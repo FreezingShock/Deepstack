@@ -497,6 +497,7 @@ function openCard(b,opts={}){
    <p class="verdict ${opts.fresh?'':'on'}" id="vd">${esc(b.verdict)}</p>
    <h3>Meaning</h3><p class="def">${esc(b.def)}</p>
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
+   ${!opts.fresh&&opts.nav?`<button class="btn favbtn" id="cfav" aria-pressed="${!!b.fav}">${b.fav?'★ Favourite':'☆ Mark as favourite'}</button>`:''}
    ${opts.nav?`<div class="cardnav"><button class="btn" id="cprev" aria-label="Previous book"${opts.nav.i<=0?' disabled':''}>\u2039</button><span>${opts.nav.i+1} of ${opts.nav.items.length}</span><button class="btn" id="cnext" aria-label="Next book"${opts.nav.i>=opts.nav.items.length-1?' disabled':''}>\u203a</button></div>`:''}
    <button class="btn pri go" id="go">${opts.onNext?(opts.last?'See your descent':'Next word'):'Close'} <kbd>Enter</kbd></button>
    </div>
@@ -508,6 +509,7 @@ function openCard(b,opts={}){
  if(opts.fresh){setTimeout(async()=>{Sfx.flip();if(b.tier>=5)Sfx.sting(b.tier);if(b.tier>=4){Feel.shake(2+b.tier*1.1,b.tier>=6?900:600);Feel.slowmo(b.tier>=6?.25:b.tier>=5?.4:.6,b.tier>=6?1700:1200);}if(b.tier>=6)flashTop();bk.classList.add('open');{const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier,30+b.tier*24);const hh=$('#halo');if(hh)hh.classList.add('go');}await sleep(380);Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+80,b.tier,30+b.tier*14);}$('#go').focus();},220);}
  else{bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
  $('#go').onclick=closeCard;
+ const fv=$('#cfav');if(fv)fv.onclick=()=>{b.fav=!b.fav;if(!b.fav)delete b.fav;save();fv.setAttribute('aria-pressed',!!b.fav);fv.textContent=b.fav?'★ Favourite':'☆ Mark as favourite';};
  if(opts.nav){const step=n=>openCard(opts.nav.items[opts.nav.i+n],{...opts,nav:{...opts.nav,i:opts.nav.i+n}});$('#cprev').onclick=()=>step(-1);$('#cnext').onclick=()=>step(1);}
  L.onclick=e=>{if(e.target===L&&!opts.onNext)closeCard();};
 }
@@ -521,22 +523,25 @@ addEventListener('keydown',e=>{
 });
 
 /* ---------- shelf overlay ---------- */
-let fTier=-1,fSort='new',fQ='';
-const SORTS={new:['Newest',(a,b)=>b.i-a.i],score:['Closest',(a,b)=>b.b.score-a.b.score||b.i-a.i],tier:['Rarest',(a,b)=>b.b.tier-a.b.tier||b.b.score-a.b.score],az:['A–Z',(a,b)=>a.b.w.localeCompare(b.b.w)]};
+let fTier=-1,fSort='new',fQ='',fFav=false,fGroup='none';
+const SORTS=core.SORTS;
 function openAll(keepFocus){
  const A=$('#all');A.hidden=false;
  const q=fQ.trim().toLowerCase();
- const list=S.shelf.map((b,i)=>({b,i})).filter(x=>(fTier<0||x.b.tier===fTier)&&(!q||x.b.w.toLowerCase().includes(q))).sort(SORTS[fSort][1]);
+ const list=core.filterShelf(S.shelf,{tier:fTier,q,sort:fSort,fav:fFav}),groups=core.groupShelf(list,fGroup,TIERS.map(t=>t.name)),favN=S.shelf.filter(b=>b.fav).length;
  const counts=TIERS.map(t=>S.shelf.filter(b=>b.tier===t.id).length);
  A.innerHTML=`<div class="sheet panel" role="dialog" aria-modal="true" aria-label="Your shelf"><button class="x" id="aclose" aria-label="Close">×</button>
   <h1 class="title small">Your shelf</h1><div class="meta">${S.shelf.length} ${S.shelf.length===1?'book':'books'}${list.length!==S.shelf.length?` · showing ${list.length}`:''}</div>
   <div class="shelftools"><input id="fq" type="search" placeholder="Find a word" value="${esc(fQ)}" aria-label="Find a word" autocomplete="off" spellcheck="false">
    <div class="sorts" role="group" aria-label="Sort">${Object.entries(SORTS).map(([k,v])=>`<button class="fchip" data-s="${k}" aria-pressed="${fSort===k}">${v[0]}</button>`).join('')}</div></div>
+  <div class="filters"><button class="fchip" id="ffav" aria-pressed="${fFav}"${favN||fFav?'':' disabled'}>★ Favourites <small>${favN}</small></button><span class="sorts" role="group" aria-label="Group by">${[['none','Flat'],['day','By day'],['tier','By tier']].map(([k,l])=>`<button class="fchip" data-g="${k}" aria-pressed="${fGroup===k}">${l}</button>`).join('')}</span></div>
   <div class="filters"><button class="fchip" data-t="-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div>
-  ${list.length?`<div class="shelfgrid">${list.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',Math.round(RHnow()*.8))}</div>`).join('')}</div>`
+  ${list.length?groups.map(g=>`${g.label?`<h2 class="sec">${esc(g.label)} <small>${g.items.length}</small></h2>`:''}<div class="shelfgrid">${g.items.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',Math.round(RHnow()*.8))}</div>`).join('')}</div>`).join('')
    :`<p class="empty">${S.shelf.length?'No book matches.':'Nothing here yet. Your first answer becomes your first book.'}</p>`}</div>`;
  $$('.fchip[data-t]',A).forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;openAll();});
  $$('.fchip[data-s]',A).forEach(c=>c.onclick=()=>{fSort=c.dataset.s;openAll();});
+ $$('.fchip[data-g]',A).forEach(c=>c.onclick=()=>{fGroup=c.dataset.g;openAll();});
+ $('#ffav').onclick=()=>{fFav=!fFav;openAll();};
  const fq=$('#fq');fq.oninput=()=>{fQ=fq.value;const pos=fq.selectionStart;openAll(true);const n=$('#fq');n.focus();n.setSelectionRange(pos,pos);};
  $$('img',A).forEach(im=>{const open=()=>{hideTip();const items=list.map(x=>x.b),k=items.indexOf(S.shelf[+im.dataset.i]);openCard(S.shelf[+im.dataset.i],{fresh:false,nav:{items,i:k}});};
   im.tabIndex=0;im.setAttribute('role','button');im.onclick=open;im.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();open();}};
