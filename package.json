@@ -8,9 +8,15 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "node --test test/*.test.js",
-    "build:words": "node scripts/build-words.mjs"
+    "build:words": "node scripts/build-words.mjs",
+    "fetch:model": "node scripts/fetch-model.mjs",
+    "prebuild": "node scripts/fetch-model.mjs",
+    "calibrate": "node scripts/calibrate.mjs"
   },
   "devDependencies": {
     "vite": "^7.0.0"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^4.3.2"
   }
 }

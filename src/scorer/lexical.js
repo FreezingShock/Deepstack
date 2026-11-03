@@ -1,5 +1,5 @@
 // Stand-in scorer: keyword/synonym concepts with light stemming. To be replaced by the embedding scorer.
-import {WORDS} from '../core/words.js';
+
 /* ----- text analysis ----- */
 export const STOP=new Set('a an the of to and or in on at for with by from as is are was were be been being it its this that these those which who whom what when where how than then so such i you he she they we me my your their our them him her his do does did has have had can could may might will would should'.split(' '));
 export const FILL=new Set('very something someone thing things word means mean meaning describes describe person people when someone one like thats'.split(' '));

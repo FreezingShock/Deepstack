@@ -31,3 +31,15 @@ Replace the body of `judgeAnswer()` in `src/scorer/index.js`; the rest of the ap
 ## Word data pipeline (scripts/)
 `npm run build:words -- --kaikki <kaikki.jsonl> --freq <en_full.txt>` writes `public/data/words.json`.
 Inputs are not committed. Difficulty is a least-squares fit of log frequency to the 38 hand-tuned difficulties; frequency alone is a rough signal (rare-but-easy words like "zzyzx" slip through), so the Daily pool should come from a hand-reviewed slice. Generated words have no concept lists, so they are not wired into the game until the embedding scorer lands.
+
+## Status (embedding scorer branch)
+- Done: words.json wired into Daily (`src/core/wordPool.js`, with quality filters), embedding judge (`src/scorer/`), lazy model load with cache + progress on the home screen, self-hosting via `npm run fetch:model`, `npm run calibrate` with labelled answers in `test/fixtures/answers.json`.
+- Calibrated (2026-11-03): `src/scorer/calibration.json` is fitted to the real MiniLM q8 model on 103 labelled answers (`npm run calibrate -- --write`). Medians: exact 0.91 cosine, good 0.57, vague 0.31, wrong 0.38, unrelated 0.11. Embeddings cannot separate topical-but-wrong answers from vague ones, so the curve pools them at score ~16. Known weak spots: antonym-style wrong answers ("lasting forever" for ephemeral reaches Codex) and one-word synonyms ("thrifty" ~12), plus poor Wiktionary glosses as reference ("infinite").
+- Reference vectors are embedded at play time (the day's definitions only), not shipped at build time.
+- Download size: model ~23 MB plus the ONNX runtime wasm (~14-27 MB, self-hosted when `fetch:model` has run).
+
+## Scoring guards (2026-11-03)
+- Antonym guard: `src/scorer/antonyms.js` is a lexicon of opposed term groups. An answer on the opposite side from the definition (negations such as "without", "lacking" flip sides) is multiplied by 0.35 and flagged as pointing the other way. 0 false positives on the 103 labelled answers; it only knows the groups listed, so extend the lexicon when real answers slip through.
+- Bare synonyms: an answer of at most two content words is also compared with the target word's own embedding (floor 0.42, capped at 0.55 similarity), so "thrifty" for frugal reaches Folio. Skipped for contrary answers.
+- Pool quality: generated words need at least 25 translations, a gloss that is not a bare synonym list or "(see usage)" leftover, and no software jargon. Removes churl, seadog and the programming sense of dialect; pool is about 5.8k words.
+- Calibration report: 97/103 answers inside their expected bands.

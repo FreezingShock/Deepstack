@@ -1,7 +1,8 @@
 import './styles.css';
 import * as core from './core/index.js';
-import {judgeAnswer} from './scorer/index.js';
-const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords}=core;
+import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
+const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords}=core;
+const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sleep=ms=>new Promise(r=>setTimeout(r,RM?Math.min(ms,30):ms));
@@ -290,7 +291,9 @@ function showHome(){
   <p class="tagline">Say what the word means. The closer you get, the deeper you go.</p>
   <div class="stats"><span>Daily No. <b>${dailyNo()}</b></span><span>7 words</span><span>Streak <b>${S.streak.n}</b></span><span>Best depth <b>${S.bestDepth} ft</b></span></div>
   ${d?`<div class="row"><button class="btn pri big" id="bRes">Today\u2019s result</button></div><div class="row" style="margin-top:6px"><button class="lnk" id="bPrac" style="font:italic 16px var(--serif)">Play a practice run</button></div>`
-     :`<div class="row"><button class="btn pri big" id="bPlay">Descend</button></div>`}</div>`;
+     :`<div class="row"><button class="btn pri big" id="bPlay">Descend</button></div>`}
+  <div class="judgestat" id="jstat" aria-live="polite"></div></div>`;
+ paintJudge(modelStatus());
  World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=()=>startDaily(false));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
@@ -308,11 +311,20 @@ cvEl.addEventListener('pointermove',e=>{if(ui.home.hidden&&ui.final.hidden||Worl
  if(h){showTip(`${h.b.w} · ${TIERS[h.b.tier].name} · ${h.b.score}`,e.clientX,e.clientY);cvEl.style.cursor='pointer';}else{hideTip();cvEl.style.cursor='';}});
 cvEl.addEventListener('click',e=>{if(World.stActive||World.restRow!==0||!(ui.stage.hidden))return;const h=World.hits().find(h=>e.clientX>=h.x&&e.clientX<=h.x+h.w&&e.clientY>=h.y&&e.clientY<=h.y+h.h);if(h){hideTip();openCard(h.b,{fresh:false});}});
 
+/* ---------- judge status (model download) ---------- */
+function paintJudge(st){const el=$('#jstat');if(!el)return;
+ el.textContent=st.state==='loading'?`Preparing the judge${st.total?`, ${Math.round(st.progress*100)}%`:'\u2026'}`:st.state==='error'?'Quick judge in use (the full judge could not load)':'';}
+onModelStatus(paintJudge);
+
 /* ---------- daily run ---------- */
 let run=null,timerId=0;
-function startDaily(practice){
+async function startDaily(practice){
+ await wordsReady;
+ if(modelStatus().state==='loading')await whenReady(8000);
+ const words=dailyWords(utc(),7);
+ prepareWords(words).catch(()=>{});
  World.reset();World.setShelf(S.shelf);
- run={practice,i:0,words:dailyWords(utc(),7),results:[],hints:2,busy:false,depthRows:0};
+ run={practice,i:0,words,results:[],hints:2,busy:false,depthRows:0};
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
@@ -436,4 +448,5 @@ const RHnow=()=>clamp(innerHeight*.22,108,172);
 
 applySound();
 showHome();
+startModelLoad();
 window.__deepstack={S,World,startDaily,showHome,judge:judgeAnswer,get run(){return run;}};

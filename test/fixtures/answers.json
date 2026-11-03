@@ -1,0 +1,517 @@
+[
+ {
+  "word": "ephemeral",
+  "label": "exact",
+  "answer": "Lasting for a very short time."
+ },
+ {
+  "word": "ephemeral",
+  "label": "exact",
+  "answer": "something that only lasts a very short while"
+ },
+ {
+  "word": "ephemeral",
+  "label": "good",
+  "answer": "fleeting, short-lived"
+ },
+ {
+  "word": "ephemeral",
+  "label": "good",
+  "answer": "it does not last long, gone quickly"
+ },
+ {
+  "word": "ephemeral",
+  "label": "vague",
+  "answer": "a thing that is temporary I think"
+ },
+ {
+  "word": "ephemeral",
+  "label": "vague",
+  "answer": "related to time"
+ },
+ {
+  "word": "ephemeral",
+  "label": "wrong",
+  "answer": "lasting forever and never fading"
+ },
+ {
+  "word": "ephemeral",
+  "label": "wrong",
+  "answer": "a long period of history"
+ },
+ {
+  "word": "ephemeral",
+  "label": "unrelated",
+  "answer": "a type of large green vegetable"
+ },
+ {
+  "word": "ephemeral",
+  "label": "unrelated",
+  "answer": "the capital city of a country"
+ },
+ {
+  "word": "ephemeral",
+  "label": "opposite",
+  "answer": "opposite of lasting for a short time"
+ },
+ {
+  "word": "frugal",
+  "label": "exact",
+  "answer": "Careful and sparing with money or resources."
+ },
+ {
+  "word": "frugal",
+  "label": "exact",
+  "answer": "being economical, not wasting money"
+ },
+ {
+  "word": "frugal",
+  "label": "good",
+  "answer": "someone who saves money and does not overspend"
+ },
+ {
+  "word": "frugal",
+  "label": "good",
+  "answer": "thrifty"
+ },
+ {
+  "word": "frugal",
+  "label": "vague",
+  "answer": "has to do with money"
+ },
+ {
+  "word": "frugal",
+  "label": "vague",
+  "answer": "a kind of person"
+ },
+ {
+  "word": "frugal",
+  "label": "wrong",
+  "answer": "spending lavishly on luxuries"
+ },
+ {
+  "word": "frugal",
+  "label": "wrong",
+  "answer": "very rich"
+ },
+ {
+  "word": "frugal",
+  "label": "unrelated",
+  "answer": "a fast red sports car"
+ },
+ {
+  "word": "frugal",
+  "label": "unrelated",
+  "answer": "the feeling of cold wind"
+ },
+ {
+  "word": "frugal",
+  "label": "opposite",
+  "answer": "the opposite of being thrifty with money"
+ },
+ {
+  "word": "candid",
+  "label": "exact",
+  "answer": "Truthful and straightforward; frank."
+ },
+ {
+  "word": "candid",
+  "label": "exact",
+  "answer": "honest and direct in what you say"
+ },
+ {
+  "word": "candid",
+  "label": "good",
+  "answer": "telling it like it is without hiding anything"
+ },
+ {
+  "word": "candid",
+  "label": "good",
+  "answer": "frank and open"
+ },
+ {
+  "word": "candid",
+  "label": "vague",
+  "answer": "a kind of person who talks"
+ },
+ {
+  "word": "candid",
+  "label": "vague",
+  "answer": "related to speech"
+ },
+ {
+  "word": "candid",
+  "label": "wrong",
+  "answer": "lying and hiding the truth"
+ },
+ {
+  "word": "candid",
+  "label": "wrong",
+  "answer": "a photograph of someone"
+ },
+ {
+  "word": "candid",
+  "label": "unrelated",
+  "answer": "an item of kitchen furniture"
+ },
+ {
+  "word": "candid",
+  "label": "unrelated",
+  "answer": "a mountain in winter"
+ },
+ {
+  "word": "meticulous",
+  "label": "exact",
+  "answer": "Showing great attention to detail; very careful and precise."
+ },
+ {
+  "word": "meticulous",
+  "label": "exact",
+  "answer": "extremely careful about every small detail"
+ },
+ {
+  "word": "meticulous",
+  "label": "good",
+  "answer": "painstakingly careful and exact"
+ },
+ {
+  "word": "meticulous",
+  "label": "good",
+  "answer": "very thorough"
+ },
+ {
+  "word": "meticulous",
+  "label": "vague",
+  "answer": "someone who works a lot"
+ },
+ {
+  "word": "meticulous",
+  "label": "vague",
+  "answer": "good at things"
+ },
+ {
+  "word": "meticulous",
+  "label": "wrong",
+  "answer": "careless and sloppy"
+ },
+ {
+  "word": "meticulous",
+  "label": "wrong",
+  "answer": "in a big hurry"
+ },
+ {
+  "word": "meticulous",
+  "label": "unrelated",
+  "answer": "a flavor of ice cream"
+ },
+ {
+  "word": "meticulous",
+  "label": "unrelated",
+  "answer": "a river crossing a valley"
+ },
+ {
+  "word": "pragmatic",
+  "label": "exact",
+  "answer": "Dealing with things sensibly and realistically, based on practical rather than theoretical considerations."
+ },
+ {
+  "word": "pragmatic",
+  "label": "exact",
+  "answer": "practical and realistic, focused on what works not theory"
+ },
+ {
+  "word": "pragmatic",
+  "label": "good",
+  "answer": "sensible and practical about getting things done"
+ },
+ {
+  "word": "pragmatic",
+  "label": "good",
+  "answer": "down to earth and realistic"
+ },
+ {
+  "word": "pragmatic",
+  "label": "vague",
+  "answer": "a way of thinking"
+ },
+ {
+  "word": "pragmatic",
+  "label": "vague",
+  "answer": "relating to philosophy"
+ },
+ {
+  "word": "pragmatic",
+  "label": "wrong",
+  "answer": "dreamy and idealistic with grand theories"
+ },
+ {
+  "word": "pragmatic",
+  "label": "wrong",
+  "answer": "angry and aggressive"
+ },
+ {
+  "word": "pragmatic",
+  "label": "unrelated",
+  "answer": "a musical instrument with strings"
+ },
+ {
+  "word": "pragmatic",
+  "label": "unrelated",
+  "answer": "a loaf of bread"
+ },
+ {
+  "word": "ubiquitous",
+  "label": "exact",
+  "answer": "Present, appearing, or found everywhere."
+ },
+ {
+  "word": "ubiquitous",
+  "label": "exact",
+  "answer": "found in every place at once"
+ },
+ {
+  "word": "ubiquitous",
+  "label": "good",
+  "answer": "seems to be everywhere you look"
+ },
+ {
+  "word": "ubiquitous",
+  "label": "good",
+  "answer": "omnipresent, widespread"
+ },
+ {
+  "word": "ubiquitous",
+  "label": "vague",
+  "answer": "very common sometimes"
+ },
+ {
+  "word": "ubiquitous",
+  "label": "vague",
+  "answer": "a big thing"
+ },
+ {
+  "word": "ubiquitous",
+  "label": "wrong",
+  "answer": "extremely rare and hard to find"
+ },
+ {
+  "word": "ubiquitous",
+  "label": "wrong",
+  "answer": "located far away"
+ },
+ {
+  "word": "ubiquitous",
+  "label": "unrelated",
+  "answer": "a small wooden boat"
+ },
+ {
+  "word": "ubiquitous",
+  "label": "unrelated",
+  "answer": "a cup of hot tea"
+ },
+ {
+  "word": "laconic",
+  "label": "exact",
+  "answer": "Using very few words."
+ },
+ {
+  "word": "laconic",
+  "label": "exact",
+  "answer": "speaking briefly, with few words"
+ },
+ {
+  "word": "laconic",
+  "label": "good",
+  "answer": "terse and to the point when talking"
+ },
+ {
+  "word": "laconic",
+  "label": "good",
+  "answer": "short and concise in speech"
+ },
+ {
+  "word": "laconic",
+  "label": "vague",
+  "answer": "quiet person maybe"
+ },
+ {
+  "word": "laconic",
+  "label": "vague",
+  "answer": "someone who is calm"
+ },
+ {
+  "word": "laconic",
+  "label": "wrong",
+  "answer": "talking endlessly with many words"
+ },
+ {
+  "word": "laconic",
+  "label": "wrong",
+  "answer": "a type of lake"
+ },
+ {
+  "word": "laconic",
+  "label": "unrelated",
+  "answer": "a pair of leather boots"
+ },
+ {
+  "word": "laconic",
+  "label": "unrelated",
+  "answer": "an apple orchard"
+ },
+ {
+  "word": "laconic",
+  "label": "opposite",
+  "answer": "opposite of using few words"
+ },
+ {
+  "word": "obsequious",
+  "label": "exact",
+  "answer": "Obedient or attentive to an excessive degree; fawning."
+ },
+ {
+  "word": "obsequious",
+  "label": "exact",
+  "answer": "overly eager to please and flatter people in power"
+ },
+ {
+  "word": "obsequious",
+  "label": "good",
+  "answer": "servile and fawning toward superiors"
+ },
+ {
+  "word": "obsequious",
+  "label": "good",
+  "answer": "grovelling, too eager to obey"
+ },
+ {
+  "word": "obsequious",
+  "label": "vague",
+  "answer": "acting in a certain way toward others"
+ },
+ {
+  "word": "obsequious",
+  "label": "vague",
+  "answer": "a type of behaviour"
+ },
+ {
+  "word": "obsequious",
+  "label": "wrong",
+  "answer": "rude and defiant toward authority"
+ },
+ {
+  "word": "obsequious",
+  "label": "wrong",
+  "answer": "a very tall person"
+ },
+ {
+  "word": "obsequious",
+  "label": "unrelated",
+  "answer": "a rainy afternoon in spring"
+ },
+ {
+  "word": "obsequious",
+  "label": "unrelated",
+  "answer": "a toolbox full of screws"
+ },
+ {
+  "word": "pusillanimous",
+  "label": "exact",
+  "answer": "Showing a lack of courage or determination; timid."
+ },
+ {
+  "word": "pusillanimous",
+  "label": "exact",
+  "answer": "cowardly, lacking the courage to act"
+ },
+ {
+  "word": "pusillanimous",
+  "label": "good",
+  "answer": "timid and afraid to take risks"
+ },
+ {
+  "word": "pusillanimous",
+  "label": "good",
+  "answer": "weak-willed and fearful"
+ },
+ {
+  "word": "pusillanimous",
+  "label": "vague",
+  "answer": "a negative trait"
+ },
+ {
+  "word": "pusillanimous",
+  "label": "vague",
+  "answer": "not very good"
+ },
+ {
+  "word": "pusillanimous",
+  "label": "wrong",
+  "answer": "brave and bold in battle"
+ },
+ {
+  "word": "pusillanimous",
+  "label": "wrong",
+  "answer": "a kind of fruit"
+ },
+ {
+  "word": "pusillanimous",
+  "label": "unrelated",
+  "answer": "a bicycle with a flat tyre"
+ },
+ {
+  "word": "pusillanimous",
+  "label": "unrelated",
+  "answer": "the colour of the sea"
+ },
+ {
+  "word": "defenestrate",
+  "label": "exact",
+  "answer": "To throw someone or something out of a window."
+ },
+ {
+  "word": "defenestrate",
+  "label": "exact",
+  "answer": "to hurl a person out through a window"
+ },
+ {
+  "word": "defenestrate",
+  "label": "good",
+  "answer": "throw out of a window"
+ },
+ {
+  "word": "defenestrate",
+  "label": "good",
+  "answer": "to toss something from a window"
+ },
+ {
+  "word": "defenestrate",
+  "label": "vague",
+  "answer": "to throw things away"
+ },
+ {
+  "word": "defenestrate",
+  "label": "vague",
+  "answer": "to remove someone"
+ },
+ {
+  "word": "defenestrate",
+  "label": "wrong",
+  "answer": "to open a window slowly"
+ },
+ {
+  "word": "defenestrate",
+  "label": "wrong",
+  "answer": "to build a house"
+ },
+ {
+  "word": "defenestrate",
+  "label": "unrelated",
+  "answer": "a recipe for tomato soup"
+ },
+ {
+  "word": "defenestrate",
+  "label": "unrelated",
+  "answer": "a cloudy night sky"
+ }
+]

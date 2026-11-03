@@ -192,3 +192,4 @@ pre.share{margin:8px 0 0;background:var(--paper2);border:1px solid var(--rule);p
 .tip{position:fixed;pointer-events:none;z-index:70;background:#f1e7d0;color:#2a2013;padding:4px 9px;font:500 13px var(--sans);border-radius:2px;opacity:0;transition:opacity .15s;white-space:nowrap}
 .meta{font-size:14px;color:var(--mute)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.word span{opacity:1;transform:none}}
+.judgestat{min-height:18px;margin-top:14px;text-align:center;font:italic 14px var(--serif);color:var(--mute);opacity:.85}
