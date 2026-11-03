@@ -7,6 +7,7 @@ import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
 import {homeHTML} from './ui/home.js';
+import {initA11y} from './ui/a11y.js';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -26,6 +27,7 @@ const dailyNo=()=>Math.floor((Date.parse(utc())-Date.parse('2026-01-01'))/864e5)
 const HINT_LABEL={letters:'first letter',sentence:'sentence',synonym:'a near word'};
 function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);b.textContent=S.sound?'Sound on':'Sound';Sfx.set(S.sound);}
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
+initA11y();
 
 /* ---------- book art (shared by the canvas world and DOM spine images) ---------- */
 const hex=h=>{const n=parseInt(h.slice(1),16);return[n>>16,n>>8&255,n&255];};
