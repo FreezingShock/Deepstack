@@ -6,6 +6,7 @@ import {openSets,toastSetsDone,setsOpen,closeSets} from './sets/ui.js';
 import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
+import {homeHTML} from './ui/home.js';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -341,21 +342,7 @@ function showHome(){
  run=null;ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;ui.gauge.classList.remove('on');clearInterval(cdTimer);
  const d=S.daily[utc()],st=computeStats(S,utc());World.setShelf(S.shelf);
  ui.home.hidden=false;ui.home.className='center fadein';
- ui.home.innerHTML=`<div class="sheet home">
-  <p class="eyebrow">Daily No. ${dailyNo()}</p>
-  <h1 class="title">Deepstack</h1>
-  <p class="tagline">Say what the word means. The closer you get, the deeper you go.</p>
-  <div class="stats"><span>Streak <b>${st.streak}</b></span><span>Deepest <b>${st.deepest} ft</b></span><span>Books <b>${S.shelf.length}</b></span>${S.bestFloor?`<span>Floor <b>${FLOORS[S.bestFloor].name}</b></span>`:''}</div>
-  ${d?`<div class="row"><button class="btn pri big" id="bRes">Today\u2019s result</button></div><p class="next" id="nextd"></p>`
-     :`<div class="row"><button class="btn pri big" id="bPlay">Descend</button></div><p class="next">Seven words \u00b7 forty-five seconds each \u00b7 one attempt</p>`}
-  <nav class="links" aria-label="More">
-   <button class="lnk" id="bStats">Stats</button>
-   <button class="lnk" id="bAll">Shelf${S.shelf.length?` <small>${S.shelf.length}</small>`:''}</button>
-   <button class="lnk" id="bUnl">${S.rating.placed?'Unlimited <small>Lexicon '+core.lexicon(S.rating.L)+'</small>':'Unlimited <small>placement</small>'}</button>
-   <button class="lnk" id="bSets">Sets</button>
-   <button class="lnk" id="bPrac">Practice run</button>
-  </nav>
-  <div class="judgestat" id="jstat" aria-live="polite"></div></div>`;
+ ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:'',lexicon:core.lexicon});
  paintJudge(modelStatus());
  World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=()=>startDaily(false));
