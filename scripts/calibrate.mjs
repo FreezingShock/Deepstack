@@ -33,12 +33,15 @@ for (const l of ['exact', 'good', 'vague', 'wrong', 'opposite', 'unrelated']) {
   console.log(l.padEnd(11), String(v.length).padStart(2), [0, .25, .5, .75, .999].map(p => q(v, p).toFixed(2).padStart(5)).join(' '));
 }
 
-const pts = [[q(by('unrelated'), .9), 0], [q(by('wrong'), .5), 14], [q(by('vague'), .5), 30], [q(by('good'), .5), 52], [q(by('exact'), .25), 78], [q(by('exact'), .5), 90], [1, 100]]
-  .sort((a, b) => a[0] - b[0]).filter((p, i, a) => i === 0 || p[0] > a[i - 1][0] + .005).map(([s, v]) => [+s.toFixed(3), v]);
+// Anchors: unrelated p90 -> 0, vague+wrong pooled median -> 16 (embeddings cannot separate topical-but-wrong from vague),
+// good median -> 52, exact p25 -> 76, exact median -> 90. Kept strictly increasing in both axes.
+const low = [...by('vague'), ...by('wrong')];
+const pts = [[q(by('unrelated'), .9), 0], [q(low, .5), 16], [q(by('good'), .5), 52], [q(by('exact'), .25), 76], [q(by('exact'), .5), 90], [1, 100]]
+  .sort((a, b) => a[0] - b[0]).filter((p, i, a) => i === 0 || (p[0] > a[i - 1][0] + .005 && p[1] > a[i - 1][1])).map(([s, v]) => [+s.toFixed(3), v]);
 console.log('\nproposed points:', JSON.stringify(pts));
 
-// Expected band per label, as [min, max] score.
-const BAND = {exact: [62, 100], good: [30, 80], vague: [10, 50], wrong: [0, 30], opposite: [0, 30], unrelated: [0, 14]};
+// Expected band per label, as [min, max] score. "good" can legitimately be near-verbatim, and short exact paraphrases land at Folio, so the floors are Folio/Hardbound.
+const BAND = {exact: [46, 100], good: [30, 95], vague: [0, 50], wrong: [0, 30], opposite: [0, 30], unrelated: [0, 14]};
 const points = process.argv.includes('--write') ? pts : cal.points;
 let bad = 0;
 for (const o of out) {

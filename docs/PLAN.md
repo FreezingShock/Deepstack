@@ -34,6 +34,6 @@ Inputs are not committed. Difficulty is a least-squares fit of log frequency to 
 
 ## Status (embedding scorer branch)
 - Done: words.json wired into Daily (`src/core/wordPool.js`, with quality filters), embedding judge (`src/scorer/`), lazy model load with cache + progress on the home screen, self-hosting via `npm run fetch:model`, `npm run calibrate` with labelled answers in `test/fixtures/answers.json`.
-- Not done: `src/scorer/calibration.json` is **provisional**. Run `npm run calibrate -- --write` with Hugging Face reachable, review out-of-band answers, then commit.
+- Calibrated (2026-11-03): `src/scorer/calibration.json` is fitted to the real MiniLM q8 model on 103 labelled answers (`npm run calibrate -- --write`). Medians: exact 0.91 cosine, good 0.57, vague 0.31, wrong 0.38, unrelated 0.11. Embeddings cannot separate topical-but-wrong answers from vague ones, so the curve pools them at score ~16. Known weak spots: antonym-style wrong answers ("lasting forever" for ephemeral reaches Codex) and one-word synonyms ("thrifty" ~12), plus poor Wiktionary glosses as reference ("infinite").
 - Reference vectors are embedded at play time (the day's definitions only), not shipped at build time.
 - Download size: model ~23 MB plus the ONNX runtime wasm (~14-27 MB, self-hosted when `fetch:model` has run).
