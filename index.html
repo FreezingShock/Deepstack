@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Deepstack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=IM+Fell+English:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400&display=swap">
+</head><body>
+
+
+<canvas id="world"></canvas>
+<div id="ui">
+  <header id="bar">
+    <button id="mark" aria-label="Deepstack home">Deepstack</button>
+    <div id="depthHud" hidden>Depth <b id="dnum">0</b> ft</div>
+    <button class="snd" id="bSound" aria-pressed="false">Sound</button>
+  </header>
+
+  <section id="home" class="center"></section>
+  <section id="stage" class="center" hidden></section>
+  <section id="final" class="center" hidden></section>
+  <div id="shelfcap" hidden></div>
+  <div id="gauge"></div>
+  <div class="skiphint" id="skiph">click or press space to hurry</div>
+</div>
+<div id="cardlayer" hidden></div>
+<div id="all" hidden></div>
+<div class="tip" id="tip"></div>
+<canvas id="fx" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:80"></canvas>
+
+<script type="module" src="/src/main.js"></script>
+</body></html>
