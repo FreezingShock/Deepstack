@@ -1,4 +1,5 @@
 import {hintLadder,rowsAfterHints} from './core/hints.js';
+import {applyCombo,comboLabel,comboNeeds,comboMultiplier} from './core/combo.js';
 import './styles.css';
 import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
@@ -380,7 +381,7 @@ async function startDaily(practice){
  const words=dailyWords(utc(),7);
  prepareWords(words).catch(()=>{});
  World.reset();World.setShelf(S.shelf);
- run={practice,i:0,words,results:[],busy:false,depthRows:0,floor:0};
+ run={practice,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0};
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
@@ -389,7 +390,7 @@ function showWord(){
  if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();run.limit=45000;
  const el=ui.stage;el.hidden=false;el.className='center fadein';
  el.innerHTML=`<div class="candle" id="candle" aria-hidden="true"><div class="wax" id="wax"><i class="flame"></i><i class="wick"></i></div><div class="plate"></div></div><div class="sheet">${pipsHTML()}
-  <div class="wlabel">Word ${run.i+1} of ${run.words.length}</div>
+  <div class="wlabel">Word ${run.i+1} of ${run.words.length}</div>${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
   <div class="word" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
   <div class="pos">${esc(w.pos)}</div>
   <div class="timer" id="tbar"><i id="tfill"></i></div>
@@ -416,8 +417,9 @@ async function submit(skipped){
  const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w);
  const t=tierOf(j.score);
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
- const rows=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
- const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT)};
+ const base=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
+ const cb=applyCombo(run.combo,t,base,skipped);run.combo=cb.chain;const rows=cb.rows;
+ const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
@@ -428,7 +430,7 @@ async function submit(skipped){
  run.results.push({...book,skipped});run.depthRows+=rows;
  if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();save();}
  const depth1=Math.round((World.restRow+rows)*FT);
- openCard(book,{fresh:true,depth0,depth1,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length,nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
+ openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length,nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
 }
 function verdictFor(j,t,w){if(j.empty)return 'Nothing written.';if(j.opposite)return 'That points the other way. The word means close to the opposite.';const T=TIERS[t];return T.lines[(w.id+j.score)%T.lines.length];}
 function finishRun(){
@@ -471,6 +473,7 @@ function openCard(b,opts={}){
    <div class="meter"><i id="mt" style="width:${opts.fresh?0:b.score}%"></i>${TIERS.slice(1).map(t=>`<u style="left:${t.min}%"></u>`).join('')}</div>
    ${!opts.fresh&&b.t?`<div class="depthgain">${b.mode==='daily'?'Daily No. <b>'+b.no+'</b> \u00b7 ':''}${new Date(b.t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</div>`:''}
    ${opts.fresh?`<div class="depthgain">Deeper by <b>+${b.ft} ft</b> \u00b7 now at <b>${opts.depth1} ft</b></div>`:''}
+   ${opts.fresh&&b.combo?`<div class="combo on" style="--tc:${T.spine}">Combo <b>${comboLabel(b.combo.mult)}</b> \u00b7 ${b.combo.n} in a row \u00b7 +${b.combo.ft} ft</div>`:opts.fresh&&opts.broke?`<div class="combo broke">Combo broken</div>`:opts.fresh&&opts.chain===1?`<div class="combo hint">Combo started: ${comboNeeds()} or better to keep it</div>`:''}
    <p class="verdict ${opts.fresh?'':'on'}" id="vd">${esc(b.verdict)}</p>
    <h3>Meaning</h3><p class="def">${esc(b.def)}</p>
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}

@@ -280,3 +280,9 @@ textarea,#fq{font-size:max(16px,1em)}
 #floorBanner.on{animation:fbanner 4.2s ease both}
 @keyframes fbanner{0%{opacity:0;transform:translate(-50%,-8px);letter-spacing:.2em}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,6px)}}
 @media(prefers-reduced-motion:reduce){#floorBanner.on{animation:fbanner-rm 2.5s ease both}@keyframes fbanner-rm{0%{opacity:0}15%,80%{opacity:1}100%{opacity:0}}}
+.combo{font:600 12px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-top:4px}
+.combo.on{color:var(--tc,var(--ink));text-shadow:0 0 12px var(--tc,transparent);animation:comboin .6s ease-out}
+.combo.on b{font-size:15px}
+.combo.broke{opacity:.7}
+.combo.live{text-align:center;color:#e0a040;text-shadow:0 0 10px #e0a04088}
+@keyframes comboin{0%{transform:scale(1.5);opacity:0}100%{transform:none;opacity:1}}
