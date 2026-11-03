@@ -447,15 +447,15 @@ async function submit(skipped){
  FX.burst(innerWidth/2,innerHeight*.5,t,16+t*8);
  run.results.push({...book,skipped});run.depthRows+=rows;
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
- if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();toastSetsDone(recordSetBook(S,book));save();}
+ if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}save();}
  const depth1=Math.round((World.restRow+rows)*FT);
  openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length;if(!last&&run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id));prepareWords([run.words[run.i]]).catch(()=>{});}const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
 }
 function verdictFor(j,t,w){if(j.empty)return 'Nothing written.';if(j.opposite)return 'That points the other way. The word means close to the opposite.';const T=TIERS[t];return T.lines[(w.id+j.score)%T.lines.length];}
 function finishRun(){
  const r=run;const books=r.results;const avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length);const best=Math.max(...books.map(b=>b.tier));
- const depth=Math.round(World.restRow*FT);
- const d={books,avg,best,depth,floor:floorAtFt(depth).id,practice:r.practice};
+ const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,depth=worldDepth+setBonus;
+ const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});}
  else if(!r.practice){S.daily[utc()]=d;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak.n=S.streak.last===y?S.streak.n+1:(S.streak.last===utc()?S.streak.n:1);S.streak.last=utc();S.bestDepth=Math.max(S.bestDepth,depth);save();}
  showFinal(d,false);
