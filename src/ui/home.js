@@ -12,14 +12,17 @@ export const HOME_STEPS=[
 export const HOME_LINKS=[
  {id:'bStats',label:'Stats'},
  {id:'bAll',label:'Shelf',badge:s=>s.shelf.length||''},
+ {id:'bUnl',label:'Unlimited',badge:(s,x)=>s.rating&&s.rating.placed?'Lexicon '+x.lexicon(s.rating.L):'placement'},
+ {id:'bSets',label:'Sets'},
  {id:'bPrac',label:'Practice run'},
 ];
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-export function homeHTML({S,st,d,no,floorName}){
+export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
+ const ctx={lexicon};
  const steps=HOME_STEPS.map(s=>`<li><span class="hn">${s.n}</span><b>${esc(s.h)}</b><span>${esc(s.p)}</span></li>`).join('');
- const links=HOME_LINKS.map(l=>{const b=l.badge?l.badge(S):'';return `<button class="lnk" id="${l.id}">${esc(l.label)}${b?` <small>${b}</small>`:''}</button>`;}).join('');
+ const links=HOME_LINKS.map(l=>{const b=l.badge?l.badge(S,ctx):'';return `<button class="lnk" id="${l.id}">${esc(l.label)}${b?` <small>${b}</small>`:''}</button>`;}).join('');
  return `<div class="sheet home">
   <p class="eyebrow">Daily No. ${no}</p>
   <h1 class="title">Deepstack</h1>

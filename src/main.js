@@ -1,6 +1,8 @@
 import {hintLadder,rowsAfterHints} from './core/hints.js';
 import {applyCombo,comboLabel,comboNeeds,comboMultiplier} from './core/combo.js';
 import './styles.css';
+import {recordBook as recordSetBook,backfill as backfillSets} from './sets/sets.js';
+import {openSets,toastSetsDone,setsOpen,closeSets} from './sets/ui.js';
 import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
@@ -16,7 +18,9 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const mem={};
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return k in mem?mem[k]:d}},set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let S=Object.assign({shelf:[],daily:{},streak:{last:'',n:0},bestDepth:0,bestFloor:0,sound:false},store.get('deepstack.v1',{}));
+S.rating=core.loadRating(S.rating);
 const save=()=>store.set('deepstack.v1',S);
+backfillSets(S);
 const utc=()=>new Date().toISOString().slice(0,10);
 const dailyNo=()=>Math.floor((Date.parse(utc())-Date.parse('2026-01-01'))/864e5)+1;
 const HINT_LABEL={letters:'first letter',sentence:'sentence',synonym:'a near word'};
@@ -338,12 +342,13 @@ function showHome(){
  run=null;ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;ui.gauge.classList.remove('on');clearInterval(cdTimer);
  const d=S.daily[utc()],st=computeStats(S,utc());World.setShelf(S.shelf);
  ui.home.hidden=false;ui.home.className='center fadein';
- ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:''});
+ ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:'',lexicon:core.lexicon});
  paintJudge(modelStatus());
  World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=()=>startDaily(false));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
- $('#bPrac').onclick=()=>startDaily(true);
+ $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
+ $('#bSets').onclick=()=>openSets(S);
  $('#bStats').onclick=openStats;$('#bAll').onclick=()=>openAll();
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
@@ -374,6 +379,17 @@ async function startDaily(practice){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
+async function startUnlimited(){
+ await wordsReady;
+ if(modelStatus().state==='loading')await whenReady(8000);
+ const placing=!S.rating.placed,n=placing?core.PLACEMENT_WORDS:core.RUN_WORDS;
+ const first=core.nextWord(S.rating,0,n,[]);
+ prepareWords([first]).catch(()=>{});
+ World.reset();World.setShelf(S.shelf);
+ run={mode:'unlimited',placing,practice:false,i:0,words:Array(n).fill(first),results:[],busy:false,depthRows:0,floor:0,lex0:core.lexicon(S.rating.L)};
+ ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
+ showWord();
+}
 function pipsHTML(){return `<div class="pips" aria-label="word ${run.i+1} of 7">${run.words.map((_,i)=>{const r=run.results[i];const T=r?TIERS[r.tier]:null;return `<i class="pip ${i===run.i?'now':''} ${r?'done':''}" style="${T?`background:${T.spine};box-shadow:0 0 8px ${T.spine}99`:''}"></i>`;}).join('')}</div>`;}
 function showWord(){
  if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();run.limit=45000;
@@ -386,7 +402,7 @@ function showWord(){
   <div class="slipwrap" id="fld"><i class="pin"></i><div class="slip"><textarea id="ans" placeholder="In your own words\u2026" maxlength="300" aria-label="Your explanation" enterkeyhint="send"></textarea></div></div>
   <div class="hintline" id="hl" aria-live="polite"></div>
   <div class="row" style="margin-top:6px"><button class="btn" id="hint"></button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
- World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII'][run.i],books:run.results});
+ World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
  ta.oninput=()=>{Sfx.key();const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
@@ -408,7 +424,7 @@ async function submit(skipped){
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
  const base=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
  const cb=applyCombo(run.combo,t,base,skipped);run.combo=cb.chain;const rows=cb.rows;
- const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
+ const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
@@ -417,26 +433,28 @@ async function submit(skipped){
  ui.gauge.classList.remove('on');ui.skip.classList.remove('on');
  FX.burst(innerWidth/2,innerHeight*.5,t,16+t*8);
  run.results.push({...book,skipped});run.depthRows+=rows;
- if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();save();}
+ if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
+ if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}save();}
  const depth1=Math.round((World.restRow+rows)*FT);
- openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length,nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
+ openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length;if(!last&&run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id));prepareWords([run.words[run.i]]).catch(()=>{});}const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
 }
 function verdictFor(j,t,w){if(j.empty)return 'Nothing written.';if(j.opposite)return 'That points the other way. The word means close to the opposite.';const T=TIERS[t];return T.lines[(w.id+j.score)%T.lines.length];}
 function finishRun(){
  const r=run;const books=r.results;const avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length);const best=Math.max(...books.map(b=>b.tier));
- const depth=Math.round(World.restRow*FT);
- const d={books,avg,best,depth,floor:floorAtFt(depth).id,practice:r.practice};
- if(!r.practice){S.daily[utc()]=d;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak.n=S.streak.last===y?S.streak.n+1:(S.streak.last===utc()?S.streak.n:1);S.streak.last=utc();S.bestDepth=Math.max(S.bestDepth,depth);save();}
+ const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,depth=worldDepth+setBonus;
+ const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
+ if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});}
+ else if(!r.practice){S.daily[utc()]=d;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak.n=S.streak.last===y?S.streak.n+1:(S.streak.last===utc()?S.streak.n:1);S.streak.last=utc();S.bestDepth=Math.max(S.bestDepth,depth);save();}
  showFinal(d,false);
 }
 const BLK='▁▂▃▄▅▆▇';
-function shareText(d){return `Deepstack No. ${dailyNo()}\nDepth ${d.depth} ft${d.floor?' · '+FLOORS[d.floor].name:''} · average closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' · ')}`;}
+function shareText(d){return `Deepstack ${d.mode==='unlimited'?'Unlimited \u00b7 Lexicon '+d.lex:'No. '+dailyNo()}\nDepth ${d.depth} ft${d.floor?' · '+FLOORS[d.floor].name:''} · average closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' · ')}`;}
 async function showFinal(d,fromHome){
  if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;World.reset();World.setShelf(S.shelf);}
  ui.hud.hidden=false;$('#dnum').textContent=d.depth;
  World.openNiche(World.restRow,{label:'FINIS',books:d.books});
  const txt=shareText(d);const el=ui.final;el.hidden=false;el.className='center fadein';
- el.innerHTML=`<div class="sheet"><div class="stats" style="margin:6px 0 0"><span>${d.practice?'Practice run':'Daily No. '+dailyNo()}</span><span>Average <b>${d.avg}</b></span><span>Rarest <b>${TIERS[d.best].name}</b></span>${d.floor?`<span>Reached <b>${FLOORS[d.floor].name}</b></span>`:''}</div><h1 class="title" style="font-size:34px;margin:0">Descent complete</h1>
+ el.innerHTML=`<div class="sheet"><div class="stats" style="margin:6px 0 0"><span>${d.mode==='unlimited'?(d.placing?'Placement':'Unlimited'):d.practice?'Practice run':'Daily No. '+dailyNo()}</span>${d.mode==='unlimited'?`<span>Lexicon <b>${d.lex}</b>${d.placing?'':` (${d.lex>=d.lex0?'+':'\u2212'}${Math.abs(d.lex-d.lex0)})`} \u00b7 ${core.levelTitle(d.lex/10)}</span>`:''}<span>Average <b>${d.avg}</b></span><span>Rarest <b>${TIERS[d.best].name}</b></span>${d.floor?`<span>Reached <b>${FLOORS[d.floor].name}</b></span>`:''}</div><h1 class="title" style="font-size:34px;margin:0">Descent complete</h1>
   <div class="bigd"><span id="cnt">0</span><small>ft deep</small></div>
   <div class="spineimgs" id="sp">${d.books.map((b,i)=>spineImg(b,i,'final',72)).join('')}</div>
   
@@ -466,6 +484,7 @@ function openCard(b,opts={}){
    <p class="verdict ${opts.fresh?'':'on'}" id="vd">${esc(b.verdict)}</p>
    <h3>Meaning</h3><p class="def">${esc(b.def)}</p>
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
+   ${!opts.fresh&&opts.nav?`<button class="btn favbtn" id="cfav" aria-pressed="${!!b.fav}">${b.fav?'★ Favourite':'☆ Mark as favourite'}</button>`:''}
    ${opts.nav?`<div class="cardnav"><button class="btn" id="cprev" aria-label="Previous book"${opts.nav.i<=0?' disabled':''}>\u2039</button><span>${opts.nav.i+1} of ${opts.nav.items.length}</span><button class="btn" id="cnext" aria-label="Next book"${opts.nav.i>=opts.nav.items.length-1?' disabled':''}>\u203a</button></div>`:''}
    <button class="btn pri go" id="go">${opts.onNext?(opts.last?'See your descent':'Next word'):'Close'} <kbd>Enter</kbd></button>
    </div>
@@ -477,6 +496,7 @@ function openCard(b,opts={}){
  if(opts.fresh){setTimeout(async()=>{Sfx.flip();if(b.tier>=5)Sfx.sting(b.tier);if(b.tier>=4){Feel.shake(2+b.tier*1.1,b.tier>=6?900:600);Feel.slowmo(b.tier>=6?.25:b.tier>=5?.4:.6,b.tier>=6?1700:1200);}if(b.tier>=6)flashTop();bk.classList.add('open');{const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier,30+b.tier*24);const hh=$('#halo');if(hh)hh.classList.add('go');}await sleep(380);Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+80,b.tier,30+b.tier*14);}$('#go').focus();},220);}
  else{bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
  $('#go').onclick=closeCard;
+ const fv=$('#cfav');if(fv)fv.onclick=()=>{b.fav=!b.fav;if(!b.fav)delete b.fav;save();fv.setAttribute('aria-pressed',!!b.fav);fv.textContent=b.fav?'★ Favourite':'☆ Mark as favourite';};
  if(opts.nav){const step=n=>openCard(opts.nav.items[opts.nav.i+n],{...opts,nav:{...opts.nav,i:opts.nav.i+n}});$('#cprev').onclick=()=>step(-1);$('#cnext').onclick=()=>step(1);}
  L.onclick=e=>{if(e.target===L&&!opts.onNext)closeCard();};
 }
@@ -485,27 +505,30 @@ function closeCard(){const L=$('#cardlayer');const o=cardOpts;cardOpts=null;L.cl
 addEventListener('keydown',e=>{
  if(!$('#cardlayer').hidden&&cardOpts&&cardOpts.nav&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){const b=$(e.key==='ArrowLeft'?'#cprev':'#cnext');if(b&&!b.disabled){e.preventDefault();b.click();}return;}
  if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'){e.preventDefault();closeCard();return;}
- if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(!$('#all').hidden)$('#all').hidden=true;else if(!$('#stats').hidden)$('#stats').hidden=true;else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
+ if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(setsOpen())closeSets();else if(!$('#all').hidden)$('#all').hidden=true;else if(!$('#stats').hidden)$('#stats').hidden=true;else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
  if(World.descending&&(e.key===' '||e.key==='Escape'||e.key==='Enter')){e.preventDefault();World.skipDown();}
 });
 
 /* ---------- shelf overlay ---------- */
-let fTier=-1,fSort='new',fQ='';
-const SORTS={new:['Newest',(a,b)=>b.i-a.i],score:['Closest',(a,b)=>b.b.score-a.b.score||b.i-a.i],tier:['Rarest',(a,b)=>b.b.tier-a.b.tier||b.b.score-a.b.score],az:['A–Z',(a,b)=>a.b.w.localeCompare(b.b.w)]};
+let fTier=-1,fSort='new',fQ='',fFav=false,fGroup='none';
+const SORTS=core.SORTS;
 function openAll(keepFocus){
  const A=$('#all');A.hidden=false;
  const q=fQ.trim().toLowerCase();
- const list=S.shelf.map((b,i)=>({b,i})).filter(x=>(fTier<0||x.b.tier===fTier)&&(!q||x.b.w.toLowerCase().includes(q))).sort(SORTS[fSort][1]);
+ const list=core.filterShelf(S.shelf,{tier:fTier,q,sort:fSort,fav:fFav}),groups=core.groupShelf(list,fGroup,TIERS.map(t=>t.name)),favN=S.shelf.filter(b=>b.fav).length;
  const counts=TIERS.map(t=>S.shelf.filter(b=>b.tier===t.id).length);
  A.innerHTML=`<div class="sheet panel" role="dialog" aria-modal="true" aria-label="Your shelf"><button class="x" id="aclose" aria-label="Close">×</button>
   <h1 class="title small">Your shelf</h1><div class="meta">${S.shelf.length} ${S.shelf.length===1?'book':'books'}${list.length!==S.shelf.length?` · showing ${list.length}`:''}</div>
   <div class="shelftools"><input id="fq" type="search" placeholder="Find a word" value="${esc(fQ)}" aria-label="Find a word" autocomplete="off" spellcheck="false">
    <div class="sorts" role="group" aria-label="Sort">${Object.entries(SORTS).map(([k,v])=>`<button class="fchip" data-s="${k}" aria-pressed="${fSort===k}">${v[0]}</button>`).join('')}</div></div>
+  <div class="filters"><button class="fchip" id="ffav" aria-pressed="${fFav}"${favN||fFav?'':' disabled'}>★ Favourites <small>${favN}</small></button><span class="sorts" role="group" aria-label="Group by">${[['none','Flat'],['day','By day'],['tier','By tier']].map(([k,l])=>`<button class="fchip" data-g="${k}" aria-pressed="${fGroup===k}">${l}</button>`).join('')}</span></div>
   <div class="filters"><button class="fchip" data-t="-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div>
-  ${list.length?`<div class="shelfgrid">${list.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',Math.round(RHnow()*.8))}</div>`).join('')}</div>`
+  ${list.length?groups.map(g=>`${g.label?`<h2 class="sec">${esc(g.label)} <small>${g.items.length}</small></h2>`:''}<div class="shelfgrid">${g.items.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',Math.round(RHnow()*.8))}</div>`).join('')}</div>`).join('')
    :`<p class="empty">${S.shelf.length?'No book matches.':'Nothing here yet. Your first answer becomes your first book.'}</p>`}</div>`;
  $$('.fchip[data-t]',A).forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;openAll();});
  $$('.fchip[data-s]',A).forEach(c=>c.onclick=()=>{fSort=c.dataset.s;openAll();});
+ $$('.fchip[data-g]',A).forEach(c=>c.onclick=()=>{fGroup=c.dataset.g;openAll();});
+ $('#ffav').onclick=()=>{fFav=!fFav;openAll();};
  const fq=$('#fq');fq.oninput=()=>{fQ=fq.value;const pos=fq.selectionStart;openAll(true);const n=$('#fq');n.focus();n.setSelectionRange(pos,pos);};
  $$('img',A).forEach(im=>{const open=()=>{hideTip();const items=list.map(x=>x.b),k=items.indexOf(S.shelf[+im.dataset.i]);openCard(S.shelf[+im.dataset.i],{fresh:false,nav:{items,i:k}});};
   im.tabIndex=0;im.setAttribute('role','button');im.onclick=open;im.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();open();}};
@@ -542,4 +565,4 @@ const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();
 showHome();
 startModelLoad();
-window.__deepstack={S,World,startDaily,showHome,judge:judgeAnswer,get run(){return run;}};
+window.__deepstack={S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,get run(){return run;}};

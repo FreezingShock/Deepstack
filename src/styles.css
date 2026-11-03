@@ -295,3 +295,6 @@ textarea,#fq{font-size:max(16px,1em)}
 .combo.broke{opacity:.7}
 .combo.live{text-align:center;color:#e0a040;text-shadow:0 0 10px #e0a04088}
 @keyframes comboin{0%{transform:scale(1.5);opacity:0}100%{transform:none;opacity:1}}
+.favbtn{display:block;margin:8px auto 0;color:var(--ink);background:transparent;border:1px solid var(--rule);padding:2px 14px;font-size:13px}
+.favbtn[aria-pressed="true"]{color:#8a5a00;border-color:#b98a2a}
+.panel h2.sec small{font:600 11px var(--sans);color:var(--mute);letter-spacing:.1em}
