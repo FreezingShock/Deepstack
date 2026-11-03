@@ -1,4 +1,4 @@
-// Usage: node scripts/build-words.mjs --kaikki <file.jsonl> --freq <en_full.txt> [--out public/data/words.json] [--min-d 1.5]
+// Usage: node scripts/build-words.mjs --kaikki <file.jsonl> --freq <en_full.txt> [--out public/data/words.json] [--min-d 1.5] [--min-trans 15] [--min-freq 20]
 // Inputs (not committed):
 //   kaikki: https://kaikki.org/dictionary/English/words/kaikki.org-dictionary-English-words.jsonl
 //   freq:   https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/en/en_full.txt
@@ -11,6 +11,7 @@ import {BANK} from '../src/core/words.js';
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i > 0 ? process.argv[i + 1] : d; };
 const kaikki = arg('kaikki'), freqPath = arg('freq'), out = arg('out', 'public/data/words.json');
 const minD = Number(arg('min-d', 1.5));
+const minT = Number(arg('min-trans', 15)), minF = Number(arg('min-freq', 20)); // familiarity filters (curated words bypass)
 if (!kaikki || !freqPath) { console.error('need --kaikki and --freq'); process.exit(1); }
 
 const freq = parseFreq(readFileSync(freqPath, 'utf8'));
@@ -31,7 +32,7 @@ for await (const e of entries) {
 const curated = new Set(anchors.map(a => a.w));
 const words = [...rec.values()]
   .map(r => ({...r, d: difficultyOf(fit, freq, r.w), curated: curated.has(r.w) || undefined}))
-  .filter(r => r.curated || r.d >= minD)
+  .filter(r => r.curated || (r.d >= minD && r.t >= minT && (freq.get(r.w) ?? 0) >= minF))
   .sort((a, b) => a.d - b.d || a.w.localeCompare(b.w));
 mkdirSync(dirname(out), {recursive: true});
 writeFileSync(out, JSON.stringify({version: 1, source: 'Wiktionary via kaikki.org (CC BY-SA 4.0)', fit, words}));

@@ -32,6 +32,16 @@ export function fitDifficulty(anchors, freq) {
 
 export const difficultyOf = (fit, freq, w) => Math.max(0.5, Math.min(10, +(fit.a + fit.b * logFreq(freq, w)).toFixed(1)));
 
+/** Number of languages the entry has translations for: a cheap "do people know this word" signal. */
+export function translationBreadth(entry) {
+  let n = 0;
+  for (const s of entry.senses || []) {
+    const c = (s.categories || []).filter(x => /^Terms with .+ translations$/.test(x.name || x)).length;
+    if (c > n) n = c;
+  }
+  return n;
+}
+
 /** Pick the best usable sense of a kaikki entry, or null. */
 export function pickSense(entry) {
   const pos = POS[entry.pos];
@@ -69,7 +79,7 @@ export function collect(entries, freq, {minCount = 3} = {}) {
     if (out.has(e.word) || (freq.get(e.word) ?? 0) < minCount) continue;
     const s = pickSense(e);
     if (!s) continue;
-    out.set(e.word, {w: e.word, pos: s.pos, def: s.def, hint: makeHint(e.word, s.examples)});
+    out.set(e.word, {w: e.word, pos: s.pos, def: s.def, hint: makeHint(e.word, s.examples), t: translationBreadth(e)});
   }
   return out;
 }
