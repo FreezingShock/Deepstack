@@ -109,6 +109,7 @@ textarea::placeholder{color:var(--mute);opacity:.7;font-style:italic}
 @keyframes flick{from{transform:rotate(-3deg) scale(1,1)}to{transform:rotate(3deg) scale(.9,1.1)}}
 .hintline{min-height:26px;margin:10px 0 0;font:italic 400 16px/1.45 var(--serif);color:var(--mute);opacity:0;transition:opacity .4s}
 .hintline.on{opacity:1}
+.hintline div+div{margin-top:4px}
 .hintline mark{background:none;color:#ffd98a;font-style:normal;font-weight:600;text-shadow:0 0 12px #ffb84d99}
 .keys{flex-basis:100%;font:400 12px var(--sans);color:var(--mute);text-align:center}
 /* gauge, skip hint */
