@@ -1,7 +1,9 @@
+import {hintLadder,rowsAfterHints} from './core/hints.js';
 import './styles.css';
 import * as core from './core/index.js';
+import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
-const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt}=core;
+const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -15,18 +17,7 @@ let S=Object.assign({shelf:[],daily:{},streak:{last:'',n:0},bestDepth:0,bestFloo
 const save=()=>store.set('deepstack.v1',S);
 const utc=()=>new Date().toISOString().slice(0,10);
 const dailyNo=()=>Math.floor((Date.parse(utc())-Date.parse('2026-01-01'))/864e5)+1;
-/* sound */
-const Sfx=(()=>{let ctx,amb,master,on=false,lastKey=0;
- function init(){if(ctx)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;ctx=new AC();master=ctx.createGain();master.gain.value=.9;master.connect(ctx.destination);
-  const len=ctx.sampleRate*4,buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);let last=0;for(let i=0;i<len;i++){const w=Math.random()*2-1;last=(last+.02*w)/1.02;d[i]=last*3.5;}
-  const src=ctx.createBufferSource();src.buffer=buf;src.loop=true;const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=380;amb=ctx.createGain();amb.gain.value=0;src.connect(lp);lp.connect(amb);amb.connect(master);src.start();
-  const lfo=ctx.createOscillator();lfo.frequency.value=.07;const lg=ctx.createGain();lg.gain.value=120;lfo.connect(lg);lg.connect(lp.frequency);lfo.start();}
- function burst(dur,ft,f0,f1,g){if(!on||!ctx)return;const n=Math.max(1,ctx.sampleRate*dur|0),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);const s=ctx.createBufferSource();s.buffer=b;const f=ctx.createBiquadFilter();f.type=ft;f.frequency.setValueAtTime(f0,ctx.currentTime);f.frequency.exponentialRampToValueAtTime(f1,ctx.currentTime+dur);const gn=ctx.createGain();gn.gain.value=g;s.connect(f);f.connect(gn);gn.connect(master);s.start();}
- function tone(f,t0,dur,g){if(!on||!ctx)return;const o=ctx.createOscillator(),gn=ctx.createGain();o.type='sine';o.frequency.value=f;gn.gain.setValueAtTime(0,ctx.currentTime+t0);gn.gain.linearRampToValueAtTime(g,ctx.currentTime+t0+.02);gn.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+t0+dur);o.connect(gn);gn.connect(master);o.start(ctx.currentTime+t0);o.stop(ctx.currentTime+t0+dur+.05);}
- return{set(v){on=v;if(v){init();ctx&&ctx.resume();amb&&amb.gain.linearRampToValueAtTime(.07,ctx.currentTime+1.5);}else amb&&amb.gain.linearRampToValueAtTime(0,ctx.currentTime+.4);},
-  flip(){burst(.25,'bandpass',900,3200,.2);},key(){const n=performance.now();if(n-lastKey<45)return;lastKey=n;burst(.03,'highpass',2500,4000,.045);},
-  whoosh(d){burst(d,'bandpass',200,1400,.14);},thud(){tone(80,0,.3,.22);burst(.12,'lowpass',500,120,.18);},
-  chime(t){const base=[0,523,587,659,784,880,1047][t]||0;if(!base)return;[1,1.25,1.5,2].slice(0,Math.max(1,t-1)).forEach((m,i)=>tone(base*m,i*.09,.9,.07));}};})();
+const HINT_LABEL={letters:'first letter',sentence:'sentence',synonym:'a near word'};
 function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);b.textContent=S.sound?'Sound on':'Sound';Sfx.set(S.sound);}
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
 
@@ -228,7 +219,7 @@ const World=(()=>{
  const shade=(hx,f)=>{const n=parseInt(hx.slice(1),16);return `rgb(${(n>>16)*f|0},${(n>>8&255)*f|0},${(n&255)*f|0})`;};
  let shelfVisible=0;
  function frame(now){
-  const dt=Math.min(.05,(now-last)/1000);last=now;vt+=dt*(st&&st.skip?6:1);
+  const rdt=Math.min(.05,(now-last)/1000);last=now;Feel.tick(rdt);const dt=rdt*Feel.ts;vt+=dt*(st&&st.skip?6:1);cv.style.transform=Feel.ox||Feel.oy?`translate(${Feel.ox}px,${Feel.oy}px)`:'';{const cl=document.getElementById('cardlayer');if(cl)cl.style.transform=cv.style.transform;}
   let camNow=cam,settle=0,pull=0;
   if(st){
    if(st.phase==='down'){const u=Math.min(1,st.t/st.dur);st.t+=dt*(st.skip?6:1);camNow=st.cam0+(st.cam1-st.cam0)*ease(u);st.prog=u;if(u>=1){st.phase='settle';st.pt=0;Sfx.thud();}}
@@ -238,7 +229,7 @@ const World=(()=>{
   }else if(rest){const u=Math.min(1,(now-rest.t0)/rest.ms),e=ease(u);cam=rest.c0+(rest.c1-rest.c0)*e;if(u>=1){const f=rest.done;rest=null;f&&f();}camNow=cam;}
   else{camNow=cam+(RM?0:Math.sin(vt*.5)*1.5);}
   const rowB=(camNow+H-RH-BM)/RH,atm=atmosphereAt(Math.max(0,rowB)),a=Math.max(clamp(rowB/190,0,1),atm.decay);
-  if(onDepth)onDepth(Math.max(0,Math.round(rowB*FT)));
+  if(onDepth)onDepth(Math.max(0,Math.round(rowB*FT)));Sfx.setDepth(Math.max(0,rowB*FT));
   ctx.globalAlpha=1;ctx.fillStyle='#0a0706';ctx.fillRect(0,0,W,H);
   // wall above shelf 0
   const top=Math.floor(camNow/RH)-1,bot=Math.ceil((camNow+H)/RH)+1;
@@ -257,13 +248,25 @@ const World=(()=>{
   if(a>0){ctx.fillStyle=`rgba(14,34,30,${.1*a})`;ctx.fillRect(0,0,W,H);}
   if(atm.tint[3]>.005){const t=atm.tint;ctx.fillStyle=`rgba(${t[0]|0},${t[1]|0},${t[2]|0},${t[3]})`;ctx.fillRect(0,0,W,H);}
   ctx.globalCompositeOperation='lighter';
-  const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31);
+  if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
+  const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick;
   let g=ctx.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*.45);{const l=atm.lamp.map(v=>v|0);g.addColorStop(0,`rgba(${l[0]},${l[1]+6},${l[2]+10},${fl})`);g.addColorStop(1,`rgba(${l[0]},${l[1]+6},${l[2]+10},0)`);}ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   if(st){const zi=st.prog>=1?st.tier:Math.min(st.tier,tierOf(st.prog*st.score));const zc=TIERS[zi].spine;g=ctx.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*.6);g.addColorStop(0,zc+'26');g.addColorStop(1,zc+'00');ctx.fillStyle=g;ctx.globalAlpha=.5+.5*settle;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;gaugeCb&&gaugeCb(zi,st);}
   if(!RM)for(const p of dust){p.y-=dt*(5+p.z*14);p.x+=Math.sin(vt*.6+p.ph)*dt*8;const yy=((p.y+camNow*(.25+p.z*.5))%H+H)%H,xx=(p.x%W+W)%W;const dist=Math.hypot(xx-lx,yy-ly)/(Math.max(W,H)*.45);const al=Math.max(0,1-dist)*(.15+.5*Math.abs(Math.sin(vt*1.3+p.ph)))*(.7+a);ctx.fillStyle=`rgba(255,226,170,${al})`;ctx.beginPath();ctx.arc(xx,yy,p.r*(.6+p.z),0,6.3);ctx.fill();}
+  if(!RM)drawMoths(lx,ly,a,dt);
   ctx.globalCompositeOperation='source-over';
   requestAnimationFrame(frame);}
- let rest=null;
+ // moths: a few circle the lamp, erratic and drawn to the light; they thin out as the library decays
+ const moths=Array.from({length:4},(_,i)=>({ang:Math.random()*6.3,rad:50+Math.random()*90,sp:(Math.random()<.5?-1:1)*(.9+Math.random()*1.2),ph:Math.random()*9,w:Math.random()*9,z:i}));
+ function drawMoths(lx,ly,a,dt){const n=Math.max(1,Math.round(moths.length*(1-.6*a)));
+  for(let i=0;i<n;i++){const m=moths[i];m.ang+=m.sp*dt*(1+.8*Math.sin(vt*1.7+m.ph));m.rad+=(Math.sin(vt*.9+m.ph)*30+(60+i*25)-m.rad)*dt*.8;m.w+=dt*38;
+   const x=lx+Math.cos(m.ang)*m.rad*1.35+Math.sin(vt*3+m.ph)*5,y=ly-30+Math.sin(m.ang)*m.rad*.7+Math.cos(vt*4.1+m.ph)*4;
+   const flap=Math.abs(Math.sin(m.w)),s=2.2+i*.2,near=Math.max(.15,1-m.rad/190);
+   ctx.globalAlpha=.55*near*(1-.5*a);ctx.fillStyle='#f3e6c4';
+   ctx.beginPath();ctx.ellipse(x-s*(.6+flap*.9),y,s*(.4+flap),s*.7,-.4,0,6.3);ctx.ellipse(x+s*(.6+flap*.9),y,s*(.4+flap),s*.7,.4,0,6.3);ctx.fill();
+   ctx.globalAlpha=.8*near;ctx.fillStyle='#a79570';ctx.fillRect(x-.6,y-s*.7,1.2,s*1.4);}
+  ctx.globalAlpha=1;}
+ let rest=null,flick=0,flickV=0,flickT=0;
  for(let i=0;i<100;i++)dust.push({x:Math.random()*5000,y:Math.random()*3000,z:Math.random(),r:.8+Math.random()*1.6,ph:Math.random()*6});
  addEventListener('resize',resize);resize();requestAnimationFrame(frame);
  cv.addEventListener('pointerdown',e=>{if(st)st.skip=true;});
@@ -284,7 +287,8 @@ const World=(()=>{
 
 /* ---------- helpers ---------- */
 const tip=$('#tip');
-function showTip(t,x,y){tip.textContent=t;tip.style.opacity=1;tip.style.left=clamp(x+14,6,innerWidth-200)+'px';tip.style.top=(y-34)+'px';}
+const NOHOVER=matchMedia('(hover:none)').matches;
+function showTip(t,x,y){if(NOHOVER)return;tip.textContent=t;tip.style.opacity=1;tip.style.left=clamp(x+14,6,innerWidth-200)+'px';tip.style.top=(y-34)+'px';}
 const hideTip=()=>tip.style.opacity=0;
 const ui={home:$('#home'),stage:$('#stage'),final:$('#final'),cap:$('#shelfcap'),hud:$('#depthHud'),gauge:$('#gauge'),skip:$('#skiph')};
 function type(el,text,speed=14){return new Promise(res=>{if(RM||!speed){el.textContent=text;return res();}let i=0;const id=setInterval(()=>{i++;el.textContent=text.slice(0,i);if(i%3===0)Sfx.key();if(i>=text.length){clearInterval(id);res();}},speed);});}
@@ -306,7 +310,7 @@ const FX=(()=>{const cv=$('#fx'),c=cv.getContext('2d');let W=0,H=0,DPR=1,ps=[],o
  const rs=()=>{DPR=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;c.setTransform(DPR,0,0,DPR,0,0);};rs();addEventListener('resize',rs);
  const R=(a,b)=>a+Math.random()*(b-a);
  const add=p=>{if(RM)return;ps.push(p);if(ps.length>1000)ps.shift();if(!on){on=true;last=performance.now();requestAnimationFrame(loop);}};
- function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;c.clearRect(0,0,W,H);
+ function loop(now){const dt=Math.min(.05,(now-last)/1000)*Feel.ts;last=now;c.clearRect(0,0,W,H);
   for(let i=ps.length-1;i>=0;i--){const p=ps[i];p.t+=dt;if(p.t>=p.max){ps.splice(i,1);continue;}const u=p.t/p.max;
    if(p.k==='ring'){c.globalCompositeOperation='lighter';c.strokeStyle=p.c;c.globalAlpha=(1-u)*.38;c.lineWidth=2.4*(1-u)+.8;c.beginPath();c.arc(p.x,p.y,30+u*p.r,0,6.3);c.stroke();continue;}
    p.vy+=p.g*dt;p.vx*=1-.8*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;const al=Math.min(1,(1-u)*1.6);
@@ -327,25 +331,32 @@ const FX=(()=>{const cv=$('#fx'),c=cv.getContext('2d');let W=0,H=0,DPR=1,ps=[],o
  };})();
 
 /* ---------- home ---------- */
+let cdTimer=0;
 function showHome(){
- run=null;ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;ui.gauge.classList.remove('on');
- const d=S.daily[utc()];World.setShelf(S.shelf);
+ run=null;ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;ui.gauge.classList.remove('on');clearInterval(cdTimer);
+ const d=S.daily[utc()],st=computeStats(S,utc());World.setShelf(S.shelf);
  ui.home.hidden=false;ui.home.className='center fadein';
- ui.home.innerHTML=`<div class="sheet">
+ ui.home.innerHTML=`<div class="sheet home">
+  <p class="eyebrow">Daily No. ${dailyNo()}</p>
   <h1 class="title">Deepstack</h1>
   <p class="tagline">Say what the word means. The closer you get, the deeper you go.</p>
-  <div class="stats"><span>Daily No. <b>${dailyNo()}</b></span><span>7 words</span><span>Streak <b>${S.streak.n}</b></span><span>Best depth <b>${S.bestDepth} ft</b></span>${S.bestFloor?`<span>Deepest floor <b>${FLOORS[S.bestFloor].name}</b></span>`:''}</div>
-  ${d?`<div class="row"><button class="btn pri big" id="bRes">Today\u2019s result</button></div><div class="row" style="margin-top:6px"><button class="lnk" id="bPrac" style="font:italic 16px var(--serif)">Play a practice run</button></div>`
-     :`<div class="row"><button class="btn pri big" id="bPlay">Descend</button></div>`}
+  <div class="stats"><span>Streak <b>${st.streak}</b></span><span>Deepest <b>${st.deepest} ft</b></span><span>Books <b>${S.shelf.length}</b></span>${S.bestFloor?`<span>Floor <b>${FLOORS[S.bestFloor].name}</b></span>`:''}</div>
+  ${d?`<div class="row"><button class="btn pri big" id="bRes">Today\u2019s result</button></div><p class="next" id="nextd"></p>`
+     :`<div class="row"><button class="btn pri big" id="bPlay">Descend</button></div><p class="next">Seven words \u00b7 forty-five seconds each \u00b7 one attempt</p>`}
+  <nav class="links" aria-label="More">
+   <button class="lnk" id="bStats">Stats</button>
+   <button class="lnk" id="bAll">Shelf${S.shelf.length?` <small>${S.shelf.length}</small>`:''}</button>
+   <button class="lnk" id="bPrac">Practice run</button>
+  </nav>
   <div class="judgestat" id="jstat" aria-live="polite"></div></div>`;
  paintJudge(modelStatus());
  World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=()=>startDaily(false));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
- $('#bPrac')&&($('#bPrac').onclick=()=>startDaily(true));
- ui.cap.hidden=false;
- ui.cap.innerHTML=`<span>Your shelf</span><b>${S.shelf.length} ${S.shelf.length===1?'book':'books'}</b>${S.shelf.length?'<button class="lnk" id="bAll">View all</button>':'<span style="text-transform:none;letter-spacing:0;font:italic 15px var(--serif);color:#c8ccd1">empty — your first book is one answer away</span>'}`;
- $('#bAll')&&($('#bAll').onclick=openAll);
+ $('#bPrac').onclick=()=>startDaily(true);
+ $('#bStats').onclick=openStats;$('#bAll').onclick=()=>openAll();
+ if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
+ ui.cap.hidden=true;
 }
 $('#mark').onclick=()=>{if(World.busy&&World.stActive)return;if(run)return leaveRun();showHome();};
 async function leaveRun(){run=null;ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;await World.ascend();showHome();}
@@ -369,7 +380,7 @@ async function startDaily(practice){
  const words=dailyWords(utc(),7);
  prepareWords(words).catch(()=>{});
  World.reset();World.setShelf(S.shelf);
- run={practice,i:0,words,results:[],hints:2,busy:false,depthRows:0,floor:0};
+ run={practice,i:0,words,results:[],busy:false,depthRows:0,floor:0};
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
@@ -384,25 +395,29 @@ function showWord(){
   <div class="timer" id="tbar"><i id="tfill"></i></div>
   <div class="slipwrap" id="fld"><i class="pin"></i><div class="slip"><textarea id="ans" placeholder="In your own words\u2026" maxlength="300" aria-label="Your explanation" enterkeyhint="send"></textarea></div></div>
   <div class="hintline" id="hl" aria-live="polite"></div>
-  <div class="row" style="margin-top:6px"><button class="btn" id="hint">Hint (${run.hints})</button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
+  <div class="row" style="margin-top:6px"><button class="btn" id="hint"></button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
  World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII'][run.i],books:run.results});
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
  ta.oninput=()=>{Sfx.key();const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
+ run.ladder=hintLadder(w);run.hintN=0;paintHintBtn();
  $('#hint').onclick=useHint;$('#skip').onclick=()=>submit(true);
  clearInterval(timerId);
  timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);if(left<=0)submit(!$('#ans').value.trim());},100);
 }
-function useHint(){if(!run||run.busy||run.hints<=0)return;run.hints--;const w=run.words[run.i];const h=esc(w.hint).replace('___',`<mark>${esc(w.w)}</mark>`);
- const hl=$('#hl');hl.innerHTML=h;requestAnimationFrame(()=>hl.classList.add('on'));$('#hint').textContent=`Hint (${run.hints})`;if(!run.hints)$('#hint').disabled=true;$('#ans').focus({preventScroll:true});}
+function paintHintBtn(){const b=$('#hint');if(!b)return;const n=run.ladder[run.hintN];b.disabled=!n;b.textContent=n?`Hint: ${HINT_LABEL[n.kind]} (\u2212${n.cost*FT|0} ft)`:'No more hints';}
+function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;run.hintSpent=(run.hintSpent||0)+n.cost;
+ const hl=$('#hl');const line=n.kind==='sentence'?esc(n.text).replace('___',`<mark>${esc(run.words[run.i].w)}</mark>`):esc(n.text);
+ hl.innerHTML+=`<div>${line}</div>`;requestAnimationFrame(()=>hl.classList.add('on'));paintHintBtn();$('#ans').focus({preventScroll:true});}
 async function submit(skipped){
  if(!run||run.busy)return;const w=run.words[run.i];let text=$('#ans').value.trim();
  if(!skipped&&!text){const f=$('#fld');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');return;}
  run.busy=true;clearInterval(timerId);
  const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w);
  const t=tierOf(j.score);
- const rows=skipped?2:Math.max(3,Math.round(3+.32*j.score));
- const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:'daily',t:Date.now(),no:dailyNo(),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT)};
+ const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
+ const rows=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
+ const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT)};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
@@ -454,10 +469,12 @@ function openCard(b,opts={}){
    <h2>${esc(b.w)}<small>${esc(b.pos)}</small></h2>
    <div class="score"><b id="cn">${opts.fresh?0:b.score}</b><span>/ 100 closeness</span></div>
    <div class="meter"><i id="mt" style="width:${opts.fresh?0:b.score}%"></i>${TIERS.slice(1).map(t=>`<u style="left:${t.min}%"></u>`).join('')}</div>
+   ${!opts.fresh&&b.t?`<div class="depthgain">${b.mode==='daily'?'Daily No. <b>'+b.no+'</b> \u00b7 ':''}${new Date(b.t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</div>`:''}
    ${opts.fresh?`<div class="depthgain">Deeper by <b>+${b.ft} ft</b> \u00b7 now at <b>${opts.depth1} ft</b></div>`:''}
    <p class="verdict ${opts.fresh?'':'on'}" id="vd">${esc(b.verdict)}</p>
    <h3>Meaning</h3><p class="def">${esc(b.def)}</p>
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
+   ${opts.nav?`<div class="cardnav"><button class="btn" id="cprev" aria-label="Previous book"${opts.nav.i<=0?' disabled':''}>\u2039</button><span>${opts.nav.i+1} of ${opts.nav.items.length}</span><button class="btn" id="cnext" aria-label="Next book"${opts.nav.i>=opts.nav.items.length-1?' disabled':''}>\u203a</button></div>`:''}
    <button class="btn pri go" id="go">${opts.onNext?(opts.last?'See your descent':'Next word'):'Close'} <kbd>Enter</kbd></button>
    </div>
   </div>
@@ -465,29 +482,68 @@ function openCard(b,opts={}){
  </div>`;
  L.hidden=false;requestAnimationFrame(()=>L.classList.add('on'));
  const bk=$('#bk');
- if(opts.fresh){setTimeout(async()=>{Sfx.flip();bk.classList.add('open');{const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier,30+b.tier*24);const hh=$('#halo');if(hh)hh.classList.add('go');}await sleep(380);Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+80,b.tier,30+b.tier*14);}$('#go').focus();},220);}
+ if(opts.fresh){setTimeout(async()=>{Sfx.flip();if(b.tier>=5)Sfx.sting(b.tier);if(b.tier>=4){Feel.shake(2+b.tier*1.1,b.tier>=6?900:600);Feel.slowmo(b.tier>=6?.25:b.tier>=5?.4:.6,b.tier>=6?1700:1200);}if(b.tier>=6)flashTop();bk.classList.add('open');{const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier,30+b.tier*24);const hh=$('#halo');if(hh)hh.classList.add('go');}await sleep(380);Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+80,b.tier,30+b.tier*14);}$('#go').focus();},220);}
  else{bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
  $('#go').onclick=closeCard;
+ if(opts.nav){const step=n=>openCard(opts.nav.items[opts.nav.i+n],{...opts,nav:{...opts.nav,i:opts.nav.i+n}});$('#cprev').onclick=()=>step(-1);$('#cnext').onclick=()=>step(1);}
  L.onclick=e=>{if(e.target===L&&!opts.onNext)closeCard();};
 }
+function flashTop(){const f=document.createElement('div');f.style.cssText='position:fixed;inset:0;z-index:70;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(190,252,255,.55),rgba(190,252,255,0) 60%);opacity:0;transition:opacity .25s ease-out';document.body.appendChild(f);requestAnimationFrame(()=>{f.style.opacity=1;setTimeout(()=>{f.style.transition='opacity 1.6s ease-in';f.style.opacity=0;setTimeout(()=>f.remove(),1700);},260);});}
 function closeCard(){const L=$('#cardlayer');const o=cardOpts;cardOpts=null;L.classList.remove('on');setTimeout(()=>{L.hidden=true;L.innerHTML='';},250);if(o&&o.onNext)o.onNext();}
 addEventListener('keydown',e=>{
+ if(!$('#cardlayer').hidden&&cardOpts&&cardOpts.nav&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){const b=$(e.key==='ArrowLeft'?'#cprev':'#cnext');if(b&&!b.disabled){e.preventDefault();b.click();}return;}
  if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'){e.preventDefault();closeCard();return;}
- if(e.key==='Escape'){if(!$('#all').hidden)$('#all').hidden=true;else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
+ if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(!$('#all').hidden)$('#all').hidden=true;else if(!$('#stats').hidden)$('#stats').hidden=true;else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
  if(World.descending&&(e.key===' '||e.key==='Escape'||e.key==='Enter')){e.preventDefault();World.skipDown();}
 });
 
-/* ---------- all books overlay ---------- */
-let fTier=-1;
-function openAll(){
- const A=$('#all');A.hidden=false;const list=S.shelf.map((b,i)=>({b,i})).filter(x=>fTier<0||x.b.tier===fTier);
- A.innerHTML=`<div class="sheet"><h1 class="title" style="font-size:34px">Your shelf</h1><div class="meta">${S.shelf.length} books</div>
-  <div class="filters"><button class="fchip" data-t="-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" aria-pressed="${fTier===t.id}">${t.name}</button>`).join('')}</div>
-  <div class="shelfgrid">${list.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',Math.round(RHnow()*.8))}</div>`).join('')}</div>
-  <div class="row"><button class="btn" id="aclose">Close</button></div></div>`;
- $$('.fchip',A).forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;openAll();});
- $$('img',A).forEach(im=>{im.onclick=()=>{openCard(S.shelf[+im.dataset.i],{fresh:false});};im.onmouseenter=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmousemove=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmouseleave=hideTip;});
- $('#aclose').onclick=()=>{A.hidden=true;};A.onclick=e=>{if(e.target===A)A.hidden=true;};
+/* ---------- shelf overlay ---------- */
+let fTier=-1,fSort='new',fQ='';
+const SORTS={new:['Newest',(a,b)=>b.i-a.i],score:['Closest',(a,b)=>b.b.score-a.b.score||b.i-a.i],tier:['Rarest',(a,b)=>b.b.tier-a.b.tier||b.b.score-a.b.score],az:['A–Z',(a,b)=>a.b.w.localeCompare(b.b.w)]};
+function openAll(keepFocus){
+ const A=$('#all');A.hidden=false;
+ const q=fQ.trim().toLowerCase();
+ const list=S.shelf.map((b,i)=>({b,i})).filter(x=>(fTier<0||x.b.tier===fTier)&&(!q||x.b.w.toLowerCase().includes(q))).sort(SORTS[fSort][1]);
+ const counts=TIERS.map(t=>S.shelf.filter(b=>b.tier===t.id).length);
+ A.innerHTML=`<div class="sheet panel" role="dialog" aria-modal="true" aria-label="Your shelf"><button class="x" id="aclose" aria-label="Close">×</button>
+  <h1 class="title small">Your shelf</h1><div class="meta">${S.shelf.length} ${S.shelf.length===1?'book':'books'}${list.length!==S.shelf.length?` · showing ${list.length}`:''}</div>
+  <div class="shelftools"><input id="fq" type="search" placeholder="Find a word" value="${esc(fQ)}" aria-label="Find a word" autocomplete="off" spellcheck="false">
+   <div class="sorts" role="group" aria-label="Sort">${Object.entries(SORTS).map(([k,v])=>`<button class="fchip" data-s="${k}" aria-pressed="${fSort===k}">${v[0]}</button>`).join('')}</div></div>
+  <div class="filters"><button class="fchip" data-t="-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div>
+  ${list.length?`<div class="shelfgrid">${list.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',Math.round(RHnow()*.8))}</div>`).join('')}</div>`
+   :`<p class="empty">${S.shelf.length?'No book matches.':'Nothing here yet. Your first answer becomes your first book.'}</p>`}</div>`;
+ $$('.fchip[data-t]',A).forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;openAll();});
+ $$('.fchip[data-s]',A).forEach(c=>c.onclick=()=>{fSort=c.dataset.s;openAll();});
+ const fq=$('#fq');fq.oninput=()=>{fQ=fq.value;const pos=fq.selectionStart;openAll(true);const n=$('#fq');n.focus();n.setSelectionRange(pos,pos);};
+ $$('img',A).forEach(im=>{const open=()=>{hideTip();const items=list.map(x=>x.b),k=items.indexOf(S.shelf[+im.dataset.i]);openCard(S.shelf[+im.dataset.i],{fresh:false,nav:{items,i:k}});};
+  im.tabIndex=0;im.setAttribute('role','button');im.onclick=open;im.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();open();}};
+  im.onmouseenter=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmousemove=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmouseleave=hideTip;});
+ $('#aclose').onclick=()=>{A.hidden=true;hideTip();};A.onclick=e=>{if(e.target===A){A.hidden=true;hideTip();}};
+ if(!keepFocus)$('#aclose').focus({preventScroll:true});
+}
+/* ---------- stats overlay ---------- */
+function openStats(){
+ const A=$('#stats'),st=computeStats(S,utc());A.hidden=false;
+ const maxT=Math.max(1,...st.tiers),maxD=Math.max(1,...st.recent.map(r=>r.depth));
+ const fmtDay=k=>new Date(k+'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',timeZone:'UTC'});
+ const big=(n,l,sub)=>`<div class="big"><b>${n}</b><span>${l}</span>${sub?`<em>${sub}</em>`:''}</div>`;
+ A.innerHTML=`<div class="sheet panel" role="dialog" aria-modal="true" aria-label="Stats"><button class="x" id="sclose" aria-label="Close">×</button>
+  <h1 class="title small">Stats</h1>
+  ${st.runs?`<div class="bigs">
+   ${big(st.streak,'Day streak','best '+st.bestStreak)}
+   ${big(st.deepest+'<small> ft</small>','Deepest dive',st.deepestDay?fmtDay(st.deepestDay):'')}
+   ${big(st.runs,st.runs===1?'Daily played':'Dailies played',st.totalFt.toLocaleString()+' ft in total')}
+   ${big(st.avg,'Avg closeness',st.answered+' answered')}
+  </div>
+  ${st.best?`<p class="bestbook">Closest answer: <b>${esc(st.best.w)}</b>, ${st.best.score}/100 · <span style="color:${TIERS[st.best.tier].spine}">${TIERS[st.best.tier].name}</span></p>`:''}
+  <h2 class="sec">Books by tier</h2>
+  <div class="tierbars">${TIERS.map(t=>`<div class="tb"><span class="tn">${t.name}</span><span class="track"><i style="width:${st.tiers[t.id]/maxT*100}%;background:${t.spine}"></i></span><b>${st.tiers[t.id]}</b></div>`).join('')}</div>
+  <h2 class="sec">Recent descents</h2>
+  <div class="recent" role="img" aria-label="Depth of your last ${st.recent.length} dailies">${st.recent.map(r=>`<div class="rc" title="${fmtDay(r.day)}: ${r.depth} ft"><i style="height:${Math.max(6,r.depth/maxD*100)}%;background:${TIERS[r.best].spine}"></i><span>${r.day.slice(8)}</span></div>`).join('')}</div>
+  <p class="meta">Bars are depth in feet, coloured by your rarest book that day.</p>`
+  :`<p class="empty">Finish your first Daily and your numbers show up here: streak, deepest dive and every tier you have shelved.</p>`}
+  </div>`;
+ $('#sclose').onclick=()=>{A.hidden=true;};A.onclick=e=>{if(e.target===A)A.hidden=true;};$('#sclose').focus({preventScroll:true});
 }
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 

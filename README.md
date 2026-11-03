@@ -16,7 +16,7 @@ npm test         # scorer + daily-seed sanity tests
 ## Layout
 
 - `src/main.js` UI, canvas library world, sound, result card, bookshelf (ported as-is from the mockup)
-- `src/core/` tiers, word bank, adaptive level, seeded daily picker, `floors.js` (themed floors by depth)
+- `src/core/` tiers, word bank, adaptive level, seeded daily picker, `stats.js` (streaks and tier counts derived from saved dailies), `floors.js` (themed floors by depth)
 - `src/scorer/` `judgeAnswer(text, word)` facade; `lexical.js` is the keyword/synonym stand-in
 - `docs/PLAN.md` plan for Wiktionary word data and the in-browser embedding scorer
 
