@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Single required status check: name it "check" in branch protection / rulesets.
+  # pull_request runs against the merge result with main, so conflicts with already-merged PRs show up here.
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      # prebuild tries to self-host the embedding model and skips gracefully if the network blocks it.
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Smoke test the built app
+        run: node scripts/smoke.mjs
