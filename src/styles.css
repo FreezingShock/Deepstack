@@ -268,3 +268,15 @@ textarea,#fq{font-size:max(16px,1em)}
  .panel .filters::-webkit-scrollbar{display:none}
  .panel .filters .fchip{flex:none}
 }
+
+/* themed floors */
+#depthHud em{font:italic 400 14px var(--serif);letter-spacing:0;text-transform:none;color:#b9a782;margin-left:4px}
+#depthHud em:empty{display:none}
+@media(max-width:560px){#depthHud em{display:none}}
+#floorBanner{position:absolute;left:50%;top:calc(var(--barH) + 28px);transform:translate(-50%,-8px);display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;opacity:0;pointer-events:none;--fc:#f0d9a6;text-shadow:0 2px 16px #000}
+#floorBanner small{font:600 11px var(--sans);letter-spacing:.24em;text-transform:uppercase;color:#b9a782}
+#floorBanner b{font:400 clamp(30px,6vw,48px)/1.1 var(--serif);color:var(--fc);letter-spacing:.02em;text-shadow:0 0 30px var(--fc),0 2px 14px #000}
+#floorBanner i{font:italic 400 17px var(--serif);color:#e6dcc0}
+#floorBanner.on{animation:fbanner 4.2s ease both}
+@keyframes fbanner{0%{opacity:0;transform:translate(-50%,-8px);letter-spacing:.2em}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,6px)}}
+@media(prefers-reduced-motion:reduce){#floorBanner.on{animation:fbanner-rm 2.5s ease both}@keyframes fbanner-rm{0%{opacity:0}15%,80%{opacity:1}100%{opacity:0}}}
