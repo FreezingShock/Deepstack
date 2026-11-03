@@ -3,6 +3,8 @@ import {applyCombo,comboLabel,comboNeeds,comboMultiplier} from './core/combo.js'
 import './styles.css';
 import {recordBook as recordSetBook,backfill as backfillSets} from './sets/sets.js';
 import {openSets,toastSetsDone,setsOpen,closeSets} from './sets/ui.js';
+import {recapHTML,bindRecap} from './ui/results.js';
+import './ui/results.css';
 import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
@@ -457,10 +459,11 @@ async function showFinal(d,fromHome){
  el.innerHTML=`<div class="sheet"><div class="stats" style="margin:6px 0 0"><span>${d.mode==='unlimited'?(d.placing?'Placement':'Unlimited'):d.practice?'Practice run':'Daily No. '+dailyNo()}</span>${d.mode==='unlimited'?`<span>Lexicon <b>${d.lex}</b>${d.placing?'':` (${d.lex>=d.lex0?'+':'\u2212'}${Math.abs(d.lex-d.lex0)})`} \u00b7 ${core.levelTitle(d.lex/10)}</span>`:''}<span>Average <b>${d.avg}</b></span><span>Rarest <b>${TIERS[d.best].name}</b></span>${d.floor?`<span>Reached <b>${FLOORS[d.floor].name}</b></span>`:''}</div><h1 class="title" style="font-size:34px;margin:0">Descent complete</h1>
   <div class="bigd"><span id="cnt">0</span><small>ft deep</small></div>
   <div class="spineimgs" id="sp">${d.books.map((b,i)=>spineImg(b,i,'final',72)).join('')}</div>
-  
+  ${recapHTML(d,S)}
   <div class="slipwrap" style="margin-top:10px"><i class="pin"></i><div class="slip" style="padding-top:8px"><pre class="share pe" id="shr" style="line-height:28px;font-size:12px;padding-top:2px;padding-bottom:2px">${esc(txt)}</pre></div></div>
   <div class="row"><button class="btn pri" id="cp">Copy result</button><button class="btn" id="up">Back to the surface</button></div></div>`;
  countUp($('#cnt'),d.depth,1200);
+ bindRecap(el,d.books,openCard);
  $$('#sp img').forEach(im=>{im.onclick=()=>openCard(d.books[+im.dataset.i],{fresh:false});});
  $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(txt);$('#cp').textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents($('#shr'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('#cp').textContent='Selected — copy it';}};
  $('#up').onclick=async()=>{ui.final.hidden=true;ui.hud.hidden=true;run=null;await World.ascend();showHome();};

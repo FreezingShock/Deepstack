@@ -1,0 +1,16 @@
+.recap{width:100%;margin:8px 0;text-align:left}
+.rtiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px}
+.rtile{border:1px solid var(--rule);padding:6px 10px;background:#0006}
+.rtile small,.rsets small{display:block;font:600 10px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.rtile b{font:400 16px var(--serif);color:var(--ink)}
+.rbooks{list-style:none;margin:8px 0;padding:0}
+.rbook{display:grid;grid-template-columns:14px 1fr auto 40px auto;gap:10px;align-items:center;width:100%;padding:6px 8px;background:none;border:0;border-bottom:1px solid var(--rule);color:var(--ink);font:400 15px var(--serif);text-align:left;cursor:pointer}
+.rbook:hover,.rbook:focus-visible{background:#ffffff0d}
+.rbook .dot{width:10px;height:10px;border-radius:50%}
+.rbook .rt{font:600 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.rbook .rs{font-variant-numeric:tabular-nums;text-align:right}
+.rbook .rf{font:400 13px var(--sans);color:var(--mute);font-variant-numeric:tabular-nums}
+.rbook em{font-style:normal;color:var(--ink)}
+.rset{display:grid;grid-template-columns:1fr 90px 36px;gap:10px;align-items:center;font:400 14px var(--serif);padding:3px 0}
+.rset.done span:first-child::after{content:' · complete';color:var(--mute)}
+@media (max-width:420px){.rbook{grid-template-columns:14px 1fr 40px auto}.rbook .rt{display:none}}
