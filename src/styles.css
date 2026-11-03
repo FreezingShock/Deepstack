@@ -280,3 +280,12 @@ textarea,#fq{font-size:max(16px,1em)}
 #floorBanner.on{animation:fbanner 4.2s ease both}
 @keyframes fbanner{0%{opacity:0;transform:translate(-50%,-8px);letter-spacing:.2em}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,6px)}}
 @media(prefers-reduced-motion:reduce){#floorBanner.on{animation:fbanner-rm 2.5s ease both}@keyframes fbanner-rm{0%{opacity:0}15%,80%{opacity:1}100%{opacity:0}}}
+/* ---- home: how it works ---- */
+.home .tagline{font-size:20px;max-width:40ch;margin-bottom:18px}
+.how{list-style:none;padding:0;margin:0 auto 6px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
+.how li{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 10px 14px;border:1px solid #f6ecd326;background:#0a0704a8;border-radius:3px;font:400 14px/1.4 var(--sans);color:var(--mute)}
+.how li b{font:400 20px var(--serif);color:var(--ink)}
+.how .hn{width:24px;height:24px;border-radius:50%;border:1px solid #f6ecd355;display:grid;place-items:center;font:600 12px var(--sans);color:var(--link)}
+.home .row{margin-top:20px}
+.home .stats{margin:22px 0 4px}
+@media(max-width:560px){.home .tagline{font-size:17px}.how{gap:6px}.how li{padding:8px 4px 10px;font-size:12px}.how li b{font-size:17px}.how li span:last-child{display:none}.home .row{margin-top:14px}.home .stats{margin-top:14px}}
