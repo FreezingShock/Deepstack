@@ -23,6 +23,7 @@ Replace the body of `judgeAnswer()` in `src/scorer/index.js`; the rest of the ap
 - Daily fairness: scoring must be deterministic across devices, so pin the model version and run it in fp32/quantised consistently; scores are local-only so small float drift is acceptable but the model file must be version-pinned.
 - Tests: a fixed fixture of (word, answer, expected tier band) run in Node via onnxruntime so regressions are caught in CI.
 
-## Open questions for nate
-- Is a ~25 MB first-load model download acceptable, or should it load only when a run starts?
-- Should Wiktionary-derived difficulty replace hand-tuned difficulty, or only seed it?
+## Decisions (nate, 2026-11-03)
+- A ~25 MB model download is acceptable. Download once, cache in Cache Storage / IndexedDB, request `navigator.storage.persist()`, and never re-download unless the pinned model version changes.
+- Show download progress: a small, non-blocking indicator on the home screen ("Preparing the judge, 40%") using the fetch stream's byte count. Daily can start with the lexical fallback only if the model is not ready, but prefer waiting briefly so scoring is consistent.
+- Difficulty: derive from Wiktionary/frequency data and use the 38 hand-tuned values as calibration anchors (both replace and seed).
