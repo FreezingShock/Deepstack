@@ -15,6 +15,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const mem={};
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return k in mem?mem[k]:d}},set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let S=Object.assign({shelf:[],daily:{},streak:{last:'',n:0},bestDepth:0,bestFloor:0,sound:false},store.get('deepstack.v1',{}));
+S.rating=core.loadRating(S.rating);
 const save=()=>store.set('deepstack.v1',S);
 const utc=()=>new Date().toISOString().slice(0,10);
 const dailyNo=()=>Math.floor((Date.parse(utc())-Date.parse('2026-01-01'))/864e5)+1;
@@ -347,6 +348,7 @@ function showHome(){
   <nav class="links" aria-label="More">
    <button class="lnk" id="bStats">Stats</button>
    <button class="lnk" id="bAll">Shelf${S.shelf.length?` <small>${S.shelf.length}</small>`:''}</button>
+   <button class="lnk" id="bUnl">${S.rating.placed?'Unlimited <small>Lexicon '+core.lexicon(S.rating.L)+'</small>':'Unlimited <small>placement</small>'}</button>
    <button class="lnk" id="bPrac">Practice run</button>
   </nav>
   <div class="judgestat" id="jstat" aria-live="polite"></div></div>`;
@@ -354,7 +356,7 @@ function showHome(){
  World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=()=>startDaily(false));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
- $('#bPrac').onclick=()=>startDaily(true);
+ $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
  $('#bStats').onclick=openStats;$('#bAll').onclick=()=>openAll();
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
@@ -385,6 +387,17 @@ async function startDaily(practice){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
+async function startUnlimited(){
+ await wordsReady;
+ if(modelStatus().state==='loading')await whenReady(8000);
+ const placing=!S.rating.placed,n=placing?core.PLACEMENT_WORDS:core.RUN_WORDS;
+ const first=core.nextWord(S.rating,0,n,[]);
+ prepareWords([first]).catch(()=>{});
+ World.reset();World.setShelf(S.shelf);
+ run={mode:'unlimited',placing,practice:false,i:0,words:Array(n).fill(first),results:[],busy:false,depthRows:0,floor:0,lex0:core.lexicon(S.rating.L)};
+ ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
+ showWord();
+}
 function pipsHTML(){return `<div class="pips" aria-label="word ${run.i+1} of 7">${run.words.map((_,i)=>{const r=run.results[i];const T=r?TIERS[r.tier]:null;return `<i class="pip ${i===run.i?'now':''} ${r?'done':''}" style="${T?`background:${T.spine};box-shadow:0 0 8px ${T.spine}99`:''}"></i>`;}).join('')}</div>`;}
 function showWord(){
  if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();run.limit=45000;
@@ -397,7 +410,7 @@ function showWord(){
   <div class="slipwrap" id="fld"><i class="pin"></i><div class="slip"><textarea id="ans" placeholder="In your own words\u2026" maxlength="300" aria-label="Your explanation" enterkeyhint="send"></textarea></div></div>
   <div class="hintline" id="hl" aria-live="polite"></div>
   <div class="row" style="margin-top:6px"><button class="btn" id="hint"></button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
- World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII'][run.i],books:run.results});
+ World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
  ta.oninput=()=>{Sfx.key();const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
@@ -419,7 +432,7 @@ async function submit(skipped){
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
  const base=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
  const cb=applyCombo(run.combo,t,base,skipped);run.combo=cb.chain;const rows=cb.rows;
- const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
+ const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
@@ -428,26 +441,28 @@ async function submit(skipped){
  ui.gauge.classList.remove('on');ui.skip.classList.remove('on');
  FX.burst(innerWidth/2,innerHeight*.5,t,16+t*8);
  run.results.push({...book,skipped});run.depthRows+=rows;
+ if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
  if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();save();}
  const depth1=Math.round((World.restRow+rows)*FT);
- openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length,nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
+ openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length;if(!last&&run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id));prepareWords([run.words[run.i]]).catch(()=>{});}const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
 }
 function verdictFor(j,t,w){if(j.empty)return 'Nothing written.';if(j.opposite)return 'That points the other way. The word means close to the opposite.';const T=TIERS[t];return T.lines[(w.id+j.score)%T.lines.length];}
 function finishRun(){
  const r=run;const books=r.results;const avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length);const best=Math.max(...books.map(b=>b.tier));
  const depth=Math.round(World.restRow*FT);
  const d={books,avg,best,depth,floor:floorAtFt(depth).id,practice:r.practice};
- if(!r.practice){S.daily[utc()]=d;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak.n=S.streak.last===y?S.streak.n+1:(S.streak.last===utc()?S.streak.n:1);S.streak.last=utc();S.bestDepth=Math.max(S.bestDepth,depth);save();}
+ if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});}
+ else if(!r.practice){S.daily[utc()]=d;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak.n=S.streak.last===y?S.streak.n+1:(S.streak.last===utc()?S.streak.n:1);S.streak.last=utc();S.bestDepth=Math.max(S.bestDepth,depth);save();}
  showFinal(d,false);
 }
 const BLK='▁▂▃▄▅▆▇';
-function shareText(d){return `Deepstack No. ${dailyNo()}\nDepth ${d.depth} ft${d.floor?' · '+FLOORS[d.floor].name:''} · average closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' · ')}`;}
+function shareText(d){return `Deepstack ${d.mode==='unlimited'?'Unlimited \u00b7 Lexicon '+d.lex:'No. '+dailyNo()}\nDepth ${d.depth} ft${d.floor?' · '+FLOORS[d.floor].name:''} · average closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' · ')}`;}
 async function showFinal(d,fromHome){
  if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;World.reset();World.setShelf(S.shelf);}
  ui.hud.hidden=false;$('#dnum').textContent=d.depth;
  World.openNiche(World.restRow,{label:'FINIS',books:d.books});
  const txt=shareText(d);const el=ui.final;el.hidden=false;el.className='center fadein';
- el.innerHTML=`<div class="sheet"><div class="stats" style="margin:6px 0 0"><span>${d.practice?'Practice run':'Daily No. '+dailyNo()}</span><span>Average <b>${d.avg}</b></span><span>Rarest <b>${TIERS[d.best].name}</b></span>${d.floor?`<span>Reached <b>${FLOORS[d.floor].name}</b></span>`:''}</div><h1 class="title" style="font-size:34px;margin:0">Descent complete</h1>
+ el.innerHTML=`<div class="sheet"><div class="stats" style="margin:6px 0 0"><span>${d.mode==='unlimited'?(d.placing?'Placement':'Unlimited'):d.practice?'Practice run':'Daily No. '+dailyNo()}</span>${d.mode==='unlimited'?`<span>Lexicon <b>${d.lex}</b>${d.placing?'':` (${d.lex>=d.lex0?'+':'\u2212'}${Math.abs(d.lex-d.lex0)})`} \u00b7 ${core.levelTitle(d.lex/10)}</span>`:''}<span>Average <b>${d.avg}</b></span><span>Rarest <b>${TIERS[d.best].name}</b></span>${d.floor?`<span>Reached <b>${FLOORS[d.floor].name}</b></span>`:''}</div><h1 class="title" style="font-size:34px;margin:0">Descent complete</h1>
   <div class="bigd"><span id="cnt">0</span><small>ft deep</small></div>
   <div class="spineimgs" id="sp">${d.books.map((b,i)=>spineImg(b,i,'final',72)).join('')}</div>
   
@@ -553,4 +568,4 @@ const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();
 showHome();
 startModelLoad();
-window.__deepstack={S,World,startDaily,showHome,judge:judgeAnswer,get run(){return run;}};
+window.__deepstack={S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,get run(){return run;}};
