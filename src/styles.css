@@ -289,3 +289,9 @@ textarea,#fq{font-size:max(16px,1em)}
 .home .row{margin-top:20px}
 .home .stats{margin:22px 0 4px}
 @media(max-width:560px){.home .tagline{font-size:17px}.how{gap:6px}.how li{padding:8px 4px 10px;font-size:12px}.how li b{font-size:17px}.how li span:last-child{display:none}.home .row{margin-top:14px}.home .stats{margin-top:14px}}
+.combo{font:600 12px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-top:4px}
+.combo.on{color:var(--tc,var(--ink));text-shadow:0 0 12px var(--tc,transparent);animation:comboin .6s ease-out}
+.combo.on b{font-size:15px}
+.combo.broke{opacity:.7}
+.combo.live{text-align:center;color:#e0a040;text-shadow:0 0 10px #e0a04088}
+@keyframes comboin{0%{transform:scale(1.5);opacity:0}100%{transform:none;opacity:1}}
