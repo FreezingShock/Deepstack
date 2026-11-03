@@ -31,3 +31,9 @@ Replace the body of `judgeAnswer()` in `src/scorer/index.js`; the rest of the ap
 ## Word data pipeline (scripts/)
 `npm run build:words -- --kaikki <kaikki.jsonl> --freq <en_full.txt>` writes `public/data/words.json`.
 Inputs are not committed. Difficulty is a least-squares fit of log frequency to the 38 hand-tuned difficulties; frequency alone is a rough signal (rare-but-easy words like "zzyzx" slip through), so the Daily pool should come from a hand-reviewed slice. Generated words have no concept lists, so they are not wired into the game until the embedding scorer lands.
+
+## Status (embedding scorer branch)
+- Done: words.json wired into Daily (`src/core/wordPool.js`, with quality filters), embedding judge (`src/scorer/`), lazy model load with cache + progress on the home screen, self-hosting via `npm run fetch:model`, `npm run calibrate` with labelled answers in `test/fixtures/answers.json`.
+- Not done: `src/scorer/calibration.json` is **provisional**. Run `npm run calibrate -- --write` with Hugging Face reachable, review out-of-band answers, then commit.
+- Reference vectors are embedded at play time (the day's definitions only), not shipped at build time.
+- Download size: model ~23 MB plus the ONNX runtime wasm (~14-27 MB, self-hosted when `fetch:model` has run).

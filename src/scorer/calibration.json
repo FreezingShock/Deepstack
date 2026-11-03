@@ -1,0 +1,7 @@
+{
+  "provisional": true,
+  "note": "Placeholder anchors from general MiniLM behaviour. Regenerate with `npm run calibrate` against the real model; tier minimums are in src/core/tiers.js.",
+  "model": "Xenova/all-MiniLM-L6-v2",
+  "fancyBonusMax": 4,
+  "points": [[0.10, 0], [0.30, 14], [0.45, 30], [0.58, 46], [0.68, 62], [0.78, 78], [0.90, 92], [1.0, 100]]
+}
