@@ -1,3 +1,4 @@
+import {hintLadder,rowsAfterHints} from './core/hints.js';
 import './styles.css';
 import * as core from './core/index.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
@@ -15,6 +16,7 @@ let S=Object.assign({shelf:[],daily:{},streak:{last:'',n:0},bestDepth:0,sound:fa
 const save=()=>store.set('deepstack.v1',S);
 const utc=()=>new Date().toISOString().slice(0,10);
 const dailyNo=()=>Math.floor((Date.parse(utc())-Date.parse('2026-01-01'))/864e5)+1;
+const HINT_LABEL={letters:'first letter',sentence:'sentence',synonym:'a near word'};
 const FT=4.2; // feet per shelf row
 /* sound */
 const Sfx=(()=>{let ctx,amb,master,on=false,lastKey=0;
@@ -324,7 +326,7 @@ async function startDaily(practice){
  const words=dailyWords(utc(),7);
  prepareWords(words).catch(()=>{});
  World.reset();World.setShelf(S.shelf);
- run={practice,i:0,words,results:[],hints:2,busy:false,depthRows:0};
+ run={practice,i:0,words,results:[],busy:false,depthRows:0};
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
@@ -339,25 +341,29 @@ function showWord(){
   <div class="timer" id="tbar"><i id="tfill"></i></div>
   <div class="slipwrap" id="fld"><i class="pin"></i><div class="slip"><textarea id="ans" placeholder="In your own words\u2026" maxlength="300" aria-label="Your explanation" enterkeyhint="send"></textarea></div></div>
   <div class="hintline" id="hl" aria-live="polite"></div>
-  <div class="row" style="margin-top:6px"><button class="btn" id="hint">Hint (${run.hints})</button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
+  <div class="row" style="margin-top:6px"><button class="btn" id="hint"></button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
  World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII'][run.i],books:run.results});
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
  ta.oninput=()=>{Sfx.key();const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
+ run.ladder=hintLadder(w);run.hintN=0;paintHintBtn();
  $('#hint').onclick=useHint;$('#skip').onclick=()=>submit(true);
  clearInterval(timerId);
  timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);if(left<=0)submit(!$('#ans').value.trim());},100);
 }
-function useHint(){if(!run||run.busy||run.hints<=0)return;run.hints--;const w=run.words[run.i];const h=esc(w.hint).replace('___',`<mark>${esc(w.w)}</mark>`);
- const hl=$('#hl');hl.innerHTML=h;requestAnimationFrame(()=>hl.classList.add('on'));$('#hint').textContent=`Hint (${run.hints})`;if(!run.hints)$('#hint').disabled=true;$('#ans').focus({preventScroll:true});}
+function paintHintBtn(){const b=$('#hint');if(!b)return;const n=run.ladder[run.hintN];b.disabled=!n;b.textContent=n?`Hint: ${HINT_LABEL[n.kind]} (\u2212${n.cost*FT|0} ft)`:'No more hints';}
+function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;run.hintSpent=(run.hintSpent||0)+n.cost;
+ const hl=$('#hl');const line=n.kind==='sentence'?esc(n.text).replace('___',`<mark>${esc(run.words[run.i].w)}</mark>`):esc(n.text);
+ hl.innerHTML+=`<div>${line}</div>`;requestAnimationFrame(()=>hl.classList.add('on'));paintHintBtn();$('#ans').focus({preventScroll:true});}
 async function submit(skipped){
  if(!run||run.busy)return;const w=run.words[run.i];let text=$('#ans').value.trim();
  if(!skipped&&!text){const f=$('#fld');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');return;}
  run.busy=true;clearInterval(timerId);
  const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w);
  const t=tierOf(j.score);
- const rows=skipped?2:Math.max(3,Math.round(3+.32*j.score));
- const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:'daily',t:Date.now(),no:dailyNo(),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT)};
+ const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
+ const rows=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
+ const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT)};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
