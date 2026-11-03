@@ -1,6 +1,8 @@
 import {hintLadder,rowsAfterHints} from './core/hints.js';
 import {applyCombo,comboLabel,comboNeeds,comboMultiplier} from './core/combo.js';
 import './styles.css';
+import {recordBook as recordSetBook,backfill as backfillSets} from './sets/sets.js';
+import {openSets,toastSetsDone,setsOpen,closeSets} from './sets/ui.js';
 import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
@@ -17,6 +19,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 let S=Object.assign({shelf:[],daily:{},streak:{last:'',n:0},bestDepth:0,bestFloor:0,sound:false},store.get('deepstack.v1',{}));
 S.rating=core.loadRating(S.rating);
 const save=()=>store.set('deepstack.v1',S);
+backfillSets(S);
 const utc=()=>new Date().toISOString().slice(0,10);
 const dailyNo=()=>Math.floor((Date.parse(utc())-Date.parse('2026-01-01'))/864e5)+1;
 const HINT_LABEL={letters:'first letter',sentence:'sentence',synonym:'a near word'};
@@ -349,6 +352,7 @@ function showHome(){
    <button class="lnk" id="bStats">Stats</button>
    <button class="lnk" id="bAll">Shelf${S.shelf.length?` <small>${S.shelf.length}</small>`:''}</button>
    <button class="lnk" id="bUnl">${S.rating.placed?'Unlimited <small>Lexicon '+core.lexicon(S.rating.L)+'</small>':'Unlimited <small>placement</small>'}</button>
+   <button class="lnk" id="bSets">Sets</button>
    <button class="lnk" id="bPrac">Practice run</button>
   </nav>
   <div class="judgestat" id="jstat" aria-live="polite"></div></div>`;
@@ -357,6 +361,7 @@ function showHome(){
  $('#bPlay')&&($('#bPlay').onclick=()=>startDaily(false));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
+ $('#bSets').onclick=()=>openSets(S);
  $('#bStats').onclick=openStats;$('#bAll').onclick=()=>openAll();
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
@@ -442,15 +447,15 @@ async function submit(skipped){
  FX.burst(innerWidth/2,innerHeight*.5,t,16+t*8);
  run.results.push({...book,skipped});run.depthRows+=rows;
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
- if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();save();}
+ if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}save();}
  const depth1=Math.round((World.restRow+rows)*FT);
  openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length;if(!last&&run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id));prepareWords([run.words[run.i]]).catch(()=>{});}const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
 }
 function verdictFor(j,t,w){if(j.empty)return 'Nothing written.';if(j.opposite)return 'That points the other way. The word means close to the opposite.';const T=TIERS[t];return T.lines[(w.id+j.score)%T.lines.length];}
 function finishRun(){
  const r=run;const books=r.results;const avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length);const best=Math.max(...books.map(b=>b.tier));
- const depth=Math.round(World.restRow*FT);
- const d={books,avg,best,depth,floor:floorAtFt(depth).id,practice:r.practice};
+ const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,depth=worldDepth+setBonus;
+ const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});}
  else if(!r.practice){S.daily[utc()]=d;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak.n=S.streak.last===y?S.streak.n+1:(S.streak.last===utc()?S.streak.n:1);S.streak.last=utc();S.bestDepth=Math.max(S.bestDepth,depth);save();}
  showFinal(d,false);
@@ -511,7 +516,7 @@ function closeCard(){const L=$('#cardlayer');const o=cardOpts;cardOpts=null;L.cl
 addEventListener('keydown',e=>{
  if(!$('#cardlayer').hidden&&cardOpts&&cardOpts.nav&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){const b=$(e.key==='ArrowLeft'?'#cprev':'#cnext');if(b&&!b.disabled){e.preventDefault();b.click();}return;}
  if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'){e.preventDefault();closeCard();return;}
- if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(!$('#all').hidden)$('#all').hidden=true;else if(!$('#stats').hidden)$('#stats').hidden=true;else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
+ if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(setsOpen())closeSets();else if(!$('#all').hidden)$('#all').hidden=true;else if(!$('#stats').hidden)$('#stats').hidden=true;else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
  if(World.descending&&(e.key===' '||e.key==='Escape'||e.key==='Enter')){e.preventDefault();World.skipDown();}
 });
 
