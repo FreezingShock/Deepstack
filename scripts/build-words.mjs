@@ -21,10 +21,13 @@ console.log('difficulty fit', fit);
 const entries = (async function* () {
   for await (const line of createInterface({input: createReadStream(kaikki)})) { if (line) yield JSON.parse(line); }
 })();
-// collect() is sync over an iterable; drain the async stream into a lazily-filtered array first.
-const all = [];
-for await (const e of entries) { if ((freq.get(e.word) ?? 0) >= 3) all.push(e); }
-const rec = collect(all, freq);
+// Filter while streaming: holding every full entry in memory OOMs on the real dump.
+const rec = new Map();
+for await (const e of entries) {
+  if (rec.has(e.word)) continue;
+  const one = collect([e], freq);
+  if (one.size) rec.set(e.word, one.get(e.word));
+}
 const curated = new Set(anchors.map(a => a.w));
 const words = [...rec.values()]
   .map(r => ({...r, d: difficultyOf(fit, freq, r.w), curated: curated.has(r.w) || undefined}))
