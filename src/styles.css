@@ -298,3 +298,10 @@ textarea,#fq{font-size:max(16px,1em)}
 .favbtn{display:block;margin:8px auto 0;color:var(--ink);background:transparent;border:1px solid var(--rule);padding:2px 14px;font-size:13px}
 .favbtn[aria-pressed="true"]{color:#8a5a00;border-color:#b98a2a}
 .panel h2.sec small{font:600 11px var(--sans);color:var(--mute);letter-spacing:.1em}
+
+/* screen transitions (src/ui/transitions.js) */
+.ghost-out{pointer-events:none;animation:ghostout .26s ease-in both}
+@keyframes ghostout{to{opacity:0;transform:translateY(-10px) scale(.985)}}
+#all.fadein,#stats.fadein,#sets.fadein{animation:ovin .3s ease-out both}
+@keyframes ovin{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){.ghost-out{display:none}}
