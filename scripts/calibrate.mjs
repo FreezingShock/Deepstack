@@ -15,15 +15,15 @@ const cal = JSON.parse(readFileSync(calPath));
 const fe = await pipeline('feature-extraction', MODEL.id, {dtype: MODEL.dtype, revision: MODEL.revision});
 const emb = async t => (await fe(t, {pooling: 'mean', normalize: true})).tolist();
 
-const refs = new Map();
-for (const w of WORDS) refs.set(w.w, await emb(referenceTexts(w)));
+const refs = new Map(), wvec = new Map();
+for (const w of WORDS) { refs.set(w.w, await emb(referenceTexts(w))); wvec.set(w.w, (await emb([w.w]))[0]); }
 const out = [];
 for (const r of rows) {
   const w = WORDS.find(x => x.w === r.word);
   const prep = prepareAnswer(r.answer, w);
   const [a] = await emb([prep.text || r.answer]);
   const sims = refs.get(w.w).map(v => cosine(a, v));
-  out.push({...r, sim: Math.max(...sims), prep});
+  out.push({...r, sim: Math.max(...sims), sims, wordSim: cosine(a, wvec.get(w.w)), prep});
 }
 const q = (xs, p) => { const s = [...xs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
 const by = l => out.filter(o => o.label === l).map(o => o.sim);
@@ -46,7 +46,7 @@ const points = process.argv.includes('--write') ? pts : cal.points;
 let bad = 0;
 for (const o of out) {
   const w = WORDS.find(x => x.w === o.word);
-  const s = Math.round(curve(o.sim, points)) * (o.label === 'opposite' && /opposite/i.test(o.answer) ? .4 : 1);
+  const s = scoreFromSims(o.sims, o.prep, o.answer, {word: w, wordSim: o.wordSim, points}).score;
   const [lo, hi] = BAND[o.label];
   if (s < lo || s > hi) { bad++; console.log(`OUT OF BAND ${o.label} ${w.w} sim=${o.sim.toFixed(2)} score=${Math.round(s)} (${TIERS[tierOf(s)].name}) "${o.answer}"`); }
 }

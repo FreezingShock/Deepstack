@@ -11,6 +11,20 @@ const RELATIONAL = /^(of|or|relating|pertaining|alternative|obsolete|archaic|dat
 // Not for a daily word game: sexual, scatological, violent and slur-adjacent entries.
 const SENSITIVE = /\b(sex\w*|genital\w*|vagin\w*|penis\w*|clitor\w*|anus|anal|rectum|rectal|masturbat\w*|orgasm\w*|erotic\w*|porn\w*|fellatio|semen|testicle\w*|scrotum|vulva|breast\w*|nipple\w*|urin\w*|faec\w*|feces|excrement|defecat\w*|vomit\w*|suicid\w*|rape\w*|rapist|slave\w*|nigg\w*|fagg\w*|retard\w*|kike|spic|chink|gook|dyke|tranny|whore|slut|bitch|cunt|fuck\w*|shit\w*|piss\w*|cock|dick|pussy|bastard|damn\w*|racial\w*|ethnic slur|pejorative|derogatory|offensive|vulgar|slang)\b/i;
 
+// Generated words below this translation count are the archaic, dialectal and compound oddities (churl, seadog).
+export const MIN_TRANSLATIONS = 25;
+const fragments = d => d.split(/[;,]\s*/).map(x => x.trim()).filter(Boolean);
+/** Glosses that are leftovers or bare synonym lists make poor references ("indefinably large, countlessly great; immense"). */
+export function weakGloss(def) {
+  if (/\((see|cf|q\.v)\b|\bsee also\b|\betc\.?\)|\.\.\.|\bq\.v\./i.test(def)) return true;
+  const fr = fragments(def);
+  if (fr.length >= 3 && fr.every(f => f.split(/\s+/).length <= 2)) return true; // a list of near-synonyms
+  if (def.split(/\s+/).length < 4 && !/^(to|a|an|the)\s/i.test(def)) return true; // "Drawn, pictorial."
+  return false;
+}
+
+// Technical first senses of everyday words (dialect: a programming-language variant) are unfair to ask.
+const JARGON = /\b(programming language|software|algorithm|syntax|operating system|computing|hardware|database)\b/i;
 const clean = s => String(s).replace(/\s+/g, ' ').trim();
 
 /** True when the definition gives the answer away by containing a form of the word itself. */
@@ -28,6 +42,9 @@ export function rejectReason(e) {
   if (RELATIONAL.test(def)) return 'relational';
   if (SENSITIVE.test(def) || SENSITIVE.test(e.w)) return 'sensitive';
   if (selfReferential(e.w, def)) return 'self';
+  if (weakGloss(def)) return 'weak';
+  if (JARGON.test(def)) return 'jargon';
+  if (e.t != null && e.t < MIN_TRANSLATIONS) return 'obscure';
   return null;
 }
 

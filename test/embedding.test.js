@@ -49,3 +49,36 @@ test('daily words from the real list are deterministic', () => {
   assert.equal(new Set(a.map(x => x.w)).size, 7);
   assert.ok(pool.length > 5000);
 });
+
+import {contrary} from '../src/scorer/antonyms.js';
+import {weakGloss, MIN_TRANSLATIONS} from '../src/core/wordPool.js';
+test('antonym guard flags answers on the opposite side of the definition, not paraphrases or negated forms', () => {
+  const e = w('ephemeral'), c = w('candid'), f = w('frugal');
+  assert.ok(contrary('lasting forever and never fading', e.def, e));
+  assert.ok(contrary('lying and hiding the truth', c.def, c));
+  assert.ok(contrary('spending lavishly on luxuries', f.def, f));
+  assert.ok(!contrary('telling it like it is without hiding anything', c.def, c));
+  assert.ok(!contrary('not wasting money', f.def, f));
+  assert.ok(!contrary('lasting a very short time', e.def, e));
+  assert.ok(contrary('brave and bold in battle', 'Cowardly; lacking courage.', {w: 'pusillanimous'}));
+  assert.ok(!contrary('cowardly, lacking the courage to act', 'Cowardly; lacking courage.', {w: 'pusillanimous'}));
+});
+test('a contrary answer is cut down and flagged', () => {
+  const e = w('ephemeral'), raw = 'lasting forever and never fading', p = prepareAnswer(raw, e);
+  const r = scoreFromSims([.64], p, raw, {word: e});
+  assert.ok(r.opposite && r.score < 25);
+});
+test('a bare synonym is judged against the word itself, but a contrary one is not rescued', () => {
+  const f = w('frugal'), p = prepareAnswer('thrifty', f);
+  const without = scoreFromSims([.29], p, 'thrifty', {word: f}).score;
+  const withWord = scoreFromSims([.29], p, 'thrifty', {word: f, wordSim: .47}).score;
+  assert.ok(withWord >= without + 20);
+  const lav = prepareAnswer('lavish', f);
+  assert.ok(scoreFromSims([.29], lav, 'lavish', {word: f, wordSim: .5}).score < 20);
+});
+test('weak glosses and obscure words are kept out of the pool', () => {
+  assert.ok(weakGloss('Indefinably large, countlessly great; immense.'));
+  assert.ok(weakGloss('By surprise; startled; dumbfounded. (see usage).'));
+  assert.ok(!weakGloss('Up to this or that time.'));
+  assert.ok(MIN_TRANSLATIONS >= 25);
+});

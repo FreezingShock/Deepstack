@@ -7,7 +7,7 @@ export {startModelLoad, onModelStatus, modelStatus, whenReady} from './model.js'
 
 const refCache = new Map(); // word -> Promise<{texts, vecs}>
 const refsFor = w => {
-  if (!refCache.has(w.w)) { const texts = referenceTexts(w); refCache.set(w.w, embed(texts).then(vecs => ({vecs}))); }
+  if (!refCache.has(w.w)) { const texts = referenceTexts(w); refCache.set(w.w, embed([...texts, w.w]).then(vecs => ({vecs: vecs.slice(0, -1), wordVec: vecs.at(-1)}))); }
   return refCache.get(w.w);
 };
 
@@ -31,8 +31,8 @@ export async function judgeAnswer(text, word) {
   if (!(await whenReady(6000))) return fallback(text, word);
   try {
     const prep = prepareAnswer(text, word);
-    const [{vecs}, [a]] = await Promise.all([refsFor(word), embed([prep.text || text])]);
-    const r = scoreFromSims(vecs.map(v => cosine(a, v)), prep, text);
+    const [{vecs, wordVec}, [a]] = await Promise.all([refsFor(word), embed([prep.text || text])]);
+    const r = scoreFromSims(vecs.map(v => cosine(a, v)), prep, text, {word, wordSim: cosine(a, wordVec)});
     return {score: r.score, sim: r.sim, caught: lex.caught, missed: lex.missed, opposite: r.opposite || lex.opposite,
       usedWord: lex.usedWord, empty: false, words: lex.words, engine: 'embedding'};
   } catch (err) {

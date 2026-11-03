@@ -1,5 +1,6 @@
 // Pure scoring math for the embedding judge (no model code, so it runs in Node tests).
 import {analyze} from './lexical.js';
+import {contrary} from './antonyms.js';
 import calibration from './calibration.json' with {type: 'json'};
 
 export const cosine = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; }; // vectors are unit length
@@ -33,15 +34,26 @@ export function prepareAnswer(text, word) {
   return {text: stripped, content: A.content, usedWord: A.usedWord, tokens: A.toks};
 }
 
+const SYNONYM_MIN = .42, SYNONYM_CAP = .55;
+
 /**
  * @param {number[]} sims cosine of the answer against each reference text
+ * @param {object} prepared result of prepareAnswer
+ * @param {string} rawText the answer as typed
+ * @param {{word?:object, wordSim?:number, points?:number[][]}} ctx word: the target (enables the antonym guard);
+ *   wordSim: cosine of the answer with the target word itself (lets a bare synonym such as "thrifty" count);
+ *   points: curve override used while calibrating
  * @returns {{score:number,sim:number,opposite:boolean}}
  */
-export function scoreFromSims(sims, prepared, rawText) {
-  const sim = Math.max(...sims);
-  let s = curve(sim);
+export function scoreFromSims(sims, prepared, rawText, ctx = {}) {
+  let sim = Math.max(...sims);
+  const contrarian = !!ctx.word && contrary(rawText, ctx.word.def, ctx.word, ctx.word.opp || '');
+  // A one- or two-word answer is a synonym attempt; it is compared with the word itself, not just the longer definition.
+  if (!contrarian && ctx.wordSim >= SYNONYM_MIN && prepared.content <= 2) sim = Math.max(sim, Math.min(SYNONYM_CAP, ctx.wordSim + .05));
+  let s = curve(sim, ctx.points);
   let opposite = false;
-  if (OPPOSITE.test(rawText) && s > 20) { s *= .4; opposite = true; }
+  if (OPPOSITE.test(rawText) && s > 20) { s *= .3; opposite = true; }
+  else if (contrarian && s > 12) { s *= .35; opposite = true; }
   if (s >= 40) { // fancy vocabulary: a small bonus only
     const fancy = prepared.tokens.filter(t => t.length >= 9).length;
     s += Math.min(calibration.fancyBonusMax, 2 * fancy);
