@@ -23,3 +23,14 @@ test('atmosphere blends across a boundary and is exact deep inside a floor',()=>
  const mid=atmosphereAt(f.row);
  assert.ok(mid.decay>FLOORS[1].decay&&mid.decay<f.decay);
 });
+
+test('each floor is darker and has a tighter lamp than the one above',()=>{
+ for(let i=1;i<FLOORS.length;i++){assert.ok(FLOORS[i].dark>=FLOORS[i-1].dark);assert.ok(FLOORS[i].lampR<=FLOORS[i-1].lampR);}
+ const deep=atmosphereAt(FLOORS[FLOORS.length-1].row+10);
+ assert.ok(deep.dark>=.4&&deep.lampR<=.64);
+ assert.equal(atmosphereAt(0).dark,0);
+});
+test('every floor has a distinct motif and name',()=>{
+ assert.equal(new Set(FLOORS.map(f=>f.motif)).size,FLOORS.length);
+ assert.equal(new Set(FLOORS.map(f=>f.name)).size,FLOORS.length);
+});

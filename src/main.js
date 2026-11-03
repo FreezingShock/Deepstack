@@ -11,6 +11,7 @@ import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenRe
 import {homeHTML} from './ui/home.js';
 import {initA11y} from './ui/a11y.js';
 import {initTransitions} from './ui/transitions.js';
+import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -92,7 +93,7 @@ if(document.fonts&&document.fonts.load)Promise.all(['16px "IM Fell English"','16
 
 /* ---------- the stacks (continuous canvas world) ---------- */
 const World=(()=>{
- const cv=$('#world'),ctx=cv.getContext('2d');
+ const cv=$('#world');let ctx=cv.getContext('2d');const ctx0=ctx;let building=false;const bmpPool=[];
  let W=0,H=0,DPR=1,RH=150,BM=20,rows=new Map(),taken=new Set(),cam=0,restRow=0,st=null,dust=[],vt=0,last=performance.now();
  let shelf=[],hits=[],onDepth=null,gaugeCb=null,niches=new Map();
  const ZS=[0,.14,.3,.46,.62,.78,.92];
@@ -107,7 +108,7 @@ const World=(()=>{
   const key=r*2+layer;if(rows.has(key))return rows.get(key);
   const rng=mulberry(r*7919+layer*104729+13),a=abn(r),fl=floorAtRow(r),sc=layer?.72:1,bs=[],webs=[],props=[];let x=-6;
   while(x<W+40){const w=(10+rng()*22)*sc;
-   if(rng()<.03+.24*a+(fl.motif==='crypt'?.14:0)){x+=w*(.5+rng());continue;} // missing books
+   if(rng()<.03+.24*a+(fl.gap||0)){x+=w*(.5+rng());continue;} // missing books
    const cx=x+w/2;if(layer===0&&(taken.has(r)||(st&&st.row===r))&&Math.abs(cx-W/2)<34){x+=w;continue;}
    const h=RH*sc*(.46+rng()*.34);
    const lean=layer===0?-(((x+w/2)/W)*2-1)*.12*a:0;const tilt=(rng()<.05+.32*a?(rng()-.5)*(.1+.45*a):0)+lean;
@@ -120,7 +121,8 @@ const World=(()=>{
    const nh=a>.03?Math.floor(rng()*(1+8*a)):0;for(let i=0;i<nh;i++)webs.push({k:'strand',x:rng()*W,len:(20+rng()*60)*(fl.motif==='flood'?2.2:1),seed:(rng()*999)|0});
    if(r===fl.row&&r>0)props.push({k:'lintel'});
    if(fl.motif==='archive'){for(let x2=40+rng()*60;x2<W-30;x2+=90+rng()*150){props.push(rng()<.55?{k:'plate',x:x2,n:100+((rng()*899)|0)}:{k:'papers',x:x2,n:2+((rng()*4)|0),w:26+rng()*30,tw:rng()-.5});}}
-   else if(fl.motif==='crypt'){for(let x2=30+rng()*60;x2<W-30;x2+=70+rng()*140){props.push(rng()<.5?{k:'skull',x:x2,s:.8+rng()*.5,tilt:(rng()-.5)*.5}:{k:'bones',x:x2,s:.8+rng()*.6,seed:(rng()*999)|0});}}}
+   else if(fl.motif==='crypt'){for(let x2=30+rng()*60;x2<W-30;x2+=70+rng()*140){props.push(rng()<.5?{k:'skull',x:x2,s:.8+rng()*.5,tilt:(rng()-.5)*.5}:{k:'bones',x:x2,s:.8+rng()*.6,seed:(rng()*999)|0});}}
+   else props.push(...deepProps(fl,W,rng));}
   const data={bs,webs,props,fl,crack:rng()<.5*a?{x:rng()*W,w:30+rng()*90}:null};rows.set(key,data);return data;}
  function drawWeb(wb,y,a,wc=[224,218,200]){
   ctx.strokeStyle=`rgba(${wc[0]},${wc[1]},${wc[2]},${.14+.3*a})`;ctx.lineWidth=1;const rng=mulberry(wb.seed);
@@ -140,6 +142,7 @@ const World=(()=>{
    ctx.save();ctx.globalAlpha=.5;const cw=46,ch=30;ctx.strokeStyle='#3d544588';ctx.lineWidth=1;
    for(let yy=y+8;yy<base-ch;yy+=ch+6)for(let xx=x0+((r*13)%cw);xx<x1;xx+=cw+6){ctx.strokeRect(xx+.5,yy+.5,cw,ch);ctx.fillStyle='#b9a35a33';ctx.fillRect(xx+cw/2-5,yy+ch-10,10,3);}
    ctx.restore();}
+  else if(fl.motif==='hollow'||fl.motif==='abyss')deepWall(ctx,fl,x0,x1,y,base,rh,r);
  }
  function floorProp(pr,fl,bx0,bx1,y,base){
   if(pr.k==='lintel'){ // the threshold beam that announces a new floor
@@ -152,6 +155,7 @@ const World=(()=>{
   if(pr.k==='plate'){ctx.fillStyle='#b9a35a';ctx.fillRect(-14,-4,28,9);ctx.fillStyle='#2a2410';ctx.font='700 8px "IBM Plex Mono",monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(pr.n,0,.5);}
   else if(pr.k==='papers'){ctx.rotate(pr.tw*.06);for(let i=0;i<pr.n;i++){ctx.fillStyle=i%2?'#c9c2a2':'#d8d0b0';ctx.fillRect(-pr.w/2+(i%2)*2,-(i+1)*5,pr.w,4);ctx.fillStyle='#00000030';ctx.fillRect(-pr.w/2,-(i+1)*5+3,pr.w,1);}ctx.fillStyle='#8a2b24';ctx.fillRect(-2,-pr.n*5-1,4,pr.n*5+1);}
   else if(pr.k==='skull'){ctx.rotate(pr.tilt);ctx.scale(pr.s,pr.s);ctx.fillStyle='#cfc6ad';ctx.beginPath();ctx.arc(0,-14,11,Math.PI,0);ctx.lineTo(8,-5);ctx.lineTo(5,-2);ctx.lineTo(-5,-2);ctx.lineTo(-8,-5);ctx.closePath();ctx.fill();ctx.fillStyle='#120d0a';ctx.beginPath();ctx.arc(-4,-13,3,0,6.3);ctx.arc(4,-13,3,0,6.3);ctx.fill();ctx.fillRect(-1,-9,2,3);}
+  else if(pr.k==='candle'||pr.k==='urn'||pr.k==='tendril'){ctx.restore();deepProp(ctx,pr,base);return;}
   else if(pr.k==='bones'){ctx.scale(pr.s,pr.s);const g=mulberry(pr.seed);ctx.strokeStyle='#cfc6ad';ctx.lineWidth=3;ctx.lineCap='round';for(let i=0;i<3;i++){const x=-14+i*14+g()*6,l=10+g()*10,a=(g()-.5)*1.6;ctx.beginPath();ctx.moveTo(x,-2);ctx.lineTo(x+Math.sin(a)*l,-2-Math.cos(a)*Math.min(l,8)*.4);ctx.stroke();}}
   ctx.restore();}
  function floodOverlay(fl,bx0,bx1,y,rh,r){
@@ -162,7 +166,7 @@ const World=(()=>{
   ctx.strokeStyle='rgba(150,235,235,.35)';ctx.lineWidth=1.5;ctx.beginPath();for(let x=bx0;x<=bx1;x+=8){const yy=top+Math.sin(x*.035+vt*.9+r)*2.2;if(x===bx0)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);}ctx.stroke();
   ctx.globalCompositeOperation='lighter';ctx.strokeStyle='rgba(120,220,220,.07)';for(let k=0;k<4;k++){ctx.beginPath();for(let x=bx0;x<=bx1;x+=10){const yy=top+14+k*18+Math.sin(x*.05+vt*.7+k*2+r*3)*5;if(x===bx0)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);}ctx.stroke();}
   ctx.restore();}
- function drawRow(r,layer,cam_,sc,dim){
+ function drawRowLive(r,layer,cam_,sc,dim){
   const rh=RH*sc,y=r*rh-cam_,base=y+rh-12*sc,a=abn(r),d=genRow(r,layer),fl=d.fl;
   const body=(bx0,bx1)=>{
    const bw=bx1-bx0;
@@ -184,8 +188,8 @@ const World=(()=>{
       if(layer===0)bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,dust:a*.8,ribbon:b.rib},vt);
       else{ctx.fillStyle=rgbs(b.col);ctx.fillRect(-b.w/2,-b.h,b.w,b.h);}}
      ctx.restore();}}
-   if(layer===0){for(const pr of d.props)floorProp(pr,fl,bx0,bx1,y,base);for(const wb of d.webs){if(wb.x>=bx0-120&&wb.x<=bx1+120)drawWeb(wb,y,a,fl.web);}
-    if(fl.motif==='flood')floodOverlay(fl,bx0,bx1,y,rh,r);}
+   if(layer===0){for(const pr of d.props)floorProp(pr,fl,bx0,bx1,y,base);for(const wb of d.webs){if(building&&wb.k==='strand')continue;if(wb.x>=bx0-120&&wb.x<=bx1+120)drawWeb(wb,y,a,fl.web);}
+    if(fl.motif==='flood'&&!building)floodOverlay(fl,bx0,bx1,y,rh,r);}
   };
   if(layer===0&&r!==0&&a>.03){
    for(let i=0;i<3;i++){const bx0=i*W/3,bx1=bx0+W/3;ctx.save();ctx.beginPath();ctx.rect(bx0,y-1,W/3,rh+2);ctx.clip();ctx.fillStyle='#070504';ctx.fillRect(bx0,y-1,W/3,rh+2);
@@ -194,6 +198,19 @@ const World=(()=>{
   }else body(0,W);
   ctx.globalAlpha=dim;ctx.fillStyle=fl.pillar;for(let i=0;i<=3;i++){const ux=i*(W/3);ctx.fillRect(ux-(i?7*sc:0),y,14*sc,rh);ctx.fillStyle='#ffffff10';ctx.fillRect(ux-(i?7*sc:0)+2,y,1.5,rh);if(fl.motif==='flood'&&layer===0){ctx.fillStyle='#8aa0a822';for(let k=0;k<rh;k+=22)ctx.fillRect(ux-(i?7*sc:0)+4,y+k+8,6,2);}ctx.fillStyle=fl.pillar;}ctx.globalAlpha=1;
   return {base,d};}
+ // Static row art is drawn once into an offscreen bitmap; only water and loose strands animate per frame.
+ function drawRow(r,layer,cam_,sc,dim){
+  if(layer!==0||r===0)return drawRowLive(r,layer,cam_,sc,dim);
+  const d=genRow(r,0),rh=RH,y=r*rh-cam_,base=y+rh-12;
+  if(!d.bmp){const pad=40,cw=Math.ceil(W*DPR),ch=Math.ceil((rh+pad*2)*DPR),oc=bmpPool.pop()||document.createElement('canvas');
+   if(oc.width!==cw||oc.height!==ch){oc.width=cw;oc.height=ch;}const o=oc.getContext('2d');o.setTransform(DPR,0,0,DPR,0,0);o.clearRect(0,0,W,rh+pad*2);
+   ctx=o;building=true;try{drawRowLive(r,0,r*rh-pad,1,1);}finally{ctx=ctx0;building=false;}d.bmp=oc;d.pad=pad;}
+  ctx.drawImage(d.bmp,0,0,d.bmp.width,d.bmp.height,0,y-d.pad,W,rh+d.pad*2);
+  const a=abn(r),fl=d.fl;
+  for(const wb of d.webs)if(wb.k==='strand')drawWeb(wb,y,a,fl.web);
+  if(fl.motif==='flood')floodOverlay(fl,0,W,y,rh,r);
+  return {base,d};}
+ function pruneRows(top,bot){for(const [k,v] of rows){const r=k>>1;if(r<top-6||r>bot+6){if(v.bmp){bmpPool.push(v.bmp);v.bmp=null;}rows.delete(k);}}}
  function drawNiche(row,nv,camNow,now){const t0=nv.t0;
   const n=nicheBox(),y=n.t+(row*RH-(H-RH-BM))-camNow,h=n.h,x=n.x,w=n.w;if(y>H+20||y+h<-20)return;
   const al=clamp((now-t0)/450,0,1),a=abn(row),r=Math.min(52,w*.09),lc=floorAtRow(row).lamp;
@@ -245,7 +262,7 @@ const World=(()=>{
   // wall above shelf 0
   const top=Math.floor(camNow/RH)-1,bot=Math.ceil((camNow+H)/RH)+1;
   // far silhouette layer
-  for(let r=top;r<=bot;r++){const fr=Math.floor(r*.9);}
+  pruneRows(top,bot);
   let tgt=null;
   for(let r=top;r<=bot;r++){const o=drawRow(r,0,camNow,1,1);if(st&&r===st.row)tgt=o;}
   for(const [nr,nv] of niches)drawNiche(nr,nv,camNow,now);
@@ -254,9 +271,10 @@ const World=(()=>{
    if(settle>0){ctx.save();ctx.globalCompositeOperation='lighter';const gg=ctx.createRadialGradient(bx,by0-bh/2,0,bx,by0-bh/2,bh*1.4);gg.addColorStop(0,T.spine+'bb');gg.addColorStop(1,T.spine+'00');ctx.globalAlpha=(.28+.35*T.id/6)*settle*(.85+.15*Math.sin(vt*5))*(1-e*.4);ctx.fillStyle=gg;ctx.fillRect(bx-bh*1.5,by0-bh*1.5,bh*3,bh*3);ctx.restore();}
    ctx.save();ctx.translate(px,py);ctx.scale(s,s);bookArt(ctx,{w:bw,h:bh,tier:st.tier,seed:st.seed,word:st.word,ribbon:st.tier>=1?RIBBONS[st.tier%5]:null},vt);ctx.restore();}
   // darkness / lamp (shrinks with abandonment)
-  const lx=W/2,ly=H*.5,lr=Math.hypot(W,H)*(.6-.2*a);
+  const lx=W/2,ly=H*.5,lr=Math.hypot(W,H)*(.6-.2*a)*atm.lampR;
   const lg=ctx.createRadialGradient(lx,ly,0,lx,ly,lr);lg.addColorStop(0,'rgba(0,0,0,0)');lg.addColorStop(.3,`rgba(6,4,2,${.2+.25*a})`);lg.addColorStop(1,`rgba(3,2,2,${.93+.06*a})`);ctx.fillStyle=lg;ctx.fillRect(0,0,W,H);
   if(a>0){ctx.fillStyle=`rgba(14,34,30,${.1*a})`;ctx.fillRect(0,0,W,H);}
+  if(atm.dark>.005){ctx.fillStyle=`rgba(1,0,3,${atm.dark})`;ctx.fillRect(0,0,W,H);}
   if(atm.tint[3]>.005){const t=atm.tint;ctx.fillStyle=`rgba(${t[0]|0},${t[1]|0},${t[2]|0},${t[3]})`;ctx.fillRect(0,0,W,H);}
   ctx.globalCompositeOperation='lighter';
   if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
@@ -306,7 +324,7 @@ function type(el,text,speed=14){return new Promise(res=>{if(RM||!speed){el.textC
 function countUp(el,to,ms,from=0){if(RM){el.textContent=to;return;}const t0=performance.now();(function f(n){const u=Math.min(1,(n-t0)/ms),e=1-Math.pow(1-u,3);el.textContent=Math.round(from+(to-from)*e);if(u<1)requestAnimationFrame(f);})(t0);}
 const floorBanner=$('#floorBanner');let bannerT=0;
 function announceFloor(f){
- floorBanner.innerHTML=`<small>Floor ${['I','II','III','IV','V'][f.id]} \u00b7 ${floorStartFt(f)} ft</small><b>${esc(f.name)}</b><i>${esc(f.sub)}</i>`;
+ floorBanner.innerHTML=`<small>Floor ${['I','II','III','IV','V','VI','VII','VIII'][f.id]} \u00b7 ${floorStartFt(f)} ft</small><b>${esc(f.name)}</b><i>${esc(f.sub)}</i>`;
  floorBanner.style.setProperty('--fc',`rgb(${f.lamp.join(',')})`);floorBanner.classList.remove('on');void floorBanner.offsetWidth;floorBanner.classList.add('on');
  clearTimeout(bannerT);bannerT=setTimeout(()=>floorBanner.classList.remove('on'),RM?2500:4200);}
 World.onDepth(v=>{const e=$('#dnum');if(e.textContent!==String(v))e.textContent=v;
