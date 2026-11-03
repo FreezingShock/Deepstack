@@ -27,3 +27,7 @@ Replace the body of `judgeAnswer()` in `src/scorer/index.js`; the rest of the ap
 - A ~25 MB model download is acceptable. Download once, cache in Cache Storage / IndexedDB, request `navigator.storage.persist()`, and never re-download unless the pinned model version changes.
 - Show download progress: a small, non-blocking indicator on the home screen ("Preparing the judge, 40%") using the fetch stream's byte count. Daily can start with the lexical fallback only if the model is not ready, but prefer waiting briefly so scoring is consistent.
 - Difficulty: derive from Wiktionary/frequency data and use the 38 hand-tuned values as calibration anchors (both replace and seed).
+
+## Word data pipeline (scripts/)
+`npm run build:words -- --kaikki <kaikki.jsonl> --freq <en_full.txt>` writes `public/data/words.json`.
+Inputs are not committed. Difficulty is a least-squares fit of log frequency to the 38 hand-tuned difficulties; frequency alone is a rough signal (rare-but-easy words like "zzyzx" slip through), so the Daily pool should come from a hand-reviewed slice. Generated words have no concept lists, so they are not wired into the game until the embedding scorer lands.
