@@ -10,6 +10,7 @@ import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
 import {homeHTML} from './ui/home.js';
 import {initA11y} from './ui/a11y.js';
+import {initTransitions} from './ui/transitions.js';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -568,6 +569,7 @@ function openStats(){
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 
 applySound();
+initTransitions();
 showHome();
 startModelLoad();
 window.__deepstack={S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,get run(){return run;}};
