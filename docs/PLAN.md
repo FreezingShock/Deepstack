@@ -1,0 +1,28 @@
+# Replacing the stand-ins
+
+## 1. Word data from Wiktionary
+
+Today: 38 hand-written words in `src/core/words.js`, each with hand-written concept lists and synonyms for the lexical scorer.
+
+Plan (offline build step, output committed or generated in CI, never fetched at play time):
+1. Take a Wiktionary dump via kaikki.org's pre-parsed JSONL (CC BY-SA, so we must credit Wiktionary in the UI and keep the data attribution file).
+2. Filter to English entries with a definition, part of speech, and no "obsolete/rare/dialect/offensive" tags. Join with a frequency list (e.g. wordfreq) and keep a rarity band.
+3. Difficulty `d` (0-10) comes from log frequency, with word length as a minor term, calibrated so the existing 38 words keep roughly their current values.
+4. Per word store: word, pos, first 1-3 senses, a cleaned primary definition, and an example sentence with the word blanked (the hint). Examples are often missing, so fall back to a templated hint or hide the hint power-up for that word.
+5. Output `public/data/words.json` (a few thousand words) plus a small index by difficulty. The daily picker and Elo placement stay as they are but read this file.
+6. Hand-review the top slice that Daily can draw from, since the first release should not ship raw Wiktionary glosses like "alternative form of ...".
+
+## 2. Embedding scorer (local, no API)
+
+Replace the body of `judgeAnswer()` in `src/scorer/index.js`; the rest of the app already awaits it.
+
+- Model: a small sentence-embedding model run in the browser with transformers.js (ONNX/WASM, WebGPU when available). Candidates: `all-MiniLM-L6-v2` (about 23 MB quantised) or `bge-small`. Lazy-load after the home screen renders and cache in IndexedDB/Cache Storage; fall back to the lexical scorer until it is ready or if loading fails.
+- Reference vectors: embed each word's definition (and optionally 2-3 paraphrased senses) once at build time and ship them with the word data, so only the player's answer is embedded at runtime.
+- Score: cosine similarity between the answer and the reference vectors (max over senses), mapped to 0-100 by a calibrated curve. Calibrate on a labelled set of real answers per tier (the tier thresholds in `src/core/tiers.js` are the targets), not on guesswork.
+- Guards: answers that contain the target word, that are too short, or that merely copy the definition get adjusted; opposite-meaning answers score high in embedding space, so keep a negation/antonym check from the lexical scorer as a penalty. Keep the "caught / missed concepts" feedback by falling back to lexical concept hits where available.
+- Daily fairness: scoring must be deterministic across devices, so pin the model version and run it in fp32/quantised consistently; scores are local-only so small float drift is acceptable but the model file must be version-pinned.
+- Tests: a fixed fixture of (word, answer, expected tier band) run in Node via onnxruntime so regressions are caught in CI.
+
+## Open questions for nate
+- Is a ~25 MB first-load model download acceptable, or should it load only when a run starts?
+- Should Wiktionary-derived difficulty replace hand-tuned difficulty, or only seed it?
