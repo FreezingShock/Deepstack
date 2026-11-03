@@ -3,7 +3,7 @@ import './styles.css';
 import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
-const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords}=core;
+const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -249,7 +249,8 @@ const World=(()=>{
 
 /* ---------- helpers ---------- */
 const tip=$('#tip');
-function showTip(t,x,y){tip.textContent=t;tip.style.opacity=1;tip.style.left=clamp(x+14,6,innerWidth-200)+'px';tip.style.top=(y-34)+'px';}
+const NOHOVER=matchMedia('(hover:none)').matches;
+function showTip(t,x,y){if(NOHOVER)return;tip.textContent=t;tip.style.opacity=1;tip.style.left=clamp(x+14,6,innerWidth-200)+'px';tip.style.top=(y-34)+'px';}
 const hideTip=()=>tip.style.opacity=0;
 const ui={home:$('#home'),stage:$('#stage'),final:$('#final'),cap:$('#shelfcap'),hud:$('#depthHud'),gauge:$('#gauge'),skip:$('#skiph')};
 function type(el,text,speed=14){return new Promise(res=>{if(RM||!speed){el.textContent=text;return res();}let i=0;const id=setInterval(()=>{i++;el.textContent=text.slice(0,i);if(i%3===0)Sfx.key();if(i>=text.length){clearInterval(id);res();}},speed);});}
@@ -285,25 +286,32 @@ const FX=(()=>{const cv=$('#fx'),c=cv.getContext('2d');let W=0,H=0,DPR=1,ps=[],o
  };})();
 
 /* ---------- home ---------- */
+let cdTimer=0;
 function showHome(){
- run=null;ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;ui.gauge.classList.remove('on');
- const d=S.daily[utc()];World.setShelf(S.shelf);
+ run=null;ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;ui.gauge.classList.remove('on');clearInterval(cdTimer);
+ const d=S.daily[utc()],st=computeStats(S,utc());World.setShelf(S.shelf);
  ui.home.hidden=false;ui.home.className='center fadein';
- ui.home.innerHTML=`<div class="sheet">
+ ui.home.innerHTML=`<div class="sheet home">
+  <p class="eyebrow">Daily No. ${dailyNo()}</p>
   <h1 class="title">Deepstack</h1>
   <p class="tagline">Say what the word means. The closer you get, the deeper you go.</p>
-  <div class="stats"><span>Daily No. <b>${dailyNo()}</b></span><span>7 words</span><span>Streak <b>${S.streak.n}</b></span><span>Best depth <b>${S.bestDepth} ft</b></span></div>
-  ${d?`<div class="row"><button class="btn pri big" id="bRes">Today\u2019s result</button></div><div class="row" style="margin-top:6px"><button class="lnk" id="bPrac" style="font:italic 16px var(--serif)">Play a practice run</button></div>`
-     :`<div class="row"><button class="btn pri big" id="bPlay">Descend</button></div>`}
+  <div class="stats"><span>Streak <b>${st.streak}</b></span><span>Deepest <b>${st.deepest} ft</b></span><span>Books <b>${S.shelf.length}</b></span></div>
+  ${d?`<div class="row"><button class="btn pri big" id="bRes">Today\u2019s result</button></div><p class="next" id="nextd"></p>`
+     :`<div class="row"><button class="btn pri big" id="bPlay">Descend</button></div><p class="next">Seven words \u00b7 forty-five seconds each \u00b7 one attempt</p>`}
+  <nav class="links" aria-label="More">
+   <button class="lnk" id="bStats">Stats</button>
+   <button class="lnk" id="bAll">Shelf${S.shelf.length?` <small>${S.shelf.length}</small>`:''}</button>
+   <button class="lnk" id="bPrac">Practice run</button>
+  </nav>
   <div class="judgestat" id="jstat" aria-live="polite"></div></div>`;
  paintJudge(modelStatus());
  World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=()=>startDaily(false));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
- $('#bPrac')&&($('#bPrac').onclick=()=>startDaily(true));
- ui.cap.hidden=false;
- ui.cap.innerHTML=`<span>Your shelf</span><b>${S.shelf.length} ${S.shelf.length===1?'book':'books'}</b>${S.shelf.length?'<button class="lnk" id="bAll">View all</button>':'<span style="text-transform:none;letter-spacing:0;font:italic 15px var(--serif);color:#c8ccd1">empty — your first book is one answer away</span>'}`;
- $('#bAll')&&($('#bAll').onclick=openAll);
+ $('#bPrac').onclick=()=>startDaily(true);
+ $('#bStats').onclick=openStats;$('#bAll').onclick=()=>openAll();
+ if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
+ ui.cap.hidden=true;
 }
 $('#mark').onclick=()=>{if(World.busy&&World.stActive)return;if(run)return leaveRun();showHome();};
 async function leaveRun(){run=null;ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;await World.ascend();showHome();}
@@ -416,10 +424,12 @@ function openCard(b,opts={}){
    <h2>${esc(b.w)}<small>${esc(b.pos)}</small></h2>
    <div class="score"><b id="cn">${opts.fresh?0:b.score}</b><span>/ 100 closeness</span></div>
    <div class="meter"><i id="mt" style="width:${opts.fresh?0:b.score}%"></i>${TIERS.slice(1).map(t=>`<u style="left:${t.min}%"></u>`).join('')}</div>
+   ${!opts.fresh&&b.t?`<div class="depthgain">${b.mode==='daily'?'Daily No. <b>'+b.no+'</b> \u00b7 ':''}${new Date(b.t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</div>`:''}
    ${opts.fresh?`<div class="depthgain">Deeper by <b>+${b.ft} ft</b> \u00b7 now at <b>${opts.depth1} ft</b></div>`:''}
    <p class="verdict ${opts.fresh?'':'on'}" id="vd">${esc(b.verdict)}</p>
    <h3>Meaning</h3><p class="def">${esc(b.def)}</p>
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
+   ${opts.nav?`<div class="cardnav"><button class="btn" id="cprev" aria-label="Previous book"${opts.nav.i<=0?' disabled':''}>\u2039</button><span>${opts.nav.i+1} of ${opts.nav.items.length}</span><button class="btn" id="cnext" aria-label="Next book"${opts.nav.i>=opts.nav.items.length-1?' disabled':''}>\u203a</button></div>`:''}
    <button class="btn pri go" id="go">${opts.onNext?(opts.last?'See your descent':'Next word'):'Close'} <kbd>Enter</kbd></button>
    </div>
   </div>
@@ -430,27 +440,65 @@ function openCard(b,opts={}){
  if(opts.fresh){setTimeout(async()=>{Sfx.flip();if(b.tier>=5)Sfx.sting(b.tier);if(b.tier>=4){Feel.shake(2+b.tier*1.1,b.tier>=6?900:600);Feel.slowmo(b.tier>=6?.25:b.tier>=5?.4:.6,b.tier>=6?1700:1200);}if(b.tier>=6)flashTop();bk.classList.add('open');{const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier,30+b.tier*24);const hh=$('#halo');if(hh)hh.classList.add('go');}await sleep(380);Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+80,b.tier,30+b.tier*14);}$('#go').focus();},220);}
  else{bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
  $('#go').onclick=closeCard;
+ if(opts.nav){const step=n=>openCard(opts.nav.items[opts.nav.i+n],{...opts,nav:{...opts.nav,i:opts.nav.i+n}});$('#cprev').onclick=()=>step(-1);$('#cnext').onclick=()=>step(1);}
  L.onclick=e=>{if(e.target===L&&!opts.onNext)closeCard();};
 }
 function flashTop(){const f=document.createElement('div');f.style.cssText='position:fixed;inset:0;z-index:70;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(190,252,255,.55),rgba(190,252,255,0) 60%);opacity:0;transition:opacity .25s ease-out';document.body.appendChild(f);requestAnimationFrame(()=>{f.style.opacity=1;setTimeout(()=>{f.style.transition='opacity 1.6s ease-in';f.style.opacity=0;setTimeout(()=>f.remove(),1700);},260);});}
 function closeCard(){const L=$('#cardlayer');const o=cardOpts;cardOpts=null;L.classList.remove('on');setTimeout(()=>{L.hidden=true;L.innerHTML='';},250);if(o&&o.onNext)o.onNext();}
 addEventListener('keydown',e=>{
+ if(!$('#cardlayer').hidden&&cardOpts&&cardOpts.nav&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){const b=$(e.key==='ArrowLeft'?'#cprev':'#cnext');if(b&&!b.disabled){e.preventDefault();b.click();}return;}
  if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'){e.preventDefault();closeCard();return;}
- if(e.key==='Escape'){if(!$('#all').hidden)$('#all').hidden=true;else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
+ if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(!$('#all').hidden)$('#all').hidden=true;else if(!$('#stats').hidden)$('#stats').hidden=true;else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
  if(World.descending&&(e.key===' '||e.key==='Escape'||e.key==='Enter')){e.preventDefault();World.skipDown();}
 });
 
-/* ---------- all books overlay ---------- */
-let fTier=-1;
-function openAll(){
- const A=$('#all');A.hidden=false;const list=S.shelf.map((b,i)=>({b,i})).filter(x=>fTier<0||x.b.tier===fTier);
- A.innerHTML=`<div class="sheet"><h1 class="title" style="font-size:34px">Your shelf</h1><div class="meta">${S.shelf.length} books</div>
-  <div class="filters"><button class="fchip" data-t="-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" aria-pressed="${fTier===t.id}">${t.name}</button>`).join('')}</div>
-  <div class="shelfgrid">${list.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',Math.round(RHnow()*.8))}</div>`).join('')}</div>
-  <div class="row"><button class="btn" id="aclose">Close</button></div></div>`;
- $$('.fchip',A).forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;openAll();});
- $$('img',A).forEach(im=>{im.onclick=()=>{openCard(S.shelf[+im.dataset.i],{fresh:false});};im.onmouseenter=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmousemove=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmouseleave=hideTip;});
- $('#aclose').onclick=()=>{A.hidden=true;};A.onclick=e=>{if(e.target===A)A.hidden=true;};
+/* ---------- shelf overlay ---------- */
+let fTier=-1,fSort='new',fQ='';
+const SORTS={new:['Newest',(a,b)=>b.i-a.i],score:['Closest',(a,b)=>b.b.score-a.b.score||b.i-a.i],tier:['Rarest',(a,b)=>b.b.tier-a.b.tier||b.b.score-a.b.score],az:['A–Z',(a,b)=>a.b.w.localeCompare(b.b.w)]};
+function openAll(keepFocus){
+ const A=$('#all');A.hidden=false;
+ const q=fQ.trim().toLowerCase();
+ const list=S.shelf.map((b,i)=>({b,i})).filter(x=>(fTier<0||x.b.tier===fTier)&&(!q||x.b.w.toLowerCase().includes(q))).sort(SORTS[fSort][1]);
+ const counts=TIERS.map(t=>S.shelf.filter(b=>b.tier===t.id).length);
+ A.innerHTML=`<div class="sheet panel" role="dialog" aria-modal="true" aria-label="Your shelf"><button class="x" id="aclose" aria-label="Close">×</button>
+  <h1 class="title small">Your shelf</h1><div class="meta">${S.shelf.length} ${S.shelf.length===1?'book':'books'}${list.length!==S.shelf.length?` · showing ${list.length}`:''}</div>
+  <div class="shelftools"><input id="fq" type="search" placeholder="Find a word" value="${esc(fQ)}" aria-label="Find a word" autocomplete="off" spellcheck="false">
+   <div class="sorts" role="group" aria-label="Sort">${Object.entries(SORTS).map(([k,v])=>`<button class="fchip" data-s="${k}" aria-pressed="${fSort===k}">${v[0]}</button>`).join('')}</div></div>
+  <div class="filters"><button class="fchip" data-t="-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div>
+  ${list.length?`<div class="shelfgrid">${list.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',Math.round(RHnow()*.8))}</div>`).join('')}</div>`
+   :`<p class="empty">${S.shelf.length?'No book matches.':'Nothing here yet. Your first answer becomes your first book.'}</p>`}</div>`;
+ $$('.fchip[data-t]',A).forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;openAll();});
+ $$('.fchip[data-s]',A).forEach(c=>c.onclick=()=>{fSort=c.dataset.s;openAll();});
+ const fq=$('#fq');fq.oninput=()=>{fQ=fq.value;const pos=fq.selectionStart;openAll(true);const n=$('#fq');n.focus();n.setSelectionRange(pos,pos);};
+ $$('img',A).forEach(im=>{const open=()=>{hideTip();const items=list.map(x=>x.b),k=items.indexOf(S.shelf[+im.dataset.i]);openCard(S.shelf[+im.dataset.i],{fresh:false,nav:{items,i:k}});};
+  im.tabIndex=0;im.setAttribute('role','button');im.onclick=open;im.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();open();}};
+  im.onmouseenter=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmousemove=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmouseleave=hideTip;});
+ $('#aclose').onclick=()=>{A.hidden=true;hideTip();};A.onclick=e=>{if(e.target===A){A.hidden=true;hideTip();}};
+ if(!keepFocus)$('#aclose').focus({preventScroll:true});
+}
+/* ---------- stats overlay ---------- */
+function openStats(){
+ const A=$('#stats'),st=computeStats(S,utc());A.hidden=false;
+ const maxT=Math.max(1,...st.tiers),maxD=Math.max(1,...st.recent.map(r=>r.depth));
+ const fmtDay=k=>new Date(k+'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',timeZone:'UTC'});
+ const big=(n,l,sub)=>`<div class="big"><b>${n}</b><span>${l}</span>${sub?`<em>${sub}</em>`:''}</div>`;
+ A.innerHTML=`<div class="sheet panel" role="dialog" aria-modal="true" aria-label="Stats"><button class="x" id="sclose" aria-label="Close">×</button>
+  <h1 class="title small">Stats</h1>
+  ${st.runs?`<div class="bigs">
+   ${big(st.streak,'Day streak','best '+st.bestStreak)}
+   ${big(st.deepest+'<small> ft</small>','Deepest dive',st.deepestDay?fmtDay(st.deepestDay):'')}
+   ${big(st.runs,st.runs===1?'Daily played':'Dailies played',st.totalFt.toLocaleString()+' ft in total')}
+   ${big(st.avg,'Avg closeness',st.answered+' answered')}
+  </div>
+  ${st.best?`<p class="bestbook">Closest answer: <b>${esc(st.best.w)}</b>, ${st.best.score}/100 · <span style="color:${TIERS[st.best.tier].spine}">${TIERS[st.best.tier].name}</span></p>`:''}
+  <h2 class="sec">Books by tier</h2>
+  <div class="tierbars">${TIERS.map(t=>`<div class="tb"><span class="tn">${t.name}</span><span class="track"><i style="width:${st.tiers[t.id]/maxT*100}%;background:${t.spine}"></i></span><b>${st.tiers[t.id]}</b></div>`).join('')}</div>
+  <h2 class="sec">Recent descents</h2>
+  <div class="recent" role="img" aria-label="Depth of your last ${st.recent.length} dailies">${st.recent.map(r=>`<div class="rc" title="${fmtDay(r.day)}: ${r.depth} ft"><i style="height:${Math.max(6,r.depth/maxD*100)}%;background:${TIERS[r.best].spine}"></i><span>${r.day.slice(8)}</span></div>`).join('')}</div>
+  <p class="meta">Bars are depth in feet, coloured by your rarest book that day.</p>`
+  :`<p class="empty">Finish your first Daily and your numbers show up here: streak, deepest dive and every tier you have shelved.</p>`}
+  </div>`;
+ $('#sclose').onclick=()=>{A.hidden=true;};A.onclick=e=>{if(e.target===A)A.hidden=true;};$('#sclose').focus({preventScroll:true});
 }
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 
