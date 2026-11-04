@@ -267,7 +267,8 @@ const World=(()=>{
   for(let r=top;r<=bot;r++){const o=drawRow(r,0,camNow,1,1);if(st&&r===st.row)tgt=o;}
   for(const [nr,nv] of niches)drawNiche(nr,nv,camNow,now);
   // pulled-out target
-  if(st&&tgt){const T=TIERS[st.tier],e=pull*pull*(3-2*pull),bw=36,bh=RH*.82;const bx=W/2,by0=tgt.base;const cy=H*.5;const px=bx,py=by0+(cy+bh*.5*2.2-by0)*e;const s=1+1.3*e;
+  if(st&&tgt){const T=TIERS[st.tier],e=pull*pull*(3-2*pull),bw=36,bh=RH*.82;const bx=W*(.4+.2*(((st.seed>>5)&127)/127)),by0=tgt.base-RH*(1+((st.seed>>3)&1));const cy=H*.5;const px=bx+(W/2-bx)*e,py=by0+(cy+bh*.5*2.2-by0)*e;const s=1+1.3*e;
+   if(settle>0){ctx.fillStyle='#070504';ctx.fillRect(bx-bw/2,by0-bh,bw,bh);}
    if(settle>0){ctx.save();ctx.globalCompositeOperation='lighter';const gg=ctx.createRadialGradient(bx,by0-bh/2,0,bx,by0-bh/2,bh*1.4);gg.addColorStop(0,T.spine+'bb');gg.addColorStop(1,T.spine+'00');ctx.globalAlpha=(.28+.35*T.id/6)*settle*(.85+.15*Math.sin(vt*5))*(1-e*.4);ctx.fillStyle=gg;ctx.fillRect(bx-bh*1.5,by0-bh*1.5,bh*3,bh*3);ctx.restore();}
    ctx.save();ctx.translate(px,py);ctx.scale(s,s);bookArt(ctx,{w:bw,h:bh,tier:st.tier,seed:st.seed,word:st.word,ribbon:st.tier>=1?RIBBONS[st.tier%5]:null},vt);ctx.restore();}
   // darkness / lamp (shrinks with abandonment)
