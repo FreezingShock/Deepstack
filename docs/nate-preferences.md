@@ -80,3 +80,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 
 - 2026-11-04 welcome v2: "note cards on each side should be more readable, todays result more centralized", "stylize the word Deepstack" -> pinned cards must be legible at normal size and vertically centred on the Descend/Result block; the title is a gilt wordmark, not plain serif (thread: welcome screen)
 - 2026-11-04 attic: "Earlier finds should go in the attic" -> no "Earlier finds" bay on the Shelf's floor view; floorless books live in the attic (thread: attic room)
+- 2026-11-04 attic climb: home clipped when going between home and attic, "refine that transition to make sure the elements stay in the alcove and the animation feels intuitive" -> DOM that lives in the world (home panel) must ride the same camera motion frame for frame, never run its own transition (pattern 9, 7; attic climb thread)
