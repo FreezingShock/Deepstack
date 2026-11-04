@@ -51,6 +51,7 @@ import './ui/penInk.css';
 import './ui/ink.css';
 import './ui/inkInput.css';
 import {attachInk} from './ui/inkInput.js';
+import './ui/shelfBays.css';
 import './ui/fonts.css';
 import './ui/googleFonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
@@ -602,7 +603,7 @@ async function submit(skipped){
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
  const base=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
  const cb=applyCombo(run.combo,t,base,skipped);run.combo=cb.chain;const rows=cb.rows;
- const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,fb:feedbackData(j,w),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
+ const book={fl:floorAtRow(World.restRow+rows).id,wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,fb:feedbackData(j,w),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');Sfx.seal();const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
@@ -692,7 +693,7 @@ addEventListener('keydown',e=>{
 
 /* ---------- shelf, sets and stats: pages of the menu books (src/ui/bookMenus.js, home.js BOOK_PAGES) ---------- */
 const bookOpenCard=()=>!$('#cardlayer').hidden;
-BOOK_PAGES.bAll=shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc:bookOpenCard});
+BOOK_PAGES.bAll=shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,FLOORS,reduceMotion:()=>RM});
 BOOK_PAGES.bSets={...setsBook(S),keepOnEsc:bookOpenCard};
 BOOK_PAGES.bDaily={...dailyBook({S,today:utc,streak:()=>computeStats(S,utc()).streak,wordsReady,wordsLoaded:()=>wordsLoaded}),keepOnEsc:bookOpenCard};
 BOOK_PAGES.bStats={...statsBook({S,st:()=>computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt}),keepOnEsc:bookOpenCard};

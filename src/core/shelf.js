@@ -5,7 +5,9 @@ export const SORTS={
   new:['Newest',(a,b)=>b.i-a.i],
   score:['Closest',(a,b)=>b.b.score-a.b.score||b.i-a.i],
   tier:['Rarest',(a,b)=>b.b.tier-a.b.tier||b.b.score-a.b.score],
-  az:['A–Z',(a,b)=>a.b.w.localeCompare(b.b.w)]
+  az:['A–Z',(a,b)=>a.b.w.localeCompare(b.b.w)],
+  deep:['Deepest',(a,b)=>(b.b.ft||0)-(a.b.ft||0)||b.i-a.i],
+  long:['Longest word',(a,b)=>b.b.w.length-a.b.w.length||b.i-a.i]
 };
 // key -> (item, opts) => boolean, applied when opts[key] is truthy.
 export const EXTRA_FILTERS={fav:x=>!!x.b.fav};

@@ -1,0 +1,32 @@
+/* Shelf bays: brass labels with a count, a leaning library ladder with a rail, piled copies, and a book that is
+   pulled out of its stack before the detail card opens. Colors come from tokens only. */
+.bk-spread.menu .splaque{flex-direction:column;align-items:center}
+.bk-spread.menu .splaque span b{margin-left:10px;padding-left:10px;border-left:1px solid color-mix(in srgb,var(--c-oak-1c1209) 45%,transparent);font:600 13px/1 var(--sans);letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.bk-spread.menu .splaque em{position:relative;z-index:0;margin-top:-2px;padding:6px 14px 3px;max-width:92%;border-radius:0 0 3px 3px;font:italic 400 13px/1.2 var(--serif);text-align:center;color:var(--c-oak-1c1209);
+ background:linear-gradient(180deg,var(--c-bronze-40),var(--c-bronze-31));box-shadow:inset 0 -2px 3px rgba(0,0,0,.3),0 2px 5px var(--c-black-alpha-bb);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.bk-spread.menu .splaque+.scase{margin-top:0}
+.bk-spread.menu .splaque:has(em){margin-bottom:-4px}
+/* a pile of copies: each extra copy shows as a thin page edge under the top book */
+.bk-spread.menu .sbook[style*="--e:1"],.bk-spread.menu .sbook[style*="--e:2"],.bk-spread.menu .sbook[style*="--e:3"]{margin-bottom:calc(var(--e) * 3px)}
+.bk-spread.menu .sbook::after{content:"";position:absolute;left:8px;right:8px;top:100%;height:calc(var(--e,0) * 3px);background:repeating-linear-gradient(0deg,var(--c-parchment-e6d8b2) 0 1.5px,var(--c-brass-bfb08a) 1.5px 3px);border-radius:0 0 3px 3px;box-shadow:0 2px 3px var(--c-black-alpha-88)}
+/* pulled from the stack: slides out and up, then the card opens above the book */
+.bk-spread.menu .sbook.pulled{transform:translate(calc(var(--o,0px) + 22px),-6px) rotate(-1.2deg);filter:brightness(1.3);z-index:5;box-shadow:0 10px 18px -6px var(--c-black)}
+/* library ladder and rail */
+.bk-spread.menu .scase[data-lad]{position:relative}
+.bk-spread.menu .scase[data-lad]::before{content:"";position:absolute;left:0;right:0;top:3px;height:3px;background:linear-gradient(180deg,var(--c-brass-d8c08c),var(--c-bronze-31));opacity:.75;box-shadow:0 1px 2px var(--c-black-alpha-aa)}
+.bk-spread.menu .scase[data-lad]::after{content:"";position:absolute;top:3px;bottom:11px;width:22px;z-index:4;pointer-events:none;
+ background:repeating-linear-gradient(0deg,transparent 0 15px,var(--c-oak-5a3d22) 15px 18px) 3px 0/16px 100% no-repeat,linear-gradient(90deg,var(--c-oak-4d3623) 0 3px,transparent 3px 19px,var(--c-oak-4d3623) 19px 22px);
+ filter:drop-shadow(0 2px 3px var(--c-black-alpha-aa))}
+.bk-spread.menu .scase[data-lad=r]::after{right:4px}
+.bk-spread.menu .scase[data-lad=l]::after{left:4px}
+.bk-spread.menu .scase[data-lad=r] .sshelf{padding-right:34px}
+.bk-spread.menu .scase[data-lad=l] .sshelf{padding-left:34px}
+@media(prefers-reduced-motion:reduce){.bk-spread.menu .sbook.pulled{transition:none}}
+/* phone: two stacks share ~300px, so the spine type tightens until a 14-letter word fits */
+@media(max-width:480px){
+ .bk-spread.menu .sshelf{gap:6px;padding-left:6px;padding-right:6px}
+ .bk-spread.menu .scase[data-lad=r] .sshelf{padding-right:30px}.bk-spread.menu .scase[data-lad=l] .sshelf{padding-left:30px}
+ .bk-spread.menu .sb-spine{gap:3px;padding:0 3px 0 2px}
+ .bk-spread.menu .sb-band:last-child{display:none}
+ .bk-spread.menu .sb-t{font-size:10.5px;letter-spacing:.02em;padding:3px 1px}
+}
