@@ -105,8 +105,8 @@ await step('daily calendar selects a day', async () => {
   await day.waitFor({state: 'visible', timeout: T}).catch(() => { fail('Daily calendar has no selectable day'); throw new Error('stop'); });
   const fam = await day.evaluate(el => getComputedStyle(el).fontFamily);
   if (!/Fuzzy Bubbles/.test(fam)) fail(`Daily calendar not in the handwriting face: ${fam}`);
-  const asked = await page.evaluate(() => [...document.querySelectorAll('link[href*="fonts.googleapis"]')].some(l => /Fuzzy\+Bubbles/.test(l.href)));
-  if (!asked) fail('page never requests the Fuzzy Bubbles face');
+  const asked = await page.evaluate(() => [...document.fonts].some(f => /Fuzzy Bubbles/.test(f.family)));
+  if (!asked) fail('Fuzzy Bubbles face is not declared in the document (self-hosted googleFonts.css)');
   await day.click();
   await dlg.locator('.dly-words').first().waitFor({state: 'visible', timeout: T}).catch(() => fail('tapping a calendar day did not open its entry'));
   await page.keyboard.press('Escape');
