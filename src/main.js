@@ -13,6 +13,8 @@ import {homeHTML} from './ui/home.js';
 import './ui/home.css';
 import {descendInto} from './ui/descend.js';
 import {initA11y} from './ui/a11y.js';
+import {initTopbar} from './ui/topbar.js';
+import {reducedMotion} from './ui/settings.js';
 import {initTransitions} from './ui/transitions.js';
 import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
 import {initBrowse} from './ui/browse.js';
@@ -21,7 +23,7 @@ import './ui/lore.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const RM=reducedMotion();
 const sleep=ms=>new Promise(r=>setTimeout(r,RM?Math.min(ms,30):ms));
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -35,9 +37,10 @@ backfillSets(S);
 const utc=()=>new Date().toISOString().slice(0,10);
 const dailyNo=()=>Math.floor((Date.parse(utc())-Date.parse('2026-01-01'))/864e5)+1;
 const HINT_LABEL={sentence:'used in a sentence',synonym:'a related word',opening:'how the definition begins'};
-function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);b.textContent=S.sound?'Sound on':'Sound';Sfx.set(S.sound);}
+function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);Sfx.set(S.sound);}
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
 initA11y();
+initTopbar({Sfx,openShelf:()=>openAll(),openStats:()=>openStats()});
 
 /* ---------- book art (shared by the canvas world and DOM spine images) ---------- */
 const hex=h=>{const n=parseInt(h.slice(1),16);return[n>>16,n>>8&255,n&255];};

@@ -1,7 +1,8 @@
 /* Sound, ambience and "juice". Everything is synthesized with WebAudio (no assets).
    Kept calm on purpose: soft attacks, low levels, a shared reverb, nothing sharp. */
 
-const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+import { reducedMotion } from './ui/settings.js';
+const RM = reducedMotion();
 const rnd = (a, b) => a + Math.random() * (b - a);
 
 /* ---------- visual feel: slow-motion + shake (read by the render loops) ---------- */
@@ -33,7 +34,7 @@ export const Feel = (() => {
 
 /* ---------- audio ---------- */
 export const Sfx = (() => {
-  let ctx, master, wet, humG, humLP, humO1, humO2, amb, ambLP, on = false, lastKey = 0, depth = 0, timers = [];
+  let vol = 1, ctx, master, wet, humG, humLP, humO1, humO2, amb, ambLP, on = false, lastKey = 0, depth = 0, timers = [];
   const noiseBuf = (secs, shape) => {
     const n = ctx.sampleRate * secs | 0, b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
     for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (shape ? shape(i / n) : 1);
@@ -44,7 +45,7 @@ export const Sfx = (() => {
     const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
     ctx = new AC();
     const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -22; comp.ratio.value = 3; comp.connect(ctx.destination);
-    master = ctx.createGain(); master.gain.value = .9; master.connect(comp);
+    master = ctx.createGain(); master.gain.value = .9 * vol; master.connect(comp);
     // reverb: decaying noise impulse, darkened
     const conv = ctx.createConvolver(); conv.buffer = (() => {
       const n = ctx.sampleRate * 2.6 | 0, b = ctx.createBuffer(2, n, ctx.sampleRate);
@@ -121,6 +122,8 @@ export const Sfx = (() => {
   function stopAmbient() { timers.forEach(clearTimeout); timers = []; }
 
   return {
+    /** master volume 0..1 (settings panel) */
+    volume(v) { vol = Math.max(0, Math.min(1, v)); if (master) master.gain.setTargetAtTime(.9 * vol, ctx.currentTime, .05); },
     set(v) {
       on = v;
       if (v) { init(); if (!ctx) return; ctx.resume(); amb.gain.linearRampToValueAtTime(.07, ctx.currentTime + 1.5); setHum(); startAmbient(); }
