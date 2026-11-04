@@ -18,7 +18,6 @@ export function playReveal(layerHost,tier,color,RM){
  let h='<i class="rvl-vig"></i>';
  if(p.rays)h+=`<i class="rvl-rays" style="--n:${p.rays}"></i>`;
  if(p.rune)h+='<i class="rvl-rune"></i>';
- for(let i=0;i<p.embers;i++)h+=`<b class="rvl-em" style="--x:${(Math.random()*100).toFixed(1)}%;--d:${(2.2+Math.random()*2.4).toFixed(2)}s;--w:${(Math.random()*1.4).toFixed(2)}s;--s:${(2+Math.random()*3).toFixed(1)}px"></b>`;
  el.innerHTML=h;layerHost.insertBefore(el,layerHost.firstChild);
  requestAnimationFrame(()=>el.classList.add('on'));
  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),1400);},2600+p.hold);

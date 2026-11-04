@@ -6,16 +6,14 @@
 .rvl-rays{left:50%;top:46%;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;border-radius:50%;
  background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--rc) 34%,transparent) 0deg 4deg,transparent 4deg calc(360deg/var(--n)));
  -webkit-mask:radial-gradient(circle,#000 0,transparent 34%);mask:radial-gradient(circle,#000 0,transparent 34%);
- animation:rvlspin 40s linear infinite;mix-blend-mode:screen}
+ animation:rvlspin 40s linear infinite;will-change:transform}
 .rvl-t6 .rvl-rays{animation-duration:22s}
 .rvl-rune{left:50%;top:46%;width:min(150vw,820px);aspect-ratio:1;margin:calc(min(150vw,820px)/-2) 0 0 calc(min(150vw,820px)/-2);border-radius:50%;
  border:1px solid color-mix(in srgb,var(--rc) 60%,transparent);
  background:repeating-conic-gradient(color-mix(in srgb,var(--rc) 55%,transparent) 0 .6deg,transparent .6deg 7.5deg);
  -webkit-mask:radial-gradient(circle,transparent 62%,#000 63%,#000 67%,transparent 68%);mask:radial-gradient(circle,transparent 62%,#000 63%,#000 67%,transparent 68%);
- animation:rvlspin 60s linear infinite reverse}
-.rvl-em{left:var(--x);bottom:-8px;width:var(--s);height:var(--s);border-radius:50%;background:var(--rc);box-shadow:0 0 8px var(--rc);opacity:0;animation:rvlrise var(--d) ease-out var(--w) infinite}
+ animation:rvlspin 60s linear infinite reverse;will-change:transform}
 @keyframes rvlspin{to{transform:rotate(360deg)}}
-@keyframes rvlrise{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-70vh);opacity:0}}
 /* name ink-in for Codex and above */
 .book.rv-ink .page .tierbar b{animation:rvink var(--m-linger) var(--e-settle) var(--m-smooth) both}
 .book.rv-ink .page .tierbar span{animation:rvfade var(--m-linger) var(--e-settle) var(--m-quick) both}
