@@ -6,6 +6,7 @@ import {recordBook as recordSetBook} from '../sets/sets.js';
 import {toastSetsDone} from '../sets/ui.js';
 import * as core from '../core/index.js';
 import {riddleJudge,riddleLadder,riddleVerdict} from '../core/riddleJudge.js';
+import {dailyRiddleWords,recordRiddleDay,riddleDay} from '../core/riddleDaily.js';
 import {RIDDLE_WORDS,loadRiddle,recordRiddleRun,riddleTarget} from '../core/riddleStats.js';
 import {Sfx} from '../feel.js';
 import {loadRelations} from '../scorer/index.js';
@@ -13,7 +14,7 @@ import {relOf} from '../scorer/relations.js';
 import {attachInk} from '../ui/inkInput.js';
 import {paintRun} from '../ui/runScreen.js';
 import {hintButtonLabel,skipButtonLabel,hintSlipHtml} from '../ui/hintSlips.js';
-import {FT,S,TIERS,dailyNo,floorAtFt,floorAtRow,save,tierOf,wordsReady} from './state.js';
+import {FT,S,TIERS,dailyNo,utc,floorAtFt,floorAtRow,save,tierOf,wordsReady} from './state.js';
 import {World} from '../world/world.js';
 import {ui} from './chrome.js';
 import {$,esc,sleep} from './util.js';
@@ -25,14 +26,20 @@ import {pipsHTML,run,setRun} from './run.js';
 const LIMIT=40000,NUMERALS=['I','II','III','IV','V','VI','VII','VIII'];
 let timerId=0;
 
-export async function startRiddle(){
+export async function startRiddle(){return beginRiddle(false);}
+/* Today's riddle: the same seven definitions for everyone (seeded by UTC date), one attempt. A second visit replays the first result. */
+export async function startTodayRiddle(){return beginRiddle(true);}
+async function beginRiddle(daily){
  await wordsReady;await loadRelations();
  S.riddle=loadRiddle(S.riddle);
+ const day=utc();
+ if(daily){const done=riddleDay(S,day);if(done){showFinal(done,true);return;}}
  const L=S.rating&&S.rating.placed?S.rating.L:core.START_LEVEL,seen=new Set(S.riddle.seen),used=[];
- const words=[];
- for(let i=0;i<RIDDLE_WORDS;i++){const w=core.pickWord(riddleTarget(L,i,RIDDLE_WORDS),new Set([...seen,...used]),Math.random);words.push(w);used.push(w.id);}
+ let words=[];
+ if(daily)words=dailyRiddleWords(day,RIDDLE_WORDS);
+ else for(let i=0;i<RIDDLE_WORDS;i++){const w=core.pickWord(riddleTarget(L,i,RIDDLE_WORDS),new Set([...seen,...used]),Math.random);words.push(w);used.push(w.id);}
  World.reset();World.setShelf([]);
- setRun({mode:'riddle',practice:false,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true});
+ setRun({mode:'riddle',daily,day,practice:false,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true});
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showRiddle();
 }
@@ -70,7 +77,7 @@ async function submit(skipped){
  const base=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
  const cb=applyCombo(run.combo,t,base,skipped);run.combo=cb.chain;const rows=cb.rows;
  const verdict=skipped?'Skipped. The word is shown.':riddleVerdict(j,w);
- const book={fl:floorAtRow(World.restRow+rows).id,wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:'riddle',t:Date.now(),no:dailyNo(),hints:run.hintN||0,verdict,rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
+ const book={fl:floorAtRow(World.restRow+rows).id,wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:'riddle',t:Date.now(),no:run.daily?core.dailyNumber(run.day):dailyNo(),hints:run.hintN||0,verdict,rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');Sfx.seal();const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}FX.warm(t);}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
@@ -88,8 +95,10 @@ async function submit(skipped){
 }
 export function finishRiddle(){
  const r=run,books=r.results,avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length),best=Math.max(...books.map(b=>b.tier));
- const worldDepth=Math.round(World.restRow*FT),depth=worldDepth+(r.setBonus||0);
- S.riddle=recordRiddleRun(S.riddle,books,r.words.map(w=>w.id));S.bestDepth=Math.max(S.bestDepth,depth);save();
+ const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,depth=r.daily?worldDepth:worldDepth+setBonus; // like the Daily, today's riddle scores words only
  const solved=books.filter(b=>b.score>=92).length;
- showFinal({books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:false,setBonus:r.setBonus||undefined,mode:'riddle',solved,of:books.length},false);
+ const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:false,setBonus:setBonus||undefined,mode:'riddle',solved,of:books.length};
+ if(r.daily){d.day=r.day;S.riddle=loadRiddle(S.riddle);if(recordRiddleDay(S.riddle,r.day,d))S.bestDepth=Math.max(S.bestDepth,depth);save();}
+ else{S.riddle=recordRiddleRun(S.riddle,books,r.words.map(w=>w.id));S.bestDepth=Math.max(S.bestDepth,depth);save();}
+ showFinal(d,false);
 }

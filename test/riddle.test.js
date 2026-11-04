@@ -61,10 +61,10 @@ test('riddle hints are only the sentence and neighbour clues, and never spell th
   assert.ok(withHint/n>.6,'most riddles get a hint: '+withHint/n);
 });
 test('riddle stats save additively and tolerate missing or damaged data', () => {
-  assert.deepEqual(loadRiddle(undefined),{runs:0,solved:0,best:0,seen:[]});
-  assert.deepEqual(loadRiddle({runs:'x',seen:'no'}),{runs:0,solved:0,best:0,seen:[]});
+  assert.deepEqual(loadRiddle(undefined),{runs:0,solved:0,best:0,seen:[],days:{}});
+  assert.deepEqual(loadRiddle({runs:'x',seen:'no'}),{runs:0,solved:0,best:0,seen:[],days:{}});
   const r=recordRiddleRun(undefined,[{score:100},{score:58},{score:95}],[1,2,3]);
-  assert.deepEqual(r,{runs:1,solved:2,best:2,seen:[1,2,3]});
+  assert.deepEqual(r,{runs:1,solved:2,best:2,seen:[1,2,3],days:{}});
   const r2=recordRiddleRun(r,[{score:100}],[4]);assert.equal(r2.solved,3);assert.equal(r2.best,2);
   const big=recordRiddleRun({seen:Array.from({length:RIDDLE_SEEN_CAP},(_,i)=>i)},[],[999]);assert.equal(big.seen.length,RIDDLE_SEEN_CAP);assert.equal(big.seen.at(-1),999);
 });

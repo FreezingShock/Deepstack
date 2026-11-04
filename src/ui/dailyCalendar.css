@@ -39,3 +39,8 @@
 @media(max-width:560px){
  .bk-spread.menu .dly.cal .cal-d{font-size:20px}
 }
+/* Today's Riddle: a small ink dot under a day whose riddle was played, and its streak line */
+.bk-spread.menu .dly.cal .cal-d{position:relative}
+.bk-spread.menu .dly.cal .cal-rid{position:absolute;left:50%;bottom:0;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--bk);pointer-events:none}
+.bk-spread.menu .dly.cal .cal-rid-note{font-size:18px}
+.bk-spread.menu .dly.cal .cal-rid-note .cal-rid{position:static;display:inline-block;margin:0 4px 1px 0;vertical-align:middle}

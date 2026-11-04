@@ -11,7 +11,7 @@ import {World} from '../world/world.js';
 import {$} from './util.js';
 import {setRun,startDaily,startUnlimited} from './run.js';
 import {showFinal} from './final.js';
-import {startRiddle} from './riddle.js';
+import {startRiddle,startTodayRiddle} from './riddle.js';
 import {bindAtticHome} from '../ui/atticHome.js';
 import {bindDeskProps} from '../ui/deskProps.js';
 
@@ -26,7 +26,7 @@ export function showHome(){
  World.clearNiches();World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
- $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;$('#bRid')&&($('#bRid').onclick=startRiddle);
+ $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;$('#bRid')&&($('#bRid').onclick=startRiddle);$('#bRidD')&&($('#bRidD').onclick=startTodayRiddle);
  
  bookify(ui.home);applyHomeTier(ui.home);
  bindAtticHome(ui.home,{shelf:S.shelf});
