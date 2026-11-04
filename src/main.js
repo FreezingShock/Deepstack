@@ -1,3 +1,4 @@
+import {bookArt,tierBase,mixc,rgbs,LEATHER,RIBBONS} from './ui/bookArt.js';
 import './ui/perf.js'; // frame-time telemetry, inert unless ?perf
 import {PALETTE} from './theme/colors.js';
 import {hintLadder,rowsAfterHints} from './core/hints.js';
@@ -100,53 +101,6 @@ initA11y();initKeys();
 initTopbar({Sfx});
 
 /* ---------- book art (shared by the canvas world and DOM spine images) ---------- */
-const hex=h=>{const n=parseInt(h.slice(1),16);return[n>>16,n>>8&255,n&255];};
-const mixc=(c,t,f)=>c.map((v,i)=>Math.round(v+(t[i]-v)*f));
-const rgbs=c=>`rgb(${c[0]},${c[1]},${c[2]})`;
-const TIERRGB=TIERS.map(t=>hex(t.spine));
-function tierBase(t){return mixc(TIERRGB[t],[0,0,0],t>=4?.34:.45);}
-const LEATHER=[[70,38,26],[92,30,32],[38,58,44],[34,44,74],[96,70,34],[56,50,46],[82,52,34],[64,36,56]];
-/* o: {w,h,tier(-1 filler),col,seed,word,ribbon,dust} drawn with origin at bottom-centre */
-function bookArt(c,o,t=0){
- const rng=mulberry(o.seed|0),w=o.w,h=o.h,x0=-w/2,y0=-h,T=o.tier;
- const base=o.col||tierBase(T),dark=mixc(base,[0,0,0],.5),light=mixc(base,[255,232,190],.22);
- const worn=T<=1;
- c.save();
- c.beginPath();c.moveTo(x0,0);c.lineTo(x0,y0+(worn?rng()*5:1));
- if(worn){const n=Math.max(3,(w/4)|0);for(let i=1;i<=n;i++)c.lineTo(x0+w*i/n,y0+rng()*(T===0||T===-1&&rng()<.4?8:3.5));}else c.lineTo(x0+w,y0+(T>=4?0:1.5));
- c.lineTo(x0+w,0);c.closePath();
- const g=c.createLinearGradient(x0,0,x0+w,0);g.addColorStop(0,rgbs(dark));g.addColorStop(.2,rgbs(base));g.addColorStop(.55,rgbs(light));g.addColorStop(.86,rgbs(base));g.addColorStop(1,rgbs(dark));
- c.fillStyle=g;c.fill();
- c.save();c.clip();
- // grain + scuffs
- c.globalAlpha=.12;for(let i=0;i<Math.max(8,w*h/110);i++){c.fillStyle=rng()<.5?PALETTE.black:PALETTE.white;c.fillRect(x0+rng()*w,y0+rng()*h,1,1+rng()*(T>=4?2:5));}
- if(T<=2){c.globalAlpha=.16;for(let i=0;i<3;i++){c.fillStyle=PALETTE.parchmentE9d8b0;c.beginPath();c.ellipse(x0+rng()*w,y0+rng()*h,w*(.2+rng()*.4),3+rng()*8,rng()*3,0,6.3);c.fill();}}
- c.globalAlpha=1;
- // raised bands
- const bands=T>=3?[.1,.2,.5,.84]:[.12,.2,.84];
- for(const p of bands){const yy=y0+h*p;c.fillStyle='rgba(0,0,0,.5)';c.fillRect(x0,yy,w,2);c.fillStyle=T>=4?PALETTE.brass66:'rgba(255,230,180,.26)';c.fillRect(x0,yy+2,w,1.4);if(T>=4){c.fillStyle=PALETTE.whiteAlpha66;c.fillRect(x0+w*.2,yy+2,w*.3,.8);}}
- // label / lettering
- const F=o.fit,lw=w*(F?.82:.7),lh=F?F.lh:Math.min(h*.5,Math.max(28,(o.word||'').length*5.6)),ly=F?y0+F.top+(h-F.top-lh)/2:y0+h*.3;
- if(T<=2&&(o.word||T>=1)){c.save();c.translate(0,ly+lh/2);c.rotate(((o.seed%7)-3)*.012);c.fillStyle=PALETTE.parchmentE6d8b2;c.globalAlpha=.94;c.fillRect(-lw/2,-lh/2,lw,lh);c.globalAlpha=.4;c.fillStyle=PALETTE.black;c.fillRect(-lw/2,-lh/2,lw,1);c.fillRect(-lw/2,lh/2-1,lw,1);c.restore();}
- if(T===0||T===-1&&rng()<.3){c.save();c.globalAlpha=.7;c.fillStyle=PALETTE.brassD8cca8;c.translate(0,y0+h*.58);c.rotate(-.5);c.fillRect(-w*.7,-3,w*1.4,6);c.restore();}
- if(T>=4){c.fillStyle=PALETTE.brass67;c.globalAlpha=.85;c.fillRect(x0+w*.14,ly-6,w*.72,1.4);c.fillRect(x0+w*.14,ly+lh+4,w*.72,1.4);c.globalAlpha=1;}
- // damage + shading
- if(worn||T<0){c.globalAlpha=.3;const sg=c.createRadialGradient(x0+w*.7,y0+h*.8,0,x0+w*.7,y0+h*.8,w);sg.addColorStop(0,PALETTE.oak10);sg.addColorStop(1,PALETTE.blackAlpha00);c.fillStyle=sg;c.fillRect(x0,y0,w,h);c.globalAlpha=1;}
- if(o.dust){c.globalAlpha=Math.min(.55,o.dust);const dg=c.createLinearGradient(0,y0,0,y0+h*.5);dg.addColorStop(0,PALETTE.brassCfc5ae);dg.addColorStop(1,PALETTE.brassCfc5aeAlpha00);c.fillStyle=dg;c.fillRect(x0,y0,w,h*.5);c.globalAlpha=1;}
- c.fillStyle='rgba(255,255,255,.2)';c.fillRect(x0,y0,1.4,h);c.fillStyle='rgba(0,0,0,.35)';c.fillRect(x0+w-1.6,y0,1.6,h);
- c.restore();
- // word on spine
- if(o.word){c.save();c.translate(0,ly+lh/2);c.rotate(-Math.PI/2);const fs=F?F.fs:clamp(w*.46,8,13);c.font=F?spineFont(fs):`${fs}px "IM Fell English",Georgia,serif`;c.textAlign='center';c.textBaseline='middle';
-  if(T>=3){if(F){c.lineJoin='round';c.lineWidth=3;c.strokeStyle=PALETTE.blackAlpha99;c.strokeText(o.word,0,0);c.fillStyle=PALETTE.brassF6d98a;}else{c.fillStyle=PALETTE.brass67;c.shadowColor=PALETTE.black;c.shadowBlur=2;}}else c.fillStyle=PALETTE.ink;F?c.fillText(o.word,0,0):c.fillText(o.word,0,0,lh*.94);c.restore();}
- // gems / seals
- if(T===5){c.fillStyle=PALETTE.blood40;c.beginPath();c.arc(0,y0+h*.14,Math.min(5,w*.2),0,6.3);c.fill();c.fillStyle=PALETTE.blood78;c.fillRect(-1,y0+h*.14-2,1.5,1.5);}
- if(T===6){c.save();c.translate(0,y0+h*.14);c.rotate(.785);const r=Math.min(5.5,w*.2);const gg=c.createLinearGradient(-r,-r,r,r);gg.addColorStop(0,PALETTE.teal96);gg.addColorStop(.55,PALETTE.aqua);gg.addColorStop(1,PALETTE.teal40);c.fillStyle=gg;c.shadowColor=PALETTE.aqua;c.shadowBlur=10;c.fillRect(-r,-r,r*2,r*2);c.restore();}
- c.strokeStyle='rgba(0,0,0,.55)';c.lineWidth=1;c.beginPath();c.moveTo(x0,0);c.lineTo(x0,y0);c.lineTo(x0+w,y0);c.lineTo(x0+w,0);c.stroke();
- // bookmark ribbon (hangs out of the bottom)
- if(o.ribbon){const rx=x0+w*(.25+rng()*.4),rl=10+rng()*14,sw=Math.sin(t*1.3+o.seed)*1.2;c.fillStyle=o.ribbon;c.beginPath();c.moveTo(rx,-3);c.lineTo(rx+3.6,-3);c.lineTo(rx+3.6+sw,rl);c.lineTo(rx+1.8+sw,rl-3.5);c.lineTo(rx+sw,rl);c.closePath();c.fill();c.fillStyle='rgba(255,255,255,.25)';c.fillRect(rx,-3,1,rl*.8);}
- c.restore();
-}
-const RIBBONS=[PALETTE.bloodA3202a,PALETTE.bronze47,PALETTE.bronze2d6a4f,PALETTE.steel36,PALETTE.bronze7a2a7a];
 function bookDims(b,rh){const hs=((b.w||'a').charCodeAt(0)*13+(b.w||'a').length*7)%20;return{w:Math.round(22+Math.min(16,(b.w||'').length*1.5)+b.tier*1.8),h:Math.round(rh*(.5+.04*b.tier)+hs),};}
 // the recent-books shelf: spines sized from the word so the whole word always fits and reads
 function shelfDims(b,rh){const d=bookDims(b,rh),f=fitSpine(b.w||'',{baseH:d.h,baseW:d.w,maxH:Math.round(rh-22),top:b.tier>=5?16:0});return{w:f.w,h:f.h,fit:{fs:f.fs,lh:f.lh,top:f.top}};}

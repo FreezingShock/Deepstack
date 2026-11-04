@@ -78,12 +78,30 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## B. Books, shelves and pages (everything is a book)
 
-### 7. Book object library
+### 7. [x] Book object library (#122)
 **Status:** [~] panel half landed as the shared book style (`src/ui/bookStyle.css`: `--bs-*` tokens, `.bookbox`); Sets and Daily book now read the same tokens (PR follow-up to #101); the per-tier `bookArt` half is still open.
 **Serves:** book objects, rarity hero.
 **Pitch:** One shared way to draw a book (spine, cover, edge, ribbon, emboss) used by the menu, shelf, recents, results and share image, with per-tier cover materials: Pamphlet card, Paperback cloth, Hardbound board, Folio vellum, Codex gilt, Grimoire runed leather, Apocrypha glowing.
 **Brief:** Goal: extract a `bookArt` module (spine height variation, wear, title kerning that fits any word without clipping or stretching) and apply per tier. Files: new `src/ui/bookArt.js`, minimal edits where `bookArt` lives in `main.js`. Done when: 14-letter and 3-letter words both fit, a seven-tier strip screenshot, no stretched text test (glyph aspect ratio check).
 **Touches:** MAIN (`bookArt`), BOOK, results. **Conflicts:** tier reveals thread; run alone for the MAIN edit or sequence after 36.
+
+### 7a. Per-tier material on the DOM book objects
+**Serves:** rarity is the hero, book objects.
+**Pitch:** The canvas spines now have seven materials (card, cloth, board, vellum, gilt, runed leather, glow). Give the CSS books (menu spines, Shelf stacks, the mini-book result card) the same seven materials so a Codex looks gilt everywhere.
+**Brief:** Goal: a `tierMaterial.css` set of per-tier backgrounds matching `bookArt.js` (tokens only). Files: new css, light edits in `bookCard.css`, `browse.css`. Done when: seven-tier strip of the card at 375 and 1280 px, reduced motion static.
+**Touches:** card, BOOK. **Conflicts:** 17, 64.
+
+### 7b. Wear that follows the book
+**Serves:** persistent world, variety over repetition.
+**Pitch:** Older books on the Shelf look handled: scuffed corners, a creased spine, dust on top, while a book found today is crisp.
+**Brief:** Goal: `bookArt` takes an `age` (from the saved date) that scales scuffs, dust and crease. Files: `src/ui/bookArt.js`, shelf spine call. Done when: same book at age 0 and age 30 days side by side, no-stretched-text test still passes.
+**Touches:** BOOK. **Conflicts:** 11.
+
+### 7c. Spine height and thickness from the answer
+**Serves:** words fully readable, rarity is the hero.
+**Pitch:** A fuller answer makes a thicker book and a better score a taller one, so the shelf reads like a record of how you did.
+**Brief:** Goal: derive spine width from answer length and height from score inside `shelfDims`, bounded so a 14-letter word still fits. Files: `bookArt.js`, `spineLabel.js`. Done when: 3-letter and 14-letter words fit at both extremes.
+**Touches:** BOOK, MAIN (`shelfDims`). **Conflicts:** 7b, 42.
 
 ### 8. Book opening v3 (cover, endpapers, ribbon)
 **Serves:** overhaul, motion.
