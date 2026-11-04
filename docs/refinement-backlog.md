@@ -460,7 +460,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Touches:** BOOK, card. **Conflicts:** 7, 16.
 
 ### 83. Backfill floor found for old books
-**Pitch:** Books shelved before floors were logged sit in "Earlier finds"; derive their floor so the floor bays are complete (skip if the attic thread covers it).
+**Pitch:** Done by the attic (#126): old books get a recovered floor, the rest live in the attic and the floor bay no longer has an "Earlier finds" group.
 **Brief:** Goal: derive `fl` additively from old Daily results. Files: new `src/core/shelfFloors.js`. Done when: tolerates missing data, tested.
 **Touches:** core. **Conflicts:** attic (#126).
 

@@ -8,7 +8,7 @@ const dayKey=b=>b&&b.t?new Date(b.t).toISOString().slice(0,10):'';
 const fmtDay=k=>new Date(k+'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
 const setOfWord=(()=>{const m=new Map();for(const s of SETS)for(const w of s.words)m.set(w,s);return w=>m.get(String(w).toLowerCase());})();
 
-/* Floor a book was found on. `fl` is saved on new books; older books have none and go to "Earlier finds". */
+/* Floor a book was found on. `fl` is saved on new books; older books have none and live in the attic instead of a floor bay. */
 export const floorIdOf=b=>Number.isInteger(b&&b.fl)?b.fl:-1;
 
 /* Returns [{key,label,sub,items}] in shelving order. ctx: {TIERS, FLOORS, floorStartFt, dailyNumber, sets}. */
@@ -21,7 +21,7 @@ export function bayGroups(list,mode,ctx={}){
   const b=x.b;
   if(mode==='tier')put('t'+b.tier,()=>({label:(TIERS[b.tier]||{}).name||'Tier '+b.tier,sub:(TIERS[b.tier]||{}).rar||'',ord:-b.tier}),x);
   else if(mode==='floor'){const id=floorIdOf(b),f=FLOORS[id];
-   put('f'+id,()=>f?{label:f.name,sub:floorStartFt(f)+' ft and below',ord:id}:{label:'Earlier finds',sub:'Shelved before floors were logged',ord:99},x);}
+   if(f)put('f'+id,()=>({label:f.name,sub:floorStartFt(f)+' ft and below',ord:id}),x);} // no floor: it waits in the attic
   else if(mode==='set'){const s=setOfWord(b.w);
    put(s?s.id:'loose',()=>s?{label:s.name,sub:s.blurb,ord:sets.indexOf(s)}:{label:'Loose volumes',sub:'Not part of a set',ord:99},x);}
   else{const k=dayKey(b)||'undated';
