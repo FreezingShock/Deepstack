@@ -16,6 +16,8 @@ import {initA11y} from './ui/a11y.js';
 import {initTransitions} from './ui/transitions.js';
 import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
 import {initBrowse} from './ui/browse.js';
+import {isLore,drawLoreMark,hitLoreBook,initLore} from './ui/lore.js';
+import './ui/lore.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -189,7 +191,7 @@ const World=(()=>{
     for(const b of d.bs){if(b.x+b.w<bx0-50||b.x>bx1+50)continue;ctx.save();const bx=b.x+b.w/2;
      if(b.lying){ctx.translate(bx,base);ctx.rotate(-.04);bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,dust:a*.9,ribbon:b.rib},vt);}
      else{ctx.translate(bx,base);if(b.tilt){ctx.translate(b.w/2,0);ctx.rotate(b.tilt);ctx.translate(-b.w/2,0);}
-      if(layer===0)bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,dust:a*.8,ribbon:b.rib},vt);
+      if(layer===0){bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,dust:a*.8,ribbon:b.rib},vt);if(isLore(b))drawLoreMark(ctx,b);}
       else{ctx.fillStyle=rgbs(b.col);ctx.fillRect(-b.w/2,-b.h,b.w,b.h);}}
      ctx.restore();}}
    if(layer===0){for(const pr of d.props)floorProp(pr,fl,bx0,bx1,y,base);for(const wb of d.webs){if(building&&wb.k==='strand')continue;if(wb.x>=bx0-120&&wb.x<=bx1+120)drawWeb(wb,y,a,fl.web);}
@@ -270,7 +272,7 @@ const World=(()=>{
   ctx.restore();}
  const ease=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
  const shade=(hx,f)=>{const n=parseInt(hx.slice(1),16);return `rgb(${(n>>16)*f|0},${(n>>8&255)*f|0},${(n&255)*f|0})`;};
- let shelfVisible=0;
+ let shelfVisible=0,lastCam=0;
  function frame(now){
   const rdt=Math.min(.05,(now-last)/1000);last=now;Feel.tick(rdt);const dt=rdt*Feel.ts;vt+=dt*(st&&st.skip?6:1);cv.style.transform=Feel.ox||Feel.oy?`translate(${Feel.ox}px,${Feel.oy}px)`:'';{const cl=document.getElementById('cardlayer');if(cl)cl.style.transform=cv.style.transform;}
   let camNow=cam,settle=0,pull=0;
@@ -282,6 +284,7 @@ const World=(()=>{
   }else if(rest){const u=Math.min(1,(now-rest.t0)/rest.ms),e=ease(u);cam=rest.c0+(rest.c1-rest.c0)*e;if(u>=1){const f=rest.done;rest=null;f&&f();}camNow=cam;boff=btgt=0;}
   else{boff=RM||Math.abs(btgt-boff)<.5?btgt:boff+(btgt-boff)*Math.min(1,rdt*14);camNow=cam+boff+(RM||boff?0:Math.sin(vt*.5)*1.5);}
   {const b=btgt<-4;if(b!==wasB){wasB=b;browseCb&&browseCb(b);}}
+  lastCam=camNow;
   const rowB=(camNow+H-RH-BM)/RH,atm=atmosphereAt(Math.max(0,rowB)),a=Math.max(clamp(rowB/190,0,1),atm.decay);
   if(onDepth)onDepth(Math.max(0,Math.round(rowB*FT)));Sfx.setDepth(Math.max(0,rowB*FT));
   ctx.globalAlpha=1;ctx.fillStyle='#0a0706';ctx.fillRect(0,0,W,H);
@@ -327,7 +330,9 @@ const World=(()=>{
  addEventListener('resize',resize);resize();requestAnimationFrame(frame);
  cv.addEventListener('pointerdown',e=>{if(st)st.skip=true;});
  return{
-  setShelf(b){shelf=b;},hits:()=>hits,get shelfVisible(){return shelfVisible;},get restRow(){return restRow;},get busy(){return !!st||!!rest;},
+  setShelf(b){shelf=b;},hits:()=>hits,
+  // the lore book under a screen point, if any: {row, book}
+  loreAt(x,y){const r=Math.floor((y+lastCam)/RH),b=hitLoreBook(rows.get(r*2),r,RH,W,lastCam,abn(r),x,y);return b?{row:r,book:b}:null;},get shelfVisible(){return shelfVisible;},get restRow(){return restRow;},get busy(){return !!st||!!rest;},
   reset(){rows.clear();taken.clear();niches.clear();restRow=0;st=null;rest=null;cam=restCam(0);},
   fillNiche(r,res,books){const e=niches.get(r);if(e){e.res=res;if(books)e.books=books;}},
   openNiche(r,o={}){const e=niches.get(r);if(e){e.label=o.label||e.label;e.books=o.books||e.books;}else niches.set(r,{t0:performance.now(),label:o.label||'',books:o.books||[]});},
@@ -418,6 +423,9 @@ cvEl.addEventListener('pointermove',e=>{if(ui.home.hidden&&ui.final.hidden||Worl
  const h=World.hits().find(h=>e.clientX>=h.x&&e.clientX<=h.x+h.w&&e.clientY>=h.y&&e.clientY<=h.y+h.h);
  if(h){showTip(`${h.b.w} · ${TIERS[h.b.tier].name} · ${h.b.score}`,e.clientX,e.clientY);cvEl.style.cursor='pointer';}else{hideTip();cvEl.style.cursor='';}});
 cvEl.addEventListener('click',e=>{if(World.stActive||World.restRow!==0||!(ui.stage.hidden))return;const h=World.hits().find(h=>e.clientX>=h.x&&e.clientX<=h.x+h.w&&e.clientY>=h.y&&e.clientY<=h.y+h.h);if(h){hideTip();openCard(h.b,{fresh:false});}});
+/* lore books: thick background books reveal a word; never one from the current run or today's daily */
+{let dk='',dw=[];initLore({world:World,canvas:cvEl,pool:WORDS,hash:hashStr,enabled:()=>ui.stage.hidden&&!World.busy,
+ exclude:()=>{if(dk!==utc()){dk=utc();dw=dailyWords(dk,7).map(w=>w.w);}return run?[...dw,...run.words.map(w=>w.w)]:dw;}});}
 
 /* ---------- judge status (model download) ---------- */
 function paintJudge(st){const el=$('#jstat');if(!el)return;
