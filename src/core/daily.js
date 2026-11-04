@@ -1,4 +1,6 @@
 import {pickWord} from './level.js';
+import {WORDS} from './words.js';
+import {rampTargets, pickRampWord} from './difficulty.js';
 /* ----- seeded daily ----- */
 export function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19;}return (h>>>0);}
 export function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -7,8 +9,12 @@ export function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.i
 export const DAILY_SPAN=5;
 export function dailyWords(dateStr,n){
  const rng=mulberry(hashStr('deepstack-'+dateStr));const used=new Set(),out=[];
- for(let i=0;i<n;i++){const target=2+i*(DAILY_SPAN/(n-1));const w=pickWord(target,used,rng);used.add(w.id);out.push(w);}
- return out;
+ for(const target of rampTargets(n)){
+  const w=pickRampWord(WORDS,target,used,out.map(x=>x.w),rng)||pickWord(target,used,rng);
+  used.add(w.id);out.push(w);
+ }
+ // Jitter can swap neighbours; keep the run strictly easiest-to-hardest.
+ return out.sort((a,b)=>a.d-b.d);
 }
 /* ----- daily numbering: No. 1 is 2026-11-03 (UTC), one number per UTC day ----- */
 export const DAILY_EPOCH='2026-11-03';
