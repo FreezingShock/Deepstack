@@ -25,6 +25,7 @@ import './ui/bookpages.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
 import {drawAlcoveLanterns} from './ui/lanterns.js';
 import './ui/ledge.css';
+import './ui/buttons.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];

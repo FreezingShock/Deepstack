@@ -1,0 +1,22 @@
+/* One button vocabulary.
+   primary   .btn.pri / .bbtn  leather + brass, cream text (works on dark and parchment)
+   secondary .btn              ink outline, transparent
+   text      .lnk              underlined-on-hover link
+   Deliberate exceptions: the carved Descend plaque (.plq) and the handwritten shelf filters (.fchip). */
+:root{
+  --b-leather-hi:#3a2614; --b-leather-lo:#241709; --b-brass:#6a4f2b; --b-brass-hi:#d3b077;
+  --b-cream:#f6ecd0; --b-glow:255,184,77; --b-radius:4px;
+}
+.btn,.bbtn{border-radius:var(--b-radius);transition:background .2s,border-color .2s,box-shadow .2s,color .2s,transform .1s}
+.btn:active,.bbtn:active{transform:translateY(1px)}
+.btn:focus-visible,.bbtn:focus-visible{outline:2px solid var(--b-brass-hi);outline-offset:2px}
+.btn.pri,.sheet .btn.pri,.bbtn{
+  background:linear-gradient(180deg,var(--b-leather-hi),var(--b-leather-lo));
+  border:1px solid var(--b-brass);color:var(--b-cream);text-shadow:none;
+  box-shadow:inset 0 1px 0 rgba(255,214,160,.14),0 2px 3px #0009}
+.btn.pri:hover,.sheet .btn.pri:hover,.bbtn:hover{
+  background:linear-gradient(180deg,#4a321a,#2d1d0d);border-color:var(--b-brass-hi);color:#fff3d6;
+  box-shadow:inset 0 1px 0 rgba(255,214,160,.2),0 0 14px rgba(var(--b-glow),.3),0 2px 3px #0009}
+.btn.pri[disabled],.btn[disabled]{box-shadow:none}
+.sheet .btn:not(.pri){color:var(--b-cream);border-color:rgba(246,236,211,.45)}
+.sheet .btn:not(.pri):hover{background:rgba(246,236,211,.1);border-color:var(--b-cream)}
