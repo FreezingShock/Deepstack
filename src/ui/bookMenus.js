@@ -21,6 +21,16 @@ export function shelfPlan(groups,{perShelf=STACK_H*STACKS_PER_SHELF,budget=PAGE_
  if(cur.length||!pages.length)pages.push(cur);
  return pages;
 }
+/* Collapse repeats: the same word in the same tier shows once, carrying a count. The first entry in the current
+   sort order stands for the pile, so "Newest" shows the newest copy and "Closest" the best one. */
+export function collapseDupes(list){
+ const seen=new Map(),out=[];
+ for(const x of list){
+  const k=x.b.tier+'|'+String(x.b.w).toLowerCase(),r=seen.get(k);
+  if(r)r.n++;else{const e={b:x.b,i:x.i,n:1};seen.set(k,e);out.push(e);}
+ }
+ return out;
+}
 /* Deterministic little sideways offset so a stack looks piled, not machined. */
 export const stagger=w=>{let h=0;for(const c of String(w))h=(h*31+c.charCodeAt(0))>>>0;return (h%9)-4;};
 export const TEXTURES=['leather','cloth','worn','vellum','grain'];
@@ -58,16 +68,18 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc}){
  const SORTS=core.SORTS;
  let list=[],countText='';
  const book=(x)=>{const b=x.b,t=TIERS[b.tier],o=stagger(b.w);
-  return `<button class="sbook" data-i="${x.i}" data-tex="${TEXTURES[b.tier%TEXTURES.length]}" style="--t:${t.spine};--o:${o}px" data-tip="${esc(b.w)} \u00b7 ${t.name} \u00b7 ${b.score}" aria-label="${esc(b.w)}, ${t.name}, ${b.score} out of 100"><span class="sb-pages" aria-hidden="true"></span><span class="sb-spine"><i class="sb-band" aria-hidden="true"></i><span class="sb-t">${esc(b.w)}</span>${b.fav?'<i class="sb-fav" aria-hidden="true">\u2605</i>':''}<i class="sb-band" aria-hidden="true"></i></span></button>`;};
+  return `<button class="sbook" data-i="${x.i}" data-tex="${TEXTURES[b.tier%TEXTURES.length]}" style="--t:${t.spine};--o:${o}px" data-tip="${esc(b.w)}${x.n>1?` \u00d7${x.n}`:''} \u00b7 ${t.name} \u00b7 ${b.score}" aria-label="${esc(b.w)}, ${t.name}, ${b.score} out of 100${x.n>1?`, ${x.n} copies`:''}"><span class="sb-pages" aria-hidden="true"></span><span class="sb-spine"><i class="sb-band" aria-hidden="true"></i><span class="sb-t">${esc(b.w)}</span>${x.n>1?`<i class="sb-n" aria-hidden="true">\u00d7${x.n}</i>`:''}${b.fav?'<i class="sb-fav" aria-hidden="true">\u2605</i>':''}<i class="sb-band" aria-hidden="true"></i></span></button>`;};
  const stack=items=>`<div class="sstack">${items.map(book).join('')}</div>`;
  const shelf=items=>`<div class="sshelf">${chunk(items,STACK_H).filter(c=>c.length).map(stack).join('')}</div>`;
  const build=()=>{
-  list=core.filterShelf(S.shelf,{tier:fTier,q:fQ.trim().toLowerCase(),sort:fSort,fav:fFav});
+  const all=core.filterShelf(S.shelf,{tier:fTier,q:fQ.trim().toLowerCase(),sort:fSort,fav:fFav});
+  list=collapseDupes(all);
   const groups=core.groupShelf(list,fGroup,TIERS.map(t=>t.name)),favN=S.shelf.filter(b=>b.fav).length;
   if(fGroup==='tier')groups.sort((a,b)=>b.key-a.key);
   if(fGroup==='none')groups.forEach(g=>{g.label='The collection';});
   const counts=TIERS.map(t=>S.shelf.filter(b=>b.tier===t.id).length);
-  countText=`${S.shelf.length} ${S.shelf.length===1?'book':'books'}${list.length!==S.shelf.length?` \u00b7 showing ${list.length}`:''}`;
+  const dupes=all.length-list.length;
+  countText=`${S.shelf.length} ${S.shelf.length===1?'book':'books'}${all.length!==S.shelf.length?` \u00b7 showing ${all.length}`:''}${dupes?` \u00b7 ${list.length} different`:''}`;
   const ctrl=`<h1>Your shelf</h1><div class="kicker" data-count>${countText}</div>
    <input id="fq" type="search" placeholder="Find a word\u2026" value="${esc(fQ)}" aria-label="Find a word" autocomplete="off" spellcheck="false">
    <div class="chipgroup"><div class="kicker">Sort</div><div class="chips" role="group" aria-label="Sort">${Object.entries(SORTS).map(([k,v])=>`<button class="fchip" data-s="${k}" data-k="s${k}" aria-pressed="${fSort===k}">${v[0]}</button>`).join('')}</div></div>
