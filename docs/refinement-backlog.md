@@ -584,12 +584,12 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: tiny shared `penScratch()` hooked to the draw-in animations, off when sound is off. Files: new `src/sound/pen.js`. Done when: respects settings, no audio before first gesture.
 **Touches:** new files. **Conflicts:** none.
 
-### 91. Creatures react to the lamp and to you
+### 94. Creatures react to the lamp and to you
 **Serves:** immersion, physical realism. **Pitch:** The silverfish scatters when a lantern swings past, the rat freezes if you scroll fast, eyes in the Hollow close when the cursor nears.
 **Brief:** Goal: pointer and camera speed feed `updateAmbient` as a `scare` input, one reaction per creature. Files: `src/ui/ambient.js` only. Done when: a test pins a reaction per kind, still off in reduced motion.
 **Touches:** WORLD. **Conflicts:** 2, 4.
 
-### 92. Sounds of the things down here
+### 95. Sounds of the things down here
 **Serves:** immersion. **Pitch:** A far scuttle, a drip with the right reverb per floor, a low bubble, matched to what is on screen.
 **Brief:** Goal: each ambient item can emit a quiet cue through `Sfx`. Files: new `src/ui/ambientSfx.js`. Done when: volume setting respected, rate-capped, silent in reduced motion.
 **Touches:** FEEL hook. **Conflicts:** 23.
