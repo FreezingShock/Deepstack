@@ -50,6 +50,8 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - Hidden things (2026-11-04): nate asked for "things that live down there" and "hidden curios on the shelves": discovery that rewards looking, tied to depth.
 - 2026-11-04 handwriting: "every tab and filter as handwriting with animated pen underline" -> no pill or button chrome on book pages; Start and Close are written words too (thread: tabs and filters)
 
+- 2026-11-04 attic: "i want the back fill to make you scroll up and for it to be an attic" -> a backfill is a place, not a silent migration: scroll up past the top of the Shelf into a dusty attic of crates (thread: attic)
+
 ## Changelog
 - 2026-11-04 initial version from project chat history.
 

@@ -4,6 +4,7 @@ import {chunk,esc,toSpreads} from './bookpages.js';
 import {statsLeaves} from './statsPages.js';
 export {statsLeaves};
 import {penMark,penPlay} from './penInk.js';
+import {bindAttic} from './attic.js';
 
 /* Shelf layout. Books lie flat in stacks (STACK_H high, STACKS_PER_SHELF side by side) on a wooden shelf; a labelled
    plaque heads each section. Pages fill by a height budget: a shelf costs 1, a plaque PLAQUE_COST. */
@@ -81,6 +82,7 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc}){
   /* typing repaints only the results page; the search box and the rest of the left page stay untouched */
   if(fq)fq.oninput=()=>{fQ=fq.value;ctl.setSpreads(toSpreads(build()),0,'r');const c=root.querySelector('[data-count]');if(c)c.textContent=countText;};
   penPlay(root);
+  bindAttic(root,ctl,{S,esc,book,collapse:collapseDupes,openCard,showTip,hideTip});
   root.querySelectorAll('.sbook').forEach(im=>{
    const open=()=>{hideTip();const items=list.map(x=>x.b),b=S.shelf[+im.dataset.i];openCard(b,{fresh:false,nav:{items,i:items.indexOf(b)}});};
    im.onclick=open;

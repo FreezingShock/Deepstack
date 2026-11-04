@@ -1,0 +1,50 @@
+/* The attic: where books with no known floor live. New books save the floor they were found on (`fl`); older
+   ones did not. A one-time backfill recovers the floor from Daily history (the saved run keeps every book's depth
+   gain, and a Daily run always starts at 0 ft), and whatever cannot be recovered stays in the attic. Pure functions.
+   Additive fields only: `fl` (floor id) and `fli` (1 = worked out by the backfill, not recorded at the time). */
+import {floorAtFt} from './floors.js';
+
+export const hasFloor=b=>!!b&&Number.isInteger(b.fl)&&b.fl>=0;
+const key=b=>String(b.w).toLowerCase()+'|'+b.t;
+
+/* Fill `fl` on shelf books that match a saved Daily run. A book's floor is the one it sat on when the word came up,
+   i.e. at the depth the run had reached before that answer. Returns how many books were placed. */
+export function backfillFloors(S,floorAt=floorAtFt){
+ if(!S||!Array.isArray(S.shelf)||!S.daily)return 0;
+ const loose=new Map();
+ for(const b of S.shelf)if(!hasFloor(b)&&b.t)loose.set(key(b),b);
+ if(!loose.size)return 0;
+ let n=0;
+ for(const d of Object.values(S.daily)){
+  if(!d||d.practice||!Array.isArray(d.books))continue;
+  let ft=0;
+  for(const db of d.books){
+   const gain=Number(db&&db.ft);
+   if(!Number.isFinite(gain))break;            // unknown depth from here on: leave the rest for the attic
+   const b=db.t&&loose.get(key(db));
+   if(b){b.fl=floorAt(ft).id;b.fli=1;loose.delete(key(db));n++;}
+   ft+=gain;
+  }
+ }
+ return n;
+}
+
+/* Books that belong in the attic, as {b,i} (i = index in S.shelf), newest first. */
+export const atticItems=shelf=>(shelf||[]).map((b,i)=>({b,i})).filter(x=>!hasFloor(x.b)).sort((a,c)=>(c.b.t||0)-(a.b.t||0)||c.i-a.i);
+
+/* Crates: the attic's books grouped by the month they were found, newest crate first; undated ones go in an unmarked crate. */
+export function atticCrates(items,{perCrate=8}={}){
+ const by=new Map(),order=[];
+ for(const x of items){
+  const k=x.b.t?new Date(x.b.t).toISOString().slice(0,7):'';
+  if(!by.has(k)){by.set(k,[]);order.push(k);}
+  by.get(k).push(x);
+ }
+ order.sort((a,b)=>a===''?1:b===''?-1:b.localeCompare(a));
+ const out=[];
+ for(const k of order){
+  const list=by.get(k),label=k?new Date(k+'-01T00:00:00Z').toLocaleDateString(undefined,{month:'long',year:'numeric',timeZone:'UTC'}):'Unmarked';
+  for(let i=0;i<list.length;i+=perCrate)out.push({key:k||'none',label,cont:i>0,items:list.slice(i,i+perCrate)});
+ }
+ return out;
+}
