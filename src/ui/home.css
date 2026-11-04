@@ -186,3 +186,6 @@
 .bk-spread.closing{pointer-events:none}
 .bk-spread.closing:not(.flyback){transition:transform .62s cubic-bezier(.45,0,.2,1)}
 .bk-spread.flyback{transition:transform .38s cubic-bezier(.55,0,.75,.35),opacity .2s .18s}
+/* seat the book stacks right on the panel's bottom ledge */
+#home.center{padding-bottom:2px}
+.home .hsecs{padding-top:10px}

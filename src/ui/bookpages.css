@@ -11,17 +11,24 @@
 .bk-spread.menu .bkv-blank{height:100%}
 .bk-spread.menu .rule{border:0;border-top:1px solid var(--rule);margin:14px 0}
 /* controls on parchment */
-.bk-spread.menu #fq{width:100%;background:#fff6;border:1px solid var(--rule);border-radius:99px;color:var(--ink);padding:8px 14px;font:400 15px var(--sans)}
-.bk-spread.menu #fq::placeholder{color:var(--mute);opacity:.8}
-.bk-spread.menu #fq:focus{outline:0;border-color:var(--bk)}
-.bk-spread.menu .fchip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid var(--rule);border-radius:99px;background:#fff4;color:var(--ink);font:500 13px var(--sans)}
-.bk-spread.menu .fchip:hover:not([disabled]){background:#fff9}
-.bk-spread.menu .fchip small{font:600 11px var(--sans);color:var(--mute)}
-.bk-spread.menu .fchip[aria-pressed="true"]{background:var(--bk);border-color:var(--bk);color:#f6ecd3}
-.bk-spread.menu .fchip[aria-pressed="true"] small{color:#f6ecd3b0}
+.bk-spread.menu #fq{width:100%;box-sizing:border-box;background:transparent;border:0;border-bottom:1.5px solid #4a3a2288;border-radius:0;color:var(--bk);padding:2px 2px 0;font:500 28px/1.3 'Caveat','Segoe Script','Bradley Hand',cursive;caret-color:var(--bk);-webkit-appearance:none;appearance:none}
+.bk-spread.menu #fq::placeholder{color:var(--mute);opacity:.55}
+.bk-spread.menu #fq:focus{outline:0;border-bottom-color:var(--bk)}
+.bk-spread.menu #fq::-webkit-search-cancel-button{display:none}
+/* filters: plain handwritten words; the chosen one is underlined with a pen stroke */
+.bk-spread.menu .fchip{position:relative;display:inline-flex;align-items:baseline;gap:5px;padding:0 3px 7px;border:0;border-radius:0;background:none;color:#4a3a22;font:500 23px/1.1 'Caveat','Segoe Script','Bradley Hand',cursive;cursor:pointer}
+.bk-spread.menu .fchip:hover:not([disabled]){color:var(--bk)}
+.bk-spread.menu .fchip small{font:500 16px 'Caveat','Segoe Script',cursive;color:var(--mute)}
+.bk-spread.menu .fchip[aria-pressed="true"]{color:var(--bk)}
+.bk-spread.menu .fchip[aria-pressed="true"] small{color:var(--bk);opacity:.7}
+.bk-spread.menu .fchip[aria-pressed="true"]::after{content:"";position:absolute;left:-2px;right:-2px;bottom:0;height:9px;background:var(--bk);
+ -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M1 6 C 12 2, 22 8, 36 5 S 62 3, 78 6 S 93 4, 99 5' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+ mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M1 6 C 12 2, 22 8, 36 5 S 62 3, 78 6 S 93 4, 99 5' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center/100% 100% no-repeat}
+.bk-spread.menu .fchip.pen[aria-pressed="true"]::after{animation:penstroke .5s cubic-bezier(.4,.1,.3,1) both}
+@keyframes penstroke{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 .bk-spread.menu .fchip[disabled]{opacity:.35;cursor:default}
-.bk-spread.menu .fchip .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.bk-spread.menu .chips{display:flex;flex-wrap:wrap;gap:6px}
+.bk-spread.menu .fchip .dot{width:8px;height:8px;border-radius:50%;display:inline-block;align-self:center}
+.bk-spread.menu .chips{display:flex;flex-wrap:wrap;gap:2px 14px}
 .bk-spread.menu .chipgroup{margin-top:12px}
 .bk-spread.menu .chipgroup>.kicker{margin-bottom:6px}
 /* shelf pages: the spines stand on a dark wooden case set into the page */
@@ -70,3 +77,7 @@
 .bk-spread.menu .floors small{display:block;font:italic 400 14px var(--serif);color:var(--mute)}
 .bk-spread.menu .floors .ft{float:right;font:600 11px var(--sans);letter-spacing:.1em;color:var(--mute)}
 @media(max-width:700px){.bk-spread.menu .bigs{grid-template-columns:1fr 1fr}.bk-spread.menu .shelfgrid{margin:0 -4px}}
+
+/* a card opened from a menu book sits above the book */
+body:has(.bk-spread) #cardlayer{z-index:100}
+@media(prefers-reduced-motion:reduce){.bk-spread.menu .fchip.pen::after{animation:none}}

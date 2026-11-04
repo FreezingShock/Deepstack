@@ -118,12 +118,14 @@ const World=(()=>{
  function setNicheVars(){const n=nicheBox(),r=document.documentElement.style;r.setProperty('--nx',n.x+'px');r.setProperty('--nw',n.w+'px');r.setProperty('--nt',n.t+'px');r.setProperty('--nb',(H-n.b)+'px');}
  function resize(){DPR=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);RH=clamp(H*.22,108,172);BM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);rows.clear();
   document.documentElement.style.setProperty('--shelfH',(RH+BM+10)+'px');setNicheVars();document.documentElement.style.setProperty('--rh',Math.round(RH*.8)+'px');if(!st)cam=restCam(restRow);}
+ // where the book for row r is pulled from: a random spot along that shelf, stable for the row
+ function pullX(r){return W*(.12+.76*mulberry(r*40503+11)());}
  function genRow(r,layer){
   const key=r*2+layer;if(rows.has(key))return rows.get(key);
   const rng=mulberry(r*7919+layer*104729+13),a=abn(r),fl=floorAtRow(r),sc=layer?.72:1,bs=[],webs=[],props=[];let x=-6;
   while(x<W+40){const w=(10+rng()*22)*sc;
    if(rng()<.03+.24*a+(fl.gap||0)){x+=w*(.5+rng());continue;} // missing books
-   const cx=x+w/2;if(layer===0&&(taken.has(r)||(st&&st.row===r))&&Math.abs(cx-W/2)<34){x+=w;continue;}
+   const cx=x+w/2;if(layer===0&&(taken.has(r)||(st&&st.row===r))&&Math.abs(cx-pullX(r))<34){x+=w;continue;}
    const h=RH*sc*(.46+rng()*.34);
    const lean=layer===0?-(((x+w/2)/W)*2-1)*.12*a:0;const tilt=(rng()<.05+.32*a?(rng()-.5)*(.1+.45*a):0)+lean;
    const tier=rng()<.05?Math.floor(rng()*rng()*7):-1;
@@ -249,11 +251,12 @@ const World=(()=>{
  function loreCovered(b,base,cam_){const n=nicheBox();if(b.x+b.w<=n.x||b.x>=n.x+n.w)return false;
   for(const [nr] of niches){const ny=n.t+(nr*RH-(H-RH-BM))-cam_;if(base>ny&&base-b.h<ny+n.h)return true;}return false;}
  function drawLoreGlows(top,bot,camNow){
-  for(let r=Math.max(1,top);r<=bot;r++){const d=rows.get(r*2);if(!d)continue;
+  for(let r=top;r<=bot;r++){const d=r?rows.get(r*2):null;if(!d)continue;
    const y=r*RH-camNow,base=y+RH-12,a=abn(r);
    for(const b of d.bs){if(!isLore(b)||b.x+b.w<0||b.x>W||loreCovered(b,base,camNow))continue;
     ctx.save();
     if(a>.03){const i=Math.min(2,Math.max(0,Math.floor((b.x+b.w/2)/(W/3)))),th=(i===0?1:i===2?-1:0)*.085*a;if(th){const cx=(i+.5)*W/3,cy=y+RH/2;ctx.translate(cx,cy);ctx.rotate(th);ctx.translate(-cx,-cy);}}
+    ctx.beginPath();ctx.rect(-RH,y-RH,W+2*RH,RH+RH-40);ctx.clip(); // the next shelf's wall overdraws the last 28px of every book
     ctx.translate(b.x+b.w/2,base);if(b.tilt){ctx.translate(b.w/2,0);ctx.rotate(b.tilt);ctx.translate(-b.w/2,0);}
     drawLoreGlow(ctx,b,vt);ctx.restore();}}}
  function drawNiche(row,nv,camNow,now){const t0=nv.t0;
@@ -313,7 +316,7 @@ const World=(()=>{
   drawLoreGlows(top,bot,camNow);
   if(ledgeCb){const cn=niches.get(restRow);ledgeCb(!st&&!rest&&cn&&cn.hit&&cn.books?cn.hit:null,cn&&cn.books);}
   // pulled-out target
-  if(st&&tgt){const T=TIERS[st.tier],e=pull*pull*(3-2*pull),bw=36,bh=RH*.82;const bx=W/2,by0=tgt.base; // seated in the gap genRow leaves in the target shelf, never floating above it
+  if(st&&tgt){const T=TIERS[st.tier],e=pull*pull*(3-2*pull),bw=36,bh=RH*.82;const bx=pullX(st.row),by0=tgt.base; // seated in the gap genRow leaves in the target shelf, never floating above it
   const cy=H*.5;const px=bx+(W/2-bx)*e,py=by0+(cy+bh*.5*2.2-by0)*e;const s=1+1.3*e;
    if(settle>0){ctx.fillStyle='#070504';ctx.fillRect(bx-bw/2,by0-bh,bw,bh);}
    if(settle>0){ctx.save();ctx.globalCompositeOperation='lighter';const gg=ctx.createRadialGradient(bx,by0-bh/2,0,bx,by0-bh/2,bh*1.4);gg.addColorStop(0,T.spine+'bb');gg.addColorStop(1,T.spine+'00');ctx.globalAlpha=(.28+.35*T.id/6)*settle*(.85+.15*Math.sin(vt*5))*(1-e*.4);ctx.fillStyle=gg;ctx.fillRect(bx-bh*1.5,by0-bh*1.5,bh*3,bh*3);ctx.restore();}
