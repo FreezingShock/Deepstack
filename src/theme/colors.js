@@ -2,6 +2,18 @@
 // `npm run gen:tokens` writes src/theme/tokens.css from this file; the canvas code imports it directly.
 // A test fails if tokens.css drifts from this file.
 export const COLORS={
+ 'book-blue':'#1c1cb4',
+ 'book-blue-dk':'#0a0a5c',
+ 'book-red':'#ae1414',
+ 'book-red-dk':'#560909',
+ 'book-green':'#168a16',
+ 'book-green-dk':'#084808',
+ 'book-aqua':'#0e8e94',
+ 'book-aqua-dk':'#054a4e',
+ 'book-purple':'#9a169f',
+ 'book-purple-dk':'#4c0850',
+ 'book-brown':'#b36d08',
+ 'book-brown-dk':'#5a3704',
  'tint-0a0604':'#0a0604',
  'tint-f3dfa8':'#f3dfa8',
  'black':'#000000',
