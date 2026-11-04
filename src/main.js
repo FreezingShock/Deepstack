@@ -35,6 +35,7 @@ import './ui/bookpages.css';
 import './ui/fonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
 import {drawAlcoveLanterns} from './ui/lanterns.js';
+import {drawFloorAtmosphere} from './ui/floorAtmosphere.js';
 import './ui/ledge.css';
 import './ui/buttons.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
@@ -360,9 +361,10 @@ const World=(()=>{
   if(a>0){ctx.fillStyle=`rgba(14,34,30,${.1*a})`;ctx.fillRect(0,0,W,H);}
   if(atm.dark>.005){ctx.fillStyle=`rgba(1,0,3,${atm.dark})`;ctx.fillRect(0,0,W,H);}
   if(atm.tint[3]>.005){const t=atm.tint;ctx.fillStyle=`rgba(${t[0]|0},${t[1]|0},${t[2]|0},${t[3]})`;ctx.fillRect(0,0,W,H);}
+  drawFloorAtmosphere(ctx,W,H,atm,vt,lx,ly,RM);
   ctx.globalCompositeOperation='lighter';
   if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
-  const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick;
+  const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick*atm.flick;
   let g=ctx.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*.45);{const l=atm.lamp.map(v=>v|0);g.addColorStop(0,`rgba(${l[0]},${l[1]+6},${l[2]+10},${fl})`);g.addColorStop(1,`rgba(${l[0]},${l[1]+6},${l[2]+10},0)`);}ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   if(st){const zi=st.prog>=1?st.tier:Math.min(st.tier,tierOf(st.prog*st.score));const zc=TIERS[zi].spine;g=ctx.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*.6);g.addColorStop(0,zc+'26');g.addColorStop(1,zc+'00');ctx.fillStyle=g;ctx.globalAlpha=.5+.5*settle;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;gaugeCb&&gaugeCb(zi,st);}
   if(!RM)for(const p of dust){p.y-=dt*(5+p.z*14);p.x+=Math.sin(vt*.6+p.ph)*dt*8;const yy=((p.y+camNow*(.25+p.z*.5))%H+H)%H,xx=(p.x%W+W)%W;const dist=Math.hypot(xx-lx,yy-ly)/(Math.max(W,H)*.45);const al=Math.max(0,1-dist)*(.15+.5*Math.abs(Math.sin(vt*1.3+p.ph)))*(.7+a);ctx.fillStyle=`rgba(255,226,170,${al})`;ctx.beginPath();ctx.arc(xx,yy,p.r*(.6+p.z),0,6.3);ctx.fill();}

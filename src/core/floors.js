@@ -9,21 +9,27 @@ export const FT=4.2; // feet per shelf row
 export const FLOORS=[
  {id:0,key:'stacks',name:'The Stacks',sub:'Where every reader starts',row:0,decay:0,motif:'stacks',
   ...FLOOR_COLORS.stacks,
+  fog:[40,30,20,0],flick:1,shimmer:0,vig:0,pulse:0,
   tint:[14,34,30,0],lamp:[255,190,110],web:[224,218,200],books:[[110,100,86],0],dark:0,lampR:1,gap:0},
  {id:1,key:'archive',name:'The Archive',sub:'Ledgers, files and forgotten indexes',row:24,decay:.12,motif:'archive',
   ...FLOOR_COLORS.archive,
+  fog:[70,96,70,.07],flick:.7,shimmer:0,vig:0,pulse:0,
   tint:[28,70,52,.1],lamp:[190,235,150],web:[210,224,206],books:[[84,112,92],.4],dark:.06,lampR:.95,gap:0},
  {id:2,key:'catacombs',name:'The Catacombs',sub:'Stone, bone and the quiet dead',row:60,decay:.4,motif:'crypt',
   ...FLOOR_COLORS.catacombs,
+  fog:[110,70,44,.13],flick:1.7,shimmer:0,vig:.05,pulse:0,
   tint:[70,28,16,.1],lamp:[255,140,70],web:[200,190,170],books:[[120,104,86],.5],dark:.14,lampR:.88,gap:.14},
  {id:3,key:'vault',name:'The Sunken Vault',sub:'The sea got here first',row:108,decay:.62,motif:'flood',
   ...FLOOR_COLORS.vault,
+  fog:[16,96,120,.22],flick:.6,shimmer:1,vig:.08,pulse:0,
   tint:[10,70,84,.22],lamp:[120,230,230],web:[110,200,170],books:[[40,86,96],.55],dark:.22,lampR:.8,gap:0},
  {id:4,key:'hollow',name:'The Hollow',sub:'Shelves without books, books without names',row:168,decay:.78,motif:'hollow',
   ...FLOOR_COLORS.hollow,
+  fog:[84,60,130,.27],flick:2.3,shimmer:0,vig:.16,pulse:0,
   tint:[34,18,52,.2],lamp:[190,150,255],web:[160,150,190],books:[[56,48,70],.7],dark:.34,lampR:.7,gap:.34},
  {id:5,key:'abyss',name:'The Abyss',sub:'Nothing here was ever meant to be read',row:240,decay:.92,motif:'abyss',
   ...FLOOR_COLORS.abyss,
+  fog:[96,10,28,.32],flick:.3,shimmer:0,vig:.3,pulse:1,
   tint:[50,6,16,.24],lamp:[255,70,80],web:[120,70,90],books:[[34,20,32],.8],dark:.4,lampR:.64,gap:.5}
 ];
 
@@ -39,8 +45,8 @@ export function atmosphereAt(rowF){
  let u=0,a=cur,b=cur;
  if(next&&rowF>=next.row-BLEND){a=cur;b=next;u=Math.min(1,(rowF-(next.row-BLEND))/(BLEND*2));}
  else if(cur.id>0&&rowF<cur.row+BLEND){a=FLOORS[cur.id-1];b=cur;u=.5+Math.min(.5,(rowF-cur.row)/(BLEND*2));}
- const m=(x,y)=>x.map((v,i)=>lerp(v,y[i],u));
- return{floor:u>=.5?b:a,tint:m(a.tint,b.tint),lamp:m(a.lamp,b.lamp),decay:lerp(a.decay,b.decay,u),dark:lerp(a.dark,b.dark,u),lampR:lerp(a.lampR,b.lampR,u)};
+ const m=(x,y)=>x.map((v,i)=>lerp(v,y[i],u)),n=k=>lerp(a[k],b[k],u);
+ return{floor:u>=.5?b:a,tint:m(a.tint,b.tint),lamp:m(a.lamp,b.lamp),decay:lerp(a.decay,b.decay,u),dark:lerp(a.dark,b.dark,u),lampR:lerp(a.lampR,b.lampR,u),fog:m(a.fog,b.fog),flick:n('flick'),shimmer:n('shimmer'),vig:n('vig'),pulse:n('pulse')};
 }
 
 // Depth range of a floor in feet: [start, end). The last floor is open-ended (end = null).
