@@ -9,7 +9,7 @@ export const SORTS={
 };
 // key -> (item, opts) => boolean, applied when opts[key] is truthy.
 export const EXTRA_FILTERS={fav:x=>!!x.b.fav};
-export const dayKey=b=>b.t?new Date(b.t).toISOString().slice(0,10):'';
+export const bookDayKey=b=>b.t?new Date(b.t).toISOString().slice(0,10):'';
 export function filterShelf(shelf,{tier=-1,q='',sort='new',...rest}={}){
   const needle=q.trim().toLowerCase();
   return shelf.map((b,i)=>({b,i}))
@@ -22,7 +22,7 @@ export function groupShelf(items,mode,tierNames=[]){
   if(mode!=='day'&&mode!=='tier')return [{key:'all',label:'',items}];
   const out=[],idx=new Map();
   for(const x of items){
-    const key=mode==='day'?(dayKey(x.b)||'undated'):String(x.b.tier);
+    const key=mode==='day'?(bookDayKey(x.b)||'undated'):String(x.b.tier);
     let g=idx.get(key);
     if(!g){g={key,label:mode==='tier'?(tierNames[x.b.tier]||'Tier '+x.b.tier):key==='undated'?'Earlier':key,items:[]};idx.set(key,g);out.push(g);}
     g.items.push(x);
