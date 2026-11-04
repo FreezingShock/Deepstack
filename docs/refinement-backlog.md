@@ -60,11 +60,23 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: threshold art drawn at each floor boundary (arch, hanging sign, a few distinct props per floor such as ledgers, ossuary niches, water drips, roots, a single candle in the Abyss). Files: new `src/ui/thresholds.js`, data fields added to `floors.js`, hook in `World`. Done when: each floor is identifiable in a screenshot with the HUD hidden, a test lists a threshold def for every floor, performance within 1 ms/frame of baseline (item 33).
 **Touches:** WORLD, CORE floors. **Conflicts:** floors thread (#81), 2, 3.
 
-### 2. Light as the mystery
+### 2. [x] Light as the mystery (PR #141)
 **Serves:** dark/mysterious, performant.
 **Pitch:** The deeper you go the less you see: lantern pools of light with real falloff, the dark between them hiding shelf detail, flickers that shift with the floor.
 **Brief:** Goal: a lighting pass where lit radius shrinks with depth and unlit shelves fade to silhouette; lantern/alcove light cast on nearby books. Files: new `src/ui/lighting.js`; hook in `World`. Done when: Abyss is legible only near lights but the word and alcove stay readable (contrast test on the alcove), cached offscreen light map, reduced motion removes flicker.
 **Touches:** WORLD. **Conflicts:** 1, 3, 33, floors thread.
+
+### LM1. Candles and braziers cast light on the shelves
+**Serves:** dark and mysterious, physical.
+**Pitch:** Wall mounts, candle stubs on ledges and the odd brazier become real light sources, so the Abyss has a few warm islands to head for and the Hollow has cold ones.
+**Brief:** Goal: any new lit prop calls `addLight(x, y, r, k)` from `src/ui/lighting.js` and gets a pool in the dark for free. Files: the prop's own file. Done when: it stays lit at Abyss depth, 375 and 1280 screenshots.
+**Touches:** WORLD. **Conflicts:** E (wall mounts), 3.
+
+### LM2. The dark has something in it
+**Serves:** immersion, rarity.
+**Pitch:** Out past the lantern pools a pair of eyes or a moving shape shows only while the cursor light is nowhere near, and flees when it arrives.
+**Brief:** Goal: one rare silhouette per deep floor, driven by `pointerLightState` in `cursorLight.js`. Done when: never over the alcove or HUD, off in reduced motion and saver mode.
+**Touches:** WORLD. **Conflicts:** 3.
 
 ### 3. [x] Things that live down here (this PR)
 **Serves:** immersion, physical realism.

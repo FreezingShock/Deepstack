@@ -19,6 +19,7 @@ import {drawAlcoveLanterns} from '../ui/lanterns.js';
 import {lowQuality,updateAmbient,drawAmbient,resetAmbient} from '../ui/ambient.js';
 import {doorSpan,drawWallMaterial,drawThreshold,drawThresholdLive,drawThresholdSign} from '../ui/thresholds.js';
 import {drawFloorAtmosphere} from '../ui/floorAtmosphere.js';
+import {drawLighting,addLight} from '../ui/lighting.js';
 import {nookMetrics,drawNook,paintAroundAlcoves,alcoveRects} from '../ui/alcoveArt.js';
 import {$,RM,clamp} from '../app/util.js';
 import {FT,TIERS,atmosphereAt,floorAtRow,hashStr,mulberry,tierOf} from '../app/state.js';
@@ -180,6 +181,7 @@ export const World=(()=>{
   for(let r=top;r<=bot;r++){const d=r?rows.get(r*2):null;if(!d)continue;
    const y=r*RH-camNow,base=y+RH-12,a=abn(r);
    for(const b of d.bs){if(!(isLore(b,W)||isCurio(b,W))||b.x+b.w<0||b.x>W||loreCovered(b,base,camNow))continue;
+    addLight(b.x+b.w/2,base-28,90,.8); // lore books and curios stay findable in the dark
     ctx.save();
     if(a>.03){const i=Math.min(2,Math.max(0,Math.floor((b.x+b.w/2)/(W/3)))),th=(i===0?1:i===2?-1:0)*.085*a;if(th){const cx=(i+.5)*W/3,cy=y+RH/2;ctx.translate(cx,cy);ctx.rotate(th);ctx.translate(-cx,-cy);}}
      
@@ -272,7 +274,8 @@ export const World=(()=>{
   const lx=W/2,ly=H*.5,lr=Math.hypot(W,H)*(.6-.2*a)*atm.lampR;
   const lg=ctx.createRadialGradient(lx,ly,0,lx,ly,lr);lg.addColorStop(0,'rgba(0,0,0,0)');lg.addColorStop(.3,`rgba(6,4,2,${.2+.25*a})`);lg.addColorStop(1,`rgba(3,2,2,${.93+.06*a})`);ctx.fillStyle=lg;ctx.fillRect(0,0,W,H);
   // the floor's own air and tint (decay, dark, tint, fog, vignette, water light) never paints over an alcove
-  paintAroundAlcoves(ctx,W,H,alcoveRects(niches.keys(),nicheBox(),RH,H,BM,camNow),()=>{
+  const arects=alcoveRects(niches.keys(),nicheBox(),RH,H,BM,camNow);
+  paintAroundAlcoves(ctx,W,H,arects,()=>{
   {const t=atm.tint,L=[]; // up to three flat veils (green decay, depth dark, floor tint) folded into one source-over fill
    if(a>0)L.push([14,34,30,.1*a]);if(atm.dark>.005)L.push([1,0,3,atm.dark]);if(t[3]>.005)L.push([t[0]|0,t[1]|0,t[2]|0,t[3]]);
    if(L.length){let ca=0,cr=0,cg=0,cb=0;for(const [r,g,b,al] of L){const na=al+ca*(1-al);cr=(r*al+cr*ca*(1-al))/na;cg=(g*al+cg*ca*(1-al))/na;cb=(b*al+cb*ca*(1-al))/na;ca=na;}
@@ -280,6 +283,7 @@ export const World=(()=>{
   drawFloorAtmosphere(ctx,W,H,atm,vt,lx,ly,RM);
   });
   ambItems=updateAmbient(dt,ambEnv(camNow,top,bot));drawAmbient(ctx,ambItems,vt,'body',atm.lamp);
+  drawLighting(ctx,{W,H,atm,t:vt,lx,ly,rects:arects,still:RM,low:lowQuality()}); // deeper floors: only lit pools stay readable
   ctx.globalCompositeOperation='lighter';
   if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
   const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick*atm.flick;

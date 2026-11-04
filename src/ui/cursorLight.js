@@ -7,6 +7,8 @@
 export const LIGHT_LAG_MS = 140;   // glow time constant: trails the hand
 // Surfaces that are already lit, where the pool would only wash them out.
 export const LIT_SEL = 'a,button,[role="button"],summary,label,select,input,textarea,[contenteditable],.lnk,.ledgebook,.hbook,[data-book],[tabindex]:not([tabindex="-1"]),.card,.paper,.page,.slip,.panel,dialog,[role="dialog"]';
+/** Where the glow is and whether it is lit, for the world's light map (lighting.js) to reveal what is under it. */
+export const pointerLightState = { x: -99, y: -99, on: false };
 export const DARK_SEL = 'canvas,html,body';
 
 /** Exponential approach: fraction of the remaining gap closed in dt ms. Frame-rate independent. */
@@ -37,8 +39,8 @@ export function initCursorLight({ doc = globalThis.document, win = globalThis.wi
 
   let tx = -99, ty = -99, gx = tx, gy = ty, last = 0, raf = 0, seen = false, over = null;
 
-  const draw = () => { glow.style.transform = `translate3d(${gx.toFixed(1)}px,${gy.toFixed(1)}px,0)`; };
-  const setOn = on => root.classList.toggle('on', on);
+  const draw = () => { pointerLightState.x = gx; pointerLightState.y = gy; glow.style.transform = `translate3d(${gx.toFixed(1)}px,${gy.toFixed(1)}px,0)`; };
+  const setOn = on => { pointerLightState.on = on; root.classList.toggle('on', on); };
   function tick(now) {
     raf = 0;
     const dt = Math.min(64, now - last || 16); last = now;
