@@ -65,6 +65,7 @@ import './ui/runScreen.css';
 import {paintRun} from './ui/runScreen.js';
 import {hintSlipHtml,hintButtonLabel,skipButtonLabel} from './ui/hintSlips.js';
 import './ui/hintSlips.css';
+import {feedbackHTML} from './ui/feedback.js';import {feedbackData} from './core/feedback.js';import './ui/feedback.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 import {deferAfterPaint} from './core/boot.js';
 const wordsReady=deferAfterPaint(()=>loadWords());let wordsLoaded=false;wordsReady.then(()=>{wordsLoaded=true;},()=>{wordsLoaded=true;});
@@ -595,7 +596,7 @@ async function submit(skipped){
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
  const base=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
  const cb=applyCombo(run.combo,t,base,skipped);run.combo=cb.chain;const rows=cb.rows;
- const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
+ const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,fb:feedbackData(j,w),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');Sfx.seal();const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
@@ -651,6 +652,7 @@ function openCard(b,opts={}){
    <p class="verdict ${opts.fresh?'':'on'}" id="vd">${esc(b.verdict)}</p>
    <p class="def">${esc(b.def)}</p>
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
+   ${feedbackHTML(b)}
    <div class="chips">
     ${opts.fresh?`<span><b>+${b.ft} ft</b> \u00b7 ${opts.depth1} ft</span>`:b.t?`<span>${b.mode==='daily'?'No. '+Math.max(1,core.dailyNumber(new Date(b.t).toISOString().slice(0,10)))+' \u00b7 ':''}${new Date(b.t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</span>`:''}
     ${opts.fresh&&b.combo?`<span class="cb">Combo <b>${comboLabel(b.combo.mult)}</b> \u00b7 ${b.combo.n} in a row</span>`:opts.fresh&&opts.broke?`<span>Combo broken</span>`:''}
