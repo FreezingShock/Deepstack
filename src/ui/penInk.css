@@ -1,0 +1,31 @@
+/* Shared pen ink for book pages: one hand-drawn stroke (--pen-stroke) used by every written control.
+   Filters/tabs (.fchip) keep their rule in bookpages.css; Start, Close the book and Daily list rows use .pen-ink here.
+   Ink decorations (backlog 9) should reuse --pen-stroke so every flourish is the same hand. */
+:root{--pen-stroke:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M1 6 C 12 2, 22 8, 36 5 S 62 3, 78 6 S 93 4, 99 5' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");--pen-hand:'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive}
+
+/* written action words: no button chrome, a stroke is drawn under them on hover or keyboard focus */
+.bk-spread .pen-ink{position:relative;background:none;border:0;border-radius:0;box-shadow:none;text-shadow:none}
+.bk-spread .pen-ink::after{content:"";position:absolute;left:-2px;right:-2px;bottom:0;height:9px;background:var(--bk);pointer-events:none;
+ -webkit-mask:var(--pen-stroke) center/100% 100% no-repeat;mask:var(--pen-stroke) center/100% 100% no-repeat;
+ clip-path:inset(0 100% 0 0);transition:clip-path .45s cubic-bezier(.4,.1,.3,1)}
+.bk-spread .pen-ink:hover::after,.bk-spread .pen-ink:focus-visible::after{clip-path:inset(0 0 0 0)}
+/* the main action rests with a faint stroke already under it */
+.bk-spread .pen-ink.rest::after{clip-path:inset(0 0 0 0);opacity:.35;transition:opacity .3s}
+.bk-spread .pen-ink.rest:hover::after,.bk-spread .pen-ink.rest:focus-visible::after{opacity:1}
+
+.bk-spread .bs-start,.bk-spread.one .bs-start{padding:6px 6px 13px;min-height:44px;font:600 clamp(28px,3.2vw,36px)/1.1 var(--pen-hand);letter-spacing:0;text-transform:none;color:var(--bk)}
+.bk-spread .bs-start:hover{filter:none;color:var(--bk)}
+.bk-spread .bs-back-btn,.bk-spread.one .bs-back-btn{padding:4px 6px 11px;min-height:44px;font:500 22px/1.1 var(--pen-hand);text-decoration:none;color:var(--c-oak-4a3a22)}
+.bk-spread .bs-back-btn:hover,.bk-spread .bs-back-btn:focus-visible{color:var(--bk)}
+.bk-spread.menu .dly .dly-go.pen-ink{padding-bottom:7px}
+.bk-spread.menu .dly .dly-go.pen-ink:hover,.bk-spread.menu .dly .dly-go.pen-ink:focus-visible{text-decoration:none}
+
+/* keyboard focus stays visible on every written control, search included */
+.bk-spread.menu .fchip:focus-visible,.bk-spread .pen-ink:focus-visible{outline:2px solid var(--bk);outline-offset:3px;border-radius:3px}
+.bk-spread.menu #fq:focus-visible{outline:0;border-bottom:2.5px solid var(--bk)}
+
+/* the stroke slides between choices (penInk.js animates it); a fallback draw-in for the first pick in a group */
+@media (prefers-reduced-motion:reduce){
+ .bk-spread .pen-ink::after{transition:none}
+ .bk-spread.menu .fchip.pen[aria-pressed="true"]::after{animation:none}
+}

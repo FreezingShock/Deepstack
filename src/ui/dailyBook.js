@@ -54,7 +54,7 @@ export function contentsLeaves(entries,startSpread){
  for(const e of entries){const l=monthLabel(e.key),g=groups[groups.length-1];if(g&&g.label===l)g.items.push(e);else groups.push({label:l,items:[e]});}
  const idx=new Map(entries.map((e,i)=>[e.key,startSpread+i]));
  return contentsPages(groups).map((secs,i)=>`<div class="dly">${i===0?'<h1>Contents</h1><div class="kicker">Newest first · tap a day to turn to it</div>':'<h1>Contents</h1><div class="kicker">continued</div>'}
-  ${secs.map(s=>`<h2>${esc(s.label)}${s.cont?' · cont.':''}</h2><ul class="dly-toc">${s.items.map(e=>`<li><button class="dly-go" data-spread="${idx.get(e.key)}"><span class="no">No. ${e.no}</span><span class="dt">${esc(shortDate(e.key))}${e.isToday?' · today':''}</span><i></i><b class="st ${e.played?'ok':e.isToday?'open':''}">${e.played?e.rec.avg+'/100':e.isToday?'sealed':'missed'}</b></button></li>`).join('')}</ul>`).join('')}</div>`);
+  ${secs.map(s=>`<h2>${esc(s.label)}${s.cont?' · cont.':''}</h2><ul class="dly-toc">${s.items.map(e=>`<li><button class="dly-go pen-ink" data-spread="${idx.get(e.key)}"><span class="no">No. ${e.no}</span><span class="dt">${esc(shortDate(e.key))}${e.isToday?' · today':''}</span><i></i><b class="st ${e.played?'ok':e.isToday?'open':''}">${e.played?e.rec.avg+'/100':e.isToday?'sealed':'missed'}</b></button></li>`).join('')}</ul>`).join('')}</div>`);
 }
 
 const tierName=t=>(TIERS[t]||TIERS[0]).name;
