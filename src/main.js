@@ -20,6 +20,8 @@ import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
 import {initBrowse} from './ui/browse.js';
 import {isLore,drawLoreMark,hitLoreBook,initLore} from './ui/lore.js';
 import './ui/lore.css';
+import {drawLedge,initLedge} from './ui/ledge.js';
+import './ui/ledge.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -104,7 +106,7 @@ if(document.fonts&&document.fonts.load)Promise.all(['16px "IM Fell English"','16
 const World=(()=>{
  const cv=$('#world');let ctx=cv.getContext('2d');const ctx0=ctx;let building=false;const bmpPool=[];
  let W=0,H=0,DPR=1,RH=150,BM=20,rows=new Map(),taken=new Set(),cam=0,restRow=0,st=null,dust=[],vt=0,last=performance.now();
- let shelf=[],hits=[],onDepth=null,gaugeCb=null,niches=new Map(),boff=0,btgt=0,wasB=false,browseCb=null;
+ let shelf=[],hits=[],ledgeCb=null,onDepth=null,gaugeCb=null,niches=new Map(),boff=0,btgt=0,wasB=false,browseCb=null;
  const ZS=[0,.14,.3,.46,.62,.78,.92];
  const restCam=r=>r*RH-(H-RH-BM);
  const abn=r=>Math.max(clamp(r/190,0,1),floorAtRow(r).decay);
@@ -270,8 +272,8 @@ const World=(()=>{
   // numeral plaque on the arch
   if(nv.label){ctx.font='600 13px Newsreader,Georgia,serif';const tw=ctx.measureText(nv.label).width+26,px=x+w/2-tw/2,py=y-12;const pg=ctx.createLinearGradient(0,py,0,py+24);pg.addColorStop(0,'#7a5a36');pg.addColorStop(1,'#3d2916');ctx.fillStyle=pg;ctx.fillRect(px,py,tw,24);ctx.strokeStyle='#b08a56';ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,tw-1,23);ctx.fillStyle='#f3e3bd';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(nv.label,x+w/2,py+12.5);}
   if(nv.res)drawNicheResult(nv.res,x,y,w,h,now);
-  // books collected so far stand on the ledge
-  if(nv.books&&nv.books.length){let bx=x+w-26;for(let i=nv.books.length-1;i>=0;i--){const b=nv.books[i],dm=bookDims({w:b.w,tier:b.tier},RH),sw=dm.w*.62;ctx.save();ctx.translate(bx-sw/2,y+h);ctx.scale(.62,.62);bookArt(ctx,{w:dm.w,h:dm.h,tier:b.tier,seed:hashStr(b.w)&0xffff,word:b.w,ribbon:b.tier>=1?RIBBONS[b.tier%5]:null},now/1000);ctx.restore();bx-=sw+3;}}
+  // this run's books stand on the ledge in word order; a skipped word leaves an empty slot
+  nv.hit=nv.books&&nv.books.length?drawLedge(ctx,{books:nv.books,x,y,w,h,now,RH,dims:b=>bookDims({w:b.w,tier:b.tier},RH),bookArt,ribbons:RIBBONS,hash:hashStr}):null;
   ctx.restore();}
  const ease=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
  const shade=(hx,f)=>{const n=parseInt(hx.slice(1),16);return `rgb(${(n>>16)*f|0},${(n>>8&255)*f|0},${(n&255)*f|0})`;};
@@ -298,6 +300,7 @@ const World=(()=>{
   let tgt=null;
   for(let r=top;r<=bot;r++){const o=drawRow(r,0,camNow,1,1);if(st&&r===st.row)tgt=o;}
   for(const [nr,nv] of niches)drawNiche(nr,nv,camNow,now);
+  if(ledgeCb){const cn=niches.get(restRow);ledgeCb(!st&&!rest&&cn&&cn.hit&&cn.books?cn.hit:null,cn&&cn.books);}
   // pulled-out target
   if(st&&tgt){const T=TIERS[st.tier],e=pull*pull*(3-2*pull),bw=36,bh=RH*.82;const bx=W*(.4+.2*(((st.seed>>5)&127)/127)),by0=tgt.base-RH*(1+((st.seed>>3)&1));const cy=H*.5;const px=bx+(W/2-bx)*e,py=by0+(cy+bh*.5*2.2-by0)*e;const s=1+1.3*e;
    if(settle>0){ctx.fillStyle='#070504';ctx.fillRect(bx-bw/2,by0-bh,bw,bh);}
@@ -340,7 +343,7 @@ const World=(()=>{
   clearNiches(){niches.clear();},
   fillNiche(r,res,books){const e=niches.get(r);if(e){e.res=res;if(books)e.books=books;}},
   openNiche(r,o={}){const e=niches.get(r);if(e){e.label=o.label||e.label;e.books=o.books||e.books;}else niches.set(r,{t0:performance.now(),label:o.label||'',books:o.books||[]});},
-  onDepth(f){onDepth=f;},onGauge(f){gaugeCb=f;},
+  onLedge(f){ledgeCb=f;},onDepth(f){onDepth=f;},onGauge(f){gaugeCb=f;},
   // look back up the descent: the camera offsets while idle and snaps home; never while a descent or glide runs
   get canBrowse(){return !st&&!rest&&restRow>0;},get browsing(){return btgt<-4;},onBrowse(f){browseCb=f;},
   browse(d){if(!this.canBrowse)return;btgt=clamp(btgt+d,restCam(0)-cam,0);},
@@ -369,6 +372,7 @@ function announceFloor(f){
  floorBanner.innerHTML=`<small>Floor ${['I','II','III','IV','V','VI','VII','VIII'][f.id]} \u00b7 ${floorStartFt(f)} ft</small><b>${esc(f.name)}</b><i>${esc(f.sub)}</i>`;
  floorBanner.style.setProperty('--fc',`rgb(${f.lamp.join(',')})`);floorBanner.style.setProperty('--fcd',`rgba(${f.lamp.join(',')},.32)`);floorBanner.dataset.motif=f.motif;floorBanner.classList.remove('on');void floorBanner.offsetWidth;floorBanner.classList.add('on');
  clearTimeout(bannerT);bannerT=setTimeout(()=>floorBanner.classList.remove('on'),RM?2500:4200);}
+World.onLedge(initLedge({tiers:TIERS,canActivate:()=>ui.stage.hidden&&$('#cardlayer').hidden,onOpen:b=>openCard(b,{fresh:false}),showTip,hideTip}));
 const browse=initBrowse({world:World,floors:FLOORS,startOf:floorStartFt,ft:FT,rm:RM});
 World.onDepth(v=>{browse.update(v);const e=$('#dnum');if(e.textContent!==String(v))e.textContent=v;
  const f=floorAtFt(v);$('#dfloor').textContent=f.id?f.name:'';
@@ -444,7 +448,7 @@ async function startDaily(practice){
  if(modelStatus().state==='loading')await whenReady(8000);
  const words=dailyWords(utc(),7);
  prepareWords(words).catch(()=>{});
- World.reset();World.setShelf(S.shelf);
+ World.reset();World.setShelf([]);
  run={practice,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0};
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
@@ -455,7 +459,7 @@ async function startUnlimited(){
  const placing=!S.rating.placed,n=placing?core.PLACEMENT_WORDS:core.RUN_WORDS;
  const first=core.nextWord(S.rating,0,n,[]);
  prepareWords([first]).catch(()=>{});
- World.reset();World.setShelf(S.shelf);
+ World.reset();World.setShelf([]);
  run={mode:'unlimited',placing,practice:false,i:0,words:Array(n).fill(first),results:[],busy:false,depthRows:0,floor:0,lex0:core.lexicon(S.rating.L)};
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
@@ -521,7 +525,7 @@ function finishRun(){
 const BLK='▁▂▃▄▅▆▇';
 function shareText(d){return `Deepstack ${d.mode==='unlimited'?'Unlimited \u00b7 Lexicon '+d.lex:'No. '+dailyNo()}\nDepth ${d.depth} ft${d.floor?' · '+FLOORS[d.floor].name:''} · average closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' · ')}`;}
 async function showFinal(d,fromHome){
- if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;World.reset();World.setShelf(S.shelf);}
+ if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;World.reset();World.setShelf([]);}
  ui.hud.hidden=false;$('#dnum').textContent=d.depth;
  World.openNiche(World.restRow,{label:'FINIS',books:d.books});
  const txt=shareText(d);const el=ui.final;el.hidden=false;el.className='center fadein';
