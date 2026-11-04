@@ -52,3 +52,7 @@ body.browsing .center *{pointer-events:none!important}
  #tracker ol{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 }
 @media(prefers-reduced-motion:reduce){#tracker,#tracker *,#snapback{transition:none!important}#tracker .you b{animation:none}}
+
+/* phones: the rail is the tap target (wider hit area, no plaques) */
+@media(max-width:700px){#tracker{width:44px;padding:14px 12px}#tracker .rail{pointer-events:auto;cursor:pointer;width:20px}}
+#tracker .rail::before{content:"";position:absolute;inset:0 -12px}

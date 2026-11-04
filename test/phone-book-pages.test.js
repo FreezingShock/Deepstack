@@ -17,3 +17,9 @@ test('intro book stays two-page on wide screens', () => {
   assert.match(sp.r, /bs-start/);
   delete globalThis.matchMedia;
 });
+
+import {railFraction} from '../src/ui/tracker.js';
+test('rail fraction stays within 0..1 for tap-to-jump math', () => {
+  const f = railFraction(99999, [0, 100, 250]);
+  assert.ok(f > 0 && f <= 1);
+});
