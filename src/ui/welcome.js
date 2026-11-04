@@ -19,13 +19,13 @@ export function rulesCardHTML(stepsHTML){
  const fake=l=>`<div class="cc-fake" aria-hidden="true"><span class="cc-plate">${l}</span><i class="cc-knob"></i></div>`;
  return `<aside class="cat-card" data-open="0" data-face="0" aria-label="Card catalogue">
  <div class="cc-cab"><div class="cc-top" data-prop-slot="bell"></div><div class="cc-run">
-  <button type="button" class="cc-drawer" aria-expanded="false" aria-controls="ccCard"><span class="cc-plate">Rules of the house</span><i class="cc-knob" aria-hidden="true"></i></button>
+  <button type="button" class="cc-drawer" aria-expanded="false" aria-controls="ccCard"><span class="cc-plate">Library rules</span><i class="cc-knob" aria-hidden="true"></i></button>
   ${fake('Tiers A–M')}${fake('Sets N–Z')}
  </div></div>
  <div class="cc-scrim" aria-hidden="true"></div>
- <div class="cc-slot"><div class="cc-flip" id="ccCard" role="region" aria-label="Rules of the house">
-  <div class="cc-face cc-front"><i class="wc-pin" aria-hidden="true"></i><div class="wc-head">Rules of the house</div><ol class="how">${stepsHTML}</ol>${turn('Turn ↻','Turn the card over: combo and tier rules')}</div>
-  <div class="cc-face cc-back"><i class="wc-pin" aria-hidden="true"></i><div class="wc-head">Combo &amp; tiers</div>${rulesBackHTML()}${turn('↺ Turn','Turn the card back: rules of the house')}</div>
+ <div class="cc-slot"><div class="cc-flip" id="ccCard" role="region" aria-label="Library rules">
+  <div class="cc-face cc-front"><i class="wc-pin" aria-hidden="true"></i><div class="wc-head">Library rules</div><p class="cc-sub">Please observe</p><ol class="how">${stepsHTML}</ol>${turn('Turn ↻','Turn the card over: combo and tier rules')}</div>
+  <div class="cc-face cc-back"><i class="wc-pin" aria-hidden="true"></i><div class="wc-head">Combo &amp; tiers</div><p class="cc-sub">Of the Reading Room</p>${rulesBackHTML()}${turn('↺ Turn','Turn the card back: rules of the house')}</div>
  </div></div>
 </aside>`;
 }
