@@ -40,7 +40,7 @@ const HINT_LABEL={sentence:'used in a sentence',synonym:'a related word',opening
 function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);Sfx.set(S.sound);}
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
 initA11y();
-initTopbar({Sfx,openShelf:()=>openAll(),openStats:()=>openStats()});
+initTopbar({Sfx});
 
 /* ---------- book art (shared by the canvas world and DOM spine images) ---------- */
 const hex=h=>{const n=parseInt(h.slice(1),16);return[n>>16,n>>8&255,n&255];};
