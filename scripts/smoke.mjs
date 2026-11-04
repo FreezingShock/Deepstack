@@ -115,6 +115,20 @@ await step('descend and play one word', async () => {
   await page.locator('#stage .wlabel', {hasText: 'Word 2'}).waitFor({state: 'visible', timeout: T}).catch(() => fail('did not reach word 2'));
 });
 
+// 2b. Enter pressed the moment the card appears (mid-reveal) must close it cleanly and move on, not throw
+await step('close result card mid-reveal', async () => {
+  if (await page.locator('#stage .wlabel', {hasText: 'Word 2'}).count() === 0) return;
+  await realClick(page, '#ans', 'answer box');
+  await page.keyboard.type('something that is rather small and quiet');
+  await page.keyboard.press('Enter');
+  const card = page.locator('#cardlayer:not([hidden])');
+  for (let i = 0; i < 40 && !(await card.count()); i++) { await page.keyboard.press('Space'); await page.waitForTimeout(250); }
+  if (!(await card.count())) { fail('no result card after answering word 2'); throw new Error('stop'); }
+  await page.keyboard.press('Enter');
+  await page.locator('#stage .wlabel', {hasText: 'Word 3'}).waitFor({state: 'visible', timeout: T}).catch(() => fail('did not reach word 3 after closing the card early'));
+  await page.waitForTimeout(1500); // let the abandoned reveal timers fire; any throw lands in pageerror
+});
+
 await step('home returns', async () => {
   await realClick(page, '#mark', 'Deepstack home mark');
 });
