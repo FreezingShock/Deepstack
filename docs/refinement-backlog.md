@@ -61,7 +61,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: 3 new rare shelf curiosities revealed on hover, seeded per row like lore books (pure function of the row seed, no storage). Files: new `src/ui/curios.js`. Done when: hover reveals with the same halo rules as lore books (tight, never near the alcove or pillars), determinism test, touch alternative.
 **Touches:** new files, WORLD hook. **Conflicts:** none significant.
 
-### 5. Alcove as a reading nook
+### 5. [x] Alcove as a reading nook (#112)
 **Serves:** integrated, rarity hero.
 **Pitch:** The alcove looks lived-in: lamp, a desk edge, an open book under the word, with your earned books lined on the ledge at believable scale.
 **Brief:** Goal: redraw the alcove frame and ledge props, keep the word lettering area clear for the run screen thread. Files: new `src/ui/alcoveArt.js`. Done when: the ledge fits 7 books plus the skipped slot at 375 px, no overlap with the word at 14 letters.
@@ -144,7 +144,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: pure CSS/canvas treatments driven by the book object library (7). Files: new `tierFrames.js` + css. Done when: seven-tier strip screenshot, tokens only, reduced motion static.
 **Touches:** card. **Conflicts:** 7, 16, tier reveals thread.
 
-### 18. Feedback that teaches (spoiler-safe)
+### 18. [x] Feedback that teaches (spoiler-safe) (PR pending)
 **Serves:** honest answers, hierarchy.
 **Pitch:** After an answer, tap the book to see "what you caught / what was missing" and the dictionary line, collapsed by default.
 **Brief:** Goal: details view using lexical hits and the reference gloss, never spelling the word if hints were used. Files: new `src/core/feedback.js`, small hook. Done when: fixture tests, no new on-screen clutter by default.
@@ -476,6 +476,17 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: shared `.ribbon` class. Files: new `src/ui/ribbon.css`. Done when: focus is visible, buttons tests pass.
 **Touches:** buttons. **Conflicts:** 7.
 
+### 72. Caught and missed on old books
+**Serves:** honest answers.
+**Pitch:** Books answered before "What it caught" existed still teach: tap one on the shelf and it shows what it caught.
+**Brief:** Goal: recompute `fb` from the saved answer with the lexical judge when a book has none. Files: `src/core/feedback.js`, `openCard` hook. Done when: fixture test on a pre-feedback save.
+**Touches:** card. **Conflicts:** judge thread.
+
+### 73. Judge relations in the caught list
+**Serves:** honest answers.
+**Pitch:** When Judge v2 lands, show near-miss ideas ("you said 'leave', it wanted 'abandon completely'") instead of only caught and missing.
+**Brief:** Goal: extend `feedbackData` with relation hits from Judge v2. Files: `src/core/feedback.js`. Done when: tests per relation kind, still no spelling.
+**Touches:** card, JUDGE. **Conflicts:** judge thread.
 ### 66. Sound per tier on the seal
 **Serves:** rarity is the hero, tactile.
 **Pitch:** The wax-seal press changes with the tier it earns: a dull press for Pamphlet, a deeper, longer press with a faint ring for Codex and up.
@@ -487,15 +498,25 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** The scratch speeds up when typing fast, softens on pauses, and gives a small flourish when the answer is sent.
 **Brief:** Goal: scale quill level and length by keystroke rate. Files: `src/sound/scribe.js`. Done when: rate-limit test still passes, no more nodes than the voice cap.
 **Touches:** FEEL hook. **Conflicts:** 23 follow-ups.
-### 72. Candle light that spines answer
+### 92. Candle light that spines answer
 **Serves:** tactile, immersive, physical.
 **Pitch:** The candle cursor's pool of light is a real light source: spines and brass inside it brighten and show a little more grain, and shelf books under the flame tilt a hair toward it.
 **Brief:** Goal: feed the cursor position into the World draw as a small radial lift (cached, one gradient per frame) instead of a screen-blend overlay. Files: new `src/ui/candleLift.js`, one WORLD hook. Done when: under 0.5 ms/frame, off with the candle.
 **Touches:** WORLD. **Conflicts:** 2.
 
-### 73. Candle that goes with the game
+### 93. Candle that goes with the game
 **Serves:** integrated, not bolted on.
 **Pitch:** The cursor flame flares on a good score, gutters when the 45 s candle is nearly out and turns the tier colour over a revealed book.
 **Brief:** Goal: tiny event hooks that set a data attribute on `#candleCursor`. Files: `cursorLight.css`, `cursorLight.js`. Done when: three states screenshotted, tokens only.
 **Touches:** new files. **Conflicts:** none.
 
+
+### 90. Things that live in the nook
+**Serves:** immersive, integrated. **Pitch:** "things that live down there": a moth, a mouse or a spider that wander the desk, and a quill that scratches while you type, each floor with its own resident.
+**Brief:** Goal: tiny animated creatures and a writing quill on the nook desk (`alcoveArt.js` hook), off with reduced motion. Done when: costs measured, no overlap with controls at 375 px.
+**Touches:** new file + `alcoveArt.js`. **Conflicts:** none.
+
+### 91. Hidden curios on the shelves (overlaps 61, merge the two)
+**Serves:** variety, discovery. **Pitch:** "hidden curios on the shelves": rare tiny objects (a key, a skull, a folded map) tucked between books that glow on hover and reveal a line of lore.
+**Brief:** Goal: seeded rare curios per floor on shelf rows, hover tooltip, a collection page. Files: new `src/ui/curios.js`. Done when: never under an alcove, tests for seeding.
+**Touches:** WORLD hook. **Conflicts:** 6, lore books.
