@@ -85,6 +85,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const r=from||{left:innerWidth/2,top:innerHeight/2,width:0,height:0};
  sp.style.cssText=`--bk:${colors.bk};--bk2:${colors.bk2};--bk-gild:${colors.gild};--tex:${colors.tex||'none'};--fx:${r.left+r.width/2-innerWidth/2}px;--fy:${r.top+r.height/2-innerHeight/2}px`;
  sp.innerHTML='<div class="bs-board l"></div><div class="bs-board r"></div><div class="bs-page l"></div><div class="bs-page r"></div><div class="bs-leaf"><i></i><i></i></div>'+
+  '<button class="bs-corner prev" aria-label="Previous page" hidden><i></i></button><button class="bs-corner next" aria-label="Next page" hidden><i></i></button>'+
   '<div class="bs-cover"><div class="cv-front"><i class="cv-hinge"></i><div class="cv-frame"><span class="cv-orn" aria-hidden="true"></span><span class="cv-t"></span><span class="cv-orn" aria-hidden="true"></span></div></div><div class="cv-in"></div></div>';
  sp.querySelector('.cv-t').textContent=title;
  document.body.appendChild(sp);
@@ -106,28 +107,64 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
     through left then right pages; a blank facing page is skipped. */
  const one=typeof matchMedia==='function'&&matchMedia('(max-width:560px)').matches;let side='l';
  const flat=()=>spreads.flatMap((s,i)=>[{i,s:'l'},...(s.r?[{i,s:'r'}]:[])]);
+ /* Page HTML for spread i side s2 ('l'|'r'); foot carries only the page number, turning is done by the corner zones. */
+ const pageNum=(i,s2)=>i*2+(s2==='l'?1:2);
+ const pageHTML=(i,s2,num)=>`<div class="pg-in">${spreads[i][s2]||''}</div><div class="pg-foot ${s2}"><span>${num}</span></div>`;
+ const corners=[...sp.querySelectorAll('.bs-corner')];
  const paint=(only)=>{
   const sd=spreads[idx],L=sp.querySelector('.bs-page.l'),R=sp.querySelector('.bs-page.r'),n=spreads.length;
   if(one&&side==='r'&&!sd.r)side='l';
   const fl=one?flat():null,pos=one?fl.findIndex(f=>f.i===idx&&f.s===side):0;
   sp.classList.toggle('one',one);if(one)sp.dataset.side=side;
-  const prevB=dis=>`<button class="bs-turn prev" ${dis?'disabled':''} aria-label="Previous page${one?'':'s'}">‹</button>`,nextB=dis=>`<button class="bs-turn next" ${dis?'disabled':''} aria-label="Next page${one?'':'s'}">›</button>`;
-  const foot=(sd2)=>{if(one){const m=fl.length;return `<div class="pg-foot ${sd2}">${m>1?prevB(pos<=0):''}<span>${pos+1}</span>${m>1?nextB(pos>=m-1):''}</div>`;}
-   const num=idx*2+(sd2==='l'?1:2);const nav=n>1?(sd2==='l'?prevB(!idx):nextB(idx>=n-1)):'';
-   return `<div class="pg-foot ${sd2}">${sd2==='l'?nav+`<span>${num}</span>`:`<span>${num}</span>`+nav}</div>`;};
-  if(only!=='r')L.innerHTML=`<div class="pg-in">${sd.l}</div>`+foot('l');
-  if(only!=='l')R.innerHTML=`<div class="pg-in">${sd.r}</div>`+foot('r');
-  if(one&&only==='r'){const f=L.querySelector('.pg-foot');if(f)f.outerHTML=foot('l');}
-  sp.querySelectorAll('.bs-turn.prev').forEach(b=>b.onclick=()=>turn(-1));sp.querySelectorAll('.bs-turn.next').forEach(b=>b.onclick=()=>turn(1));
+  const nl=one?pos+1:pageNum(idx,'l'),nr=one?pos+1:pageNum(idx,'r');
+  if(only!=='r')L.innerHTML=pageHTML(idx,'l',nl);
+  if(only!=='l')R.innerHTML=pageHTML(idx,'r',nr);
+  const m=one?fl.length:n,at=one?pos:idx;
+  corners.forEach(c=>{const prev=c.classList.contains('prev');c.hidden=m<2;c.disabled=prev?at<=0:at>=m-1;});
   if(api.onPaint)api.onPaint(sp,idx);
  };
+ /* Page turn: a leaf lifts from the corner and swings about the spine (two pages) or peels away (phones).
+    Only transform and opacity animate. A second turn pressed mid-flight is queued, not dropped. */
+ const FLIP_MS=560;let flying=null,queued=0;
+ const settle=()=>{if(!flying)return;const f=flying;flying=null;clearTimeout(f.t);f.leaf.remove();f.done();sp.classList.remove('flipping','flip-next','flip-prev');
+  if(queued){const d=queued;queued=0;turn(d);}};
  const turn=d=>{let j=idx+d,s2=side;
+  if(flying){queued=d;return;}
   if(one){const fl=flat(),p=fl.findIndex(f=>f.i===idx&&f.s===side)+d;if(p<0||p>=fl.length)return;j=fl[p].i;s2=fl[p].s;}
   else if(j<0||j>=spreads.length)return;
-  sp.classList.add('turning');setTimeout(()=>{idx=j;side=s2;paint();sp.classList.remove('turning');},160);};
+  if(reduce||!sp.classList.contains('intro')){idx=j;side=s2;paint();return;}
+  const next=d>0,leaf=document.createElement('div');leaf.className='bs-flip '+(next?'next':'prev')+(one?' one':'');
+  const face=(cls,html)=>`<div class="bs-face ${cls} bs-page" inert>${html}</div>`;
+  const L=sp.querySelector('.bs-page.l'),R=sp.querySelector('.bs-page.r');
+  const cur=one?(side==='r'?R:L):(next?R:L);                      /* the page being lifted */
+  const curHTML=cur.innerHTML;
+  const oldIdx=idx,oldSide=side;
+  let front=curHTML,back='',done;
+  if(one){/* phone: the lifted page peels away (next) or the target page settles in (prev) */
+   const np=flat().findIndex(f=>f.i===j&&f.s===s2)+1;
+   if(next){idx=j;side=s2;paint();done=()=>{};}
+   else{front=`<div class="pg-in">${spreads[j][s2]||''}</div><div class="pg-foot ${s2}"><span>${np}</span></div>`;done=()=>{idx=j;side=s2;paint();};}
+  }else if(next){/* new right page appears underneath at once; new left lands when the leaf has covered the old one */
+   back=`<div class="pg-in">${spreads[j].l||''}</div><div class="pg-foot l"><span>${pageNum(j,'l')}</span></div>`;
+   idx=j;paint('r');done=()=>paint('l');
+  }else{
+   back=`<div class="pg-in">${spreads[j].r||''}</div><div class="pg-foot r"><span>${pageNum(j,'r')}</span></div>`;
+   idx=j;paint('l');done=()=>paint('r');
+  }
+  leaf.innerHTML=face('front',front)+(one?'':face('back',back));
+  sp.appendChild(leaf);sp.classList.add('flipping',next?'flip-next':'flip-prev');
+  flying={leaf,done,t:setTimeout(settle,FLIP_MS+40)};
+  leaf.addEventListener('animationend',e=>{if(e.target===leaf)settle();});
+ };
+ /* swipe on the open book: a mostly horizontal drag turns the page */
+ let sw=null;
+ sp.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'||e.target.closest('input,textarea,select,button,a,.bs-corner'))return;sw={x:e.clientX,y:e.clientY};});
+ sp.addEventListener('pointerup',e=>{if(!sw)return;const dx=e.clientX-sw.x,dy=e.clientY-sw.y;sw=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)turn(dx<0?1:-1);});
+ sp.addEventListener('pointercancel',()=>{sw=null;});
+ corners.forEach(c=>c.addEventListener('click',()=>turn(c.classList.contains('next')?1:-1)));
  const key=ev=>{if(ev.key==='Escape'){if(!(keepOnEsc&&keepOnEsc()))close();return;}if(ev.target.closest&&ev.target.closest('input,textarea,select'))return;if(ev.key==='ArrowRight')turn(1);else if(ev.key==='ArrowLeft')turn(-1);};
  /* swap the pages in place (filters, search); stays on spread i. only 'r' or 'l' repaints just that page, so an input on the other page keeps focus */
- const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0,only){spreads=s;idx=Math.max(0,Math.min(i,s.length-1));if(!only)side='l';paint(only);}};
+ const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0,only){settle();queued=0;spreads=s;idx=Math.max(0,Math.min(i,s.length-1));if(!only)side='l';paint(only);}};
  t(()=>sp.classList.add('open'),BOOK_FLY_MS+BOOK_HOLD_MS);
  if(spreads&&spreads.length){
   t(()=>{
