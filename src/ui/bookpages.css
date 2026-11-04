@@ -1,5 +1,5 @@
 /* Content styles for the menu books (Shelf, Sets, Stats) shown on openBook pages (.bk-spread.menu). */
-.bk-spread.menu{--ink:var(--c-ink);--mute:var(--c-bronze-32);--rule:var(--c-bronze-33-alpha-40)}
+.bk-spread.menu{--ink:var(--bs-ink);--mute:var(--bs-mute);--rule:var(--bs-rule)}
 .bk-spread.menu .pg-in{overflow-y:auto;overflow-x:hidden;display:block;scrollbar-width:thin;padding-top:clamp(16px,4%,30px)}
 .bk-spread.menu .pg-in>*{flex:none}
 .bk-spread.menu h1{margin:0 0 2px;font:500 clamp(24px,3.4vw,34px)/1.1 var(--serif);letter-spacing:.04em;text-transform:uppercase;color:var(--bk);text-shadow:none}
@@ -11,14 +11,14 @@
 .bk-spread.menu .bkv-blank{height:100%}
 .bk-spread.menu .rule{border:0;border-top:1px solid var(--rule);margin:14px 0}
 /* controls on parchment */
-.bk-spread.menu #fq{width:100%;box-sizing:border-box;background:transparent;border:0;border-bottom:1.5px solid var(--c-oak-4a3a22-alpha-88);border-radius:0;color:var(--bk);padding:2px 2px 0;font:500 28px/1.3 'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive;caret-color:var(--bk);-webkit-appearance:none;appearance:none}
+.bk-spread.menu #fq{width:100%;box-sizing:border-box;background:transparent;border:0;border-bottom:1.5px solid var(--c-oak-4a3a22-alpha-88);border-radius:0;color:var(--bk);padding:2px 2px 0;font:500 28px/1.3 var(--bs-hand);caret-color:var(--bk);-webkit-appearance:none;appearance:none}
 .bk-spread.menu #fq::placeholder{color:var(--mute);opacity:.55}
 .bk-spread.menu #fq:focus{outline:0;border-bottom-color:var(--bk)}
 .bk-spread.menu #fq::-webkit-search-cancel-button{display:none}
 /* filters: plain handwritten words; the chosen one is underlined with a pen stroke */
-.bk-spread.menu .fchip{position:relative;display:inline-flex;align-items:baseline;gap:5px;padding:0 3px 7px;border:0;border-radius:0;background:none;color:var(--c-oak-4a3a22);font:500 23px/1.1 'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive;cursor:pointer}
+.bk-spread.menu .fchip{position:relative;display:inline-flex;align-items:baseline;gap:5px;padding:0 3px 7px;border:0;border-radius:0;background:none;color:var(--bs-ink2);font:500 23px/1.1 var(--bs-hand);cursor:pointer}
 .bk-spread.menu .fchip:hover:not([disabled]){color:var(--bk)}
-.bk-spread.menu .fchip small{font:500 16px 'Fuzzy Bubbles','Segoe Script',cursive;color:var(--mute)}
+.bk-spread.menu .fchip small{font:500 16px var(--bs-hand);color:var(--mute)}
 .bk-spread.menu .fchip[aria-pressed="true"]{color:var(--bk)}
 .bk-spread.menu .fchip[aria-pressed="true"] small{color:var(--bk);opacity:.7}
 .bk-spread.menu .fchip[aria-pressed="true"]::after{content:"";position:absolute;left:-2px;right:-2px;bottom:0;height:9px;background:var(--bk);
@@ -60,7 +60,7 @@
 .bk-spread.menu .sb-band:first-child{margin-left:-4px;width:7px;border-radius:3px 0 0 3px}
 .bk-spread.menu .sb-t{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:500 12.5px/1 var(--serif);letter-spacing:.07em;text-transform:uppercase;text-align:center;color:var(--gild);text-shadow:0 1px 0 var(--c-black-alpha-99);
  padding:3px 4px;border:1px solid color-mix(in srgb,var(--gild) 50%,transparent);border-width:1px 0}
-.bk-spread.menu .sb-n{flex:none;font:600 16px/1 'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive;font-style:normal;letter-spacing:.02em;color:var(--gild);text-shadow:0 1px 0 var(--c-black-alpha-99)}
+.bk-spread.menu .sb-n{flex:none;font:600 16px/1 var(--bs-hand);font-style:normal;letter-spacing:.02em;color:var(--gild);text-shadow:0 1px 0 var(--c-black-alpha-99)}
 .bk-spread.menu .sb-fav{flex:none;font:400 11px/1 var(--sans);color:var(--c-amber-92);font-style:normal;text-shadow:0 0 6px var(--c-black)}
 .bk-spread.menu .sbook:hover,.bk-spread.menu .sbook:focus-visible{transform:translateX(calc(var(--o,0px) + 7px));filter:brightness(1.18);z-index:3}
 .bk-spread.menu .sbook:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:2px}
