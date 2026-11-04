@@ -45,7 +45,7 @@ export async function startUnlimited(){
  const first=core.nextWord(S.rating,0,n,[]);
  prepareWords([first]).catch(()=>{});
  World.reset();World.setShelf([]);
- run={mode:'unlimited',placing,practice:false,i:0,words:Array(n).fill(first),results:[],busy:false,depthRows:0,floor:0,lex0:core.lexicon(S.rating.L)};
+ run={mode:'unlimited',placing,practice:false,i:0,words:Array(n).fill(first),results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true,lex0:core.lexicon(S.rating.L)};
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
