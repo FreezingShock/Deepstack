@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Open `?perf` on your own machine at home, mid-run and during a descent and tell me the p95 and whether it feels smoother or the same: the headless box can only see JS cost, and your GPU is the real test for the glow-cache change (item 38).
 - Scroll up into the attic and tap an earlier find that has no floor: a slip asks which floor it was found on, the pen underlines your pick and the book leaves the attic for that floor's bay on the Shelf. Check the slip reads at your screen size. (dust-off thread, PR #156)
 - Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Borrower's ledger on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
 - Scroll up into the attic and back a few times (also Escape, swipe, with reduced motion): a ladder now slides in from the left and its rungs pass you as you rise, and the room brightens as the skylight comes overhead. Say if it is too long or too dark at the start. (attic climb thread)
@@ -332,7 +333,8 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Files: new `src/ui/perf.js`, `scripts/perf.mjs`. Done when: zero cost when off, baseline in the PR.
 **Touches:** new files. **Conflicts:** none.
 
-### 38. Canvas draw budget (done, this PR)
+### 38. [x] Canvas draw budget (PR pending)
+**Status:** the three full-screen radial glows (lamp vignette, flame glow, tier glow) are now cached sprites (`src/ui/glowSprite.js`). Dust batching, the DPR cap and the low-light map already existed. Headless software rendering spends ~84% in raster ("program"), not JS, so p95 does not move there; see the PR for numbers. Real-GPU confirmation is R5 and new item P1.
 **Pitch:** Cut per-frame cost: cached gradients, batched dust, DPR cap on huge screens.
 **Brief:** Files: WORLD. Done when: p95 improved vs item 37, snapshots unchanged.
 **Touches:** WORLD. **Conflicts:** floors, particles, 1-3 (run last).
@@ -964,3 +966,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Serves:** atmosphere.
 **Pitch:** The dress-form sheet shifts slightly when you climb in, as if disturbed by the draught.
 **Brief:** Goal: one-off settle animation for the sheet when the attic opens, in the shared motion language. **Touches:** WORLD. **Conflicts:** none.
+
+### P1. Per-pass timers in the ?perf overlay
+**Serves:** performance.
+**Pitch:** show which canvas pass (rows, niches, lighting, glows, dust) costs what, so I can fix the slowest one instead of guessing.
+**Brief:** Goal: optional timers around each pass in `frame()` shown as a bar list under `?perf`, zero cost when off. Files: `src/ui/perf.js`, one-line hooks in `world.js`. Done when: timers sum to the frame work and nothing is measured without `?perf`.
+**Touches:** WORLD (hooks), TOOLING. **Conflicts:** none.
+
+### P2. Cache the wall gradient per floor
+**Serves:** performance.
+**Pitch:** every shelf row still builds its own wall gradient each time it is redrawn; one cached strip per floor would do.
+**Brief:** Goal: reuse a per-floor wall sprite in `drawRowLive` instead of `createLinearGradient`. Files: `src/world/world.js`. Done when: p95 not worse and snapshots unchanged.
+**Touches:** WORLD. **Conflicts:** floors threads.

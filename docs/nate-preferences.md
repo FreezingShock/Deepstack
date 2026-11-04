@@ -23,6 +23,7 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 - **Shelves everywhere.** He asked three times why the top shelves were bare. Full shelves and wall detail from the very first screen, including behind the menu.
 - **Daily is its own thing.** Daily No. 1 = 2026-11-03, shown with today's date, one entry per day with 7 words, definitions and results. Reactive difficulty is Unlimited only.
 - **Performance is a feature.** "Performant" appears with lanterns and scrolling. He wants costs measured before building ("determine the performance cost").
+  - 2026-11-04: asked for the canvas draw budget (38) to run last, after floors, lighting and fallen books. Report measured numbers honestly, including when a change is within noise.
 - **Honest answers.** He asks "is this on purpose?", "why does it look like this?", "should duplicates show?". Give the real cause and the fix, not a defence.
 - **Say it once, expect it done.** When he sends a screenshot with "fix this", he expects the thread to find the cause. Repeat complaints (shelves at the top, hover on lore books) mean the first fix was not checked in the real screen. Verify with a screenshot of the exact screen he showed.
 - 2026-11-04 motion: "the motion language should be for all animations and changes, make sure it's smooth and performant and all uniform" (sounds should line up with it, thread: desk sounds)

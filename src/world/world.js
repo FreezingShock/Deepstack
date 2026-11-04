@@ -1,6 +1,7 @@
 import {tierBase,mixc,LEATHER,RIBBONS,bookArt,rgbs} from '../ui/bookArt.js';
 import {plaqueShadow,plaqueMount} from '../ui/mounts.js';
 import {lecternGeom,drawLecternBack,drawLecternLip} from '../ui/lectern.js';
+import {glowSprite,stampGlow,fillOutside} from '../ui/glowSprite.js';
 import {PALETTE} from '../theme/colors.js';
 import {worldCovered,frameInterval} from '../ui/canvasCover.js';
 import {Quality} from '../ui/quality.js';
@@ -272,7 +273,7 @@ export const World=(()=>{
    if(lg0)drawLecternLip(ctx,lg0,RM?1:Math.min(1,e*1.6));}
   // darkness / lamp (shrinks with abandonment)
   const lx=W/2,ly=H*.5,lr=Math.hypot(W,H)*(.6-.2*a)*atm.lampR;
-  const lg=ctx.createRadialGradient(lx,ly,0,lx,ly,lr);lg.addColorStop(0,'rgba(0,0,0,0)');lg.addColorStop(.3,`rgba(6,4,2,${.2+.25*a})`);lg.addColorStop(1,`rgba(3,2,2,${.93+.06*a})`);ctx.fillStyle=lg;ctx.fillRect(0,0,W,H);
+  {const aq=Math.round(a*48)/48;stampGlow(ctx,glowSprite('lamp'+aq,[[0,'rgba(0,0,0,0)'],[.3,`rgba(6,4,2,${.2+.25*aq})`],[1,`rgba(3,2,2,${.93+.06*aq})`]]),lx,ly,lr);fillOutside(ctx,W,H,lx,ly,lr,`rgba(3,2,2,${.93+.06*aq})`);} // cached sprite, a quantised to 1/48
   // the floor's own air and tint (decay, dark, tint, fog, vignette, water light) never paints over an alcove
   const arects=alcoveRects(niches.keys(),nicheBox(),RH,H,BM,camNow);
   paintAroundAlcoves(ctx,W,H,arects,()=>{
@@ -287,8 +288,8 @@ export const World=(()=>{
   ctx.globalCompositeOperation='lighter';
   if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
   const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick*atm.flick;
-  let g=ctx.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*.45);{const l=atm.lamp.map(v=>v|0);g.addColorStop(0,`rgba(${l[0]},${l[1]+6},${l[2]+10},${fl})`);g.addColorStop(1,`rgba(${l[0]},${l[1]+6},${l[2]+10},0)`);}ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  if(st){const zi=st.prog>=1?st.tier:Math.min(st.tier,tierOf(st.prog*st.score));const zc=TIERS[zi].spine;g=ctx.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*.6);g.addColorStop(0,zc+'26');g.addColorStop(1,zc+'00');ctx.fillStyle=g;ctx.globalAlpha=.5+.5*settle;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;gaugeCb&&gaugeCb(zi,st);}
+  {const l=atm.lamp.map(v=>v|0),c=`${l[0]},${l[1]+6},${l[2]+10}`;stampGlow(ctx,glowSprite('flame'+c,[[0,`rgba(${c},1)`],[1,`rgba(${c},0)`]]),lx,ly,Math.max(W,H)*.45,Math.max(0,fl));}
+  if(st){const zi=st.prog>=1?st.tier:Math.min(st.tier,tierOf(st.prog*st.score));const zc=TIERS[zi].spine;ctx.globalAlpha=.5+.5*settle;stampGlow(ctx,glowSprite('tier'+zc,[[0,zc+'26'],[1,zc+'00']]),lx,ly,Math.max(W,H)*.6);ctx.globalAlpha=1;gaugeCb&&gaugeCb(zi,st);}
   if(!RM){ // dust batched: 8 alpha buckets, one path and fill each, instead of a style string and fill per mote
    const dm=Math.max(W,H)*.45,bk=dustB;for(const b of bk)b.length=0;
    for(let di=0,dn=Math.min(dust.length,Quality.params().dust);di<dn;di++){const p=dust[di];p.y-=dt*(5+p.z*14);p.x+=Math.sin(vt*.6+p.ph)*dt*8;const yy=((p.y+camNow*(.25+p.z*.5))%H+H)%H,xx=(p.x%W+W)%W;const dist=Math.hypot(xx-lx,yy-ly)/dm;const al=Math.max(0,1-dist)*(.15+.5*Math.abs(Math.sin(vt*1.3+p.ph)))*(.7+a);const k=Math.min(7,al*9|0);if(al>.01)bk[k].push(xx,yy,p.r*(.6+p.z));}
