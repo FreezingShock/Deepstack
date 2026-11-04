@@ -16,3 +16,11 @@ test('links are extensible',()=>{
  assert.ok(homeHTML({...base,d:null}).includes('id="bX"'));
  HOME_LINKS.pop();
 });
+
+test('links are grouped into labelled sections; unknown groups fall into More',()=>{
+ HOME_LINKS.push({id:'bY',label:'Odd',group:'nope'});
+ const h=homeHTML({...base,d:null});
+ HOME_LINKS.pop();
+ for(const g of ['Play','Collection','Records','More'])assert.ok(h.includes('>'+g+'</h2>'),g);
+ assert.ok(h.includes('id="bPlay"')&&h.includes('class="descend"'));
+});
