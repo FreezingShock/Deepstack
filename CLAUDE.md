@@ -9,7 +9,7 @@ Many Claude threads work in parallel here, each on its own feature, and every PR
 5. After a merge, later threads rebase onto it. Resolve conflicts by keeping both sides' intent; never discard another thread's work.
 
 ## Avoiding conflicts
-- Put new code in new files under `src/` (e.g. `src/sound/`, `src/ui/stats.js`) and import it from `src/main.js` with a one-line hook. `src/main.js` and `src/styles.css` are the shared hot spots: touch them minimally, don't reformat or reorder, don't do drive-by cleanups.
+- Put new code in new files under `src/` (e.g. `src/sound/`, `src/ui/stats.js`) and import it from `src/main.js` with a one-line hook. `src/main.js` (now thin boot wiring) is the shared hot spot; game code is in `src/app/` and `src/world/`. Global CSS is split into `src/styles/*.css` (ordered by `src/styles/index.css`; order is the cascade, so append, don't reorder). Prefer your own new css file: touch them minimally, don't reformat or reorder, don't do drive-by cleanups.
 - Don't edit `package.json` / lockfile unless you need a dependency. Don't rename or move files others use.
 - Add tests in `test/` as new files named for your feature.
 - Persistent state: saves live in `localStorage` key `deepstack.v1`. Add fields additively and tolerate missing ones; never change the shape of existing fields.

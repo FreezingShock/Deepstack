@@ -12,7 +12,7 @@ test('index.html makes no third-party request', () => {
 test('no stylesheet imports or links Google Fonts', () => {
     for (const f of readdirSync(new URL('../src/ui', import.meta.url)).filter(f => f.endsWith('.css')))
       assert.doesNotMatch(read('src/ui/' + f), /fonts\.(googleapis|gstatic)\.com/, f);
-    assert.doesNotMatch(read('src/styles.css'), /fonts\.(googleapis|gstatic)\.com/);
+    for (const f of readdirSync(new URL('../src/styles', import.meta.url))) assert.doesNotMatch(read('src/styles/' + f), /fonts\.(googleapis|gstatic)\.com/);
 });
 test('every @font-face file exists in public/', () => {
     const css = read('src/ui/googleFonts.css') + read('src/ui/fonts.css');

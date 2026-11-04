@@ -1,0 +1,20 @@
+/* screen transitions (src/ui/transitions.js) */
+.ghost-out{pointer-events:none;animation:ghostout var(--m-base) var(--e-accelerate) both}
+@keyframes ghostout{to{opacity:0;transform:translateY(-10px) scale(.985)}}
+#all.fadein,#stats.fadein,#sets.fadein{animation:ovin var(--m-base) var(--e-settle) both}
+@keyframes ovin{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){.ghost-out{display:none}}
+
+/* phones: fit the word stage above the shelf without clipping the hint and skip buttons */
+@media(max-width:640px){
+ .slip textarea{height:104px}
+ .word{font-size:clamp(40px,11vw,60px)}
+ .pos{margin:2px 0 6px}
+ .hintline{min-height:22px;margin-top:6px}
+ .stage-row,#stage .row{margin-top:4px}
+}
+
+/* phones: the "quick judge" notice is quiet (still on hover/long-press via title); loading progress stays */
+@media(max-width:560px){#jstat[data-state=error]{display:none}}
+/* short viewports (landscape, or the on-screen keyboard open): give the word stage the room the shelf was using */
+@media(max-height:480px){:root{--nb:10px;--nt:60px}.center{padding-top:6px}.slip textarea{height:68px}.word{font-size:clamp(32px,9vw,44px)}.hintline{min-height:0}.wlabel,.pos,#depthHud{display:none}}
