@@ -4,11 +4,8 @@ import {chunk,esc,toSpreads} from './bookpages.js';
 import {statsLeaves} from './statsPages.js';
 export {statsLeaves};
 import {penMark,penPlay} from './penInk.js';
-<<<<<<< HEAD
 import {bindAttic} from './attic.js';
-=======
 import {BAY_MODES,bayGroups,pileEdges,ladderSide} from './shelfBays.js';
->>>>>>> origin/main
 
 /* Shelf layout. Books lie flat in stacks (STACK_H high, STACKS_PER_SHELF side by side) on a wooden shelf; a labelled
    plaque heads each section. Pages fill by a height budget: a shelf costs 1, a plaque PLAQUE_COST. */
