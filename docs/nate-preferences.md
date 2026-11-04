@@ -28,6 +28,7 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 - 2026-11-04 motion: "the motion language should be for all animations and changes, make sure it's smooth and performant and all uniform" (sounds should line up with it, thread: desk sounds)
 
 - 2026-11-04 results screen: "not spanning the whole vertical page and having to scroll, it shouldnt be like that" -> every screen must fit one view at 1280x720 and 375x667, compact instead of scrolling (pattern 10)
+- Alcove vs level effects (2026-11-04): the water and other floor effects should be drawn separately from the alcove so the alcove stays a clean reading nook; "physical sanity audit" confirmed as a wanted pass.
 
 ## 3. How he works
 

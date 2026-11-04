@@ -58,7 +58,9 @@ import './ui/shelfBays.css';
 import './ui/fonts.css';
 import './ui/googleFonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
+import {tiltAboutFoot,settleBooks,lyingFootprint,propHalf,placeProp} from './ui/physics.js';
 import {drawAlcoveLanterns} from './ui/lanterns.js';
+import {updateAmbient,drawAmbient,resetAmbient,lowQuality} from './ui/ambient.js';
 import {drawFloorAtmosphere} from './ui/floorAtmosphere.js';
 import {nookMetrics,drawNook,alcoveRects,paintAroundAlcoves} from './ui/alcoveArt.js';
 import './ui/ledge.css';
@@ -180,11 +182,12 @@ const World=(()=>{
    if(rng()<.03+.24*a+(fl.gap||0)){x+=w*(.5+rng());continue;} // missing books
    const cx=x+w/2;if(layer===0&&(taken.has(r)||(st&&st.row===r))&&Math.abs(cx-pullX(r))<34){x+=w;continue;}
    const h=RH*sc*(.58+rng()*.32);
-   const lean=layer===0?-(((x+w/2)/W)*2-1)*.12*a:0;const tilt=(rng()<.05+.32*a?(rng()-.5)*(.1+.45*a):0)+lean;
+   const lean=layer===0?-(((x+w/2)/W)*2-1)*.12*a:0;const rnd=rng()<.05+.32*a?(rng()-.5)*(.1+.45*a):0,tilt=rnd+lean;
    const tier=rng()<.05?Math.floor(rng()*rng()*7):-1;
    const col=tier>=0?tierBase(tier):mixc(mixc(LEATHER[(rng()*LEATHER.length)|0],fl.books[0],fl.books[1]),[110,100,86],a*.5);
-   bs.push({x:x,w,h,tier,col,tilt,seed:(rng()*65536)|0,rib:rng()<.14?RIBBONS[(rng()*5)|0]:null,lying:rng()<.09*a});
-   x+=w+(rng()<.1?3+rng()*12:1);}
+   bs.push({x:x,w,h,tier,col,tilt,lean,rnd,seed:(rng()*65536)|0,rib:rng()<.14?RIBBONS[(rng()*5)|0]:null,lying:rng()<.09*a});
+   x+=Math.max(w,bs[bs.length-1].lying?lyingFootprint(bs[bs.length-1]):0)+(rng()<.1?3+rng()*12:1);}
+  settleBooks(bs); // lean only on a neighbour, about the right foot; lying books keep their own room
   if(layer===0){for(let i=0;i<=3;i++){const ux=i*(W/3);if(rng()<.3+.7*a){const dir=i===3?-1:1;webs.push({k:'corner',x:ux+dir*7,y:0,dir,s:34+rng()*(60+120*a),seed:(rng()*999)|0});}
     if(i<3&&rng()<.1+.8*a){webs.push({k:'curtain',x:ux+7,x2:ux+W/3-7,sag:30+rng()*60,seed:(rng()*999)|0});}}
    const nh=a>.03?Math.floor(rng()*(1+8*a)):0;for(let i=0;i<nh;i++)webs.push({k:'strand',x:rng()*W,len:(20+rng()*60)*(fl.motif==='flood'?2.2:1),seed:(rng()*999)|0});
@@ -193,7 +196,9 @@ const World=(()=>{
    else if(fl.motif==='archive'){for(let x2=40+rng()*60;x2<W-30;x2+=90+rng()*150){props.push(rng()<.55?{k:'plate',x:x2,n:100+((rng()*899)|0)}:{k:'papers',x:x2,n:2+((rng()*4)|0),w:26+rng()*30,tw:rng()-.5});}}
    else if(fl.motif==='crypt'){for(let x2=30+rng()*60;x2<W-30;x2+=70+rng()*140){props.push(rng()<.5?{k:'skull',x:x2,s:.8+rng()*.5,tilt:(rng()-.5)*.5}:{k:'bones',x:x2,s:.8+rng()*.6,seed:(rng()*999)|0});}}
    else props.push(...deepProps(fl,W,rng));}
-  const data={bs,webs,props,fl,crack:rng()<.5*a?{x:rng()*W,w:30+rng()*90}:null};rows.set(key,data);return data;}
+  const data={bs,webs,props,fl,crack:rng()<.5*a?{x:rng()*W,w:30+rng()*90}:null};
+  for(const pr of props)if(pr.x!=null)pr.x=placeProp(pr.x,propHalf(pr),W,data.crack); // nothing stands on a pillar or over a cracked plank
+  rows.set(key,data);return data;}
  function drawWeb(wb,y,a,wc=[224,218,200]){
   ctx.strokeStyle=`rgba(${wc[0]},${wc[1]},${wc[2]},${.14+.3*a})`;ctx.lineWidth=1;const rng=mulberry(wb.seed);
   if(wb.k==='corner'){const n=5,s=wb.s,pts=[];for(let i=0;i<n;i++){const ang=(i/(n-1))*Math.PI/2*(.9+rng()*.2);pts.push([wb.x+wb.dir*Math.cos(ang)*s,y+Math.sin(ang)*s]);ctx.beginPath();ctx.moveTo(wb.x,y);ctx.lineTo(pts[i][0],pts[i][1]);ctx.stroke();}
@@ -260,13 +265,13 @@ const World=(()=>{
     // fill the rest of this shelf with the same procedural books as every other row, so the top never reads as a bare band
     {const x0=Math.max(34,(W-Math.min(W-60,1040))/2),gx0=x0-4,gx1=x+4;
      for(const b of d.bs){if(b.x+b.w<bx0-50||b.x>bx1+50||(vis.length&&b.x+b.w>gx0&&b.x<gx1))continue;ctx.save();ctx.translate(b.x+b.w/2,base);
-      if(b.lying){ctx.rotate(-.04);bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib},vt);}
-      else{if(b.tilt){ctx.translate(b.w/2,0);ctx.rotate(b.tilt);ctx.translate(-b.w/2,0);}bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib},vt);}
+      if(b.lying){bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib},vt);}
+      else{if(b.tilt)tiltAboutFoot(ctx,b.tilt,b.w);bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib},vt);}
       ctx.restore();}}}
    else{
     for(const b of d.bs){if(b.x+b.w<bx0-50||b.x>bx1+50)continue;ctx.save();const bx=b.x+b.w/2;
-     if(b.lying){ctx.translate(bx,base);ctx.rotate(-.04);bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,dust:a*.9,ribbon:b.rib},vt);}
-     else{ctx.translate(bx,base);if(b.tilt){ctx.translate(b.w/2,0);ctx.rotate(b.tilt);ctx.translate(-b.w/2,0);}
+     if(b.lying){ctx.translate(bx,base);bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,dust:a*.9,ribbon:b.rib},vt);}
+     else{ctx.translate(bx,base);if(b.tilt)tiltAboutFoot(ctx,b.tilt,b.w);
       if(layer===0){bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,dust:a*.8,ribbon:b.rib},vt);if(isLore(b,W))drawLoreMark(ctx,b);else if(isCurio(b,W))drawCurioMark(ctx,b);}
       else{ctx.fillStyle=rgbs(b.col);ctx.fillRect(-b.w/2,-b.h,b.w,b.h);}}
      ctx.restore();}}
@@ -325,7 +330,7 @@ const World=(()=>{
     ctx.save();
     if(a>.03){const i=Math.min(2,Math.max(0,Math.floor((b.x+b.w/2)/(W/3)))),th=(i===0?1:i===2?-1:0)*.085*a;if(th){const cx=(i+.5)*W/3,cy=y+RH/2;ctx.translate(cx,cy);ctx.rotate(th);ctx.translate(-cx,-cy);}}
      
-    ctx.translate(b.x+b.w/2,base);if(b.tilt){ctx.translate(b.w/2,0);ctx.rotate(b.tilt);ctx.translate(-b.w/2,0);}
+    ctx.translate(b.x+b.w/2,base);if(b.tilt)tiltAboutFoot(ctx,b.tilt,b.w);
     drawLoreGlow(ctx,b,vt);ctx.restore();}}}
  function drawNiche(row,nv,camNow,now){const t0=nv.t0;
   const n=nicheBox(),y=n.t+(row*RH-(H-RH-BM))-camNow,h=n.h,x=n.x,w=n.w;if(y>H+20||y+h<-20)return;
@@ -359,7 +364,9 @@ const World=(()=>{
   ctx.restore();}
  const ease=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
  const shade=(hx,f)=>{const n=parseInt(hx.slice(1),16);return `rgb(${(n>>16)*f|0},${(n>>8&255)*f|0},${(n&255)*f|0})`;};
- let shelfVisible=0,lastCam=0;
+ let shelfVisible=0,lastCam=0,ambItems=[];
+ // creatures keep off the alcove (and everything it could be), the top bar and any covering page
+ function ambEnv(camNow,top,bot){const n=nicheBox(),ex=[{x:0,y:0,w:W,h:barPx()+10}];for(const [row] of niches){ex.push({x:n.x-44,y:n.t+(row*RH-(H-RH-BM))-camNow-60,w:n.w+88,h:n.h+130});}if(btgt>=-4)ex.push({x:n.x-44,y:n.t-60,w:n.w+88,h:n.h+130});return{W,H,RH,camNow,top,bot,excl:ex,rm:RM,low:lowQuality(),quiet:covNow,busy:!!st||!!rest};}
  let lastDraw=0,coverChk=0,covNow=false;
  function frame(now){
   if(now-coverChk>100){coverChk=now;covNow=worldCovered();} // DOM probe at 10 Hz, not per frame
@@ -394,6 +401,8 @@ const World=(()=>{
   const cy=H*.5;const px=bx+(W/2-bx)*e,py=by0+(cy+bh*.5*2.2-by0)*e;const s=1+1.3*e;
    if(settle>0){ctx.fillStyle=PALETTE.oak2;ctx.fillRect(bx-bw/2,by0-bh,bw,bh);}
    if(settle>0){ctx.save();ctx.globalCompositeOperation='lighter';const gg=ctx.createRadialGradient(bx,by0-bh/2,0,bx,by0-bh/2,bh*1.4);gg.addColorStop(0,T.spine+'bb');gg.addColorStop(1,T.spine+'00');ctx.globalAlpha=(.28+.35*T.id/6)*settle*(.85+.15*Math.sin(vt*5))*(1-e*.4);ctx.fillStyle=gg;ctx.fillRect(bx-bh*1.5,by0-bh*1.5,bh*3,bh*3);ctx.restore();}
+   if(e>0){ // lifted off the shelf: it casts a soft shadow on the books behind, so it reads as held in front of them, not floating
+    ctx.save();ctx.shadowColor=`rgba(0,0,0,${.6*e})`;ctx.shadowBlur=30*s*DPR;ctx.shadowOffsetX=-6000*DPR+8*e;ctx.shadowOffsetY=14*e*DPR;ctx.fillStyle='rgba(0,0,0,1)';ctx.fillRect(px-bw*s/2+6000,py-bh*s,bw*s,bh*s);ctx.restore();}
    ctx.save();ctx.translate(px,py);ctx.scale(s,s);bookArt(ctx,{w:bw,h:bh,tier:st.tier,seed:st.seed,word:st.word,ribbon:st.tier>=1?RIBBONS[st.tier%5]:null},vt);ctx.restore();}
   // darkness / lamp (shrinks with abandonment)
   const lx=W/2,ly=H*.5,lr=Math.hypot(W,H)*(.6-.2*a)*atm.lampR;
@@ -406,6 +415,7 @@ const World=(()=>{
     ctx.fillStyle=`rgba(${cr|0},${cg|0},${cb|0},${ca})`;ctx.fillRect(0,0,W,H);}}
   drawFloorAtmosphere(ctx,W,H,atm,vt,lx,ly,RM);
   });
+  ambItems=updateAmbient(dt,ambEnv(camNow,top,bot));drawAmbient(ctx,ambItems,vt,'body',atm.lamp);
   ctx.globalCompositeOperation='lighter';
   if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
   const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick*atm.flick;
@@ -416,6 +426,7 @@ const World=(()=>{
    for(const p of dust){p.y-=dt*(5+p.z*14);p.x+=Math.sin(vt*.6+p.ph)*dt*8;const yy=((p.y+camNow*(.25+p.z*.5))%H+H)%H,xx=(p.x%W+W)%W;const dist=Math.hypot(xx-lx,yy-ly)/dm;const al=Math.max(0,1-dist)*(.15+.5*Math.abs(Math.sin(vt*1.3+p.ph)))*(.7+a);const k=Math.min(7,al*9|0);if(al>.01)bk[k].push(xx,yy,p.r*(.6+p.z));}
    for(let k=0;k<8;k++){const b=bk[k];if(!b.length)continue;ctx.fillStyle=DUST_STYLE[k];ctx.beginPath();for(let i=0;i<b.length;i+=3){ctx.moveTo(b[i]+b[i+2],b[i+1]);ctx.arc(b[i],b[i+1],b[i+2],0,6.3);}ctx.fill();}}
   if(!RM)drawMoths(lx,ly,a,dt);
+  drawAmbient(ctx,ambItems,vt,'glow',atm.lamp);
   ctx.globalCompositeOperation='source-over';
   requestAnimationFrame(frame);}
  // moths: a few circle the lamp, erratic and drawn to the light; they thin out as the library decays
@@ -437,7 +448,7 @@ const World=(()=>{
   setShelf(b){shelf=b;},hits:()=>hits,
   // the lore book under a screen point, if any: {row, book}
   loreAt(x,y){const r=Math.floor((y+lastCam)/RH),b=hitLoreBook(rows.get(r*2),r,RH,W,lastCam,abn(r),x,y,(b,base)=>loreCovered(b,base,lastCam));return b?{row:r,book:b}:null;},curioAt(x,y){const r=Math.floor((y+lastCam)/RH),b=hitCurio(rows.get(r*2),r,RH,W,lastCam,abn(r),x,y,(b,base)=>loreCovered(b,base,lastCam));return b?{row:r,book:b}:null;},get shelfVisible(){return shelfVisible;},get restRow(){return restRow;},get busy(){return !!st||!!rest;},
-  reset(){rows.clear();taken.clear();niches.clear();restRow=0;st=null;rest=null;cam=restCam(0);},
+  reset(){resetAmbient();rows.clear();taken.clear();niches.clear();restRow=0;st=null;rest=null;cam=restCam(0);},
   clearNiches(){niches.clear();},
   // put a finished descent back (see core/replay.js): alcoves, emptied shelf slots, camera at the top
   restore(L){this.reset();const t0=performance.now()-1e3;for(const n of L.niches)niches.set(n.row,{t0,label:n.label,books:n.books,res:n.res||undefined});for(const r of L.taken)taken.add(r);},

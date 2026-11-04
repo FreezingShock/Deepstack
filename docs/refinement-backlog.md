@@ -52,7 +52,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: a lighting pass where lit radius shrinks with depth and unlit shelves fade to silhouette; lantern/alcove light cast on nearby books. Files: new `src/ui/lighting.js`; hook in `World`. Done when: Abyss is legible only near lights but the word and alcove stay readable (contrast test on the alcove), cached offscreen light map, reduced motion removes flicker.
 **Touches:** WORLD. **Conflicts:** 1, 3, 33, floors thread.
 
-### 3. Things that live down here
+### 3. [x] Things that live down here (this PR)
 **Serves:** immersion, physical realism.
 **Pitch:** Small ambient life per floor: moths round the lantern, a rat on the Catacombs shelf, a book that slides itself shut, drips, bubbles in the Vault, drifting ash in the Hollow.
 **Brief:** Goal: 2 or 3 ambient creatures/events per floor, each rare and quiet, never over text or panels (respect the particles rules). Files: new `src/ui/ambient.js`. Done when: spawn rates capped, none covers the alcove or HUD (test via exclusion rects), off in reduced motion and low quality mode (35).
@@ -70,7 +70,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: redraw the alcove frame and ledge props, keep the word lettering area clear for the run screen thread. Files: new `src/ui/alcoveArt.js`. Done when: the ledge fits 7 books plus the skipped slot at 375 px, no overlap with the word at 14 letters.
 **Touches:** WORLD. **Conflicts:** run screen thread; sequence after it.
 
-### 6. Realistic hanging and physical sanity audit
+### 6. Realistic hanging and physical sanity audit — [x] (PR #113, report: docs/physical-sanity-audit.md)
 **Serves:** "why are the lanterns hanging from nothing", "floating book".
 **Pitch:** Sweep the world for things that float, clip or lack support: lanterns, banners, plaques, ledge books, pulled books, lore halos.
 **Brief:** Goal: a screenshot audit of every floor at several scroll positions listing physics/logic glitches, then fix them (chains reach a ceiling, books rest on planks). Files: WORLD files. Done when: report in `docs/` with before/after crops, a test for any new geometry helper.
@@ -428,6 +428,21 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: derive `fl` additively from old Daily results. Files: new `src/core/shelfFloors.js`. Done when: tolerates missing data, tested.
 **Touches:** core. **Conflicts:** attic (#126).
 
+### 100. Wall-hung things get a visible mount
+**Pitch:** Plaques, banners and lantern plates show their screws, brackets and a cast shadow on the wall, so nothing hangs from nothing.
+**Brief:** Goal: a mount helper (bolt, bracket, shadow) used by the numeral plaque, floor banner, tracker plaques and lanterns. Files: new `src/ui/mounts.js`, one-line hooks. Done when: mounts visible at 375 and 1280, a geometry test that every hung object's anchor lies on a surface.
+**Touches:** WORLD, tracker. **Conflicts:** 5 (alcove).
+
+### 101. The held book rests on something
+**Pitch:** The pulled book is presented on a reading stand or in a gloved hand of light instead of hovering mid-shelf.
+**Brief:** Goal: replace the hover pose with a lectern or lit cradle that rises with the pull, shadow on the shelves behind. Files: `src/main.js` pulled-target block (small), new `src/ui/lectern.js`. Done when: pose looks supported at 375 and 1280, reduced motion shows it already raised.
+**Touches:** MAIN (pull block), results. **Conflicts:** tier reveals thread.
+
+### 102. Fallen books on the shelf floor
+**Pitch:** Where a leaning book has no support it should have fallen: tumbled books and loose pages lie in front of gaps on deep floors.
+**Brief:** Goal: scatter fallen books (flat, rotated, resting on the plank) in front of wide gaps from `settleBooks`. Files: `src/ui/physics.js`, row generation. Done when: no fallen book overlaps a standing one, seeded and stable per row, a test pinning it.
+**Touches:** WORLD. **Conflicts:** 3, 4.
+
 ---
 
 ### 54. Almanac pages for Unlimited and Sets
@@ -601,3 +616,13 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** A faint scratch of nib on paper while rings, underlines and tab strokes draw, quiet and optional.
 **Brief:** Goal: tiny shared `penScratch()` hooked to the draw-in animations, off when sound is off. Files: new `src/sound/pen.js`. Done when: respects settings, no audio before first gesture.
 **Touches:** new files. **Conflicts:** none.
+
+### 94. Creatures react to the lamp and to you
+**Serves:** immersion, physical realism. **Pitch:** The silverfish scatters when a lantern swings past, the rat freezes if you scroll fast, eyes in the Hollow close when the cursor nears.
+**Brief:** Goal: pointer and camera speed feed `updateAmbient` as a `scare` input, one reaction per creature. Files: `src/ui/ambient.js` only. Done when: a test pins a reaction per kind, still off in reduced motion.
+**Touches:** WORLD. **Conflicts:** 2, 4.
+
+### 95. Sounds of the things down here
+**Serves:** immersion. **Pitch:** A far scuttle, a drip with the right reverb per floor, a low bubble, matched to what is on screen.
+**Brief:** Goal: each ambient item can emit a quiet cue through `Sfx`. Files: new `src/ui/ambientSfx.js`. Done when: volume setting respected, rate-capped, silent in reduced motion.
+**Touches:** FEEL hook. **Conflicts:** 23.
