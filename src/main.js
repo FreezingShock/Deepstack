@@ -43,6 +43,7 @@ import {drawAlcoveLanterns} from './ui/lanterns.js';
 import {drawFloorAtmosphere} from './ui/floorAtmosphere.js';
 import './ui/ledge.css';
 import './ui/buttons.css';
+import './ui/tactile.css';
 import { particleVisibility } from './ui/particleMask.js';
 import './ui/polish.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
