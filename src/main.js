@@ -468,6 +468,7 @@ cvEl.addEventListener('click',e=>{if(World.stActive||World.restRow!==0||!(ui.sta
 
 /* ---------- judge status (model download) ---------- */
 function paintJudge(st){const el=$('#jstat');if(!el)return;
+ el.dataset.state=st.state;el.title=st.state==='error'?'Quick judge in use (the full judge could not load)':'';
  el.textContent=st.state==='loading'?`Preparing the judge${st.total?`, ${Math.round(st.progress*100)}%`:'\u2026'}`:st.state==='error'?'Quick judge in use (the full judge could not load)':'';}
 onModelStatus(paintJudge);
 

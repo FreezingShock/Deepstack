@@ -27,6 +27,12 @@ export function buildTracker(doc, floors, startOf, onJump) {
   const items = [...nav.querySelectorAll('li')], btns = items.map(li => li.firstChild);
   const segs = [...nav.querySelectorAll('.seg')], view = nav.querySelector('.view'), you = nav.querySelector('.you');
   btns.forEach((b, i) => { b.onclick = () => { if (!b.disabled) onJump(i); }; });
+  /* phones hide the plaques; tapping the rail itself jumps to the floor under the finger */
+  const rail = nav.querySelector('.rail');
+  rail.onclick = e => {
+    const r = rail.getBoundingClientRect(), i = Math.min(floors.length - 1, Math.max(0, Math.floor((e.clientY - r.top) / r.height * floors.length)));
+    if (!btns[i].disabled) onJump(i);
+  };
   let key = '';
   /** viewFt: depth on screen; youFt: your real depth; browsing: view differs from you. */
   function update(viewFt, youFt, browsing) {
