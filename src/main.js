@@ -27,6 +27,7 @@ import {loreCovered as loreCoveredAt} from './ui/loreCover.js';
 import {isLore,drawLoreMark,drawLoreGlow,hitLoreBook,initLore} from './ui/lore.js';
 import './ui/lore.css';
 import {shelfBook,statsBook} from './ui/bookMenus.js';
+import {replayLayout} from './core/replay.js';
 import {dailyBook} from './ui/dailyBook.js';
 import './ui/dailyBook.css';
 import './ui/bookpages.css';
@@ -386,6 +387,8 @@ const World=(()=>{
   loreAt(x,y){const r=Math.floor((y+lastCam)/RH),b=hitLoreBook(rows.get(r*2),r,RH,W,lastCam,abn(r),x,y,(b,base)=>loreCovered(b,base,lastCam));return b?{row:r,book:b}:null;},get shelfVisible(){return shelfVisible;},get restRow(){return restRow;},get busy(){return !!st||!!rest;},
   reset(){rows.clear();taken.clear();niches.clear();restRow=0;st=null;rest=null;cam=restCam(0);},
   clearNiches(){niches.clear();},
+  // put a finished descent back (see core/replay.js): alcoves, emptied shelf slots, camera at the top
+  restore(L){this.reset();const t0=performance.now()-1e3;for(const n of L.niches)niches.set(n.row,{t0,label:n.label,books:n.books,res:n.res||undefined});for(const r of L.taken)taken.add(r);},
   fillNiche(r,res,books){const e=niches.get(r);if(e){e.res=res;if(books)e.books=books;}},
   openNiche(r,o={}){const e=niches.get(r);if(e){e.label=o.label||e.label;e.books=o.books||e.books;}else niches.set(r,{t0:performance.now(),label:o.label||'',books:o.books||[]});},
   onLedge(f){ledgeCb=f;},onDepth(f){onDepth=f;},onGauge(f){gaugeCb=f;},
@@ -570,7 +573,10 @@ function finishRun(){
 const BLK='▁▂▃▄▅▆▇';
 function shareText(d){return `Deepstack ${d.mode==='unlimited'?'Unlimited \u00b7 Lexicon '+d.lex:'No. '+dailyNo()}\nDepth ${d.depth} ft${d.floor?' · '+FLOORS[d.floor].name:''} · average closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' · ')}`;}
 async function showFinal(d,fromHome){
- if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;World.reset();World.setShelf([]);}
+ if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;World.setShelf([]);
+  /* replay the whole descent: every alcove and floor again, ending at the results */
+  const L=replayLayout(d.books,{gapRows:World.nextRows(),ftPerRow:FT});World.restore(L);ui.hud.hidden=false;
+  if(L.finalRow>0){await World.glide(L.finalRow,clamp(L.finalRow*45,1600,4200));if(!ui.home.hidden)return;}}
  ui.hud.hidden=false;$('#dnum').textContent=d.depth;
  World.openNiche(World.restRow,{label:'FINIS',books:[]});
  const txt=shareText(d);const el=ui.final;el.hidden=false;el.className='center fadein';
