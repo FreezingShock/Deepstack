@@ -68,10 +68,10 @@ export const pg={
 export function introSpreads(intro){
  const narrow=typeof matchMedia==='function'&&matchMedia('(max-width:560px)').matches;
  /* phones show one page at a time: keep the Start button on the first page */
- if(narrow)return [{l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start">${esc(intro.btn)}</button><button class="bs-back-btn">Close the book</button></div>`,r:''}];
+ if(narrow)return [{l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button><button class="bs-back-btn pen-ink">Close the book</button></div>`,r:''}];
  return [{
   l:pg.head(intro.kicker,intro.h)+pg.body(intro.p),
-  r:pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start">${esc(intro.btn)}</button><button class="bs-back-btn">Close the book</button></div>`,
+  r:pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button><button class="bs-back-btn pen-ink">Close the book</button></div>`,
  }];
 }
 

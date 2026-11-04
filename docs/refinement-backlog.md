@@ -94,7 +94,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: a decorations helper that adds hand-drawn dividers/underlines (SVG stroke-draw animation) to page headings across Shelf, Sets, Stats and Daily. Files: new `src/ui/ink.js` + `ink.css`; light edits in BOOK files. Done when: stroke-draw respects reduced motion, text contrast unchanged, one headings test.
 **Touches:** new files, BOOK. **Conflicts:** 8, 10.
 
-### 10. Tabs and filters as handwriting (finish it)
+### 10. Tabs and filters as handwriting (finish it) [x] (PR pending)
 **Serves:** handwritten, pen underline.
 **Pitch:** Every filter, tab and toggle in every book is a written word with a pen-drawn underline that animates between choices; the search field is handwriting and only repaints results.
 **Brief:** Goal: audit all remaining pill/button-style controls inside book pages and convert them; keep focus rings visible. Files: BOOK css/js. Done when: no `.bbtn` or pill inside `.bookpage` (css test), keyboard focus visible, typing in search does not rebuild the page (existing test extended).
@@ -106,7 +106,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: add bays and sort modes beyond tier; stack height reflects count; selecting a stack lifts the top book to a detail card above the book (never behind). Files: new `src/ui/shelfBays.js`, `browse.js` hooks. Done when: 200-book shelf stays under 16 ms to render a page, duplicates collapse with a handwritten x N, 14-letter titles fit.
 **Touches:** BOOK. **Conflicts:** 7, 10.
 
-### 12. Stats as an almanac
+### 12. [x] Stats as an almanac (PR pending)
 **Serves:** handwritten, sectioned, multiple pages.
 **Pitch:** Stats become hand-drawn charts: Lexicon rising over runs, a tier histogram drawn as stacked book spines, depth per floor as a cross-section, streak ink-tally marks.
 **Brief:** Goal: three to four stats pages from existing saves (`S.rating.hist`, dailies, shelf). Files: new `src/ui/statsPages.js`. Done when: empty states are written ("Nothing shelved yet."), 60-point history tested, tally marks match streak, phone layout verified.
@@ -355,6 +355,17 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** Credits list Wiktionary, model, fonts and a short "what's new" shown once per version.
 **Brief:** Files: `topbar.js` credits, new `changelog.js`. Done when: once-per-version test, licences present.
 **Touches:** `topbar.js`. **Conflicts:** none.
+### 54. Pen-written page titles and counts
+**Serves:** handwritten, pages that feel written.
+**Pitch:** Book headings, "8 books · showing 1" and the tier counts are written in with the same pen stroke when a page opens, so no page appears printed.
+**Brief:** Goal: reuse `--pen-stroke` and `penInk.js` to draw page titles and counters in on open. Files: new `src/ui/penWrite.js`. Done when: reduced motion shows them at rest, 14-letter titles fit at 375.
+**Touches:** BOOK. **Conflicts:** 9, 12.
+
+### 55. Written settings and credits panels
+**Serves:** one shared book style, integrated.
+**Pitch:** Settings and Credits stop being button panels: toggles become handwritten words that cross themselves out when off, sliders become pen ticks.
+**Brief:** Goal: apply the pen-ink controls to the pop-up panels. Files: `settings.js`, `topbar.js`, new css. Done when: keyboard focus visible, no filled pill inside panels (css test).
+**Touches:** HOME. **Conflicts:** 7, a11y thread.
 
 ### 60. More secrets in the stacks
 **Serves:** immersion, things that live down there.
@@ -392,6 +403,21 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ---
 
+### 54. Almanac pages for Unlimited and Sets
+**Serves:** everything is a book, sectioned.
+**Pitch:** The almanac only charts Daily depth and the shelf; give Unlimited its own spread (runs, placement, best Lexicon) and a sets-progress page with the completed cases.
+**Brief:** Goal: two more leaves in `statsPages.js` from `S.rating` and `S.sets`. Done when: empty states written, 375 px verified. **Touches:** BOOK. **Conflicts:** 10, 14.
+
+### 55. Almanac tap-through
+**Serves:** immersion through interaction.
+**Pitch:** Tap a spine column, a day bar or a floor stratum in the almanac to open the shelf filtered to it, or the Daily book page for that day.
+**Brief:** Goal: hooks from `statsPages.js` into shelf filters and the Daily book. Done when: keyboard reachable, reduced motion safe. **Touches:** BOOK. **Conflicts:** 10, 11, 13.
+
+### 56. Almanac notes in the margin
+**Serves:** pages that feel written.
+**Pitch:** Margin notes that read the numbers back in a hand ("Deepest yet. The Vault is close.") with a pen-drawn arrow to the marker.
+**Brief:** Goal: a small pure `almanacNotes(st)` picking one line per page. Done when: a test per note rule. **Touches:** new file. **Conflicts:** 9.
+
 ## Suggested batches
 - **Overhaul wave 1 (his favourite kind):** 7, 8, 11, 12, 16 (book objects, opening, shelf bays, almanac, reveal card). Run 7 first; 8 and 11 after.
 - **Make the library darker:** 1, 2, 3, 6 (sections, light, life, physical audit). Sequence after floors #81.
@@ -403,3 +429,21 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 ### 62. Perf budget in CI
 **Pitch:** CI runs `scripts/perf.mjs` and warns when work-per-frame p95 regresses past a stored baseline.
 **Brief:** Files: new `scripts/perfCheck.mjs`, CI step. Done when: tolerant threshold (software rendering is noisy), baseline file committed. **Touches:** CI. **Conflicts:** none.
+
+### 63. Page-turn between result cards
+**Serves:** everything is a book, motion.
+**Pitch:** "Next word" turns the page of the same little book instead of closing and reopening it, so a run feels like writing one volume.
+**Brief:** Goal: reuse the corner-flip from book pages on the card. Files: new `src/ui/cardFlip.js`, `bookCard.css`. Done when: reduced motion cuts, Enter still advances, 14-letter word fits.
+**Touches:** card, MAIN hook. **Conflicts:** 16, 17.
+
+### 64. Wax seal and foil for rare covers
+**Serves:** rarity is the hero.
+**Pitch:** Folio and up get a pressed wax seal on the ribbon, Codex gilt corners that catch light, Apocrypha a glowing edge.
+**Brief:** Goal: per-tier dressing on the new book card. Files: `bookCard.css`. Done when: seven-tier strip screenshot, tokens only.
+**Touches:** card. **Conflicts:** 17.
+
+### 65. Ribbon bookmark everywhere
+**Serves:** integrated, not bolted on.
+**Pitch:** Primary buttons on book pages (Descend, Close, Continue) become the same swallow-tailed ribbon instead of boxes.
+**Brief:** Goal: shared `.ribbon` class. Files: new `src/ui/ribbon.css`. Done when: focus is visible, buttons tests pass.
+**Touches:** buttons. **Conflicts:** 7.

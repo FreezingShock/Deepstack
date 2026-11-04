@@ -5,7 +5,7 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 ## 1. The ten patterns that repeat
 
 1. **Overhaul, not tweak.** His verbs are "completely overhaul", "completely renovate", "completely rework", "it looks horrible and needs a complete polishing". Small nudges are rarely what he wants. Offer rebuilds with a clear new idea, not 2-pixel fixes.
-2. **Everything is a book, a shelf or a page.** The menu is horizontal books in stacks. Shelf, Sets, Stats and Daily are book spreads with sections and multiple pages. Tabs are written words with a pen underline. Search is handwritten. Arrows became page-corner flips. If a new feature can be an object in the library, make it one.
+2. **Everything is a book, a shelf or a page.** (2026-11-04 result card: "visual hierarchy is WONDERFUL" but "too boxy? should this be a mini book?" -> keep the hierarchy, change the object: leather boards, deckled page, ribbon button; no rectangles with outlines.) The menu is horizontal books in stacks. Shelf, Sets, Stats and Daily are book spreads with sections and multiple pages. Tabs are written words with a pen underline. Search is handwritten. Arrows became page-corner flips. If a new feature can be an object in the library, make it one.
 3. **Handwritten, themed, sectioned.** The Daily book should "look handwritten", have sections and several pages. He asked for handwriting fonts and a type specimen. Duplicates show once with a handwritten x N. Labels are Cinzel, handwriting Fuzzy Bubbles, fine print Special Elite, body Anthropic Serif (his own font). (2026-11-04) "Daily book calendar page (this is how to select days)": the calendar is the way into a day, so tapping a day must open its entry.
 4. **Words must be fully readable.** Repeated complaints: words clipped on spines ("too short"), a stretched word, the share note cut off, a judge % clipping the books. Never clip, never stretch, always check long words.
 5. **Dark, mysterious, deeper is darker.** "Feel more dark and mysterious the further you get down and have sections for each." Floors need distinct identities and title banners with their own gradient backdrop. Copy should be concise and mysterious ("Descend to the depths of the library").
@@ -47,8 +47,10 @@ Every brief should state: which pattern(s) above it serves, the physical object 
 When your PR merges, if nate said anything new about taste in your thread (a correction, a "don't", a "love this"), append one dated line under the matching pattern here (or add a pattern), and add 2-3 fresh backlog items implied by what he asked, using his wording. Keep entries to one line. Example: `2026-11-05 hover glow: "outline clips" -> glow must be a halo fitted to the spine (thread: lore books)`.
 
 - Hidden things (2026-11-04): nate asked for "things that live down there" and "hidden curios on the shelves": discovery that rewards looking, tied to depth.
+- 2026-11-04 handwriting: "every tab and filter as handwriting with animated pen underline" -> no pill or button chrome on book pages; Start and Close are written words too (thread: tabs and filters)
 
 ## Changelog
 - 2026-11-04 initial version from project chat history.
 
 - Colors (2026-11-04): nate likes Minecraft color codes as the color reference (use the actual hues: dark blue, dark red, dark green, dark aqua, dark purple, gold/orange). Variety comes from values within each item (darker edges, stripes), not muted/aged versions of the hue. Home menu books: Daily blue, Unlimited red, Practice green, Shelf aqua, Sets purple, Stats orange-brown.
+- 2026-11-04 stats: wants "stats as an almanac" -> hand-drawn charts (tally marks, spines, cross-section) not UI bars (thread: almanac)
