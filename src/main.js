@@ -45,6 +45,10 @@ import {initLore} from './ui/lore.js';
 import './ui/lore.css';
 import {initCurios} from './ui/curios.js';
 import './ui/curios.css';
+import {initCurioFx} from './ui/curioFx.js';
+import './ui/curioFx.css';
+import {curioLeaves} from './ui/curioLog.js';
+import {toSpreads} from './ui/bookpages.js';
 import {shelfBook,statsBook} from './ui/bookMenus.js';
 import './core/replay.js';
 import './core/dailyRun.js';
@@ -118,7 +122,7 @@ cvEl.addEventListener('click',e=>{if(World.stActive||World.restRow!==0||!(ui.sta
 {let dk='',dw=[];initLore({world:World,canvas:cvEl,pool:WORDS,hash:hashStr,enabled:()=>!World.busy,
  exclude:()=>{if(dk!==utc()){dk=utc();dw=dailyWords(dk,7).map(w=>w.w);}return run?[...dw,...run.words.map(w=>w.w)]:dw;}});}
 /* curios: rare thin books hide a loose page, a ribbon, a sealed clasp or a marginal note */
-initCurios({world:World,canvas:cvEl,enabled:()=>!World.busy});
+initCurios({world:World,canvas:cvEl,enabled:()=>!World.busy,...initCurioFx({S,save})});
 onModelStatus(paintJudge);
 addEventListener('keydown',e=>{
  if(!$('#cardlayer').hidden&&cardOpts&&cardOpts.nav&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){const b=$(e.key==='ArrowLeft'?'#cprev':'#cnext');if(b&&!b.disabled){e.preventDefault();b.click();}return;}
@@ -131,7 +135,8 @@ const bookOpenCard=()=>!$('#cardlayer').hidden;
 BOOK_PAGES.bAll=shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,FLOORS,reduceMotion:()=>RM});
 BOOK_PAGES.bSets={...setsBook(S),keepOnEsc:bookOpenCard};
 BOOK_PAGES.bDaily={...dailyBook({S,today:utc,streak:()=>computeStats(S,utc()).streak,wordsReady,wordsLoaded:()=>wordsLoaded}),keepOnEsc:bookOpenCard};
-BOOK_PAGES.bStats={...statsBook({S,st:()=>computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt}),keepOnEsc:bookOpenCard};
+{const sb=statsBook({S,st:()=>computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt});
+ BOOK_PAGES.bStats={...sb,spreads:()=>[...sb.spreads(),...toSpreads(curioLeaves(S,r=>floorAtFt(r*FT),r=>Math.round(r*FT)))],keepOnEsc:bookOpenCard};}
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();
 initTransitions();
