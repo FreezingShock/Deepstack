@@ -215,6 +215,26 @@ const World=(()=>{
   if(fl.motif==='flood')floodOverlay(fl,0,W,y,rh,r);
   return {base,d};}
  function pruneRows(top,bot){for(const [k,v] of rows){const r=k>>1;if(r<top-6||r>bot+6){if(v.bmp){bmpPool.push(v.bmp);v.bmp=null;}rows.delete(k);}}}
+ // A finished alcove keeps its word, your answer on the slip, and the result, so scrolling back reads like a log.
+ function wrapLines(t,maxW,max){const out=[];let line='';for(const wd of t.split(/\s+/)){const tr=line?line+' '+wd:wd;if(line&&ctx.measureText(tr).width>maxW){out.push(line);line=wd;if(out.length>=max)break;}else line=tr;}if(out.length<max&&line)out.push(line);else if(line&&out.length>=max)out[max-1]=out[max-1].replace(/\s*\S*$/,'')+'\u2026';return out;}
+ function drawNicheResult(r,x,y,w,h,now){
+  const T=TIERS[r.tier],cx=x+w/2,fs=clamp(w*.1,34,76);ctx.save();ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  ctx.font=`400 ${fs}px Newsreader,Georgia,serif`;ctx.fillStyle='#efe3c4';ctx.shadowColor='#000';ctx.shadowBlur=14;ctx.fillText(r.w,cx,y+h*.2,w*.82);ctx.shadowBlur=0;
+  ctx.font='italic 400 17px Newsreader,Georgia,serif';ctx.fillStyle='#b9a782';ctx.fillText(r.pos||'',cx,y+h*.2+26);
+  const sw=Math.min(w*.74,520),sh=Math.min(Math.max(96,h*.3),170),sx=cx-sw/2,sy=y+h*.2+48;
+  ctx.save();ctx.translate(cx,sy+sh/2);ctx.rotate(-.01);ctx.translate(-cx,-(sy+sh/2));
+  ctx.shadowColor='#000a';ctx.shadowBlur=14;ctx.shadowOffsetY=8;ctx.fillStyle='#eee2c4';ctx.fillRect(sx,sy,sw,sh);ctx.shadowColor='transparent';
+  ctx.strokeStyle='#8aa0c866';ctx.lineWidth=1;for(let ly=sy+34;ly<sy+sh;ly+=34){ctx.beginPath();ctx.moveTo(sx,ly);ctx.lineTo(sx+sw,ly);ctx.stroke();}
+  ctx.strokeStyle='#c4483e88';ctx.beginPath();ctx.moveTo(sx+52,sy);ctx.lineTo(sx+52,sy+sh);ctx.stroke();
+  ctx.fillStyle='#b3342a';ctx.beginPath();ctx.arc(cx,sy+4,6,0,6.3);ctx.fill();
+  ctx.textAlign='left';ctx.fillStyle='#24324f';ctx.font='600 24px Caveat,cursive';
+  const txt=r.skipped||!r.answer?'(skipped)':r.answer;ctx.globalAlpha=r.skipped||!r.answer?.55:1;
+  wrapLines(txt,sw-72,Math.max(1,Math.floor((sh-6)/34))).forEach((l,i)=>ctx.fillText(l,sx+62,sy+28+i*34));
+  ctx.restore();ctx.globalAlpha=1;
+  const ry=sy+sh+34;ctx.textAlign='center';ctx.font='600 15px "Source Sans 3",system-ui,sans-serif';ctx.fillStyle=T.spine;ctx.shadowColor=T.spine;ctx.shadowBlur=10;
+  ctx.fillText(`${T.name.toUpperCase()}  \u00b7  ${r.score}`+(r.ft?`  \u00b7  +${r.ft} FT`:''),cx,ry);ctx.shadowBlur=0;
+  if(r.verdict){ctx.font='italic 400 16px Newsreader,Georgia,serif';ctx.fillStyle='#d9ccaa';ctx.fillText(r.verdict,cx,ry+24,sw);}
+  ctx.restore();}
  function drawNiche(row,nv,camNow,now){const t0=nv.t0;
   const n=nicheBox(),y=n.t+(row*RH-(H-RH-BM))-camNow,h=n.h,x=n.x,w=n.w;if(y>H+20||y+h<-20)return;
   const al=clamp((now-t0)/450,0,1),a=abn(row),r=Math.min(52,w*.09),lc=floorAtRow(row).lamp;
@@ -244,6 +264,7 @@ const World=(()=>{
    ctx.globalCompositeOperation='lighter';const lg2=ctx.createRadialGradient(lx2,ly2,0,lx2,ly2,150);lg2.addColorStop(0,`rgba(${lc[0]},${lc[1]-10},${lc[2]-20},${(.34-.18*a)*fk})`);lg2.addColorStop(1,`rgba(${lc[0]},${lc[1]-10},${lc[2]-20},0)`);ctx.fillStyle=lg2;ctx.fillRect(lx2-150,ly2-150,300,300);ctx.globalCompositeOperation='source-over';}
   // numeral plaque on the arch
   if(nv.label){ctx.font='600 13px Newsreader,Georgia,serif';const tw=ctx.measureText(nv.label).width+26,px=x+w/2-tw/2,py=y-12;const pg=ctx.createLinearGradient(0,py,0,py+24);pg.addColorStop(0,'#7a5a36');pg.addColorStop(1,'#3d2916');ctx.fillStyle=pg;ctx.fillRect(px,py,tw,24);ctx.strokeStyle='#b08a56';ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,tw-1,23);ctx.fillStyle='#f3e3bd';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(nv.label,x+w/2,py+12.5);}
+  if(nv.res)drawNicheResult(nv.res,x,y,w,h,now);
   // books collected so far stand on the ledge
   if(nv.books&&nv.books.length){let bx=x+w-26;for(let i=nv.books.length-1;i>=0;i--){const b=nv.books[i],dm=bookDims({w:b.w,tier:b.tier},RH),sw=dm.w*.62;ctx.save();ctx.translate(bx-sw/2,y+h);ctx.scale(.62,.62);bookArt(ctx,{w:dm.w,h:dm.h,tier:b.tier,seed:hashStr(b.w)&0xffff,word:b.w,ribbon:b.tier>=1?RIBBONS[b.tier%5]:null},now/1000);ctx.restore();bx-=sw+3;}}
   ctx.restore();}
@@ -308,6 +329,7 @@ const World=(()=>{
  return{
   setShelf(b){shelf=b;},hits:()=>hits,get shelfVisible(){return shelfVisible;},get restRow(){return restRow;},get busy(){return !!st||!!rest;},
   reset(){rows.clear();taken.clear();niches.clear();restRow=0;st=null;rest=null;cam=restCam(0);},
+  fillNiche(r,res,books){const e=niches.get(r);if(e){e.res=res;if(books)e.books=books;}},
   openNiche(r,o={}){const e=niches.get(r);if(e){e.label=o.label||e.label;e.books=o.books||e.books;}else niches.set(r,{t0:performance.now(),label:o.label||'',books:o.books||[]});},
   onDepth(f){onDepth=f;},onGauge(f){gaugeCb=f;},
   // look back up the descent: the camera offsets while idle and snaps home; never while a descent or glide runs
@@ -463,11 +485,12 @@ async function submit(skipped){
  {const sw=$('#fld');if(sw){sw.classList.add('sending');const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
- const depth0=Math.round(World.restRow*FT);
+ const depth0=Math.round(World.restRow*FT),nicheRow=World.restRow;
  await World.descend({rows,tier:t,score:j.score,word:w.w});
  ui.gauge.classList.remove('on');ui.skip.classList.remove('on');
  FX.burst(innerWidth/2,innerHeight*.5,t,16+t*8);
  run.results.push({...book,skipped});run.depthRows+=rows;
+ World.fillNiche(nicheRow,{w:w.w,pos:w.pos,answer:text,score:j.score,tier:t,ft:book.ft,verdict:book.verdict,skipped},run.results.slice());
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
  if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}save();}
  const depth1=Math.round((World.restRow+rows)*FT);

@@ -18,7 +18,7 @@
 #tracker .you{width:9px;height:9px;border-radius:50%;background:#f0d9a6;box-shadow:0 0 12px #f0d9a6;transition:top .3s}
 #tracker .view{width:13px;height:13px;border-radius:50%;border:2px solid #fff;background:#0b0907;transition:top .12s}
 #tracker .view[hidden]{display:none}
-body.browsing .center{opacity:.1!important;transition:opacity .25s}
+body.browsing .center{opacity:0!important;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
 body.browsing .center *{pointer-events:none!important}
 #snapback{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);padding:9px 20px;border-radius:3px;font:600 13px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#f1e7d0;background:#1a120bf2;border:1px solid #b08a56;box-shadow:0 4px 22px #000a;z-index:5}
 #snapback:hover{background:#2a1c10}
