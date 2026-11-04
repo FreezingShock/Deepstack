@@ -256,7 +256,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: contextual spine text and a stored run checkpoint (additive `S.resume`). Files: HOME, new `src/core/resume.js`. Done when: Daily cannot be replayed through resume, tested.
 **Touches:** HOME, MAIN. **Conflicts:** Daily fairness thread, 27.
 
-### 29. First-run welcome in the library's voice
+### 29. [x] Welcome screen as a reading room (reinterpreted by nate: not a narrated intro; #139)
 **Serves:** mysterious, concise copy.
 **Pitch:** A short, wordless-first intro: a hand writes the rules in a book, Descend lights up. Skippable and never repeated.
 **Brief:** Goal: onboarding in 20 s or less, static in reduced motion, flag in `S.seen.welcome`. Files: new `src/ui/welcome.js`. Done when: skip by keyboard, once-only test.
@@ -780,3 +780,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 ### AT2. Attic crates you can rearrange
 **Pitch:** Let recent guesses sit in the attic as loose books on the beams with how many you want to keep up there (5, 12, 30).
 **Brief:** Goal: setting for how many recent guesses the attic holds (`RECENT_N` in `src/core/attic.js`), saved additively. Done when: tested, default stays 12. **Touches:** core. **Conflicts:** 75.
+
+### W1. Rules card you can pull out
+**Serves:** everything is a book/shelf/page, immersion through interaction.
+**Pitch:** The pinned "Rules of the house" card slides out of a card-catalogue drawer on the niche ledge when you click it, and flips to a second card with the combo and tier rules.
+**Brief:** Goal: make the welcome rules card interactive. Files: `src/ui/welcome.css`, new `src/ui/welcome.js`. Done when: keyboard operable, reduced motion static, 375 and 1280 screenshots.
+**Touches:** HOME. **Conflicts:** 27.
+
+### W2. A librarian's desk on the ledge
+**Serves:** "things that live down there", hidden curios, physical sanity.
+**Pitch:** A small brass bell, an inkwell and a stamp sit on the niche ledge; the bell chimes, the stamp thumps a due date onto the borrower's slip.
+**Brief:** Goal: ledge props with one sound each. Files: new `src/ui/deskProps.js`. Done when: nothing floats, props hidden under 560 px.
+**Touches:** HOME, ledge. **Conflicts:** 4.

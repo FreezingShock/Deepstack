@@ -1,0 +1,39 @@
+/* Welcome screen as a reading room: the rules are a catalogue card and the records a borrower's
+   slip, both pinned to the niche beside the Descend plaque. Loaded after home.css. */
+.home .hz-kicker{margin:0 0 calc(var(--hz-g,16px)*.3);font:600 11px var(--label);letter-spacing:.42em;text-transform:uppercase;color:var(--c-brass-65);display:flex;align-items:center;gap:12px;justify-content:center}
+.home .hz-kicker::before,.home .hz-kicker::after{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--c-brass-65))}
+.home .hz-kicker::after{transform:scaleX(-1)}
+.home .hz-plaque{position:relative}
+.home .cat-card,.home .stats.slip{--ink:var(--c-oak-1a1208);position:absolute;bottom:-18px;width:196px;box-sizing:border-box;padding:22px 14px 12px;text-align:left;text-shadow:none;color:var(--c-oak-1a1208);
+ background:repeating-linear-gradient(180deg,transparent 0 19px,color-mix(in srgb,var(--c-oak-4a3a22) 28%,transparent) 19px 20px),radial-gradient(120% 90% at 30% 10%,var(--c-parchment-85),var(--c-parchment-dim));
+ border:0;border-radius:2px;box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 10px 18px -6px var(--c-black),0 0 0 1px var(--c-black-alpha-66);
+ transition:transform var(--m-base) var(--e-settle),box-shadow var(--m-base);display:none}
+.home .cat-card{left:-52px;transform:rotate(-2.2deg);transform-origin:50% 0}
+.home .stats.slip{right:-52px;transform:rotate(1.8deg);transform-origin:50% 0;flex-direction:column;flex-wrap:nowrap;gap:0;align-items:stretch;justify-content:flex-start;margin:0;padding-top:22px;border-top:0;border-bottom:0;font:400 13px/20px var(--mono);letter-spacing:.02em;text-transform:none}
+.home .cat-card:hover,.home .stats.slip:hover{transform:rotate(0) translateY(-3px);box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 16px 24px -8px var(--c-black),0 0 0 1px var(--c-black-alpha-66)}
+.home .cat-card::after,.home .stats.slip::after{content:"";position:absolute;left:0;right:0;top:15px;height:1px;background:var(--c-bronze-51)}
+.home .wc-pin{position:absolute;top:-5px;left:14px;width:11px;height:11px;margin-left:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c-amber-fff6d0),var(--c-brass-62) 45%,var(--c-oak-24));box-shadow:0 3px 3px var(--c-black-alpha-88)}
+.home .wc-head{position:absolute;left:0;right:0;top:0;padding:3px 0 0;text-align:center;font:600 9.5px/12px var(--label);letter-spacing:.2em;text-transform:uppercase;color:var(--c-book-red)}
+/* rules: typed lines with a handwritten numeral, like entries on an index card */
+.home .cat-card .how{display:block;margin:0;padding:0;width:auto;list-style:none}
+.home .cat-card .how .step{display:block;position:relative;padding:0 0 0 20px;margin:0 0 2px;border:0;background:none;box-shadow:none;border-radius:0;font:400 11.5px/20px var(--mono);color:var(--c-oak-1a1208)}
+.home .cat-card .how .step b{font:600 12.5px/20px var(--mono);color:var(--c-oak-1a1208);display:inline;margin-right:5px}
+.home .cat-card .how .hn{position:absolute;left:0;top:0;width:auto;height:auto;border:0;display:inline;font:700 15px/20px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-blue)}
+.home .cat-card .how .step span:last-child{display:inline;grid-column:auto}
+.home .cat-card .how .step{line-height:20px}
+/* slip: dotted leaders between a label and its stamped value */
+.home .stats.slip span{display:flex;justify-content:space-between;gap:6px;color:var(--c-oak-1a1208);white-space:nowrap}
+.home .stats.slip span::after{content:none}
+.home .stats.slip b{font:700 13px/20px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-red);min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* shown only where there is wall for them: wide rooms; the rules also fit inline on tablets */
+@media(min-width:1000px){
+ [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card,[data-room=snug] .home .cat-card,
+ [data-room=roomy] .home .stats.slip,[data-room=cozy] .home .stats.slip,[data-room=snug] .home .stats.slip{display:block}
+ .home .stats.slip{display:flex}
+ [data-room=snug] .home .stats.slip{display:flex}
+}
+@media(min-width:561px) and (max-width:999px){
+ [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card{display:block;position:static;width:min(100%,360px);margin:0 auto var(--hz-g,12px);transform:rotate(-1deg)}
+}
+@media(prefers-reduced-motion:reduce){.home .cat-card,.home .stats.slip{transition:none}}
+html[data-motion="reduce"] .home .cat-card,html[data-motion="reduce"] .home .stats.slip{transition:none}
