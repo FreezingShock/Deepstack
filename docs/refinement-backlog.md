@@ -62,7 +62,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: 3 new rare shelf curiosities revealed on hover, seeded per row like lore books (pure function of the row seed, no storage). Files: new `src/ui/curios.js`. Done when: hover reveals with the same halo rules as lore books (tight, never near the alcove or pillars), determinism test, touch alternative.
 **Touches:** new files, WORLD hook. **Conflicts:** none significant.
 
-### 5. Alcove as a reading nook
+### 5. [x] Alcove as a reading nook (#112)
 **Serves:** integrated, rarity hero.
 **Pitch:** The alcove looks lived-in: lamp, a desk edge, an open book under the word, with your earned books lined on the ledge at believable scale.
 **Brief:** Goal: redraw the alcove frame and ledge props, keep the word lettering area clear for the run screen thread. Files: new `src/ui/alcoveArt.js`. Done when: the ledge fits 7 books plus the skipped slot at 375 px, no overlap with the word at 14 letters.
@@ -516,3 +516,13 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** The older the book, the more dust, webs and faded gilding on its spine.
 **Brief:** Goal: age-based spine dressing in the attic. Files: `src/ui/attic.css`. Done when: tokens only, 14-letter word still readable.
 **Touches:** BOOK. **Conflicts:** none.
+
+### 90. Things that live in the nook
+**Serves:** immersive, integrated. **Pitch:** "things that live down there": a moth, a mouse or a spider that wander the desk, and a quill that scratches while you type, each floor with its own resident.
+**Brief:** Goal: tiny animated creatures and a writing quill on the nook desk (`alcoveArt.js` hook), off with reduced motion. Done when: costs measured, no overlap with controls at 375 px.
+**Touches:** new file + `alcoveArt.js`. **Conflicts:** none.
+
+### 91. Hidden curios on the shelves (overlaps 61, merge the two)
+**Serves:** variety, discovery. **Pitch:** "hidden curios on the shelves": rare tiny objects (a key, a skull, a folded map) tucked between books that glow on hover and reveal a line of lore.
+**Brief:** Goal: seeded rare curios per floor on shelf rows, hover tooltip, a collection page. Files: new `src/ui/curios.js`. Done when: never under an alcove, tests for seeding.
+**Touches:** WORLD hook. **Conflicts:** 6, lore books.
