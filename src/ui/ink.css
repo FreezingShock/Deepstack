@@ -1,0 +1,19 @@
+/* Hand-drawn page furniture (src/ui/ink.js). Pure decoration: pointer-events off, text colours untouched. */
+.bk-spread.menu .pg-in{position:relative}
+.bk-spread.menu .ink{display:block;color:var(--bk);pointer-events:none;overflow:visible}
+.bk-spread.menu .ink-rule{width:100%;height:12px;margin:2px 0 10px;opacity:.85}
+.bk-spread.menu .ink-under{width:100%;height:8px;margin:-9px 0 10px;opacity:.7;color:var(--mute)}
+.bk-spread.menu h2.inked{border-bottom:0;padding-bottom:9px}
+.bk-spread.menu h1.inked-title{padding-right:60px}
+.bk-spread.menu .ink-doodle{position:absolute;top:clamp(14px,3.6%,26px);right:16px;width:38px;height:38px;color:var(--mute);opacity:.6;transform:rotate(6deg)}
+.bk-spread.menu .ink-doodle path{stroke-width:1.5}
+.bk-spread.menu .ink-note{display:flex;align-items:center;gap:8px;margin:22px 0 4px;font:500 19px/1.2 'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive;color:var(--mute);transform:rotate(-1.5deg);transform-origin:left}
+.bk-spread.menu .ink-blot{flex:none;width:20px;height:20px;color:var(--ink);opacity:.5}
+@media(prefers-reduced-motion:no-preference){
+ .bk-spread.menu .ink-rule,.bk-spread.menu .ink-under,.bk-spread.menu .ink-doodle{animation:inkdraw .7s cubic-bezier(.4,.1,.3,1) .15s both}
+ .bk-spread.menu .ink-under{animation-delay:.3s}
+ .bk-spread.menu .ink-doodle{animation-duration:1s;animation-delay:.4s}
+ .bk-spread.menu .ink-blot{animation:inkblot .5s ease-out .6s both}
+}
+@keyframes inkdraw{from{clip-path:inset(-4px 100% -4px 0)}to{clip-path:inset(-4px -4px -4px 0)}}
+@keyframes inkblot{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:.5}}

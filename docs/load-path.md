@@ -18,5 +18,5 @@ Unthrottled: first paint 444 ms to 352 ms, 10 third-party requests to 0.
 
 ## Decisions
 - Font preloads made first paint worse on slow links (they queue ahead of the JS), so there are none. Fonts use `font-display: swap`.
-- Word list is not split by difficulty band: the Daily's seeded picks need the full pool in a fixed order, so every run needs every band before it can start. Shrinking the file is backlog item 64.
+- Word list is not split by difficulty band: the Daily's seeded picks need the full pool in a fixed order, so every run needs every band before it can start. Shrinking the file is backlog item 80.
 - Gzip/brotli is the host's job (the script measures with gzip: 2.2 MB json becomes 691 KB). Vite's dev server does not compress; any static host (GitHub Pages, Netlify, Vercel, Cloudflare) does by default. Hashed `assets/*` can be cached for a year; `data/words.json` and `fonts/*` are not hashed, so give them a short cache or version their URLs if the host caches aggressively.
