@@ -201,7 +201,13 @@ const World=(()=>{
     for(const v of vis){const {b,dm}=v;const bx=x+dm.w/2;ctx.save();ctx.translate(bx,base);
      bookArt(ctx,{w:dm.w,h:dm.h,tier:b.tier,seed:seedOf(b),word:b.w,ribbon:b.tier>=1||seedOf(b)%3===0?RIBBONS[seedOf(b)%RIBBONS.length]:null},vt);ctx.restore();
      hits.push({x:x,y:base-dm.h,w:dm.w,h:dm.h+16,b});x+=dm.w+3;}
-    shelfVisible=vis.length;}
+    shelfVisible=vis.length;
+    // fill the rest of this shelf with the same procedural books as every other row, so the top never reads as a bare band
+    {const x0=Math.max(34,(W-Math.min(W-60,1040))/2),gx0=x0-4,gx1=x+4;
+     for(const b of d.bs){if(b.x+b.w<bx0-50||b.x>bx1+50||(vis.length&&b.x+b.w>gx0&&b.x<gx1))continue;ctx.save();ctx.translate(b.x+b.w/2,base);
+      if(b.lying){ctx.rotate(-.04);bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib},vt);}
+      else{if(b.tilt){ctx.translate(b.w/2,0);ctx.rotate(b.tilt);ctx.translate(-b.w/2,0);}bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib},vt);}
+      ctx.restore();}}}
    else{
     for(const b of d.bs){if(b.x+b.w<bx0-50||b.x>bx1+50)continue;ctx.save();const bx=b.x+b.w/2;
      if(b.lying){ctx.translate(bx,base);ctx.rotate(-.04);bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,dust:a*.9,ribbon:b.rib},vt);}
