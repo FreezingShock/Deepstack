@@ -2,6 +2,9 @@
 
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
+## What nate needs to do
+- Play down to 252 ft (Catacombs), 454 ft (Sunken Vault), 706 ft (Hollow) and 1008 ft (Abyss) and say which door still feels like "just a tint": each floor's first row now has a sign, a doorway scene and its own wall (item 1).
+
 Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 
 **Keeping this alive (every thread):** when your PR merges, (1) tick your item here and update your row in the inventory, (2) append any new taste nate expressed in your thread to `nate-preferences.md` (one dated line under the matching pattern), (3) add 2 to 3 fresh items to the end of this file that follow from what he asked, in his wording and in the same format. Keep edits to a few lines so threads do not conflict.
@@ -43,7 +46,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## A. The library as a place (WORLD, dark and mysterious)
 
-### 1. Floor sections as chapters
+### 1. [x] Floor sections as chapters (this PR)
 **Serves:** dark/mysterious, sections for each floor, integrated.
 **Pitch:** Each of the six floors reads as a chapter: a carved door or archway you pass through, a name plate, and its own wall material (paper stacks, bone, flooded stone, hollow wood, black glass), not just a tint.
 **Brief:** Goal: threshold art drawn at each floor boundary (arch, hanging sign, a few distinct props per floor such as ledgers, ossuary niches, water drips, roots, a single candle in the Abyss). Files: new `src/ui/thresholds.js`, data fields added to `floors.js`, hook in `World`. Done when: each floor is identifiable in a screenshot with the HUD hidden, a test lists a threshold def for every floor, performance within 1 ms/frame of baseline (item 33).
@@ -744,3 +747,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** Particles scale with the Graphics setting instead of guessing.
 **Brief:** Goal: once `src/ui/quality.js` is on main, make `qualityScale()` in `revealFx.js` read `Quality.params()` instead of `data-quality`. Done when: low mode throws about a third of the particles, tested.
 **Touches:** reveal. **Conflicts:** 40.
+
+### D1. Walk through the door
+**Serves:** immersion, motion.
+**Pitch:** Descending past a floor door should feel like passing through it: a short slow-down at the threshold, the sign swinging a little, a one-line floor sound.
+**Brief:** Goal: a threshold moment while the camera crosses a floor start (sign sway, brief ease, optional room-tone sting). Files: new `src/ui/thresholdPass.js`, hook in `World` camera. Done when: uses the shared motion presets, off in reduced motion.
+**Touches:** WORLD, FEEL. **Conflicts:** 2, 38.
+
+### D2. Floor doors in the almanac and on the tracker
+**Serves:** integrated, sections for each floor.
+**Pitch:** The depth tracker and the Stats cross-section show each floor's door sign and wall swatch, so the same identity appears everywhere.
+**Brief:** Goal: reuse `THRESHOLDS`/wall materials to paint small swatches. Files: `tracker.js`, `statsPages.js`. Done when: 375 and 1280 screenshots, long floor name readable.
+**Touches:** HOME, tracker. **Conflicts:** 2.

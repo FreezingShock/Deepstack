@@ -15,6 +15,7 @@ import {drawLedge} from '../ui/ledge.js';
 import {lyingFootprint,settleBooks,placeProp,propHalf,tiltAboutFoot} from '../ui/physics.js';
 import {drawAlcoveLanterns} from '../ui/lanterns.js';
 import {lowQuality,updateAmbient,drawAmbient,resetAmbient} from '../ui/ambient.js';
+import {doorSpan,drawWallMaterial,drawThreshold,drawThresholdLive,drawThresholdSign} from '../ui/thresholds.js';
 import {drawFloorAtmosphere} from '../ui/floorAtmosphere.js';
 import {nookMetrics,drawNook,paintAroundAlcoves,alcoveRects} from '../ui/alcoveArt.js';
 import {$,RM,clamp} from '../app/util.js';
@@ -42,7 +43,8 @@ export const World=(()=>{
   const rng=mulberry(r*7919+layer*104729+13),a=abn(r),fl=floorAtRow(r),sc=layer?.72:1,bs=[],webs=[],props=[];let x=-6;
   while(x<W+40){const w=(10+rng()*22)*sc;
    if(rng()<.03+.24*a+(fl.gap||0)){x+=w*(.5+rng());continue;} // missing books
-   const cx=x+w/2;if(layer===0&&(taken.has(r)||(st&&st.row===r))&&Math.abs(cx-pullX(r))<34){x+=w;continue;}
+   const cx=x+w/2;if(layer===0&&r===fl.row&&r>0&&cx>doorSpan(W)[0]-w&&cx<doorSpan(W)[1]+w){x+=w;continue;} // the doorway bay holds no books
+   if(layer===0&&(taken.has(r)||(st&&st.row===r))&&Math.abs(cx-pullX(r))<34){x+=w;continue;}
    const h=RH*sc*(.58+rng()*.32);
    const lean=layer===0?-(((x+w/2)/W)*2-1)*.12*a:0;const rnd=rng()<.05+.32*a?(rng()-.5)*(.1+.45*a):0,tilt=rnd+lean;
    const tier=rng()<.05?Math.floor(rng()*rng()*7):-1;
@@ -69,29 +71,9 @@ export const World=(()=>{
    for(let i=1;i<7;i++){const t=i/7,px=wb.x+(wb.x2-wb.x)*t,py=y+2+wb.sag*2*t*(1-t)*.5;ctx.beginPath();ctx.moveTo(px,y+2);ctx.lineTo(px+(rng()-.5)*8,py+wb.sag*.35*(1-Math.abs(t-.5)*1.4));ctx.stroke();}}
   else{ctx.beginPath();ctx.moveTo(wb.x,y);ctx.quadraticCurveTo(wb.x+6*Math.sin(vt*.7+wb.seed),y+wb.len*.5,wb.x+2,y+wb.len);ctx.stroke();}}
  // ---- themed floor dressing ----
- function floorWall(fl,x0,x1,y,base,rh,r){
-  if(fl.motif==='crypt'){ // stone blocks behind the books
-   ctx.save();ctx.globalAlpha=.55;ctx.strokeStyle=PALETTE.blackAlpha99;ctx.lineWidth=2;const bh=rh/3.4,rg=mulberry(r*53+1);
-   for(let k=0;k*bh<base-y;k++){const yy=y+k*bh;ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(x1,yy);ctx.stroke();const off=(k%2)*34;for(let xx=x0-off;xx<x1;xx+=68+((rg()*14)|0)){ctx.beginPath();ctx.moveTo(xx,yy);ctx.lineTo(xx,yy+bh);ctx.stroke();}}
-   ctx.fillStyle=PALETTE.whiteAlpha08;for(let i=0;i<14;i++)ctx.fillRect(x0+rg()*(x1-x0),y+rg()*(base-y),10+rg()*30,2+rg()*5);
-   ctx.restore();}
-  else if(fl.motif==='stacks'){ // wood paneling and a rail behind the books, so the first floor isn't a bare wall
-   ctx.save();ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=2;const pw=54;
-   for(let xx=x0+((r*29)%pw);xx<x1;xx+=pw){ctx.beginPath();ctx.moveTo(xx,y);ctx.lineTo(xx,base);ctx.stroke();ctx.fillStyle='rgba(255,255,255,.03)';ctx.fillRect(xx+2,y,1,base-y);}
-   ctx.fillStyle='rgba(0,0,0,.33)';ctx.fillRect(x0,y+rh*.16,x1-x0,3);ctx.fillStyle='rgba(255,255,255,.05)';ctx.fillRect(x0,y+rh*.16+3,x1-x0,1);
-   ctx.restore();}
-  else if(fl.motif==='archive'){ // faint rows of pigeonhole drawers on the back wall
-   ctx.save();ctx.globalAlpha=.5;const cw=46,ch=30;ctx.strokeStyle=PALETTE.bronze28Alpha88;ctx.lineWidth=1;
-   for(let yy=y+8;yy<base-ch;yy+=ch+6)for(let xx=x0+((r*13)%cw);xx<x1;xx+=cw+6){ctx.strokeRect(xx+.5,yy+.5,cw,ch);ctx.fillStyle=PALETTE.bronze54Alpha33;ctx.fillRect(xx+cw/2-5,yy+ch-10,10,3);}
-   ctx.restore();}
-  else if(fl.motif==='hollow'||fl.motif==='abyss')deepWall(ctx,fl,x0,x1,y,base,rh,r);
- }
+ function floorWall(fl,x0,x1,y,base,rh,r){drawWallMaterial(ctx,fl,x0,x1,y,base,rh,r);} // paper, drawers, bone, wet stone, hollow wood, black glass (ui/thresholds.js)
  function floorProp(pr,fl,bx0,bx1,y,base){
-  if(pr.k==='lintel'){ // the threshold beam that announces a new floor
-   ctx.save();ctx.fillStyle=fl.pillar;ctx.fillRect(0,y,W,16);ctx.fillStyle=fl.ledgeHi;ctx.fillRect(0,y+16,W,2);ctx.fillStyle=PALETTE.blackAlpha99;ctx.fillRect(0,y+18,W,6);
-   ctx.font='600 12px "IM Fell English",Georgia,serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=`rgb(${fl.lamp.join(',')})`;ctx.globalAlpha=.85;
-   const label=fl.name.toUpperCase().split('').join(' ');for(let i=0;i<3;i++)ctx.fillText(label,W*(i+.5)/3,y+8.5);
-   ctx.restore();return;}
+  if(pr.k==='lintel'){drawThreshold(ctx,fl,W,y,RH,base,bx0,bx1);return;} // the door into a new floor
   if(pr.x<bx0-60||pr.x>bx1+60)return;
   ctx.save();ctx.translate(pr.x,base);
   if(pr.k==='plate'){ctx.fillStyle=PALETTE.bronze54;ctx.fillRect(-14,-4,28,9);ctx.fillStyle=PALETTE.oak2a2410;ctx.font='400 8px "Special Elite",monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(pr.n,0,.5);}
@@ -147,6 +129,7 @@ export const World=(()=>{
   }else if(layer===0){ctx.save();ctx.beginPath();ctx.rect(0,y-1,W,rh+2);ctx.clip();body(0,W);ctx.restore();} // clip so the next row's wall can't swallow this row's plank and book bottoms
   else body(0,W);
   ctx.globalAlpha=dim;ctx.fillStyle=fl.pillar;for(let i=0;i<=3;i++){const ux=i*(W/3);ctx.fillRect(ux-(i?7*sc:0),y,14*sc,rh);ctx.fillStyle=PALETTE.whiteAlpha10;ctx.fillRect(ux-(i?7*sc:0)+2,y,1.5,rh);if(fl.motif==='flood'&&layer===0){ctx.fillStyle=PALETTE.teal60Alpha22;for(let k=0;k<rh;k+=22)ctx.fillRect(ux-(i?7*sc:0)+4,y+k+8,6,2);}ctx.fillStyle=fl.pillar;}ctx.globalAlpha=1;
+  if(layer===0&&r===fl.row&&r>0)drawThresholdSign(ctx,fl,W,y,rh);
   return {base,d};}
  // Static row art is drawn once into an offscreen bitmap; only water and loose strands animate per frame.
  function drawRow(r,layer,cam_,sc,dim){
@@ -161,6 +144,7 @@ export const World=(()=>{
   const a=abn(r),fl=d.fl;
   for(const wb of d.webs)if(wb.k==='strand')drawWeb(wb,y,a,fl.web);
   if(fl.motif==='flood')floodOverlay(fl,0,W,y,rh,r);
+  if(r===fl.row)drawThresholdLive(ctx,fl,W,y,rh,vt,RM);
   return {base,d};}
  function pruneRows(top,bot){for(const [k,v] of rows){const r=k>>1;if(r<top-6||r>bot+6){if(v.bmp){bmpPool.push(v.bmp);v.bmp=null;}rows.delete(k);}}}
  // A finished alcove keeps its word, your answer on the slip, and the result, so scrolling back reads like a log.

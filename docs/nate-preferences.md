@@ -68,3 +68,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-04 motion: the motion language should cover all animations and changes, smooth, performant and "all uniform" -> every transition goes through the shared presets (thread: motion language)
 
 - 2026-11-04 notes: "keep updating the refinements list, what i need to work on, and my preferences" -> every thread/audit appends to backlog, inventory and preferences automatically (thread: floor ambience)
+- 2026-11-04 floors: "make each floor a chapter", "make sure to spend time on these 1 and 2, they are important" -> floors must be unmistakable with the HUD hidden: a door, sign and wall material each, not a tint (thread: floors as chapters)
