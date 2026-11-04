@@ -47,6 +47,8 @@ import './ui/buttons.css';
 import './ui/tactile.css';
 import { particleVisibility } from './ui/particleMask.js';
 import './ui/polish.css';
+import './ui/runScreen.css';
+import {paintRun} from './ui/runScreen.js';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();let wordsLoaded=false;wordsReady.then(()=>{wordsLoaded=true;},()=>{wordsLoaded=true;});
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -539,7 +541,7 @@ function showWord(){
  el.innerHTML=`<div class="candle" id="candle" aria-hidden="true"><div class="wax" id="wax"><i class="flame"></i><i class="wick"></i></div><div class="plate"></div></div><div class="sheet">${pipsHTML()}
   <div class="wlabel">Word ${run.i+1} of ${run.words.length}</div>${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
   <div class="word" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
-  <div class="pos">${esc(w.pos)}</div>
+  <div class="pos">${esc(w.pos)}</div><div class="clock" id="clock" aria-hidden="true">0:45</div>
   <div class="timer" id="tbar"><i id="tfill"></i></div>
   <div class="slipwrap" id="fld"><i class="pin"></i><div class="slip"><textarea id="ans" placeholder="In your own words\u2026" maxlength="300" aria-label="Your explanation" enterkeyhint="send"></textarea></div></div>
   <div class="hintline" id="hl" aria-live="polite"></div>
@@ -551,7 +553,7 @@ function showWord(){
  run.ladder=hintLadder(w);run.hintN=0;paintHintBtn();
  $('#hint').onclick=useHint;$('#skip').onclick=()=>submit(true);
  clearInterval(timerId);
- timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);if(left<=0)submit(!$('#ans').value.trim());},100);
+ timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);paintRun(left,run.limit);if(left<=0)submit(!$('#ans').value.trim());},100);
 }
 function paintHintBtn(){const b=$('#hint');if(!b)return;const n=run.ladder[run.hintN];b.disabled=!n;b.textContent=n?`Hint: ${HINT_LABEL[n.kind]} (\u2212${n.cost*FT|0} ft)`:'No more hints';}
 function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;run.hintSpent=(run.hintSpent||0)+n.cost;
