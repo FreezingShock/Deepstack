@@ -101,3 +101,24 @@
 @keyframes vlift{to{opacity:0}}
 @media(prefers-reduced-motion:reduce){.descend,.d-flame,.d-chev{animation:none}.hbook,.hb-spine,.hb-pages{transition:none}.hbook:hover .hb-spine,.hbook:focus-visible .hb-spine{transform:none}.hbook.opening{transform:none}.bk-spread{transition:none}.bk-spread .bs-cover{transition:none}.descend-veil{display:none}}
 @media(max-height:900px){.home .stats{display:none}}
+
+/* intro pages (Unlimited, Practice): the spread stays open with a Start button */
+.bk-spread.intro{pointer-events:auto}
+.bk-spread .bs-page{padding:7% 8%;color:#2a2013;text-align:left;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.bk-spread .bs-page h2{margin:0;font:500 clamp(18px,4vw,34px)/1.1 var(--serif);letter-spacing:.03em;text-transform:uppercase;color:var(--bk)}
+.bk-spread .bs-page p{margin:0;font:italic 400 clamp(15px,2.2vw,18px)/1.5 var(--serif)}
+.bk-spread .bs-page ul{margin:0;padding-left:18px;font:400 clamp(14px,2vw,16px)/1.6 var(--serif)}
+.bs-start{margin-top:auto;align-self:flex-start;padding:10px 20px;border-radius:3px;font:600 13px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--bk-gild);background:linear-gradient(var(--bk),var(--bk2));border:1px solid var(--bk-gild);box-shadow:0 3px 10px -3px #000a}
+.bs-start:hover{filter:brightness(1.2)}
+.bs-back-btn{align-self:flex-start;font:italic 400 14px var(--serif);color:#5b4a2a;text-decoration:underline;padding:2px 0}
+.bk-spread :focus-visible{outline:3px solid #b8741f;outline-offset:3px}
+/* Shelf, Sets and Stats panels read as an open book: leather cover, two pages, centre gutter */
+#all .panel,#stats .panel,#sets .panel{--bk:#23406b;--bk2:#10203a;--bk-gild:#d0b36a;width:min(100%,860px);border:0;border-radius:6px;
+ background:linear-gradient(90deg,transparent calc(50% - 22px),#0009 50%,transparent calc(50% + 22px)),linear-gradient(180deg,#1d150d,#130d08);
+ box-shadow:0 0 0 9px var(--bk),0 0 0 10px var(--bk-gild),0 0 0 14px var(--bk2),0 30px 70px -10px #000,inset 0 0 40px #000a}
+#sets .panel{--bk:#4a2a63;--bk2:#26143a;--bk-gild:#d8b676}
+#stats .panel{--bk:#5b3a1d;--bk2:#2d1c0d;--bk-gild:#d8b676}
+#sets .setlist{column-gap:44px;grid-template-columns:repeat(2,1fr)}@media(max-width:700px){#sets .setlist{grid-template-columns:1fr}}
+#stats .bigs{column-gap:20px}
+@media(max-width:700px){#all .panel,#stats .panel,#sets .panel{box-shadow:inset 0 0 40px #000a;background:linear-gradient(180deg,#1d150d,#130d08)}}
+@media(prefers-reduced-motion:reduce){.bk-spread.intro{transition:none}}
