@@ -313,3 +313,12 @@ textarea,#fq{font-size:max(16px,1em)}
 #all.fadein,#stats.fadein,#sets.fadein{animation:ovin .3s ease-out both}
 @keyframes ovin{from{opacity:0}}
 @media(prefers-reduced-motion:reduce){.ghost-out{display:none}}
+
+/* phones: fit the word stage above the shelf without clipping the hint and skip buttons */
+@media(max-width:640px){
+ .slip textarea{height:104px}
+ .word{font-size:clamp(40px,11vw,60px)}
+ .pos{margin:2px 0 6px}
+ .hintline{min-height:22px;margin-top:6px}
+ .stage-row,#stage .row{margin-top:4px}
+}
