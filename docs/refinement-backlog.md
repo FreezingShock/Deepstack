@@ -316,12 +316,12 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## H. Overhauls of foundations
 
-### 42. Split `main.js`
+### 42. [x] Split `main.js` (PR split-main)
 **Pitch:** The 650-line dense file becomes `world.js`, `run.js`, `card.js`, `final.js`, `boot.js`, no behaviour change.
 **Brief:** Pure refactor, announced first, run only when no other thread touches `main.js`. Done when: tests, smoke and snapshots pixel-identical.
 **Touches:** MAIN entirely. **Conflicts:** everything tagged MAIN or WORLD; schedule alone.
 
-### 43. Split `styles.css`
+### 43. [x] Split `styles.css` (PR split-main)
 **Pitch:** Per-screen CSS files so threads stop colliding.
 **Brief:** Pure move, zero visual diff. Done when: css-sanity and snapshots pass untouched.
 **Touches:** CSS. **Conflicts:** all CSS items; schedule with 42.

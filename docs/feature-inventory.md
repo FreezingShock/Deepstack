@@ -65,7 +65,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Judge benchmark | `scripts/judge-bench.mjs` | A | Compares worker, forced-main, blocked-worker. |
 
 ## Cross-cutting gaps (feed the backlog)
-- `src/main.js` (~65 KB) and `src/styles.css` (~34 KB) remain the collision points.
+- `main.js` is now a thin boot file (imports, wiring, init). Game code lives in `src/app/` (`util`, `state`, `chrome`, `fx`, `home`, `run`, `final`, `card`) and `src/world/` (`world.js` canvas, `bookArt.js`). CSS is `src/styles/*.css`, imported in cascade order by `src/styles/index.css`. Rows below that say `main.js` mean those files.
 - No onboarding or how-to-play; no pause; no keyboard-only path audit; no analytics-free self-check of frame rate.
 - No export/import of saves; no cloud sync; no leaderboards (by design local only so far).
 - Audio and screen reader behaviour untested by machines.

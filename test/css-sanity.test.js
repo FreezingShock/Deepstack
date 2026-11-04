@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 
-const files=['src/styles.css',...readdirSync('src/ui').filter(f=>f.endsWith('.css')).map(f=>'src/ui/'+f)];
+const files=[...readdirSync('src/styles').filter(f=>f.endsWith('.css')).map(f=>'src/styles/'+f),...readdirSync('src/ui').filter(f=>f.endsWith('.css')).map(f=>'src/ui/'+f)];
 for(const f of files)test(`${f} has balanced braces and no stray selector text in declarations`,()=>{
  const s=readFileSync(f,'utf8').replace(/\/\*[\s\S]*?\*\//g,'');
  let d=0;for(const c of s){if(c==='{')d++;if(c==='}')d--;assert.ok(d>=0,'unbalanced }');}

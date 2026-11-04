@@ -20,7 +20,7 @@
 - Settings > Actions > General > Workflow permissions: Read and write.
 
 ## Module boundaries
-`src/core/` game rules, `src/scorer/` judging, `src/main.js` UI/world (shared hot spot), `scripts/` data tooling. Prefer adding new modules over editing `main.js`.
+`src/core/` game rules, `src/scorer/` judging, `src/main.js` boot wiring (shared hot spot), `src/app/` run, home, card and final screens, `src/world/` canvas world, `scripts/` data tooling. Prefer adding new modules over editing `main.js`.
 
 ## Colors
 Colors live in `src/theme/colors.js` (single source of truth). `npm run gen:tokens` writes `src/theme/tokens.css` (`--c-*`, `--tier-*`, `--floor-*` custom properties); canvas/JS code imports `colors.js` directly. In CSS use `var(--c-parchment)` etc. instead of raw hex. Files listed in `test/fixtures/hex-budget*.json` may not gain raw hex.
