@@ -13,18 +13,19 @@ export const HOME_STEPS=[
    button id; color picks the leather (HOME_BOOK_COLORS). Other features can push
    onto HOME_LINKS. Layout, hover and open animation live in home.css (--bk-* vars). */
 export const HOME_BOOK_COLORS={
- red:[PALETTE.blood26,PALETTE.blood14,PALETTE.bronze51],
- green:[PALETTE.oak23,PALETTE.oak122a18,PALETTE.brass62],
- blue:[PALETTE.steel28,PALETTE.steel15,PALETTE.brass62],
- purple:[PALETTE.violet28,PALETTE.violet15,PALETTE.brass65],
- brown:[PALETTE.oak24,PALETTE.oak11,PALETTE.brass65],
+ red:[PALETTE.bookRed,PALETTE.bookRedDk,PALETTE.bronze51],
+ green:[PALETTE.bookGreen,PALETTE.bookGreenDk,PALETTE.brass62],
+ blue:[PALETTE.bookBlue,PALETTE.bookBlueDk,PALETTE.brass62],
+ aqua:[PALETTE.bookAqua,PALETTE.bookAquaDk,PALETTE.brass62],
+ purple:[PALETTE.bookPurple,PALETTE.bookPurpleDk,PALETTE.brass65],
+ brown:[PALETTE.bookBrown,PALETTE.bookBrownDk,PALETTE.brass65],
 };
 /* stack: which pile the book lies in (0 = play modes, 1 = collection). */
 export const HOME_LINKS=[
  {id:'bDaily',stack:0,tex:'grain',color:'blue',label:'Daily',note:'Every Daily, word by word',badge:(s,x)=>x.dailyNo?'No. '+x.dailyNo:''},
  {id:'bUnl',stack:0,color:'red',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>s.rating&&s.rating.placed?'Lexicon '+x.lexicon(s.rating.L):'placement'},
  {id:'bPrac',stack:0,tex:'cloth',color:'green',label:'Practice',note:'Same words, no pressure'},
- {id:'bAll',stack:1,tex:'worn',color:'blue',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
+ {id:'bAll',stack:1,tex:'worn',color:'aqua',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
  {id:'bSets',stack:1,tex:'vellum',color:'purple',label:'Sets',note:'Themed collections'},
  {id:'bStats',stack:1,tex:'grain',color:'brown',label:'Stats',note:'Streaks, depth and tiers'},
 ];
