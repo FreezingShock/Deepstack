@@ -27,6 +27,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [~] Daily fairness and streaks
 - [~] Particles off panels and text (#83)
 - [~] Home button from Today's Result (bug)
+- [x] Shelf as a library section (item 11, #111)
 - [x] Results screen fits one view, no scroll (this PR)
 - [x] Done: Daily book (#72), fonts (#73), results screen (#74), tagline (#75), smooth glides (#76, #79), page-corner flips (#77), replay descent (#78), top shelves and planks (#68, #80), shelf duplicates (#70), readable recent spines (#71), lore books hover and halo (#45, #57, #67), chained lanterns (#41), top bar (#31), floors and tracker (#33), menu books (#35-#39, #46), tokens (#49-#62), judge worker (#61), phone layout (#60, #64), canvas throttling (#51).
 
@@ -414,6 +415,16 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** The pen underline and stroke-draw reach the notebook slip and result card, so the answer you typed is underlined as you submit and the verdict is signed off in ink.
 **Brief:** Goal: reuse `ink.js` strokes on the run slip and results leaf. Files: `ink.js`, `runScreen.css`, `results.css`. Done when: reduced motion respected, no layout shift at 14 letters.
 **Touches:** run screen, results. **Conflicts:** run screen and results threads.
+
+### 82. Shelf: pulled book stays on the shelf
+**Pitch:** The pulled book leans out of its stack and its detail card is a slip tucked into the shelf, not a centred popup.
+**Brief:** Goal: anchor the shelf card to the pulled book. Files: `shelfBays.js`, `card.css`. Done when: slip never covers the book, 375 px verified, reduced motion static.
+**Touches:** BOOK, card. **Conflicts:** 7, 16.
+
+### 83. Backfill floor found for old books
+**Pitch:** Books shelved before floors were logged sit in "Earlier finds"; derive their floor so the floor bays are complete (skip if the attic thread covers it).
+**Brief:** Goal: derive `fl` additively from old Daily results. Files: new `src/core/shelfFloors.js`. Done when: tolerates missing data, tested.
+**Touches:** core. **Conflicts:** attic (#126).
 
 ---
 
