@@ -2,6 +2,7 @@
    Kept calm on purpose: soft attacks, low levels, a shared reverb, nothing sharp. */
 
 import { reducedMotion } from './ui/settings.js';
+import { createScribe } from './sound/scribe.js';
 const RM = reducedMotion();
 const rnd = (a, b) => a + Math.random() * (b - a);
 
@@ -121,7 +122,9 @@ export const Sfx = (() => {
   function startAmbient() { stopAmbient(); schedule('drip', 3, 9); schedule('steps', 28, 70); }
   function stopAmbient() { timers.forEach(clearTimeout); timers = []; }
 
+  const scribe = createScribe({ ctx: () => ctx, on: () => on, out, noiseBuf });
   return {
+    quill: () => scribe.quill(), paper: () => scribe.paper(), seal: () => scribe.seal(), land: () => scribe.land(),
     /** master volume 0..1 (settings panel) */
     volume(v) { vol = Math.max(0, Math.min(1, v)); if (master) master.gain.setTargetAtTime(.9 * vol, ctx.currentTime, .05); },
     set(v) {
