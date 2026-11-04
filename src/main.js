@@ -133,7 +133,7 @@ const World=(()=>{
   while(x<W+40){const w=(10+rng()*22)*sc;
    if(rng()<.03+.24*a+(fl.gap||0)){x+=w*(.5+rng());continue;} // missing books
    const cx=x+w/2;if(layer===0&&(taken.has(r)||(st&&st.row===r))&&Math.abs(cx-pullX(r))<34){x+=w;continue;}
-   const h=RH*sc*(.46+rng()*.34);
+   const h=RH*sc*(.58+rng()*.32);
    const lean=layer===0?-(((x+w/2)/W)*2-1)*.12*a:0;const tilt=(rng()<.05+.32*a?(rng()-.5)*(.1+.45*a):0)+lean;
    const tier=rng()<.05?Math.floor(rng()*rng()*7):-1;
    const col=tier>=0?tierBase(tier):mixc(mixc(LEATHER[(rng()*LEATHER.length)|0],fl.books[0],fl.books[1]),[110,100,86],a*.5);
@@ -143,7 +143,8 @@ const World=(()=>{
     if(i<3&&rng()<.1+.8*a){webs.push({k:'curtain',x:ux+7,x2:ux+W/3-7,sag:30+rng()*60,seed:(rng()*999)|0});}}
    const nh=a>.03?Math.floor(rng()*(1+8*a)):0;for(let i=0;i<nh;i++)webs.push({k:'strand',x:rng()*W,len:(20+rng()*60)*(fl.motif==='flood'?2.2:1),seed:(rng()*999)|0});
    if(r===fl.row&&r>0)props.push({k:'lintel'});
-   if(fl.motif==='archive'){for(let x2=40+rng()*60;x2<W-30;x2+=90+rng()*150){props.push(rng()<.55?{k:'plate',x:x2,n:100+((rng()*899)|0)}:{k:'papers',x:x2,n:2+((rng()*4)|0),w:26+rng()*30,tw:rng()-.5});}}
+   if(fl.motif==='stacks'){for(let x2=60+rng()*80;x2<W-30;x2+=130+rng()*220){props.push(rng()<.5?{k:'plate',x:x2,n:1+((rng()*98)|0)}:{k:'papers',x:x2,n:2+((rng()*3)|0),w:24+rng()*26,tw:rng()-.5});}}
+   else if(fl.motif==='archive'){for(let x2=40+rng()*60;x2<W-30;x2+=90+rng()*150){props.push(rng()<.55?{k:'plate',x:x2,n:100+((rng()*899)|0)}:{k:'papers',x:x2,n:2+((rng()*4)|0),w:26+rng()*30,tw:rng()-.5});}}
    else if(fl.motif==='crypt'){for(let x2=30+rng()*60;x2<W-30;x2+=70+rng()*140){props.push(rng()<.5?{k:'skull',x:x2,s:.8+rng()*.5,tilt:(rng()-.5)*.5}:{k:'bones',x:x2,s:.8+rng()*.6,seed:(rng()*999)|0});}}
    else props.push(...deepProps(fl,W,rng));}
   const data={bs,webs,props,fl,crack:rng()<.5*a?{x:rng()*W,w:30+rng()*90}:null};rows.set(key,data);return data;}
@@ -160,6 +161,11 @@ const World=(()=>{
    ctx.save();ctx.globalAlpha=.55;ctx.strokeStyle=PALETTE.blackAlpha99;ctx.lineWidth=2;const bh=rh/3.4,rg=mulberry(r*53+1);
    for(let k=0;k*bh<base-y;k++){const yy=y+k*bh;ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(x1,yy);ctx.stroke();const off=(k%2)*34;for(let xx=x0-off;xx<x1;xx+=68+((rg()*14)|0)){ctx.beginPath();ctx.moveTo(xx,yy);ctx.lineTo(xx,yy+bh);ctx.stroke();}}
    ctx.fillStyle=PALETTE.whiteAlpha08;for(let i=0;i<14;i++)ctx.fillRect(x0+rg()*(x1-x0),y+rg()*(base-y),10+rg()*30,2+rg()*5);
+   ctx.restore();}
+  else if(fl.motif==='stacks'){ // wood paneling and a rail behind the books, so the first floor isn't a bare wall
+   ctx.save();ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=2;const pw=54;
+   for(let xx=x0+((r*29)%pw);xx<x1;xx+=pw){ctx.beginPath();ctx.moveTo(xx,y);ctx.lineTo(xx,base);ctx.stroke();ctx.fillStyle='rgba(255,255,255,.03)';ctx.fillRect(xx+2,y,1,base-y);}
+   ctx.fillStyle='rgba(0,0,0,.33)';ctx.fillRect(x0,y+rh*.16,x1-x0,3);ctx.fillStyle='rgba(255,255,255,.05)';ctx.fillRect(x0,y+rh*.16+3,x1-x0,1);
    ctx.restore();}
   else if(fl.motif==='archive'){ // faint rows of pigeonhole drawers on the back wall
    ctx.save();ctx.globalAlpha=.5;const cw=46,ch=30;ctx.strokeStyle=PALETTE.bronze28Alpha88;ctx.lineWidth=1;
@@ -197,7 +203,7 @@ const World=(()=>{
    ctx.fillStyle=fl.ledge;ctx.fillRect(bx0-70,base,bw+140,12*sc+40);ctx.fillStyle=fl.ledgeHi;ctx.fillRect(bx0-70,base,bw+140,2*sc);ctx.fillStyle=PALETTE.blackAlpha66;ctx.fillRect(bx0-70,base+12*sc-2,bw+140,2);
    if(d.crack){ctx.fillStyle=PALETTE.oak1;ctx.beginPath();ctx.moveTo(d.crack.x,base);ctx.lineTo(d.crack.x+d.crack.w*.5,base+5*sc);ctx.lineTo(d.crack.x+d.crack.w,base);ctx.lineTo(d.crack.x+d.crack.w,base+12*sc);ctx.lineTo(d.crack.x,base+12*sc);ctx.fill();}
    ctx.globalAlpha=1;
-   if(layer===0&&r!==0)floorWall(fl,bx0,bx1,y,base,rh,r);
+   if(layer===0&&(r!==0||fl.motif==='stacks'))floorWall(fl,bx0,bx1,y,base,rh,r);
    if(layer===0&&r===0){hits=[];let x=Math.max(34,(W-Math.min(W-60,1040))/2),maxX=W-Math.max(34,(W-Math.min(W-60,1040))/2);
     const vis=[];let tot=0;for(let i=shelf.length-1;i>=0;i--){const b=shelf[i],dm=bookDims(b,RH);if(tot+dm.w+3>maxX-x)break;tot+=dm.w+3;vis.unshift({b,dm});}
     for(const v of vis){const {b,dm}=v;const bx=x+dm.w/2;ctx.save();ctx.translate(bx,base);
