@@ -22,7 +22,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [~] Run screen overhaul (alcove, wall lettering, candle timer, input)
 - [~] Floors: distinct look per floor (#81)
 - [~] Tactile hover/press/focus everywhere (#82)
-- [~] Rare tier reveals
+- [x] Rare tier reveals: particle overhaul (pooled sprite engine, prewarmed, per-tier recipes; this PR)
 - [~] Screen-to-screen transitions
 - [~] Keyboard controls and accessibility
 - [~] Judge accuracy on tricky answers
@@ -724,3 +724,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 ### 142. Mounts for the alcove numeral on phones
 **Pitch:** Check every hung thing at 375 px for bolts that crowd the text and give the narrow plaques a one-bolt variant.
 **Brief:** Goal: audit `plaqueBolts` at phone widths with 14-letter labels. Files: `src/ui/mounts.js`. Done when: screenshots attached. **Touches:** WORLD. **Conflicts:** 5.
+
+### R1. Reveal ceremony beats per tier
+**Serves:** rarity is the hero, overhaul.
+**Pitch:** "completely overhaul the particle system on book reveal ... more stylized and polished": the particles are done, now the rest of the reveal (backdrop rays, cover, sound) should share the same per-tier recipe.
+**Brief:** Goal: drive rays, rune and screen flash from `src/ui/revealRecipes.js` so one table defines a tier's whole reveal. Files: `src/ui/reveal.js`, `revealRecipes.js`. Done when: tests pin it, frame time measured on a real GPU.
+**Touches:** card, reveal. **Conflicts:** 16.
+
+### R2. Quality hook for particles
+**Serves:** performance.
+**Pitch:** Particles scale with the Graphics setting instead of guessing.
+**Brief:** Goal: once `src/ui/quality.js` is on main, make `qualityScale()` in `revealFx.js` read `Quality.params()` instead of `data-quality`. Done when: low mode throws about a third of the particles, tested.
+**Touches:** reveal. **Conflicts:** 40.
