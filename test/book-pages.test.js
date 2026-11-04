@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {chunk,toSpreads} from '../src/ui/bookpages.js';
-import {shelfPlan,stagger,statsLeaves} from '../src/ui/bookMenus.js';
+import {collapseDupes,shelfPlan,stagger,statsLeaves} from '../src/ui/bookMenus.js';
 import {FLOORS,floorStartFt} from '../src/core/floors.js';
 
 test('chunk always returns at least one page',()=>{
@@ -33,4 +33,9 @@ test('stats leaves: one empty page, several when there are runs',()=>{
  const l=statsLeaves(st,{bestFloor:1},{TIERS,FLOORS,floorStartFt});
  assert.equal(l.length,4);
  assert.match(l[3],/Undiscovered/);
+});
+test('duplicates collapse per tier and keep the first copy in sort order',()=>{
+ const mk=(w,tier,i)=>({b:{w,tier},i});
+ const out=collapseDupes([mk('Graveyard',5,9),mk('graveyard',5,7),mk('graveyard',5,2),mk('graveyard',4,1),mk('frost',5,0)]);
+ assert.deepEqual(out.map(e=>[e.b.w,e.b.tier,e.n,e.i]),[['Graveyard',5,3,9],['graveyard',4,1,1],['frost',5,1,0]]);
 });

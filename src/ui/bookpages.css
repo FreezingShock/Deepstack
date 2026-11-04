@@ -60,6 +60,7 @@
 .bk-spread.menu .sb-band:first-child{margin-left:-4px;width:7px;border-radius:3px 0 0 3px}
 .bk-spread.menu .sb-t{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:500 12.5px/1 var(--serif);letter-spacing:.07em;text-transform:uppercase;text-align:center;color:var(--gild);text-shadow:0 1px 0 var(--c-black-alpha-99);
  padding:3px 4px;border:1px solid color-mix(in srgb,var(--gild) 50%,transparent);border-width:1px 0}
+.bk-spread.menu .sb-n{flex:none;font:600 16px/1 'Caveat','Segoe Script','Bradley Hand',cursive;font-style:normal;letter-spacing:.02em;color:var(--gild);text-shadow:0 1px 0 var(--c-black-alpha-99)}
 .bk-spread.menu .sb-fav{flex:none;font:400 11px/1 var(--sans);color:var(--c-amber-92);font-style:normal;text-shadow:0 0 6px var(--c-black)}
 .bk-spread.menu .sbook:hover,.bk-spread.menu .sbook:focus-visible{transform:translateX(calc(var(--o,0px) + 7px));filter:brightness(1.18);z-index:3}
 .bk-spread.menu .sbook:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:2px}
