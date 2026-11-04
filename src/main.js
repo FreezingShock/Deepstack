@@ -6,7 +6,7 @@ import './styles.css';
 import {frameInterval,worldCovered} from './ui/canvasCover.js';
 import {recordBook as recordSetBook,backfill as backfillSets} from './sets/sets.js';
 import {setsBook,toastSetsDone} from './sets/ui.js';
-import {recapHTML,bindRecap} from './ui/results.js';
+import {recapHTML,bindRecap,finalHTML} from './ui/results.js';
 import './ui/results.css';
 import './ui/card.css';
 import * as core from './core/index.js';
@@ -111,8 +111,8 @@ function shelfDims(b,rh){const d=bookDims(b,rh),f=fitSpine(b.w||'',{baseH:d.h,ba
 const seedOf=b=>hashStr(b.w+(b.t||''))&0xffff;
 const urlCache=new Map();
 function spineURL(b,rh=110){const k=b.w+'|'+b.tier+'|'+rh;if(urlCache.has(k))return urlCache.get(k);
- const d=bookDims(b,rh),pw=d.w+16,ph=d.h+30,cv=document.createElement('canvas');cv.width=pw*2;cv.height=ph*2;const c=cv.getContext('2d');c.scale(2,2);c.translate(pw/2,d.h+8);
- bookArt(c,{w:d.w,h:d.h,tier:b.tier,seed:seedOf(b),word:b.w,ribbon:b.tier>=1||seedOf(b)%3===0?RIBBONS[seedOf(b)%RIBBONS.length]:null},0);
+ const d=shelfDims(b,rh),pw=d.w+16,ph=d.h+30,cv=document.createElement('canvas');cv.width=pw*2;cv.height=ph*2;const c=cv.getContext('2d');c.scale(2,2);c.translate(pw/2,d.h+8);
+ bookArt(c,{w:d.w,h:d.h,fit:d.fit,tier:b.tier,seed:seedOf(b),word:b.w,ribbon:b.tier>=1||seedOf(b)%3===0?RIBBONS[seedOf(b)%RIBBONS.length]:null},0);
  const r={url:cv.toDataURL(),w:pw,h:ph};urlCache.set(k,r);return r;}
 const spineImg=(b,i,src,rh=110,scale=1)=>{const s=spineURL(b,rh);return `<img src="${s.url}" width="${s.w*scale}" height="${s.h*scale}" alt="${esc(b.w)}, ${TIERS[b.tier].name}" data-i="${i}" data-src="${src}" data-tip="${esc(b.w)} · ${TIERS[b.tier].name} · ${b.score}">`;};
 if(document.fonts&&document.fonts.load)Promise.all(['16px "IM Fell English"','16px Newsreader','24px "Fuzzy Bubbles"','600 14px Cinzel','16px "Special Elite"'].map(f=>document.fonts.load(f))).then(()=>{urlCache.clear();resetSpineMeasure();}).catch(()=>{});
@@ -572,14 +572,9 @@ function shareText(d){return `Deepstack ${d.mode==='unlimited'?'Unlimited \u00b7
 async function showFinal(d,fromHome){
  if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;World.reset();World.setShelf([]);}
  ui.hud.hidden=false;$('#dnum').textContent=d.depth;
- World.openNiche(World.restRow,{label:'FINIS',books:d.books});
+ World.openNiche(World.restRow,{label:'FINIS',books:[]});
  const txt=shareText(d);const el=ui.final;el.hidden=false;el.className='center fadein';
- el.innerHTML=`<div class="sheet"><div class="stats" style="margin:6px 0 0"><span>${d.mode==='unlimited'?(d.placing?'Placement':'Unlimited'):d.practice?'Practice run':'Daily No. '+dailyNo()}</span>${d.mode==='unlimited'?`<span>Lexicon <b>${d.lex}</b>${d.placing?'':` (${d.lex>=d.lex0?'+':'\u2212'}${Math.abs(d.lex-d.lex0)})`} \u00b7 ${core.levelTitle(d.lex/10)}</span>`:''}<span>Average <b>${d.avg}</b></span><span>Rarest <b>${TIERS[d.best].name}</b></span>${d.floor?`<span>Reached <b>${FLOORS[d.floor].name}</b></span>`:''}</div><h1 class="title" style="font-size:34px;margin:0">Descent complete</h1>
-  <div class="bigd"><span id="cnt">0</span><small>ft deep</small></div>
-  <div class="spineimgs" id="sp">${d.books.map((b,i)=>spineImg(b,i,'final',72)).join('')}</div>
-  ${recapHTML(d,S)}
-  <div class="slipwrap" style="margin-top:10px"><i class="pin"></i><div class="slip" style="padding-top:8px"><pre class="share pe" id="shr" style="line-height:28px;font-size:12px;padding-top:2px;padding-bottom:2px">${esc(txt)}</pre></div></div>
-  <div class="row"><button class="btn pri" id="cp">Copy result</button><button class="btn" id="up">Back to the surface</button></div></div>`;
+ el.innerHTML=finalHTML(d,S,{txt,rarest:TIERS[d.best].name,no:dailyNo(),floorName:d.floor?FLOORS[d.floor].name:'',levelTitle,spines:d.books.map((b,i)=>spineImg(b,i,'final',132)).join('')});
  countUp($('#cnt'),d.depth,1200);
  bindRecap(el,d.books,openCard);
  $$('#sp img').forEach(im=>{im.onclick=()=>openCard(d.books[+im.dataset.i],{fresh:false});});
