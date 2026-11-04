@@ -23,7 +23,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [~] Keyboard controls and accessibility
 - [~] Judge accuracy on tricky answers
 - [~] Difficulty ramp and word pool
-- [~] Hints and skip
+- [x] Hints and skip (#86)
 - [~] Daily fairness and streaks
 - [~] Particles off panels and text (#83)
 - [~] Home button from Today's Result (bug)
