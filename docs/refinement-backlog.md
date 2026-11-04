@@ -407,3 +407,21 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 ### 62. Perf budget in CI
 **Pitch:** CI runs `scripts/perf.mjs` and warns when work-per-frame p95 regresses past a stored baseline.
 **Brief:** Files: new `scripts/perfCheck.mjs`, CI step. Done when: tolerant threshold (software rendering is noisy), baseline file committed. **Touches:** CI. **Conflicts:** none.
+
+### 63. Page-turn between result cards
+**Serves:** everything is a book, motion.
+**Pitch:** "Next word" turns the page of the same little book instead of closing and reopening it, so a run feels like writing one volume.
+**Brief:** Goal: reuse the corner-flip from book pages on the card. Files: new `src/ui/cardFlip.js`, `bookCard.css`. Done when: reduced motion cuts, Enter still advances, 14-letter word fits.
+**Touches:** card, MAIN hook. **Conflicts:** 16, 17.
+
+### 64. Wax seal and foil for rare covers
+**Serves:** rarity is the hero.
+**Pitch:** Folio and up get a pressed wax seal on the ribbon, Codex gilt corners that catch light, Apocrypha a glowing edge.
+**Brief:** Goal: per-tier dressing on the new book card. Files: `bookCard.css`. Done when: seven-tier strip screenshot, tokens only.
+**Touches:** card. **Conflicts:** 17.
+
+### 65. Ribbon bookmark everywhere
+**Serves:** integrated, not bolted on.
+**Pitch:** Primary buttons on book pages (Descend, Close, Continue) become the same swallow-tailed ribbon instead of boxes.
+**Brief:** Goal: shared `.ribbon` class. Files: new `src/ui/ribbon.css`. Done when: focus is visible, buttons tests pass.
+**Touches:** buttons. **Conflicts:** 7.
