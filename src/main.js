@@ -19,6 +19,7 @@ import './ui/home.css';
 import {descendInto} from './ui/descend.js';
 import {travelEase,travelMs} from './ui/camMotion.js';
 import {initA11y} from './ui/a11y.js';
+import {initKeys} from './ui/keys.js';
 import {initTopbar} from './ui/topbar.js';
 import {reducedMotion} from './ui/settings.js';
 import {initTransitions} from './ui/transitions.js';
@@ -59,7 +60,7 @@ const dailyNo=()=>Math.max(1,core.dailyNumber(utc()));
 const HINT_LABEL={sentence:'used in a sentence',synonym:'a related word',opening:'how the definition begins'};
 function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);Sfx.set(S.sound);}
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
-initA11y();
+initA11y();initKeys();
 initTopbar({Sfx});
 
 /* ---------- book art (shared by the canvas world and DOM spine images) ---------- */
