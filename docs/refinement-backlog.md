@@ -76,6 +76,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 ## B. Books, shelves and pages (everything is a book)
 
 ### 7. Book object library
+**Status:** [~] panel half landed as the shared book style (`src/ui/bookStyle.css`: `--bs-*` tokens, `.bookbox`); the per-tier `bookArt` half is still open.
 **Serves:** book objects, rarity hero.
 **Pitch:** One shared way to draw a book (spine, cover, edge, ribbon, emboss) used by the menu, shelf, recents, results and share image, with per-tier cover materials: Pamphlet card, Paperback cloth, Hardbound board, Folio vellum, Codex gilt, Grimoire runed leather, Apocrypha glowing.
 **Brief:** Goal: extract a `bookArt` module (spine height variation, wear, title kerning that fits any word without clipping or stretching) and apply per tier. Files: new `src/ui/bookArt.js`, minimal edits where `bookArt` lives in `main.js`. Done when: 14-letter and 3-letter words both fit, a seven-tier strip screenshot, no stretched text test (glyph aspect ratio check).

@@ -113,7 +113,7 @@
 .bs-board.l{left:-10px;width:calc(50% + 10px);border-radius:7px 0 0 7px;opacity:0;transition:opacity .2s}
 .bs-board.r{right:-10px;width:calc(50% + 10px);border-radius:0 7px 7px 0}
 .bk-spread.open .bs-board.l{opacity:1;transition:opacity .25s .15s}
-.bs-page{background:repeating-linear-gradient(0deg,transparent 0 27px,var(--c-bronze-33-alpha-1a) 27px 28px),linear-gradient(90deg,var(--c-brass-75),var(--c-parchment-85) 45%,var(--c-parchment-80));color:var(--c-ink);display:flex;flex-direction:column}
+.bs-page{background:var(--bs-page);color:var(--c-ink);display:flex;flex-direction:column}
 .bs-page.l{left:0;border-radius:3px 0 0 3px;box-shadow:inset -22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 34px var(--c-oak-24-alpha-55);opacity:0;transition:opacity .15s}
 .bs-page.r{right:0;border-radius:0 3px 3px 0;box-shadow:inset 22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 34px var(--c-oak-24-alpha-55)}
 .bk-spread.open .bs-page.l{opacity:1;transition:opacity .2s .3s}
