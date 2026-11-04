@@ -84,7 +84,7 @@ const bodyLen = await page.evaluate(() => document.body.innerText.length + docum
 if (!bodyLen) fail('page rendered nothing');
 
 // 1. every menu book opens onto its pages and closes again, leaving the home screen usable
-for (const [id, name] of [['bUnl', 'Unlimited'], ['bPrac', 'Practice'], ['bAll', 'Shelf'], ['bSets', 'Sets'], ['bStats', 'Stats']]) {
+for (const [id, name] of [['bDaily', 'Daily'], ['bUnl', 'Unlimited'], ['bPrac', 'Practice'], ['bAll', 'Shelf'], ['bSets', 'Sets'], ['bStats', 'Stats']]) {
   await step(`open and close ${name}`, async () => {
     await realClick(page, `#${id}`, `${name} book`);
     const dlg = page.locator('[role=dialog].intro').first();
