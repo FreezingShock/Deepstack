@@ -337,6 +337,7 @@ const World=(()=>{
   // the lore book under a screen point, if any: {row, book}
   loreAt(x,y){const r=Math.floor((y+lastCam)/RH),b=hitLoreBook(rows.get(r*2),r,RH,W,lastCam,abn(r),x,y);return b?{row:r,book:b}:null;},get shelfVisible(){return shelfVisible;},get restRow(){return restRow;},get busy(){return !!st||!!rest;},
   reset(){rows.clear();taken.clear();niches.clear();restRow=0;st=null;rest=null;cam=restCam(0);},
+  clearNiches(){niches.clear();},
   fillNiche(r,res,books){const e=niches.get(r);if(e){e.res=res;if(books)e.books=books;}},
   openNiche(r,o={}){const e=niches.get(r);if(e){e.label=o.label||e.label;e.books=o.books||e.books;}else niches.set(r,{t0:performance.now(),label:o.label||'',books:o.books||[]});},
   onDepth(f){onDepth=f;},onGauge(f){gaugeCb=f;},
@@ -409,7 +410,7 @@ function showHome(){
  ui.home.hidden=false;ui.home.className='center fadein';
  ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:'',lexicon:core.lexicon});
  paintJudge(modelStatus());
- World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
+ World.clearNiches();World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
