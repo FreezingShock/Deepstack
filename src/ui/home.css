@@ -221,3 +221,9 @@
 .sheet.home .row{margin-top:auto;padding-top:clamp(14px,3vh,34px)}
 .sheet.home .stats{margin-bottom:auto}
 .sheet.home .hsecs{padding-top:clamp(16px,3vh,34px)}
+
+/* Header rhythm for the one-line tagline: title, caption and step cards read as one group,
+   with a little air under the title and a clear gap before the cards. */
+.sheet.home .title{margin-bottom:clamp(4px,1vh,10px)}
+.sheet.home .tagline{max-width:none;font-size:clamp(17px,2.4vw,21px);letter-spacing:.02em;margin-bottom:clamp(14px,2.4vh,24px)}
+.sheet.home .how{margin-bottom:clamp(8px,1.5vh,16px)}
