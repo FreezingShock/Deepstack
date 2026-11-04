@@ -25,6 +25,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - If the look is new, ask nate at most 3-5 styling questions with a recommended default, then start on the default.
 
 ## In progress (do not start)
+- [x] F / 102. Fallen books in front of shelf gaps (toppled, stacked, open face-down; `src/ui/fallenBooks.js`, PR #140)
 - [x] C. Attic for earlier Shelf finds (backfill floors from Daily history, scroll-up attic)
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
 - [~] Spacing and type pass on every screen
@@ -893,3 +894,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** The ledger gets a second page you turn to: last descent's seven words struck through in pen with the tier ink beside each.
 **Brief:** Goal: a page-turn on the ledger frame showing the latest run from saves (read-only). Files: new `src/ui/ledgerPages.js`, `welcome.css`. Done when: tolerates empty saves, keyboard turn, reduced motion static.
 **Touches:** HOME, saves (read). **Conflicts:** H1.
+
+### F1. Books that fall when you pull one
+**Serves:** physical, immersive, interaction.
+**Pitch:** Pulling a book from a tight row sometimes knocks its neighbour over; it tips onto the plank and joins the fallen books.
+**Brief:** Goal: on pull, the book beside the slot leans into the gap, then lies down using `fallenBooks.js` poses. Files: new `src/ui/fallenReact.js`, hook in the pull block. Done when: seeded, no overlap, reduced motion skips the tip.
+**Touches:** WORLD, pull. **Conflicts:** 101.
+
+### F2. Loose pages and dust where books fell
+**Serves:** dark and mysterious, deeper is darker.
+**Pitch:** Deep floors scatter torn pages and a dust puff around fallen books, thicker below the Hollow.
+**Brief:** Goal: add a `pages` kind and dust specks to `placeFallen`. Files: `src/ui/fallenBooks.js`, `test/fallen-books.test.js`. Done when: still seeded and non-overlapping.
+**Touches:** WORLD. **Conflicts:** 4.

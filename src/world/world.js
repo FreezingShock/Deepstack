@@ -13,6 +13,7 @@ import {loreCovered as loreCoveredAt} from '../ui/loreCover.js';
 import {isLore,drawLoreMark,drawLoreGlow,hitLoreBook} from '../ui/lore.js';
 import {isCurio,drawCurioMark,hitCurio} from '../ui/curios.js';
 import {drawLedge} from '../ui/ledge.js';
+import {placeFallen,drawFallen} from '../ui/fallenBooks.js';
 import {lyingFootprint,settleBooks,placeProp,propHalf,tiltAboutFoot} from '../ui/physics.js';
 import {drawAlcoveLanterns} from '../ui/lanterns.js';
 import {lowQuality,updateAmbient,drawAmbient,resetAmbient} from '../ui/ambient.js';
@@ -66,6 +67,7 @@ export const World=(()=>{
    else props.push(...deepProps(fl,W,rng));}
   const data={bs,webs,props,fl,crack:rng()<.5*a?{x:rng()*W,w:30+rng()*90}:null};
   for(const pr of props)if(pr.x!=null)pr.x=placeProp(pr.x,propHalf(pr),W,data.crack); // nothing stands on a pillar or over a cracked plank
+  if(layer===0&&r>0)data.fallen=placeFallen(bs,{W,RH,a,r,crack:data.crack,avoid:[[pullX(r)-40,pullX(r)+40]],paint:g=>{const t=g()<.05?Math.floor(g()*g()*7):-1;return{tier:t,col:t>=0?tierBase(t):mixc(mixc(LEATHER[(g()*LEATHER.length)|0],fl.books[0],fl.books[1]),[110,100,86],a*.5)};}}); // books that came down in front of the gaps
   rows.set(key,data);return data;}
  function drawWeb(wb,y,a,wc=[224,218,200]){
   ctx.strokeStyle=`rgba(${wc[0]},${wc[1]},${wc[2]},${.14+.3*a})`;ctx.lineWidth=1;const rng=mulberry(wb.seed);
@@ -123,6 +125,7 @@ export const World=(()=>{
       if(layer===0){bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,dust:a*.8,ribbon:b.rib},vt);if(isLore(b,W))drawLoreMark(ctx,b);else if(isCurio(b,W))drawCurioMark(ctx,b);}
       else{ctx.fillStyle=rgbs(b.col);ctx.fillRect(-b.w/2,-b.h,b.w,b.h);}}
      ctx.restore();}}
+   if(layer===0&&d.fallen)for(const f of d.fallen){if(f.hi<bx0-20||f.lo>bx1+20)continue;ctx.save();ctx.translate(0,base);drawFallen(ctx,f,a*.9,vt);ctx.restore();}
    if(layer===0){for(const pr of d.props)floorProp(pr,fl,bx0,bx1,y,base);for(const wb of d.webs){if(building&&wb.k==='strand')continue;if(wb.x>=bx0-120&&wb.x<=bx1+120)drawWeb(wb,y,a,fl.web);}
     if(fl.motif==='flood'&&!building)floodOverlay(fl,bx0,bx1,y,rh,r);}
   };
