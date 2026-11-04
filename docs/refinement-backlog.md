@@ -1000,3 +1000,10 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** a new book re-chunks the piles so shapes shuffle; each pile should keep its look as books are added.
 **Brief:** Goal: derive pile kind from the oldest book in it, not its order. Files: `src/world/atticRoom.js` layoutPiles + test. Done when: adding a book changes at most the newest pile.
 **Touches:** WORLD. **Conflicts:** none.
+
+- [x] N8. A sigil for every book (sigils thread): `src/ui/sigil.js`, one call in `bookArt.js`.
+
+### S1. Sigils on the book cover and the result card
+**Pitch:** stamp the sigil big on the opened/DOM book covers too.
+**Brief:** Goal: reuse `drawSigil`. Files: `src/ui/bookOpenFx.js`, `src/ui/bookCard.css`. Done when: same word, same sigil everywhere.
+**Touches:** BOOK. **Conflicts:** 7a.

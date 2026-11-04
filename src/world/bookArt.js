@@ -1,6 +1,7 @@
 import {bookArt,RIBBONS} from '../ui/bookArt.js';
 import {fitSpine,resetSpineMeasure} from '../ui/spineLabel.js';
 import {TIERS,hashStr} from '../app/state.js';
+import {Quality} from '../ui/quality.js';
 import {esc} from '../app/util.js';
 
 /* ---------- book art (shared by the canvas world and DOM spine images) ---------- */
@@ -9,7 +10,7 @@ export function bookDims(b,rh){const hs=((b.w||'a').charCodeAt(0)*13+(b.w||'a').
 export function shelfDims(b,rh){const d=bookDims(b,rh),f=fitSpine(b.w||'',{baseH:d.h,baseW:d.w,maxH:Math.round(rh-22),top:b.tier>=5?16:0});return{w:f.w,h:f.h,fit:{fs:f.fs,lh:f.lh,top:f.top}};}
 export const seedOf=b=>hashStr(b.w+(b.t||''))&0xffff;
 export const urlCache=new Map();
-export function spineURL(b,rh=110){const k=b.w+'|'+b.tier+'|'+rh;if(urlCache.has(k))return urlCache.get(k);
+export function spineURL(b,rh=110){const k=b.w+'|'+b.tier+'|'+rh+'|'+Quality.tier();if(urlCache.has(k))return urlCache.get(k);
  const d=shelfDims(b,rh),pw=d.w+16,ph=d.h+30,cv=document.createElement('canvas');cv.width=pw*2;cv.height=ph*2;const c=cv.getContext('2d');c.scale(2,2);c.translate(pw/2,d.h+8);
  bookArt(c,{w:d.w,h:d.h,fit:d.fit,tier:b.tier,seed:seedOf(b),word:b.w,ribbon:b.tier>=1||seedOf(b)%3===0?RIBBONS[seedOf(b)%RIBBONS.length]:null},0);
  const r={url:cv.toDataURL(),w:pw,h:ph};urlCache.set(k,r);return r;}

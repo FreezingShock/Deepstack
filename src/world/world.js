@@ -271,7 +271,7 @@ export const World=(()=>{
    if(e>0){ // lifted off the shelf: it casts a soft shadow on the books behind, so it reads as held in front of them, not floating
     ctx.save();ctx.shadowColor=`rgba(0,0,0,${.6*e})`;ctx.shadowBlur=30*s*DPR;ctx.shadowOffsetX=-6000*DPR+8*e;ctx.shadowOffsetY=14*e*DPR;ctx.fillStyle='rgba(0,0,0,1)';ctx.fillRect(px-bw*s/2+6000,py-bh*s,bw*s,bh*s);ctx.restore();}
    const lg0=e>0?lecternGeom(px,py,bw,bh,s,RM?1:e):null;if(lg0)drawLecternBack(ctx,lg0,RM?1:Math.min(1,e*1.6)); // the stand rises with the pull; reduced motion shows it already raised
-   ctx.save();ctx.translate(px,py);ctx.scale(s,s);bookArt(ctx,{w:bw,h:bh,tier:st.tier,seed:st.seed,word:st.word,ribbon:st.tier>=1?RIBBONS[st.tier%5]:null},vt);ctx.restore();
+   ctx.save();ctx.translate(px,py);ctx.scale(s,s);bookArt(ctx,{w:bw,h:bh,tier:st.tier,seed:st.seed,word:st.word,held:true,ribbon:st.tier>=1?RIBBONS[st.tier%5]:null},vt);ctx.restore();
    if(lg0)drawLecternLip(ctx,lg0,RM?1:Math.min(1,e*1.6));}
   // darkness / lamp (shrinks with abandonment)
   const lx=W/2,ly=H*.5,lr=Math.hypot(W,H)*(.6-.2*a)*atm.lampR;
