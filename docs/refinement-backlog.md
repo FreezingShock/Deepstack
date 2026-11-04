@@ -794,7 +794,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: add per-tier cue lists (timing, layers) to `revealCeremony` and let `Sfx` play them, so the sting lands on the flash and the cover creak matches the cover time. Files: `src/ui/revealRecipes.js`, `src/feel.js`. Done when: tests pin cue timing against `flash.at` and `cover.delay`.
 **Touches:** reveal, sound. **Conflicts:** 24.
 
-### R4. Reveal cover materials
+### R4. [x] Reveal cover materials (PR pending)
 **Serves:** rarity is the hero, everything is a book.
 **Pitch:** the cover only changes speed per tier; each tier's cover could crack, unlatch, unseal or burn open in its own way.
 **Brief:** Goal: add a `cover.style` field to the ceremony table (wax seal snap, clasp, chain, glow seam) with CSS in `reveal.css`. Done when: all seven covers differ at a glance in a screenshot strip at 1280 and 375.
@@ -989,3 +989,17 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** a new book re-chunks the piles so shapes shuffle; each pile should keep its look as books are added.
 **Brief:** Goal: derive pile kind from the oldest book in it, not its order. Files: `src/world/atticRoom.js` layoutPiles + test. Done when: adding a book changes at most the newest pile.
 **Touches:** WORLD. **Conflicts:** none.
+### R6. Cover sounds per closure
+**Serves:** rarity is the hero, sound lines up with motion.
+**Pitch:** each cover now comes undone its own way (tape, twine, strap, clasp, seal, chain, seam) but the audio is still one paper sound.
+**Brief:** Goal: one cue per closure (tape rip, cord slip, buckle, brass click, wax crack, chain rattle, shimmer) timed from `cover.lock`/`cover.delay`. Files: `src/ui/revealRecipes.js`, `src/feel.js`. Done when: tests pin cue time against `cover.delay`. **Touches:** reveal, sound. **Conflicts:** R3.
+
+### R7. Covers on the shelf and in the almanac
+**Serves:** everything is a book, integrated.
+**Pitch:** the seven closures could also show on closed books you tap on the shelf and as the tier key in the almanac, so a book's rarity is readable before it opens.
+**Brief:** Goal: reuse `coverLockHTML(style)` on shelf cards and almanac tier swatches. Files: `src/ui/coverLock.js`, shelf and almanac modules. Done when: 375 and 1280 screenshots. **Touches:** HOME, card. **Conflicts:** 16.
+
+### R8. Reopen a book you already have with its cover
+**Serves:** physical, rarity is the hero.
+**Pitch:** opening an old book from the shelf skips the closure; let it play a short, quiet version of its tier closure instead.
+**Brief:** Goal: in `openCard` non-fresh path, play the lock at half speed without particles. Done when: reduced motion shows no closure. **Touches:** card. **Conflicts:** 16.
