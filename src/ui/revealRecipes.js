@@ -60,3 +60,31 @@ export function landRecipe(tier) {
 
 /** Total particle count of a recipe at quality q (rings excluded). */
 export function recipeCount(rec, q = 1) { return rec.reduce((s, e) => s + (e.k === 'ring' ? 0 : Math.round(e.n * q)), 0); }
+
+/* ---- The ceremony: everything around the particles, one row per tier ----
+   rays/rune/vig are the backdrop (rays = beam count, rayA = beam opacity %, spin = seconds per turn);
+   flash is the screen flash (peak opacity, at = ms after the reveal starts, up/down = ms, hue = how far the tier colour is lifted toward white);
+   cover is how the book's cover swings open (ms, delay ms, so Apocrypha waits for its implosion);
+   sound picks the cues (sting = rising swell + bell chord, chimeAt = ms after the cover opens);
+   shake/slow are the camera feel; ink/pulse are the tier name treatments; hold is how long the backdrop lingers (ms).
+   Rows only ever get richer going up, which the tests pin. Pamphlet and Paperback stay plain on purpose. */
+const CEREMONY = [
+  /* 0 Pamphlet */ {vig: 0,   rays: 0,  rayA: 0,  spin: 0,  rune: false, runeSpin: 0,  embers: 0,  flash: null, cover: {ms: 520, delay: 0},   sound: {sting: false}, shake: null, slow: null, ink: false, pulse: false, hold: 0},
+  /* 1 Paperback */ {vig: 0,  rays: 0,  rayA: 0,  spin: 0,  rune: false, runeSpin: 0,  embers: 0,  flash: null, cover: {ms: 560, delay: 0},   sound: {sting: false}, shake: null, slow: null, ink: false, pulse: false, hold: 0},
+  /* 2 Hardbound */ {vig: 0,  rays: 0,  rayA: 0,  spin: 0,  rune: false, runeSpin: 0,  embers: 0,  flash: null, cover: {ms: 600, delay: 0},   sound: {sting: false}, shake: null, slow: null, ink: false, pulse: false, hold: 0},
+  /* 3 Folio */     {vig: .18, rays: 6,  rayA: 26, spin: 48, rune: false, runeSpin: 0,  embers: 0,  flash: null, cover: {ms: 640, delay: 0},   sound: {sting: false}, shake: null, slow: null, ink: false, pulse: false, hold: 0},
+  /* 4 Codex */     {vig: .32, rays: 8,  rayA: 32, spin: 40, rune: false, runeSpin: 0,  embers: 0,  flash: {peak: .14, at: 60,  up: 140, down: 900,  hue: .45}, cover: {ms: 700, delay: 60},  sound: {sting: false}, shake: {amp: 6.4, ms: 600},  slow: {scale: .6, ms: 1200}, ink: true, pulse: false, hold: 900},
+  /* 5 Grimoire */  {vig: .46, rays: 10, rayA: 38, spin: 32, rune: true,  runeSpin: 60, embers: 10, flash: {peak: .28, at: 120, up: 160, down: 1200, hue: .55}, cover: {ms: 780, delay: 140}, sound: {sting: true}, shake: {amp: 7.5, ms: 600},  slow: {scale: .4, ms: 1200}, ink: true, pulse: true, hold: 1300},
+  /* 6 Apocrypha */ {vig: .6,  rays: 14, rayA: 46, spin: 22, rune: true,  runeSpin: 40, embers: 18, flash: {peak: .55, at: 520, up: 250, down: 1600, hue: .7},  cover: {ms: 900, delay: 480}, sound: {sting: true}, shake: {amp: 8.6, ms: 900},  slow: {scale: .25, ms: 1700}, ink: true, pulse: true, hold: 1900},
+];
+for (const r of CEREMONY) { Object.freeze(r.cover); Object.freeze(r.sound); r.flash && Object.freeze(r.flash); r.shake && Object.freeze(r.shake); r.slow && Object.freeze(r.slow); Object.freeze(r); }
+
+/** One tier's whole reveal besides the particles (which revealRecipe owns). */
+export function revealCeremony(tier) { return CEREMONY[clampT(tier)]; }
+
+/** What the ceremony costs on a given Quality.params(): no glow means no rune, fewer and fainter rays, a gentler flash. */
+export function ceremonyFor(tier, params = {}) {
+  const c = revealCeremony(tier);
+  if (params.glow !== false) return c;
+  return {...c, rune: false, embers: 0, rays: c.rays ? Math.max(4, c.rays >> 1) : 0, rayA: Math.round(c.rayA * .6), flash: c.flash && {...c.flash, peak: c.flash.peak * .6}};
+}
