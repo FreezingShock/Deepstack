@@ -32,6 +32,15 @@ export function backfillFloors(S,floorAt=floorAtFt){
 /* Books that belong in the attic, as {b,i} (i = index in S.shelf), newest first. */
 export const atticItems=shelf=>(shelf||[]).map((b,i)=>({b,i})).filter(x=>!hasFloor(x.b)).sort((a,c)=>(c.b.t||0)-(a.b.t||0)||c.i-a.i);
 
+/* Recent guesses live in the attic too: the last few books you earned, newest first, as {b,i,recent:true}. */
+export const RECENT_N=12;
+export const recentItems=(shelf,n=RECENT_N)=>{const out=[];for(let i=(shelf||[]).length-1;i>=0&&out.length<n;i--)out.push({b:shelf[i],i,recent:true});return out;};
+/* Everything the attic holds: recent guesses first, then floorless earlier finds (a book is never listed twice). */
+export function atticAll(shelf,n=RECENT_N){
+ const recent=recentItems(shelf,n),seen=new Set(recent.map(x=>x.i));
+ return [...recent,...atticItems(shelf).filter(x=>!seen.has(x.i))];
+}
+
 /* Crates: the attic's books grouped by the month they were found, newest crate first; undated ones go in an unmarked crate. */
 export function atticCrates(items,{perCrate=8}={}){
  const by=new Map(),order=[];

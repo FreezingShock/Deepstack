@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {backfillFloors,atticItems,atticCrates,hasFloor} from '../src/core/attic.js';
+import {backfillFloors,atticItems,atticCrates,hasFloor,recentItems,atticAll} from '../src/core/attic.js';
 import {floorAtFt} from '../src/core/floors.js';
 
 const T=Date.UTC(2026,10,3,12);
@@ -38,4 +38,13 @@ test('attic lists newest first and crates group by month, unmarked last',()=>{
  assert.deepEqual(crates.map(c=>c.key),['2026-11','2026-10','none']);
  assert.equal(crates[2].label,'Unmarked');
  assert.equal(atticCrates(items,{perCrate:1}).length,4);
+});
+test('attic holds recent guesses first (newest first), then floorless finds, never twice',()=>{
+ const shelf=[{w:'old',t:1},{w:'a',fl:0,t:2},{w:'b',fl:1,t:3},{w:'c',fl:1,t:4}];
+ assert.deepEqual(recentItems(shelf,2).map(x=>x.b.w),['c','b']);
+ const all=atticAll(shelf,2);
+ assert.deepEqual(all.map(x=>x.b.w),['c','b','old']);
+ assert.equal(all.filter(x=>x.recent).length,2);
+ assert.equal(atticAll(shelf,12).length,4);
+ assert.deepEqual(atticAll([]),[]);
 });
