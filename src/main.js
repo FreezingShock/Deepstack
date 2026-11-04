@@ -13,6 +13,7 @@ import {recapHTML,bindRecap,finalHTML} from './ui/results.js';
 import './ui/results.css';
 import './ui/card.css';
 import './ui/bookCard.css';
+import './ui/tierFrames.css';
 import './ui/reveal.css';
 import {playReveal} from './ui/reveal.js';
 import * as core from './core/index.js';
