@@ -23,6 +23,7 @@ import './ui/lore.css';
 import {shelfBook,statsBook} from './ui/bookMenus.js';
 import './ui/bookpages.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
+import {drawAlcoveLanterns} from './ui/lanterns.js';
 import './ui/ledge.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
@@ -276,12 +277,8 @@ const World=(()=>{
   ctx.fillStyle='#35241a';ctx.fillRect(x-14,y+h,w+28,12);ctx.fillStyle='#6a4a30';ctx.fillRect(x-14,y+h,w+28,2);ctx.fillStyle='#0008';ctx.fillRect(x-14,y+h+10,w+28,2);
   // cobwebs in the alcove corners, thicker when deeper
   if(a>.05){const m=mulberry(row*31+7);drawWeb({k:'corner',x:x+10,y:0,dir:1,s:40+a*90,seed:(m()*999)|0},y+10,a);drawWeb({k:'corner',x:x+w-10,y:0,dir:-1,s:40+a*90,seed:(m()*999)|0},y+10,a);}
-  // wall lanterns
-  for(const [lx2,ph] of [[x+36,1.3],[x+w-36,4.1]]){const ly2=y+Math.min(120,h*.28),fk=.75+.25*Math.sin(now/95+ph)+.08*Math.sin(now/37+ph);
-   ctx.strokeStyle='#3a2a1a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(lx2,ly2-30);ctx.lineTo(lx2,ly2-12);ctx.stroke();
-   ctx.fillStyle='#4a3524';ctx.fillRect(lx2-9,ly2-12,18,4);ctx.fillRect(lx2-9,ly2+14,18,4);
-   ctx.fillStyle=`rgba(${lc[0]},${Math.min(255,lc[1]+30*fk)|0},${lc[2]},${.55+.35*fk})`;ctx.fillRect(lx2-7,ly2-8,14,22);ctx.fillStyle='#2a1c10';ctx.fillRect(lx2-1,ly2-8,2,22);
-   ctx.globalCompositeOperation='lighter';const lg2=ctx.createRadialGradient(lx2,ly2,0,lx2,ly2,150);lg2.addColorStop(0,`rgba(${lc[0]},${lc[1]-10},${lc[2]-20},${(.34-.18*a)*fk})`);lg2.addColorStop(1,`rgba(${lc[0]},${lc[1]-10},${lc[2]-20},0)`);ctx.fillStyle=lg2;ctx.fillRect(lx2-150,ly2-150,300,300);ctx.globalCompositeOperation='source-over';}
+  // wall lanterns, hung from chains on the arch
+  drawAlcoveLanterns(ctx,{x,y,w,h,r,lc,a,now,row});
   // numeral plaque on the arch
   if(nv.label){ctx.font='600 13px Newsreader,Georgia,serif';const tw=ctx.measureText(nv.label).width+26,px=x+w/2-tw/2,py=y-12;const pg=ctx.createLinearGradient(0,py,0,py+24);pg.addColorStop(0,'#7a5a36');pg.addColorStop(1,'#3d2916');ctx.fillStyle=pg;ctx.fillRect(px,py,tw,24);ctx.strokeStyle='#b08a56';ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,tw-1,23);ctx.fillStyle='#f3e3bd';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(nv.label,x+w/2,py+12.5);}
   if(nv.res)drawNicheResult(nv.res,x,y,w,h,now);
