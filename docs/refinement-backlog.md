@@ -194,7 +194,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Files: new `src/ui/haptics.js`, Settings toggle (additive). Done when: guarded by `navigator.vibrate`, pattern table per tier, stubbed test.
 **Touches:** settings. **Conflicts:** tier reveals thread.
 
-### 26. Cursor as a hand
+### 26. Cursor as a hand [x] (candle cursor, PR pending)
 **Serves:** tactile, interactive.
 **Pitch:** The cursor becomes a small candle or hand that lights nearby spines, swings lanterns (existing) and changes over hoverable books.
 **Brief:** Goal: custom cursor and a soft pointer light, only on fine pointers. Files: new `src/ui/cursorLight.js`. Done when: off on touch, off in reduced motion, under 0.5 ms/frame.
@@ -460,3 +460,15 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** The scratch speeds up when typing fast, softens on pauses, and gives a small flourish when the answer is sent.
 **Brief:** Goal: scale quill level and length by keystroke rate. Files: `src/sound/scribe.js`. Done when: rate-limit test still passes, no more nodes than the voice cap.
 **Touches:** FEEL hook. **Conflicts:** 23 follow-ups.
+### 68. Candle light that spines answer
+**Serves:** tactile, immersive, physical.
+**Pitch:** The candle cursor's pool of light is a real light source: spines and brass inside it brighten and show a little more grain, and shelf books under the flame tilt a hair toward it.
+**Brief:** Goal: feed the cursor position into the World draw as a small radial lift (cached, one gradient per frame) instead of a screen-blend overlay. Files: new `src/ui/candleLift.js`, one WORLD hook. Done when: under 0.5 ms/frame, off with the candle.
+**Touches:** WORLD. **Conflicts:** 2.
+
+### 69. Candle that goes with the game
+**Serves:** integrated, not bolted on.
+**Pitch:** The cursor flame flares on a good score, gutters when the 45 s candle is nearly out and turns the tier colour over a revealed book.
+**Brief:** Goal: tiny event hooks that set a data attribute on `#candleCursor`. Files: `cursorLight.css`, `cursorLight.js`. Done when: three states screenshotted, tokens only.
+**Touches:** new files. **Conflicts:** none.
+

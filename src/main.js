@@ -57,6 +57,8 @@ import './ui/buttons.css';
 import './ui/tactile.css';
 import { particleVisibility } from './ui/particleMask.js';
 import './ui/polish.css';
+import {initCursorLight} from './ui/cursorLight.js';
+import './ui/cursorLight.css';
 import './ui/runScreen.css';
 import {paintRun} from './ui/runScreen.js';
 import {hintSlipHtml,hintButtonLabel,skipButtonLabel} from './ui/hintSlips.js';
@@ -65,6 +67,7 @@ const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,daily
 const wordsReady=loadWords();let wordsLoaded=false;wordsReady.then(()=>{wordsLoaded=true;},()=>{wordsLoaded=true;});
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const RM=reducedMotion();
+initCursorLight({reduced:RM});
 const sleep=ms=>new Promise(r=>setTimeout(r,RM?Math.min(ms,30):ms));
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
