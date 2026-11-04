@@ -12,9 +12,9 @@ concurrency:
 permissions:
   contents: read
 
-# Layout: scope -> (test | build -> browser[smoke, snapshots]) -> check.
-# Unit tests run beside the build instead of before it, and the two browser checks run as separate
-# parallel jobs. "check" is the only required status: it aggregates everything, so add or rename
+# Layout: scope -> (test | build+browser checks) -> check.
+# Unit tests run beside the build instead of before it. Smoke and snapshots stay in the build job:
+# splitting them into their own jobs was measured slower (repeated setup), see docs/refinement-backlog.md CI1. "check" is the only required status: it aggregates everything, so add or rename
 # jobs freely as long as they stay in check's `needs`.
 jobs:
   # Docs/notes-only changes (*.md, docs/) cannot affect the app, so every heavy job is skipped.
@@ -72,32 +72,6 @@ jobs:
           key: model-${{ hashFiles('src/scorer/model.js') }}
       # prebuild tries to self-host the embedding model and skips gracefully if the network blocks it.
       - run: npm run build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/
-          retention-days: 1
-
-  # One job per browser check, in parallel. Each serves dist on its own random port.
-  browser:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        script: [smoke, snapshots]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
       - name: Get Playwright version
         id: pw
         run: echo "v=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
@@ -113,9 +87,17 @@ jobs:
           else
             npx playwright install --with-deps chromium
           fi
-      - run: node scripts/${{ matrix.script }}.mjs
+      # Both scripts serve the build on their own random port, so they run side by side.
+      - name: Smoke test and screenshot snapshots (in parallel)
+        run: |
+          node scripts/smoke.mjs & smoke=$!
+          node scripts/snapshots.mjs & snaps=$!
+          rc=0
+          wait $smoke || rc=1
+          wait $snaps || rc=1
+          exit $rc
       - name: Upload snapshot diffs
-        if: failure() && matrix.script == 'snapshots'
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: snapshot-diffs
@@ -127,7 +109,7 @@ jobs:
   # (skipped is fine: that is the docs-only path).
   check:
     if: always()
-    needs: [scope, test, build, browser]
+    needs: [scope, test, build]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

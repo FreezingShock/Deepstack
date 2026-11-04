@@ -745,11 +745,11 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 
 ### CI1. [x] Shard the browser checks (PR pending)
 **Pitch:** Smoke and snapshots are about 35 to 55 s of a 75 to 120 s run; splitting snapshots into two parallel jobs would cut the wait further.
-**Brief:** Goal: run `snapshots.mjs` per viewport/screen group in a matrix, keeping one required `check` job that depends on them. Files: `.github/workflows/ci.yml`, `scripts/snapshots.mjs`. Done when: median green time drops and `check` is still the only required context. **Touches:** TOOLING. **Conflicts:** none.
+**Brief:** Goal: run `snapshots.mjs` per viewport/screen group in a matrix, keeping one required `check` job that depends on them. Files: `.github/workflows/ci.yml`, `scripts/snapshots.mjs`. Done when: median green time drops and `check` is still the only required context. **Result:** separate smoke/snapshots jobs took 2m16s end to end (snapshots job 63 s, smoke 83 s, build 28 s, plus scope/check overhead) versus 75 to 120 s before, because each job repeats checkout, npm ci and Chromium setup. Kept only the parallel `npm test` and the aggregating `check`. **Touches:** TOOLING. **Conflicts:** none.
 
 ### CI3. Shard snapshots per screen
 **Pitch:** Snapshots is one sequential flow in one browser, so it is now the longest browser job; splitting its screens into independent jobs would shorten it further.
-**Brief:** Goal: make each screen in `scripts/snapshots.mjs` reachable without replaying the earlier ones (seeded localStorage), then add them to the `browser` matrix in `ci.yml`. Done when: snapshots job time drops and `check` stays the only required context. **Touches:** TOOLING. **Conflicts:** none.
+**Brief:** Goal: make each screen in `scripts/snapshots.mjs` reachable without replaying the earlier ones (seeded localStorage), then run them as parallel processes in the build job (separate jobs measured slower, see CI1). Done when: snapshots job time drops and `check` stays the only required context. **Touches:** TOOLING. **Conflicts:** none.
 
 ### CI2. Merge queue for bursts of PRs
 **Pitch:** If strict up-to-date is ever turned on, a merge queue tests PRs together instead of making each one re-run after every merge.
