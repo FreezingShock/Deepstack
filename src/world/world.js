@@ -10,6 +10,7 @@ import {Feel,Sfx} from '../feel.js';
 import {travelEase,travelMs} from '../ui/camMotion.js';
 import {deepProps,deepWall,deepProp} from '../ui/floorArt.js';
 import {pullX as pullXAt} from '../core/pull.js';
+import {liftGeom,liftEnvelope,drawLift} from './lift.js';
 import {loreCovered as loreCoveredAt} from '../ui/loreCover.js';
 import {isLore,drawLoreMark,drawLoreGlow,hitLoreBook} from '../ui/lore.js';
 import {isCurio,drawCurioMark,hitCurio} from '../ui/curios.js';
@@ -266,6 +267,7 @@ export const World=(()=>{
   for(const [nr,nv] of niches)drawNiche(nr,nv,camNow,now);
   drawLoreGlows(top,bot,camNow);
   if(ledgeCb){const cn=niches.get(restRow);ledgeCb(!st&&!rest&&cn&&cn.hit&&cn.books?cn.hit:null,cn&&cn.books);}
+  if(st){const n=nicheBox();drawLift(ctx,{W,H,cam:camNow,cam0:st.cam0,vt,geom:liftGeom(W,H,n.w),baseX:pullX(st.row),baseY:tgt?tgt.base:H*.7,env:liftEnvelope({phase:st.phase,u:st.prog,settle,pull,rm:RM,quality:Quality.params().name})});} // the brass lift: rope, pulley and cage ride the camera glide
   // pulled-out target
   if(st&&tgt){const T=TIERS[st.tier],e=pull*pull*(3-2*pull),bw=36,bh=RH*.82;const bx=pullX(st.row),by0=tgt.base; // seated in the gap genRow leaves in the target shelf, never floating above it
   const cy=H*.5;const px=bx+(W/2-bx)*e,py=by0+(cy+bh*.5*2.2-by0)*e;const s=1+1.3*e;
