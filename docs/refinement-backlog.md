@@ -743,9 +743,13 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** Check every hung thing at 375 px for bolts that crowd the text and give the narrow plaques a one-bolt variant.
 **Brief:** Goal: audit `plaqueBolts` at phone widths with 14-letter labels. Files: `src/ui/mounts.js`. Done when: screenshots attached. **Touches:** WORLD. **Conflicts:** 5.
 
-### CI1. Shard the browser checks
+### CI1. [x] Shard the browser checks (PR pending)
 **Pitch:** Smoke and snapshots are about 35 to 55 s of a 75 to 120 s run; splitting snapshots into two parallel jobs would cut the wait further.
 **Brief:** Goal: run `snapshots.mjs` per viewport/screen group in a matrix, keeping one required `check` job that depends on them. Files: `.github/workflows/ci.yml`, `scripts/snapshots.mjs`. Done when: median green time drops and `check` is still the only required context. **Touches:** TOOLING. **Conflicts:** none.
+
+### CI3. Shard snapshots per screen
+**Pitch:** Snapshots is one sequential flow in one browser, so it is now the longest browser job; splitting its screens into independent jobs would shorten it further.
+**Brief:** Goal: make each screen in `scripts/snapshots.mjs` reachable without replaying the earlier ones (seeded localStorage), then add them to the `browser` matrix in `ci.yml`. Done when: snapshots job time drops and `check` stays the only required context. **Touches:** TOOLING. **Conflicts:** none.
 
 ### CI2. Merge queue for bursts of PRs
 **Pitch:** If strict up-to-date is ever turned on, a merge queue tests PRs together instead of making each one re-run after every merge.

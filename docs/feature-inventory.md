@@ -63,7 +63,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Feature | Files | Q | State and known gaps |
 |---|---|---|---|
 | Save in `localStorage` key `deepstack.v1` (additive fields; falls back to memory if blocked) | `src/main.js` (`store`) | B | No export/import, no versioned migrations, shelf capped. |
-| CI: tests, build, headless boot smoke (clicks Descend and every menu book), seeded screenshot snapshots | `.github/workflows/ci.yml`, `scripts/smoke.mjs`, `snapshots.mjs`, `test/snapshots/` | A | Snapshots are tolerant (10% pixel diff). No mobile snapshots, no axe run. Docs-only changes (`*.md`, `docs/`) skip install/build/browser steps. |
+| CI: tests, build, headless boot smoke (clicks Descend and every menu book), seeded screenshot snapshots | `.github/workflows/ci.yml`, `scripts/smoke.mjs`, `snapshots.mjs`, `test/snapshots/` | A | Snapshots are tolerant (10% pixel diff). No mobile snapshots, no axe run. Jobs: `scope`, `test` and `build` in parallel, then `smoke` and `snapshots` as parallel matrix jobs, then the single required `check` aggregator. Docs-only changes (`*.md`, `docs/`) skip everything heavy. |
 | Auto-merge workflow | `.github/workflows/automerge.yml` | A | Squash, requires `check`. |
 | Judge benchmark | `scripts/judge-bench.mjs` | A | Compares worker, forced-main, blocked-worker. |
 
