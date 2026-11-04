@@ -29,8 +29,8 @@ catch (e) { console.log('smoke: no browser, skipping:', e.message.split('\n')[0]
 // Fonts and the embedding model come from third parties; keep CI offline-safe and fast. A blocked model makes the
 // app use its lexical judge, which is deterministic. Failed-resource console lines for these hosts are expected.
 const BLOCKED = /^https?:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|huggingface\.co|[^/]*\.hf\.co|cdn\.jsdelivr\.net)\//;
-// Optional same-origin assets: self-hosted model/runtime and the gitignored local font files may legitimately be absent.
-const OPTIONAL = /\/(models|ort|fonts)\//;
+// Optional same-origin assets: self-hosted model/runtime may legitimately be absent (fonts are committed, so a missing font fails).
+const OPTIONAL = /\/(models|ort)\//;
 const problems = [];
 const fail = msg => { problems.push(msg); };
 const T = 15000;
