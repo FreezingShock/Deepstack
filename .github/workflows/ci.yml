@@ -26,13 +26,37 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      # Self-hosted embedding model: cache it so the build doesn't re-download from Hugging Face.
+      - uses: actions/cache@v4
+        with:
+          path: public/models
+          key: model-${{ hashFiles('src/scorer/model.js') }}
       # prebuild tries to self-host the embedding model and skips gracefully if the network blocks it.
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
-      - name: Smoke test the built app
-        run: node scripts/smoke.mjs
-      - name: Screenshot snapshots and home-screen behaviour
-        run: node scripts/snapshots.mjs
+      - name: Get Playwright version
+        id: pw
+        run: echo "v=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: pwcache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.v }}
+      - name: Install Chromium
+        run: |
+          if [ "${{ steps.pwcache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
+      # Both scripts serve the build on their own random port, so they can run side by side.
+      - name: Smoke test and screenshot snapshots (in parallel)
+        run: |
+          node scripts/smoke.mjs & smoke=$!
+          node scripts/snapshots.mjs & snaps=$!
+          rc=0
+          wait $smoke || rc=1
+          wait $snaps || rc=1
+          exit $rc
       - name: Upload snapshot diffs
         if: failure()
         uses: actions/upload-artifact@v4
