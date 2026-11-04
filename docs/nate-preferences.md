@@ -27,6 +27,8 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 - **Say it once, expect it done.** When he sends a screenshot with "fix this", he expects the thread to find the cause. Repeat complaints (shelves at the top, hover on lore books) mean the first fix was not checked in the real screen. Verify with a screenshot of the exact screen he showed.
 - 2026-11-04 motion: "the motion language should be for all animations and changes, make sure it's smooth and performant and all uniform" (sounds should line up with it, thread: desk sounds)
 
+- 2026-11-04 results screen: "not spanning the whole vertical page and having to scroll, it shouldnt be like that" -> every screen must fit one view at 1280x720 and 375x667, compact instead of scrolling (pattern 10)
+
 ## 3. How he works
 
 - Starts many threads at once (picked 11 menu numbers in one message) and wants them "all working in conjunction". Wants independence checked between threads.
