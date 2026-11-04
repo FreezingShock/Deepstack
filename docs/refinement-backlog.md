@@ -277,6 +277,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Touches:** WORLD. **Conflicts:** floors, particles, 1-3 (run last).
 
 ### 39. Load path
+**Status:** [x] done in this PR (fonts self-hosted, word list and judge model start after first paint in sequence; band split deliberately not done, see `docs/load-path.md`).
 **Pitch:** First load feels instant: gzip notes, `words.json` split by difficulty band, model fetch resumes after first paint, self-host the three Google fonts.
 **Brief:** Files: `vite.config.js`, loader, fonts. Done when: transfer measured before/after, fonts committed so no third-party request.
 **Touches:** JUDGE loader, CORE words, fonts. **Conflicts:** judge and word pool threads.
@@ -378,6 +379,16 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** A weekly page of seven small tabs (Mon to Sun) with each day's words as ghost text and your best book circled, so the week reads like a diary.
 **Brief:** Goal: replace the "This week" strip with a full leaf reachable from the calendar. Files: `dailyCalendar.js`, `dailyBook.js`. Done when: week boundary (UTC Monday) test, tap a tab opens that day.
 **Touches:** BOOK. **Conflicts:** 10.
+
+### 64. Smaller word list
+**Pitch:** The word list is 691 KB gzipped and the biggest download after first paint; make it smaller without losing words.
+**Brief:** Files: `scripts/build-words.mjs`, `src/core/wordPool.js`. Done when: gzipped transfer measured with `node scripts/loadpath.mjs dist`, same pool and same Daily picks (determinism test), shorter definitions only where the judge reference text is unchanged.
+**Touches:** CORE words, build script. **Conflicts:** judge and word pool threads.
+
+### 65. Offline Daily
+**Pitch:** Cache the word list and judge model so the Daily works with no connection after the first visit.
+**Brief:** Files: a service worker plus a precache list. Done when: airplane-mode Daily plays through, cache version pinned to the model revision, `loadpath.mjs` shows zero requests on the second load.
+**Touches:** `index.html`, `vite.config.js`. **Conflicts:** 52.
 
 ---
 
