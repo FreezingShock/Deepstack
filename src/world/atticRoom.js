@@ -17,13 +17,17 @@ export const VP_Y=.5,FAR=.6,EAVE=.38;
 /* ---- layout (pure) ---- */
 /* items: [{b,i,recent?}], newest first. Returns piles with a row (0 front .. 2 back), centre x, and books top-of-pile
    first. Piles never mix recent guesses with earlier finds so each group can wear its own tag. */
+/* Piles differ: heights cycle through SIZES (bumped up only when the books would not otherwise fit) and each pile
+   takes a different look (KINDS) so the floor reads as a lived-in heap rather than a row of identical stacks. */
+export const SIZES=[4,2,5,3,5,3,4];
+export const KINDS=['stack','heap','trunk','slump','crate','plank','heap','stack','slump','trunk'];
 export function layoutPiles(items,W,{rowsMax=3}={}){
  const phone=W<600,pileW=phone?150:214,fit=Math.max(1,Math.floor((W-28)/pileW)),cap=fit*rowsMax;
  const groups=[items.filter(x=>x.recent),items.filter(x=>!x.recent)].filter(g=>g.length);
- const total=items.length,perPile=Math.min(6,Math.max(4,Math.ceil(total/cap)));
- const piles=[];
- groups.forEach((g,gi)=>{for(let k=0;k<g.length;k+=perPile)piles.push({items:g.slice(k,k+perPile),group:g[0].recent?'recent':'earlier',first:k===0});});
+ const chunk=bump=>{const out=[];groups.forEach(g=>{for(let k=0,o=0;k<g.length;o++){const n=SIZES[(o+(g[0].recent?0:3))%SIZES.length]+bump;out.push({items:g.slice(k,k+n),group:g[0].recent?'recent':'earlier',first:k===0,ord:o});k+=n;}});return out;};
+ let piles=chunk(0);for(let bump=1;bump<=1&&piles.length>cap;bump++)piles=chunk(bump);
  const shown=piles.slice(0,cap),hidden=piles.slice(cap).reduce((n,p)=>n+p.items.length,0);
+ shown.forEach((p,i)=>{p.kind=KINDS[(i*3+(p.group==='recent'?0:2))%KINDS.length];});
  let at=0;
  for(let row=0;row<rowsMax&&at<shown.length;row++){
   const n=Math.min(fit,shown.length-at),span=n*pileW,x0=(W-span)/2+pileW/2;
@@ -155,13 +159,12 @@ function ageBook(c,w,h,age,seed){
 /* ---- books ---- */
 function lyingBook(c,x,y,w,h,spine,word,rot,fav,age=0,seed=1){
  c.save();c.translate(x,y);c.rotate(rot);
- c.fillStyle=rgb(0,0,0,.4);c.beginPath();c.ellipse(0,1,w*.54,h*.28,0,0,6.3);c.fill();
- const g=c.createLinearGradient(0,-h,0,0);g.addColorStop(0,shade(spine,1.18));g.addColorStop(.35,shade(spine,.95));g.addColorStop(1,shade(spine,.5));
+ const g=c.createLinearGradient(0,-h,0,0);g.addColorStop(0,shade(spine,1.18));g.addColorStop(.35,shade(spine,.95));g.addColorStop(1,shade(spine,.76));
  c.fillStyle=g;c.fillRect(-w/2,-h,w,h);
  c.fillStyle=rgb(236,224,190);c.fillRect(w/2,-h+2,Math.max(5,h*.28),h-4); // page block
  c.strokeStyle=rgb(150,134,100,.8);c.lineWidth=.7;for(let k=1;k<4;k++){const yy=-h+2+(h-4)*k/4;c.beginPath();c.moveTo(w/2,yy);c.lineTo(w/2+Math.max(5,h*.28),yy);c.stroke();}
  c.fillStyle=rgb(216,184,110,.9*(1-.75*age));for(const bx of[-w/2+h*.55,w/2-h*.55])c.fillRect(bx-1.5,-h,3,h);
- c.fillStyle=rgb(0,0,0,.25);c.fillRect(-w/2,-h,w,1.5);
+ c.fillStyle=rgb(255,240,200,.1);c.fillRect(-w/2,-h,w,1.2);
  ageBook(c,w,h,age,seed);
  c.fillStyle=rgb(246,236,210,.95);c.textAlign='center';c.textBaseline='middle';
  let fs=Math.max(9,Math.min(15,h*.52));c.font=`600 ${fs}px Cinzel,Georgia,serif`;const maxW=w-h*1.5;
@@ -169,6 +172,41 @@ function lyingBook(c,x,y,w,h,spine,word,rot,fav,age=0,seed=1){
  c.lineJoin='round';c.lineWidth=2.4;c.strokeStyle=rgb(0,0,0,.55);c.strokeText(String(word).toUpperCase(),0,-h/2+.5,maxW);c.fillText(String(word).toUpperCase(),0,-h/2+.5,maxW);
  if(fav){c.fillStyle=rgb(246,217,138);c.fillText('★',w/2-h*.95,-h/2+.5);}
  c.restore();
+}
+
+/* What a pile sits on. Returns how far it lifts the books. 'crate-ends' paints the front end boards afterwards. */
+function plinth(c,kind,x,y,bw,bh,n=3){
+ const wood=(t=1)=>rgb(88*t,60*t,32*t),dark=rgb(18,12,7,.8);
+ if(kind==='trunk'){
+  const w=bw*1.04,h=bh*1.6;
+  const g=c.createLinearGradient(0,y-h,0,y);g.addColorStop(0,wood(1.25));g.addColorStop(1,wood(.7));
+  c.fillStyle=g;c.fillRect(x-w/2,y-h,w,h);
+  c.fillStyle=wood(1.4);c.fillRect(x-w/2,y-h,w,Math.max(3,h*.12));
+  c.fillStyle=dark;for(const sx of[-.32,.32])c.fillRect(x+sx*w-3,y-h,6,h);
+  c.fillStyle=rgb(190,148,70);c.fillRect(x-4,y-h*.62,8,h*.2);for(const sx of[-.5,.5]){c.fillRect(x+sx*w-(sx<0?0:4),y-5,4,5);c.fillRect(x+sx*w-(sx<0?0:4),y-h,4,5);}
+  c.strokeStyle=dark;c.lineWidth=1;c.strokeRect(x-w/2,y-h,w,h);
+  return h-1;
+ }
+ if(kind==='plank'){
+  const w=bw*1.05,bl=bh*.55,pt=bh*.3;
+  c.fillStyle=wood(.8);for(const sx of[-.38,.38])c.fillRect(x+sx*w-w*.07,y-bl,w*.14,bl);
+  const g=c.createLinearGradient(0,y-bl-pt,0,y-bl);g.addColorStop(0,wood(1.35));g.addColorStop(1,wood(.9));
+  c.fillStyle=g;c.fillRect(x-w/2,y-bl-pt,w,pt);c.strokeStyle=dark;c.lineWidth=1;c.strokeRect(x-w/2,y-bl-pt,w,pt);
+  return bl+pt-1;
+ }
+ if(kind==='crate'){
+  const w=bw*1.02,t=bh*.28;c.fillStyle=wood(1);c.fillRect(x-w/2,y-t,w,t);c.strokeStyle=dark;c.lineWidth=1;c.strokeRect(x-w/2,y-t,w,t);
+  return t-1;
+ }
+ if(kind==='crate-ends'){
+  const w=bw*1.02,t=bh*.28,hh=Math.min(n,3)*(bh-1)+t+4;
+  for(const sx of[-1,1]){const ex=x+sx*(w/2-3);
+   const g=c.createLinearGradient(ex-4,0,ex+4,0);g.addColorStop(0,wood(1.2));g.addColorStop(1,wood(.7));
+   c.fillStyle=g;c.fillRect(ex-4,y-hh,8,hh);c.strokeStyle=dark;c.lineWidth=1;c.strokeRect(ex-4,y-hh,8,hh);
+   c.fillStyle=rgb(190,148,70);c.fillRect(ex-1.5,y-hh+4,3,3);}
+  return 0;
+ }
+ return 0;
 }
 
 /* Paint the room (and what moves in it) at screen offset ry (top of the room). Returns hit rects in screen space,
@@ -190,17 +228,34 @@ export function drawAttic(ctx,room,o){
  const now=Date.now(),rank=new Map(items.map((x,k)=>[x,k]));
  const base=r=>ry+A*(1-.03-.075*r),sc=r=>1-.12*r;
  for(const p of piles.slice().sort((a,b)=>b.row-a.row)){
-  const s=sc(p.row),bw=p.w*(phone?.84:.8)*s,bh=(phone?19:29)*s;let y=base(p.row);
+  const s=sc(p.row),bw=p.w*(phone?.84:.8)*s,bh=(phone?19:29)*s,pr=rng(((p.items[0].i+1)*40503+p.ord*977)>>>0);
+  const cx=p.x+(pr()-.5)*p.w*.12,y0=base(p.row)+(pr()-.5)*A*.012;let y=y0;
+  /* one soft contact shadow on the floor under the whole pile (none between books) */
+  const sg=ctx.createRadialGradient(cx,y0+2,0,cx,y0+2,bw*.62);sg.addColorStop(0,rgb(0,0,0,.3));sg.addColorStop(1,rgb(0,0,0,0));
+  ctx.save();ctx.translate(0,y0+2);ctx.scale(1,.16);ctx.translate(0,-(y0+2));ctx.fillStyle=sg;ctx.fillRect(cx-bw*.7,y0+2-bw*.7,bw*1.4,bw*1.4);ctx.restore();
+  const kind=p.kind,n=p.items.length,inner=kind==='crate'?.9:1;
+  let rise=0;
+  if(kind==='trunk')rise=plinth(ctx,'trunk',cx,y,bw,bh);
+  else if(kind==='plank')rise=plinth(ctx,'plank',cx,y,bw,bh);
+  else if(kind==='crate')rise=plinth(ctx,'crate',cx,y,bw,bh,n);
+  y-=rise;
   const order=p.items.slice().reverse(); // oldest at the bottom, newest on top
   order.forEach((x,k)=>{
-   const seed=((x.i+1)*2654435761)>>>0,R=rng(seed),w=bw*(.82+R()*.18),rot=(R()-.5)*.05,jx=(R()-.5)*bw*.1,spine=TIERS[x.b.tier].spine;
-   lyingBook(ctx,p.x+jx,y,w,bh,spine,x.b.w,rot,x.b.fav,bookAge(x.b,rank.get(x),items.length,now),seed);
-   hits.unshift({x:p.x+jx-w/2,y:y-bh,w:w+bh*.3,h:bh,b:x.b});
-   y-=bh-1;
+   const seed=((x.i+1)*2654435761)>>>0,R=rng(seed),top=k>=order.length-(order.length>3?2:1);
+   let w=bw*inner*(.82+R()*.18),rot=(R()-.5)*.05,jx=(R()-.5)*bw*.1;
+   if(kind==='heap'){rot=(R()-.5)*.22;jx=(R()-.5)*bw*.2;w=bw*(.7+R()*.28);}
+   else if(kind==='slump'&&top){rot=(k===order.length-1?-1:1)*(.1+R()*.08);jx=(k===order.length-1?1:-1)*bw*(.04+R()*.06);}
+   else if(kind==='crate'){jx=(R()-.5)*bw*.04;}
+   const lift=Math.abs(Math.sin(rot))*w*.42,yy=y-lift;
+   lyingBook(ctx,cx+jx,yy,w,bh,TIERS[x.b.tier].spine,x.b.w,rot,x.b.fav,bookAge(x.b,rank.get(x),items.length,now),seed);
+   const ext=Math.abs(Math.sin(rot))*w/2;
+   hits.unshift({x:cx+jx-w/2,y:yy-bh-ext,w:w+bh*.3,h:bh+ext*2,b:x.b});
+   y=yy-bh+1;
   });
+  if(kind==='crate')plinth(ctx,'crate-ends',cx,y0,bw,bh,n);
   if(p.first){const label=p.group==='recent'?'Recent guesses':'Earlier finds',fs=phone?13:16;
    ctx.font=`500 ${fs}px "Fuzzy Bubbles",Georgia,serif`;const tw=ctx.measureText(label).width+14;
-   ctx.save();ctx.translate(p.x,y-8*s);ctx.rotate(-.03);ctx.fillStyle=rgb(236,224,190);ctx.fillRect(-tw/2,-fs-2,tw,fs+8);ctx.fillStyle=rgb(40,28,16);ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(label,0,0);ctx.restore();}
+   ctx.save();ctx.translate(cx,y-8*s);ctx.rotate(-.03);ctx.fillStyle=rgb(236,224,190);ctx.fillRect(-tw/2,-fs-2,tw,fs+8);ctx.fillStyle=rgb(40,28,16);ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(label,0,0);ctx.restore();}
  }
  /* the skylight grows as you rise: the whole room starts in shadow and brightens, with a window bloom on top */
  if(lit<1){ctx.fillStyle=rgb(4,3,2,(1-lit)*.78);ctx.fillRect(0,ry,W,A);}
