@@ -1,0 +1,16 @@
+/* Candle timer: the flame stands tall with the time left, flickers faster in the last 10 s and gutters out at zero.
+   No red, no flashing: the warning is only a quicker, lower flame. */
+.candle .flame{--fh:1;height:calc(22px * var(--fh));width:calc(12px * (.55 + .45 * var(--fh)));margin-left:calc(-6px * (.55 + .45 * var(--fh)));top:calc(-1px - 22px * var(--fh));
+ animation-duration:var(--fp,.16s);transition:height .12s linear,width .12s linear,margin-left .12s linear,top .12s linear,opacity .5s}
+.candle.low .flame{background:radial-gradient(ellipse at 50% 72%,var(--c-amber-fff7cf) 0,var(--c-amber-69) 42%,var(--c-amber-58) 74%,var(--c-amber-58-alpha-00) 100%);box-shadow:0 0 calc(30px * var(--fh)) calc(10px * var(--fh)) var(--c-amber-ffa83c-alpha-66)}
+.candle.dying{animation:none}
+.candle.dying .flame{animation-duration:var(--fp,.06s)}
+.candle.out .flame{opacity:0;box-shadow:none}
+.candle.out::before{opacity:.12;animation:none;transition:opacity .6s}
+.candle .wick::after{content:"";position:absolute;left:-2px;bottom:5px;width:6px;height:16px;border-radius:50%;background:radial-gradient(ellipse at 50% 100%,color-mix(in srgb,var(--c-parchment-90) 45%,transparent),transparent 70%);opacity:0;filter:blur(2px)}
+.candle.out .wick::after{animation:wisp 1.6s linear forwards}
+@keyframes wisp{from{opacity:.7;transform:translateY(0) scale(.6)}to{opacity:0;transform:translateY(-26px) scale(1.4)}}
+/* the clock keeps its colour change but never blinks or glows red */
+.clock.low{animation:none;text-shadow:0 0 12px var(--c-amber-ffb84d-alpha-88)}
+.timer.low i{background:linear-gradient(90deg,var(--c-amber-ffd98a),var(--c-parchment))}
+@media(prefers-reduced-motion:reduce){.candle .flame,.candle.dying .flame{animation:none;transition:none}.candle.out .wick::after{animation:none;opacity:0}}

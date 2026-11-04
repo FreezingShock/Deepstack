@@ -183,7 +183,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: details view using lexical hits and the reference gloss, never spelling the word if hints were used. Files: new `src/core/feedback.js`, small hook. Done when: fixture tests, no new on-screen clutter by default.
 **Touches:** new, card hook. **Conflicts:** 16, judge thread.
 
-### 19. Candle timer
+### 19. [x] Candle timer (PR pending)
 **Serves:** physical, mysterious.
 **Pitch:** The 45 s timer is a candle burning down with a flame that flickers faster in the last 10 s and gutters out at zero, no red flashing.
 **Brief:** Goal: drawn candle with flame height tied to time left. Files: new `src/ui/candle.js` + css; hook. Done when: flame function tested (full, half, last 10 s, zero), reduced motion steady flame.
@@ -685,3 +685,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Serves:** immersion. **Pitch:** A far scuttle, a drip with the right reverb per floor, a low bubble, matched to what is on screen.
 **Brief:** Goal: each ambient item can emit a quiet cue through `Sfx`. Files: new `src/ui/ambientSfx.js`. Done when: volume setting respected, rate-capped, silent in reduced motion.
 **Touches:** FEEL hook. **Conflicts:** 23.
+
+### C1. Wax pooling and drips
+**Serves:** physical, mysterious.
+**Pitch:** The candle timer leaves wax pooling on the plate and a drip that runs down as the minutes pass, so a finished run leaves a stub on the desk.
+**Brief:** Goal: persist a little wax build-up per run on the candle plate. Files: `src/ui/candle.css`. Done when: reduced motion static, 14-letter word unaffected.
+**Touches:** run screen. **Conflicts:** none.
+
+### C2. Candle light on the word
+**Serves:** dark and mysterious, integrated.
+**Pitch:** The wall lettering and the paper slip are lit from the candle's side and dim as the flame lowers, so time reads in the room, not only the corner.
+**Brief:** Goal: drive the existing `--fr` light through flame height. Files: `src/ui/candle.css`. Done when: legible at the last second, 375 and 1280 screenshots.
+**Touches:** run screen. **Conflicts:** 20.
