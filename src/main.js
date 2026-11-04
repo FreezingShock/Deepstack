@@ -46,6 +46,7 @@ import './ui/bookpages.css';
 import './ui/bookStyle.css';
 import './ui/statsPages.css';
 import './ui/penInk.css';
+import './ui/ink.css';
 import './ui/fonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
 import {drawAlcoveLanterns} from './ui/lanterns.js';
