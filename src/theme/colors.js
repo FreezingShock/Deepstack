@@ -411,3 +411,7 @@ export function tokenEntries(){
  for(const[f,c]of Object.entries(FLOOR_COLORS))for(const[k,v]of Object.entries(c))out.push([`--floor-${f}-${kebab(k)}`,v]);
  return out;
 }
+
+// camelCase view of every named color for JS/canvas code: PALETTE.parchment, PALETTE.oak24, PALETTE.blackAlphaCc ...
+const camel=s=>s.replace(/-([a-z0-9])/g,(_,c)=>c.toUpperCase());
+export const PALETTE=Object.fromEntries([...Object.entries(COLORS),...Object.entries(ALPHA)].map(([k,v])=>[camel(k),v]));
