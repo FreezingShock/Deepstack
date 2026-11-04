@@ -3,6 +3,7 @@
    update() returns the visible items as screen boxes; an item whose box touches an exclusion rect (the alcove,
    the HUD band) is faded out and never painted, so nothing ever crosses text or panels. Off for reduced motion
    and low quality. Spawns are capped: at most MAX_LIVE at once and a long random gap between arrivals. */
+import {Quality} from './quality.js';
 import {FLOORS} from '../core/floors.js';
 
 export const MAX_LIVE = 2;
@@ -37,7 +38,7 @@ export const blocked = (box, excl) => excl.some(e => hit(box, e));
 export function ambientEnabled({rm = false, low = false} = {}) { return !rm && !low; }
 
 let live = [], cool = 6, nid = 1;
-export function lowQuality() { try { return !!navigator.connection?.saveData; } catch (e) { return false; } }
+export function lowQuality() { try { return !!navigator.connection?.saveData || !Quality.params().ambient; } catch (e) { return false; } }
 export function resetAmbient() { live = []; cool = 6; }
 export function liveCount() { return live.length; }
 

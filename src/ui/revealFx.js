@@ -8,6 +8,7 @@
    by itself if frames run long. */
 import {revealRecipe, settleRecipe, landRecipe, tint} from './revealRecipes.js';
 import {particleVisibility} from './particleMask.js';
+import {Quality} from './quality.js';
 
 const CAP = 1500, RINGS = 12;
 const SPR = {dot: 0, streak: 1, star: 2, fleck: 3};
@@ -85,10 +86,10 @@ export function createRevealFx({canvas, tiers, palette, feel, reduced = false, n
   }
 
   function resize() {
-    DPR = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+    DPR = Math.min(Quality.params().dprMax, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
     canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
   }
-  addEventListener('resize', resize); resize();
+  addEventListener('resize', resize); Quality.subscribe(resize); resize();
 
   /* ---- emit ---- */
   function put(x, y, vx_, vy_, g, drag, delay, life, size, spr, col, o = 0) {
