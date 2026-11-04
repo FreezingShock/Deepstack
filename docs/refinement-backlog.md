@@ -266,7 +266,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## G. Performance
 
-### 37. Frame-time telemetry
+### 37. Frame-time telemetry (done, PR pending)
 **Pitch:** `?perf` overlay shows frame time and dropped frames, and `scripts/perf.mjs` records a 10 s headless p95.
 **Brief:** Files: new `src/ui/perf.js`, `scripts/perf.mjs`. Done when: zero cost when off, baseline in the PR.
 **Touches:** new files. **Conflicts:** none.
@@ -376,3 +376,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 - **Feel:** 22 first, then 23, 24, 26.
 - **Parallel-safe quick wins:** 4, 9, 15, 24, 33, 37, 48, 50.
 - **Foundations (alone):** 42 + 43 together, then 44.
+
+### 62. Perf budget in CI
+**Pitch:** CI runs `scripts/perf.mjs` and warns when work-per-frame p95 regresses past a stored baseline.
+**Brief:** Files: new `scripts/perfCheck.mjs`, CI step. Done when: tolerant threshold (software rendering is noisy), baseline file committed. **Touches:** CI. **Conflicts:** none.

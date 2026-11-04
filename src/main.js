@@ -1,3 +1,4 @@
+import './ui/perf.js'; // frame-time telemetry, inert unless ?perf
 import {PALETTE} from './theme/colors.js';
 import {hintLadder,rowsAfterHints} from './core/hints.js';
 import {applyCombo,comboLabel,comboNeeds,comboMultiplier} from './core/combo.js';
