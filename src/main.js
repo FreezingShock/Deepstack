@@ -15,6 +15,7 @@ import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenRe
 import {homeHTML,bookify,BOOK_PAGES} from './ui/home.js';
 import './ui/home.css';
 import {descendInto} from './ui/descend.js';
+import {travelEase,travelMs} from './ui/camMotion.js';
 import {initA11y} from './ui/a11y.js';
 import {initTopbar} from './ui/topbar.js';
 import {reducedMotion} from './ui/settings.js';
@@ -325,11 +326,11 @@ const World=(()=>{
   const rdt=Math.min(gap?.12:.05,(now-last)/1000);last=now;Feel.tick(rdt);const dt=rdt*Feel.ts;vt+=dt*(st&&st.skip?6:1);cv.style.transform=Feel.ox||Feel.oy?`translate(${Feel.ox}px,${Feel.oy}px)`:'';{const cl=document.getElementById('cardlayer');if(cl)cl.style.transform=cv.style.transform;}
   let camNow=cam,settle=0,pull=0;
   if(st){
-   if(st.phase==='down'){const u=Math.min(1,st.t/st.dur);st.t+=dt*(st.skip?6:1);camNow=st.cam0+(st.cam1-st.cam0)*ease(u);st.prog=u;if(u>=1){st.phase='settle';st.pt=0;Sfx.thud();}}
+   if(st.phase==='down'){const u=Math.min(1,st.t/st.dur);st.t+=dt*(st.skip?6:1);camNow=st.cam0+(st.cam1-st.cam0)*travelEase(u);st.prog=u;if(u>=1){st.phase='settle';st.pt=0;Sfx.thud();}}
    if(st.phase==='settle'){st.pt+=dt*(st.skip?6:1);camNow=st.cam1;st.prog=1;settle=Math.min(1,st.pt/.3);if(settle>=1){st.phase='pull';st.pt=0;Sfx.flip();}}
    if(st.phase==='pull'||st.phase==='hold'){camNow=st.cam1;settle=1;if(st.phase==='pull')st.pt+=dt*(st.skip?6:1);pull=Math.min(1,st.pt/.45);if(st.phase==='pull'&&pull>=1){st.phase='hold';const r=st.res;st.res=null;r&&r();}}
    cam=camNow;boff=btgt=0;
-  }else if(rest){const u=Math.min(1,(now-rest.t0)/rest.ms),e=ease(u);cam=rest.c0+(rest.c1-rest.c0)*e;if(u>=1){const f=rest.done;rest=null;f&&f();}camNow=cam;boff=btgt=0;}
+  }else if(rest){const u=Math.min(1,(now-rest.t0)/rest.ms),e=travelEase(u);cam=rest.c0+(rest.c1-rest.c0)*e;if(u>=1){const f=rest.done;rest=null;f&&f();}camNow=cam;boff=btgt=0;}
   else{boff=RM||Math.abs(btgt-boff)<.5?btgt:boff+(btgt-boff)*Math.min(1,rdt*14);camNow=cam+boff+(RM||boff?0:Math.sin(vt*.5)*1.5);}
   {const b=btgt<-4;if(b!==wasB){wasB=b;browseCb&&browseCb(b);}}
   lastCam=camNow;
@@ -395,12 +396,12 @@ const World=(()=>{
   browseToFt(ft){if(!this.canBrowse)return;btgt=clamp(restCam(Math.min(restRow,ft/FT))-H*.35-cam,restCam(0)-cam,0);},
   snap(){btgt=0;},
   descend({rows:n,tier,score,word}){return new Promise(res=>{
-   const a=restRow,b=a+n;st={a,row:b,tier,score,word,seed:hashStr(word)&0xffff,cam0:restCam(a),cam1:restCam(b),dur:RM?.5:1.5+n*.075,t:0,phase:'down',pt:0,skip:false,prog:0,res};cam=st.cam0;Sfx.whoosh(st.dur*.9);});},
+   const a=restRow,b=a+n;st={a,row:b,tier,score,word,seed:hashStr(word)&0xffff,cam0:restCam(a),cam1:restCam(b),dur:travelMs(n,RM)/1000,t:0,phase:'down',pt:0,skip:false,prog:0,res};cam=st.cam0;Sfx.whoosh(st.dur*.9);});},
   skipDown(){if(st)st.skip=true;},
   nextRows(){const n=nicheBox();return Math.ceil((H-BM-n.t)/RH);},
-  glide(row,ms){return new Promise(res=>{const c0=cam,c1=restCam(row);rest={t0:performance.now(),ms:RM?200:ms,c0,c1,done:()=>{restRow=row;res();}};});},
+  glide(row,ms){return new Promise(res=>{const c0=cam,c1=restCam(row);rest={t0:performance.now(),ms:RM?200:(ms||travelMs(Math.abs(c0-c1)/RH)),c0,c1,done:()=>{restRow=row;res();}};});},
   release(){if(!st)return;taken.add(st.row);rows.delete(st.row*2);restRow=st.row;cam=restCam(restRow);st=null;},
-  ascend(){return new Promise(res=>{const c0=cam,c1=restCam(0),dist=Math.abs(c0-c1)/RH;rest={t0:performance.now(),ms:RM?200:clamp(dist*60,700,2400),c0,c1,done:()=>{restRow=0;res();}};});},
+  ascend(){return new Promise(res=>{const c0=cam,c1=restCam(0),dist=Math.abs(c0-c1)/RH;rest={t0:performance.now(),ms:travelMs(dist,RM),c0,c1,done:()=>{restRow=0;res();}};});},
   get stActive(){return !!st;},get descending(){return !!st&&st.phase!=='hold';}
  };})();
 
