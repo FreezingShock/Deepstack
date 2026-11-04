@@ -5,6 +5,7 @@ import {recordBook as recordSetBook,backfill as backfillSets} from './sets/sets.
 import {openSets,toastSetsDone,setsOpen,closeSets} from './sets/ui.js';
 import {recapHTML,bindRecap} from './ui/results.js';
 import './ui/results.css';
+import './ui/card.css';
 import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
@@ -500,14 +501,14 @@ function openCard(b,opts={}){
    <div class="tierbar"><b>${T.name}</b><span>${T.rar}</span></div>
    <div class="inner">
    <h2>${esc(b.w)}<small>${esc(b.pos)}</small></h2>
-   <div class="score"><b id="cn">${opts.fresh?0:b.score}</b><span>/ 100 closeness</span></div>
-   <div class="meter"><i id="mt" style="width:${opts.fresh?0:b.score}%"></i>${TIERS.slice(1).map(t=>`<u style="left:${t.min}%"></u>`).join('')}</div>
-   ${!opts.fresh&&b.t?`<div class="depthgain">${b.mode==='daily'?'Daily No. <b>'+b.no+'</b> \u00b7 ':''}${new Date(b.t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</div>`:''}
-   ${opts.fresh?`<div class="depthgain">Deeper by <b>+${b.ft} ft</b> \u00b7 now at <b>${opts.depth1} ft</b></div>`:''}
-   ${opts.fresh&&b.combo?`<div class="combo on" style="--tc:${T.spine}">Combo <b>${comboLabel(b.combo.mult)}</b> \u00b7 ${b.combo.n} in a row \u00b7 +${b.combo.ft} ft</div>`:opts.fresh&&opts.broke?`<div class="combo broke">Combo broken</div>`:opts.fresh&&opts.chain===1?`<div class="combo hint">Combo started: ${comboNeeds()} or better to keep it</div>`:''}
    <p class="verdict ${opts.fresh?'':'on'}" id="vd">${esc(b.verdict)}</p>
-   <h3>Meaning</h3><p class="def">${esc(b.def)}</p>
+   <p class="def">${esc(b.def)}</p>
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
+   <div class="chips">
+    ${opts.fresh?`<span><b>+${b.ft} ft</b> \u00b7 ${opts.depth1} ft</span>`:b.t?`<span>${b.mode==='daily'?'No. '+b.no+' \u00b7 ':''}${new Date(b.t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</span>`:''}
+    ${opts.fresh&&b.combo?`<span class="cb">Combo <b>${comboLabel(b.combo.mult)}</b> \u00b7 ${b.combo.n} in a row</span>`:opts.fresh&&opts.broke?`<span>Combo broken</span>`:''}
+    <span class="cs"><b id="cn">${opts.fresh?0:b.score}</b>/100<div class="meter"><i id="mt" style="width:${opts.fresh?0:b.score}%"></i></div></span>
+   </div>
    ${!opts.fresh&&opts.nav?`<button class="btn favbtn" id="cfav" aria-pressed="${!!b.fav}">${b.fav?'★ Favourite':'☆ Mark as favourite'}</button>`:''}
    ${opts.nav?`<div class="cardnav"><button class="btn" id="cprev" aria-label="Previous book"${opts.nav.i<=0?' disabled':''}>\u2039</button><span>${opts.nav.i+1} of ${opts.nav.items.length}</span><button class="btn" id="cnext" aria-label="Next book"${opts.nav.i>=opts.nav.items.length-1?' disabled':''}>\u203a</button></div>`:''}
    <button class="btn pri go" id="go">${opts.onNext?(opts.last?'See your descent':'Next word'):'Close'} <kbd>Enter</kbd></button>

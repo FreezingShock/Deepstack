@@ -1,0 +1,32 @@
+/* Book result card: dark leather page, tier name and rarity are the hero. */
+.book .page{--th:color-mix(in srgb,var(--tc) 68%,#fff);--tx:#eadfc4;--tm:#a8987a;
+ background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--tc) 30%,transparent) 0%,transparent 62%),repeating-linear-gradient(37deg,#0000 0 3px,#0000001c 3px 4px),linear-gradient(180deg,#1d1710,#120e09);
+ color:var(--tx);text-align:center;border-radius:3px;box-shadow:0 0 0 1px color-mix(in srgb,var(--tc) 55%,#000),inset 0 0 0 6px #120e09,inset 0 0 0 7px color-mix(in srgb,var(--tc) 40%,#000),0 0 44px -6px color-mix(in srgb,var(--tc) 55%,transparent)}
+.book .page .tierbar{display:flex;flex-direction:column;align-items:center;gap:2px;padding:30px 22px 6px;background:none;color:var(--th)}
+.book .page .tierbar span{order:-1;font:700 14px var(--sans);letter-spacing:.38em;text-transform:uppercase;color:var(--th);opacity:1;padding-left:.34em}
+.book .page .tierbar b{font:400 clamp(44px,15vw,64px)/1.05 var(--fell);letter-spacing:.02em;text-transform:none;text-shadow:0 0 26px color-mix(in srgb,var(--tc) 70%,transparent),0 2px 0 #000a}
+.book .page .tierbar::after{content:"";width:96px;height:1px;margin-top:12px;background:linear-gradient(90deg,#0000,var(--th),#0000)}
+.book .page .inner{padding:10px 26px 22px;align-items:center;gap:10px}
+.book .page h2{font:400 26px/1.15 var(--serif);color:var(--tx)}
+.book .page h2 small{font:italic 400 15px var(--serif);color:var(--tm)}
+.book .page .verdict{font:italic 400 17px/1.4 var(--serif);color:var(--th);margin:0}
+.book .page h3{display:none}
+.book .page .def{font:400 17px/1.45 var(--serif);color:var(--tx);margin:2px 0 0;max-width:34ch}
+.book .page .wrote{font:italic 400 14px/1.4 var(--serif);color:var(--tm);max-width:34ch}
+.book .page .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:4px 0 0}
+.book .page .chips span{font:600 11px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tm);border:1px solid #ffffff22;border-radius:99px;padding:3px 11px}
+.book .page .chips b{color:var(--tx)}
+.book .page .chips .cb{color:var(--th);border-color:color-mix(in srgb,var(--tc) 60%,#000)}
+.book .page .chips .cs{display:inline-flex;align-items:baseline;gap:5px}
+.book .page .chips .cs b{font-weight:600;color:var(--tm)}
+.book .page .meter{width:56px;height:3px;background:#ffffff1c;align-self:center;display:inline-block}
+.book .page .depthgain{font:600 11px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--tm)}
+.book .page .depthgain b{color:var(--tx)}
+.book .page .go{margin-top:8px;background:color-mix(in srgb,var(--tc) 38%,#120e09);color:#fff;border:1px solid var(--th)}
+.book .page .go kbd{color:#fff;background:#0004;border-color:#fff6}
+.book .page .favbtn,.book .page .cardnav,.book .page .cardnav .btn{color:var(--tx);border-color:#ffffff33}
+.book .page .favbtn[aria-pressed="true"]{color:var(--th);border-color:var(--th)}
+.book .page :focus-visible{outline:3px solid #fff;outline-offset:3px;box-shadow:none}
+.book.open .tierbar b{animation:tierin .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes tierin{from{opacity:0;transform:scale(.86);letter-spacing:.2em}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.book.open .tierbar b{animation:none}}
