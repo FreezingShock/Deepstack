@@ -29,7 +29,7 @@
  color:var(--c-parchment-f3e3bd);background:linear-gradient(var(--c-bronze-35),var(--c-oak-3d2916));border:1px solid var(--c-brass);box-shadow:0 2px 4px var(--c-black-alpha-aa),inset 0 1px 0 var(--c-white-alpha-26);transition:filter .3s,box-shadow .3s}
 #tracker li button::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:3px 0 0 3px;background:var(--fc)}
 #tracker li button b{font:600 13px/1.2 var(--serif);color:var(--c-parchment-f3e3bd);letter-spacing:.01em;text-shadow:0 1px 0 var(--c-oak-1b110a)}
-#tracker li button small{font:600 9px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--c-brass-72);font-variant-numeric:tabular-nums;text-shadow:0 1px 0 var(--c-oak-1b110a)}
+#tracker li button small{font:600 9px var(--label);letter-spacing:.12em;text-transform:uppercase;color:var(--c-brass-72);font-variant-numeric:tabular-nums;text-shadow:0 1px 0 var(--c-oak-1b110a)}
 #tracker li:not(.reached) button{background:linear-gradient(var(--c-oak-13),var(--c-oak-1a110a));border-color:var(--c-oak-21);box-shadow:inset 0 0 8px var(--c-black-alpha-aa);cursor:default}
 #tracker li:not(.reached) button b{color:var(--c-bronze-45);text-shadow:none}
 #tracker li:not(.reached) button small{color:var(--c-bronze-34);text-shadow:none}
@@ -41,7 +41,7 @@
 #tracker li button:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:2px}
 body.browsing .center{opacity:0!important;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
 body.browsing .center *{pointer-events:none!important}
-#snapback{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);padding:9px 20px;border-radius:3px;font:600 13px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--c-parchment-f3e3bd);background:linear-gradient(var(--c-oak-5a3f22),var(--c-oak-12));border:1px solid var(--c-brass);box-shadow:0 4px 22px var(--c-black-alpha-aa);z-index:5}
+#snapback{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);padding:9px 20px;border-radius:3px;font:600 13px var(--label);letter-spacing:.08em;text-transform:uppercase;color:var(--c-parchment-f3e3bd);background:linear-gradient(var(--c-oak-5a3f22),var(--c-oak-12));border:1px solid var(--c-brass);box-shadow:0 4px 22px var(--c-black-alpha-aa);z-index:5}
 #snapback:hover{filter:brightness(1.2)}
 #snapback[hidden]{display:none}
 @media(max-height:560px){#tracker{height:min(78vh,330px)}#tracker li button small{display:none}}

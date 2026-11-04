@@ -1,5 +1,5 @@
 /* The Daily book: handwritten ledger pages. Scoped to .dly inside the menu book spreads. */
-.bk-spread.menu .dly{--hand:'Caveat','Segoe Script','Bradley Hand',cursive}
+.bk-spread.menu .dly{--hand:'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive}
 .bk-spread.menu .dly .dly-date{font:600 clamp(22px,2.6vw,28px)/1.15 var(--hand);color:var(--c-oak-4a3a22);margin:2px 0 6px}
 .bk-spread.menu .dly .dly-no{font:600 clamp(30px,4vw,44px)/1 var(--hand);color:var(--bk);transform:rotate(-1.5deg);transform-origin:left;margin:6px 0 10px}
 .bk-spread.menu .dly .dly-line{font:500 23px/1.25 var(--hand);color:var(--ink);margin:6px 0 10px}
