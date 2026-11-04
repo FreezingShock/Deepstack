@@ -1,6 +1,6 @@
 #sets{position:fixed;inset:0;z-index:56;background:radial-gradient(ellipse at center,var(--c-black-alpha-aa),var(--c-black-alpha-ee));display:flex;align-items:center;justify-content:center;padding:12px;pointer-events:auto}
 #sets[hidden]{display:none}
-#sets .panel .meta{font:600 11px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:2px 0 6px}
+#sets .panel .meta{font:600 11px var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:2px 0 6px}
 .setnote{font:italic 15px var(--serif);color:var(--mute);margin:0 0 14px}
 .setlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
 .setcard{border:1px solid var(--c-parchment-alpha-26);border-radius:3px;padding:12px 14px;background:var(--c-black-alpha-33)}
