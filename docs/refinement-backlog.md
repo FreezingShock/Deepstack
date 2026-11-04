@@ -51,7 +51,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: a lighting pass where lit radius shrinks with depth and unlit shelves fade to silhouette; lantern/alcove light cast on nearby books. Files: new `src/ui/lighting.js`; hook in `World`. Done when: Abyss is legible only near lights but the word and alcove stay readable (contrast test on the alcove), cached offscreen light map, reduced motion removes flicker.
 **Touches:** WORLD. **Conflicts:** 1, 3, 33, floors thread.
 
-### 3. Things that live down here
+### 3. [x] Things that live down here (this PR)
 **Serves:** immersion, physical realism.
 **Pitch:** Small ambient life per floor: moths round the lantern, a rat on the Catacombs shelf, a book that slides itself shut, drips, bubbles in the Vault, drifting ash in the Hollow.
 **Brief:** Goal: 2 or 3 ambient creatures/events per floor, each rare and quiet, never over text or panels (respect the particles rules). Files: new `src/ui/ambient.js`. Done when: spawn rates capped, none covers the alcove or HUD (test via exclusion rects), off in reduced motion and low quality mode (35).

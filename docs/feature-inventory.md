@@ -17,6 +17,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Tiers: Pamphlet, Paperback, Hardbound, Folio, Codex, Grimoire, Apocrypha (min 0/14/30/46/62/78/92) | `src/core/tiers.js`, `src/theme/colors.js` | B | Thresholds are shared with the judge calibration. Reveal moment is plain; tier reveal thread in flight. |
 | Combo chain (Folio+, x0.25 per link, cap x2) | `src/core/combo.js` | A | Pure, tested. Surfaced in result card and results screen. |
 | Depth and floors: Stacks 0, Archive 101, Catacombs 252, Sunken Vault 454, Hollow 706, Abyss 1008 ft; 4.2 ft per row | `src/core/floors.js`, `src/ui/floorArt.js`, `#floorBanner` | B | Palette, shelf dressing, lamp colour, decay per floor. Floors thread (#81) in flight. |
+| Ambient creatures: spider, silverfish, rat, drip, fish, bubbles, eyes, ash, tendril (2-3 per floor, max 2 live, 9-24 s apart) | `src/ui/ambient.js`, hook in `main.js` `frame` | B | Keep off the alcove, top bar and covering pages; off in reduced motion and data-saver. Drawn as small canvas shapes, not yet screenshot-reviewed on a device. |
 | Collectible sets (6 themed sets, depth bonus) | `src/sets/*` | B | Six sets of six words; only works with the 38 curated words reliably. No set-complete celebration beyond a bonus line. |
 | Recap and replay of a run | `src/core/recap.js`, `replay.js`, `src/ui/results.js` | B | Replay reuses the smooth camera glide (#79). |
 
