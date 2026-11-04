@@ -205,7 +205,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## E. Home and onboarding
 
-### 27. Home as one cohesive scene
+### 27. [x] Home as one cohesive scene (PR pending)
 **Serves:** overhaul, integrated, spacing.
 **Pitch:** The home screen is one lit reading room: title, tagline, the Daily book on top of Unlimited, stacks at the bottom, shelves behind, nothing floating.
 **Brief:** Goal: composition pass defining a layout grid (title zone, plaque zone, stacks zone) with fixed rhythm tokens for every viewport height from 560 to 1000 px. Files: `home.css`, new `homeLayout.js`. Done when: snapshots at 5 heights, no overlap, stacks sit on the ledge.
@@ -485,6 +485,17 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** On phones the share note and stat tiles are hidden to fit one view. Bring the note back as a pull-up slip from the Copy button.
 **Brief:** Goal: a tap on Copy result lifts the torn note over the list, then drops it. Files: `src/ui/results.js`, `results.css`. Done when: no scroll at 375x667 and the note shows complete.
 **Touches:** results only. **Conflicts:** none.
+
+### 94. Home shelves reach the ledge
+**Pitch:** The stacks stand on the ledge, and the walls either side of the room carry the same shelves so the whole home reads as one lit room.
+**Brief:** Goal: expose the niche floor y as a CSS var from `setNicheVars` and let the stacks drop onto it exactly at every height; add a soft lamp pool under the plaque. Files: `homeLayout.js`, `home.css`. Done when: `scripts/home-heights.mjs` also checks against the canvas ledge.
+**Touches:** HOME, MAIN hook. **Conflicts:** 7.
+
+### 95. Home that fits any phone
+**Pitch:** Phones in landscape and small heights get a dedicated tight room instead of scrolling.
+**Brief:** Goal: tiers for height under 340 px and landscape, with the stacks beside the plaque. Files: `homeLayout.js`, `home.css`. Done when: no scroll at 320x568 and 667x375.
+**Touches:** HOME. **Conflicts:** none.
+
 
 ## Suggested batches
 - **Overhaul wave 1 (his favourite kind):** 7, 8, 11, 12, 16 (book objects, opening, shelf bays, almanac, reveal card). Run 7 first; 8 and 11 after.

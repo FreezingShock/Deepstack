@@ -84,9 +84,7 @@
  .descend{min-width:min(100%,280px);padding:14px 28px}
  .d-t{font-size:22px}
 }
-@media(max-height:900px){.home .how .step span:last-child{display:none}.home .how{margin-bottom:12px}}
-@media(max-height:800px){.home .title{font-size:clamp(36px,6vw,56px)}}
-@media(max-width:700px){.home .stats{display:none}.home .how .step{white-space:nowrap}.home .next{margin-top:6px}}
+@media(max-width:700px){.home .how .step{white-space:nowrap}}
 /* transition into the game */
 .home.descending{pointer-events:none;animation:hsink var(--m-page) var(--e-accelerate) forwards}
 @keyframes hsink{to{transform:translateY(60px) scale(.94);opacity:0;filter:blur(3px)}}
@@ -95,7 +93,6 @@
 .descend-veil.lift{clip-path:none;animation:vlift var(--m-page) var(--e-cruise) forwards}
 @keyframes vlift{to{opacity:0}}
 @media(prefers-reduced-motion:reduce){.descend,.d-flame,.d-chev{animation:none}.hbook,.hb-spine{transition:none}.hbook:hover,.hbook:focus-visible{transform:none}.hbook.opening{transform:none}.bk-spread{transition:none}.descend-veil{display:none}}
-@media(max-height:900px){.home .stats{display:none}}
 
 /* ---- the opened book: a generic, large two-page spread (hosts any menu book) ----
    Stages: .go flies the closed book to the middle (cover showing), .open swings the cover
@@ -256,3 +253,26 @@
 .sheet.home .title{margin-bottom:clamp(4px,1vh,10px)}
 .sheet.home .tagline{max-width:none;font-size:clamp(17px,2.4vw,21px);letter-spacing:.02em;margin-bottom:clamp(14px,2.4vh,24px)}
 .sheet.home .how{margin-bottom:clamp(8px,1.5vh,16px)}
+
+/* ---- one lit reading room: three zones on a fixed rhythm (homeLayout.js sets data-room and --hz-g / --hz-book) ----
+   title zone at the top, plaque zone centred in what is left, stacks zone standing on the ledge. */
+.center>.sheet.home{display:grid;grid-template-rows:auto minmax(0,1fr) auto;justify-items:center;width:min(100%,640px);min-height:100%;margin:0 auto;padding:0}
+.home .hz{display:flex;flex-direction:column;align-items:center;width:100%;min-height:0}
+.home .how .step span:last-child{display:none}
+.home .hz-title{gap:0;padding-top:calc(var(--hz-g,16px)*.5)}
+.home .hz-plaque{justify-content:center;gap:var(--hz-g,16px)}
+.home .hz-plaque .row,.home .hz-plaque .next{margin:0}
+.home .hz-plaque .stats{margin:0}
+.home .hz-title .title{margin:0 0 calc(var(--hz-g,16px)*.2)}
+.home .hz-title .tagline{margin:0 auto var(--hz-g,16px)}
+.home .hz-title .how{margin:0}
+.home .hsecs{flex-direction:row;justify-content:center;margin:0;padding:var(--hz-g,16px) 0 2px;align-items:flex-end}
+.home .hbook{height:var(--hz-book,38px)}
+[data-room=snug] .home .how,[data-room=tight] .home .how{display:none}
+[data-room=snug] .home .stats,[data-room=tight] .home .stats,[data-room=cozy] .home .stats{display:none}
+[data-room=tight] .home .title{font-size:40px}
+[data-room=tight] .home .tagline,[data-room=snug] .home .tagline{font-size:16px}
+[data-room=tight] .home .hb-t,[data-room=snug] .home .hb-t{font-size:14px}
+[data-room=tight] .home .descend{padding-top:9px;padding-bottom:9px}
+[data-room=tight] .home .d-t,[data-room=snug] .home .d-t{font-size:22px}
+@media(max-width:700px){.home .hz-plaque .stats{display:none}.home .hbook{height:min(var(--hz-book,38px),34px)}}
