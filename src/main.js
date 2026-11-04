@@ -470,7 +470,7 @@ cvEl.addEventListener('pointermove',e=>{if(ui.home.hidden&&ui.final.hidden||Worl
  if(h){showTip(`${h.b.w} · ${TIERS[h.b.tier].name} · ${h.b.score}`,e.clientX,e.clientY);cvEl.style.cursor='pointer';}else{hideTip();cvEl.style.cursor='';}});
 cvEl.addEventListener('click',e=>{if(World.stActive||World.restRow!==0||!(ui.stage.hidden))return;const h=World.hits().find(h=>e.clientX>=h.x&&e.clientX<=h.x+h.w&&e.clientY>=h.y&&e.clientY<=h.y+h.h);if(h){hideTip();openCard(h.b,{fresh:false});}});
 /* lore books: thick background books reveal a word; never one from the current run or today's daily */
-{let dk='',dw=[];initLore({world:World,canvas:cvEl,pool:WORDS,hash:hashStr,enabled:()=>ui.stage.hidden&&!World.busy,
+{let dk='',dw=[];initLore({world:World,canvas:cvEl,pool:WORDS,hash:hashStr,enabled:()=>!World.busy,
  exclude:()=>{if(dk!==utc()){dk=utc();dw=dailyWords(dk,7).map(w=>w.w);}return run?[...dw,...run.words.map(w=>w.w)]:dw;}});}
 
 /* ---------- judge status (model download) ---------- */
