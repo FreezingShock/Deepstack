@@ -13,6 +13,7 @@ import {homeHTML} from './ui/home.js';
 import {initA11y} from './ui/a11y.js';
 import {initTransitions} from './ui/transitions.js';
 import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
+import {initBrowse} from './ui/browse.js';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -96,7 +97,7 @@ if(document.fonts&&document.fonts.load)Promise.all(['16px "IM Fell English"','16
 const World=(()=>{
  const cv=$('#world');let ctx=cv.getContext('2d');const ctx0=ctx;let building=false;const bmpPool=[];
  let W=0,H=0,DPR=1,RH=150,BM=20,rows=new Map(),taken=new Set(),cam=0,restRow=0,st=null,dust=[],vt=0,last=performance.now();
- let shelf=[],hits=[],onDepth=null,gaugeCb=null,niches=new Map();
+ let shelf=[],hits=[],onDepth=null,gaugeCb=null,niches=new Map(),boff=0,btgt=0,wasB=false,browseCb=null;
  const ZS=[0,.14,.3,.46,.62,.78,.92];
  const restCam=r=>r*RH-(H-RH-BM);
  const abn=r=>Math.max(clamp(r/190,0,1),floorAtRow(r).decay);
@@ -254,9 +255,10 @@ const World=(()=>{
    if(st.phase==='down'){const u=Math.min(1,st.t/st.dur);st.t+=dt*(st.skip?6:1);camNow=st.cam0+(st.cam1-st.cam0)*ease(u);st.prog=u;if(u>=1){st.phase='settle';st.pt=0;Sfx.thud();}}
    if(st.phase==='settle'){st.pt+=dt*(st.skip?6:1);camNow=st.cam1;st.prog=1;settle=Math.min(1,st.pt/.3);if(settle>=1){st.phase='pull';st.pt=0;Sfx.flip();}}
    if(st.phase==='pull'||st.phase==='hold'){camNow=st.cam1;settle=1;if(st.phase==='pull')st.pt+=dt*(st.skip?6:1);pull=Math.min(1,st.pt/.45);if(st.phase==='pull'&&pull>=1){st.phase='hold';const r=st.res;st.res=null;r&&r();}}
-   cam=camNow;
-  }else if(rest){const u=Math.min(1,(now-rest.t0)/rest.ms),e=ease(u);cam=rest.c0+(rest.c1-rest.c0)*e;if(u>=1){const f=rest.done;rest=null;f&&f();}camNow=cam;}
-  else{camNow=cam+(RM?0:Math.sin(vt*.5)*1.5);}
+   cam=camNow;boff=btgt=0;
+  }else if(rest){const u=Math.min(1,(now-rest.t0)/rest.ms),e=ease(u);cam=rest.c0+(rest.c1-rest.c0)*e;if(u>=1){const f=rest.done;rest=null;f&&f();}camNow=cam;boff=btgt=0;}
+  else{boff=RM||Math.abs(btgt-boff)<.5?btgt:boff+(btgt-boff)*Math.min(1,rdt*14);camNow=cam+boff+(RM||boff?0:Math.sin(vt*.5)*1.5);}
+  {const b=btgt<-4;if(b!==wasB){wasB=b;browseCb&&browseCb(b);}}
   const rowB=(camNow+H-RH-BM)/RH,atm=atmosphereAt(Math.max(0,rowB)),a=Math.max(clamp(rowB/190,0,1),atm.decay);
   if(onDepth)onDepth(Math.max(0,Math.round(rowB*FT)));Sfx.setDepth(Math.max(0,rowB*FT));
   ctx.globalAlpha=1;ctx.fillStyle='#0a0706';ctx.fillRect(0,0,W,H);
@@ -306,6 +308,11 @@ const World=(()=>{
   reset(){rows.clear();taken.clear();niches.clear();restRow=0;st=null;rest=null;cam=restCam(0);},
   openNiche(r,o={}){const e=niches.get(r);if(e){e.label=o.label||e.label;e.books=o.books||e.books;}else niches.set(r,{t0:performance.now(),label:o.label||'',books:o.books||[]});},
   onDepth(f){onDepth=f;},onGauge(f){gaugeCb=f;},
+  // look back up the descent: the camera offsets while idle and snaps home; never while a descent or glide runs
+  get canBrowse(){return !st&&!rest&&restRow>0;},get browsing(){return btgt<-4;},onBrowse(f){browseCb=f;},
+  browse(d){if(!this.canBrowse)return;btgt=clamp(btgt+d,restCam(0)-cam,0);},
+  browseToFt(ft){if(!this.canBrowse)return;btgt=clamp(restCam(Math.min(restRow,ft/FT))-H*.35-cam,restCam(0)-cam,0);},
+  snap(){btgt=0;},
   descend({rows:n,tier,score,word}){return new Promise(res=>{
    const a=restRow,b=a+n;st={a,row:b,tier,score,word,seed:hashStr(word)&0xffff,cam0:restCam(a),cam1:restCam(b),dur:RM?.5:1.5+n*.075,t:0,phase:'down',pt:0,skip:false,prog:0,res};cam=st.cam0;Sfx.whoosh(st.dur*.9);});},
   skipDown(){if(st)st.skip=true;},
@@ -329,7 +336,8 @@ function announceFloor(f){
  floorBanner.innerHTML=`<small>Floor ${['I','II','III','IV','V','VI','VII','VIII'][f.id]} \u00b7 ${floorStartFt(f)} ft</small><b>${esc(f.name)}</b><i>${esc(f.sub)}</i>`;
  floorBanner.style.setProperty('--fc',`rgb(${f.lamp.join(',')})`);floorBanner.style.setProperty('--fcd',`rgba(${f.lamp.join(',')},.32)`);floorBanner.dataset.motif=f.motif;floorBanner.classList.remove('on');void floorBanner.offsetWidth;floorBanner.classList.add('on');
  clearTimeout(bannerT);bannerT=setTimeout(()=>floorBanner.classList.remove('on'),RM?2500:4200);}
-World.onDepth(v=>{const e=$('#dnum');if(e.textContent!==String(v))e.textContent=v;
+const browse=initBrowse({world:World,floors:FLOORS,startOf:floorStartFt,ft:FT,rm:RM});
+World.onDepth(v=>{browse.update(v);const e=$('#dnum');if(e.textContent!==String(v))e.textContent=v;
  const f=floorAtFt(v);$('#dfloor').textContent=f.id?f.name:'';
  if(run&&f.id>run.floor){run.floor=f.id;S.bestFloor=Math.max(S.bestFloor,f.id);announceFloor(f);}});
 ui.gauge.innerHTML=TIERS.map(t=>`<div data-t="${t.id}" style="color:${t.spine}"><span>${t.name}</span><i></i></div>`).join('');

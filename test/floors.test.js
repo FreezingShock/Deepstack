@@ -1,6 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt} from '../src/core/floors.js';
+import {FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,floorRangeFt,atmosphereAt} from '../src/core/floors.js';
+import {comboMultiplier} from '../src/core/combo.js';
 
 test('floors are ordered and start at the surface',()=>{
  assert.equal(FLOORS[0].row,0);
@@ -14,8 +15,21 @@ test('row and feet lookups agree at every boundary',()=>{
  }
  assert.equal(floorAtRow(1e6).id,FLOORS.length-1);
 });
-test('a good daily run (about 300 ft) can reach the last floor',()=>{
- assert.ok(floorStartFt(FLOORS[FLOORS.length-1])<=300,String(FT));
+test('deep floors are earned: typical runs stop short, only a sustained chain reaches the Abyss',()=>{
+ const rowsFor=score=>Math.max(3,Math.round(3+.32*score));
+ const run=(score,chain)=>{let rows=0;for(let i=1;i<=7;i++)rows+=Math.round(rowsFor(score)*(chain?comboMultiplier(i):1));return Math.round(rows*FT);};
+ const abyss=floorStartFt(FLOORS[FLOORS.length-1]);
+ assert.ok(run(50,false)<floorStartFt(FLOORS[4]),'an average run stays above the Hollow');
+ assert.ok(run(75,false)<abyss,'a strong run without a chain does not reach the Abyss');
+ assert.ok(run(75,true)>=abyss,'a sustained Folio+ chain does');
+});
+test('floors are well spaced: gaps widen and none is squeezed',()=>{
+ const starts=FLOORS.map(floorStartFt);
+ for(let i=1;i<starts.length;i++)assert.ok(starts[i]-starts[i-1]>=100,`gap before floor ${i}`);
+ assert.ok(starts[1]>=90);
+});
+test('floorRangeFt gives contiguous ranges and an open last floor',()=>{
+ for(const f of FLOORS){const [a,b]=floorRangeFt(f);assert.equal(a,floorStartFt(f));if(f.id<FLOORS.length-1)assert.equal(b,floorStartFt(FLOORS[f.id+1]));else assert.equal(b,null);}
 });
 test('atmosphere blends across a boundary and is exact deep inside a floor',()=>{
  const f=FLOORS[2];

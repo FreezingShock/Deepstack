@@ -24,4 +24,4 @@ Saves live in `localStorage` under `deepstack.v1`. Fonts load from Google Fonts 
 
 ## Floors
 
-The descent passes milestones that change the library: The Stacks (0 ft), The Archive (63 ft), The Catacombs (151 ft) and The Sunken Vault (260 ft). Each has its own palette, shelf dressing and lamp colour, and a banner announces the crossing. Edit `src/core/floors.js` to retune depths or looks; decay (cobwebs, missing and tilted books) never drops below a floor's `decay` value.
+The descent passes milestones that change the library: The Stacks (0 ft), The Archive (101 ft), The Catacombs (252 ft), The Sunken Vault (454 ft), The Hollow (706 ft) and The Abyss (1008 ft). Each has its own palette, shelf dressing and lamp colour, and a banner announces the crossing. Edit `src/core/floors.js` to retune depths or looks; decay (cobwebs, missing and tilted books) never drops below a floor's `decay` value.
