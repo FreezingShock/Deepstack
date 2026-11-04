@@ -94,7 +94,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: a decorations helper that adds hand-drawn dividers/underlines (SVG stroke-draw animation) to page headings across Shelf, Sets, Stats and Daily. Files: new `src/ui/ink.js` + `ink.css`; light edits in BOOK files. Done when: stroke-draw respects reduced motion, text contrast unchanged, one headings test.
 **Touches:** new files, BOOK. **Conflicts:** 8, 10.
 
-### 10. Tabs and filters as handwriting (finish it) [x] (PR pending)
+### 10. Tabs and filters as handwriting (finish it) [x] (#127)
 **Serves:** handwritten, pen underline.
 **Pitch:** Every filter, tab and toggle in every book is a written word with a pen-drawn underline that animates between choices; the search field is handwriting and only repaints results.
 **Brief:** Goal: audit all remaining pill/button-style controls inside book pages and convert them; keep focus rings visible. Files: BOOK css/js. Done when: no `.bbtn` or pill inside `.bookpage` (css test), keyboard focus visible, typing in search does not rebuild the page (existing test extended).
@@ -106,13 +106,13 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: add bays and sort modes beyond tier; stack height reflects count; selecting a stack lifts the top book to a detail card above the book (never behind). Files: new `src/ui/shelfBays.js`, `browse.js` hooks. Done when: 200-book shelf stays under 16 ms to render a page, duplicates collapse with a handwritten x N, 14-letter titles fit.
 **Touches:** BOOK. **Conflicts:** 7, 10.
 
-### 12. [x] Stats as an almanac (PR pending)
+### 12. [x] Stats as an almanac (#127)
 **Serves:** handwritten, sectioned, multiple pages.
 **Pitch:** Stats become hand-drawn charts: Lexicon rising over runs, a tier histogram drawn as stacked book spines, depth per floor as a cross-section, streak ink-tally marks.
 **Brief:** Goal: three to four stats pages from existing saves (`S.rating.hist`, dailies, shelf). Files: new `src/ui/statsPages.js`. Done when: empty states are written ("Nothing shelved yet."), 60-point history tested, tally marks match streak, phone layout verified.
 **Touches:** BOOK. **Conflicts:** 10.
 
-### 13. [x] Daily book calendar and margins (PR pending)
+### 13. [x] Daily book calendar and margins (#127)
 **Serves:** Daily book, handwritten.
 **Pitch:** The Daily book gains a month calendar page (circled days you played, tier ink colours), a "this week" spread, and a margin note with your streak.
 **Brief:** Goal: calendar page from existing saves, no new fields. Files: `dailyBook.js`, new `dailyCalendar.js`. Done when: UTC day-key edge test, Daily No. numbering shown, handwriting font loads (smoke test checks the face is in the document).
@@ -162,7 +162,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: restyle the input only, keep behaviour. Files: new `src/ui/inkInput.js` + css. Done when: IME and mobile keyboard work, long answers scroll, typing sound still rate-limited.
 **Touches:** run screen. **Conflicts:** run screen thread, a11y thread.
 
-### 21. [x] Skipped and cleared books in the ledge (PR pending)
+### 21. [x] Skipped and cleared books in the ledge (#127)
 **Serves:** integrated.
 **Pitch:** Skipped words leave a dashed slot, close calls get a ribbon, a streak of Folios gets a chain link, all visible on the alcove ledge.
 **Brief:** Goal: richer ledge states using existing run data. Files: `ledge.js`. Done when: states tested, books fit at 375 px.
@@ -170,14 +170,14 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## D. Motion, sound and feel (smooth, physical)
 
-### 22. [x] Motion language (PR pending)
+### 22. [x] Motion language (#127)
 **Serves:** smooth motion.
 **Pitch:** One set of durations and easings (accelerate, cruise, settle) for every move: page flips, book opens, camera glides, modal enters.
 **Brief:** Goal: a `motion.js` of named presets used by new code, with an audit of existing hard-coded durations. Files: new `src/ui/motion.js`, tests. Done when: preset table documented, no animation over 1.2 s except the long glides (clamped 1.2-2.5 s), reduced-motion branch in one place.
 **Done:** `src/ui/motion.js` + `motion.css` (tokens `--m-*` durations, `--e-*` easings), 112 CSS declarations migrated, `test/motion.test.js` bans raw easings. Presets: press 80, quick 160, base 240, smooth 360, page 560, linger 1000 ms; accelerate / cruise / settle / spring / press / ink; glides stay in `camMotion.js` (1.2-2.5 s). Exempt: infinite ambient loops, keyframe-timed banners, `animation-duration` overrides. Reduced motion collapses all tokens in `motion.css`.
 **Touches:** new files. **Conflicts:** transitions thread.
 
-### 23. Typing, page and seal sounds [x] (PR pending)
+### 23. Typing, page and seal sounds [x] (#127)
 **Serves:** tactile, immersive.
 **Pitch:** Quill scratch on typing, paper on page flips, a wax-seal press on submit, a heavy thud when a book lands on the ledge.
 **Brief:** Goal: new synthesised sounds with a fake-AudioContext test. Files: new `src/sound/*.js`, one hook in FEEL. Done when: mute and volume respected, rate limits, `test/sfx.test.js` covers routing.
@@ -235,7 +235,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## F. Mechanics and progression
 
-### 32. [x] Chain feedback you can feel (PR pending)
+### 32. [x] Chain feedback you can feel (#127)
 **Serves:** rarity, tactile.
 **Pitch:** A combo is visible in the world: a brass chain climbs the ledge, each Folio+ adds a link, a break clunks and the chain falls.
 **Brief:** Goal: surface the existing combo chain (cap x2) with art and sound, no rule changes. Files: new `src/ui/chain.js`. Done when: link count matches `applyCombo`, break animation, reduced motion.
