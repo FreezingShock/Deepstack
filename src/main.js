@@ -1,5 +1,6 @@
 import {hintLadder,rowsAfterHints} from './core/hints.js';
 import {applyCombo,comboLabel,comboNeeds,comboMultiplier} from './core/combo.js';
+import './theme/tokens.css';
 import './styles.css';
 import {recordBook as recordSetBook,backfill as backfillSets} from './sets/sets.js';
 import {setsBook,toastSetsDone} from './sets/ui.js';
