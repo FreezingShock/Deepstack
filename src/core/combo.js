@@ -16,6 +16,7 @@ export function comboMultiplier(chain) {
 
 /** Apply a combo to one answer. Returns the new chain, multiplier, and rows (after hints). */
 export function applyCombo(chain, tier, rows, skipped = false) {
+  chain = chain | 0; // a run that forgot to start a chain must not turn depth into NaN
   if (!extendsCombo(tier, skipped)) return {chain: 0, mult: 1, rows, bonus: 0, broke: chain >= 2};
   const next = chain + 1, mult = comboMultiplier(next), total = Math.round(rows * mult);
   return {chain: next, mult, rows: total, bonus: total - rows, broke: false};

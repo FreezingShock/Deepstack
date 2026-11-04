@@ -158,6 +158,32 @@ await step('resume daily after leaving mid-run', async () => {
   await page.locator('#stage .wlabel', {hasText: 'Word 3'}).waitFor({state: 'visible', timeout: T}).catch(() => fail('Daily did not resume at word 3'));
 });
 
+// 3. Unlimited: a well-answered first word must descend to a finite depth (a missing combo field once made it NaN)
+await step('unlimited descends to a finite depth', async () => {
+  await realClick(page, '#mark', 'Deepstack home mark');
+  await realClick(page, '#bUnl', 'Unlimited book');
+  await realClick(page, '[role=dialog].intro button:has-text("Start Unlimited")', 'Start Unlimited');
+  await page.locator('#stage .word').waitFor({state: 'visible', timeout: T}).catch(() => { fail('Unlimited: no word appeared'); throw new Error('stop'); });
+  const word = await page.locator('#stage .word').getAttribute('aria-label');
+  const data = JSON.parse(await readFile(join(root, 'data/words.json'), 'utf8'));
+  const entry = (data.words || []).find(w => w.w === word);
+  const answer = entry ? entry.def : 'a thing that is the opposite of what you would expect to find here';
+  await realClick(page, '#ans', 'answer box');
+  await page.keyboard.type(answer.slice(0, 280));
+  await page.keyboard.press('Enter');
+  const card = page.locator('#cardlayer:not([hidden])');
+  for (let i = 0; i < 40 && !(await card.count()); i++) {
+    const d = await page.locator('#dnum').innerText().catch(() => '0');
+    if (!/^\d+$/.test(d.replace(/[,\s]/g, ''))) fail(`Unlimited: depth readout is "${d}"`);
+    await page.keyboard.press('Space'); await page.waitForTimeout(250);
+  }
+  if (!(await card.count())) { fail('Unlimited: no result card after answering'); throw new Error('stop'); }
+  const depth = await page.locator('#dnum').innerText();
+  if (!/^\d+$/.test(depth.replace(/[,\s]/g, ''))) fail(`Unlimited: depth after descent is "${depth}"`);
+  const filled = await page.evaluate(() => JSON.parse(localStorage.getItem('deepstack.v1')).shelf.every(b => Number.isFinite(b.rows) && b.rows > 0));
+  if (!filled) fail('Unlimited: saved book has a non-finite row count');
+});
+
 await browser.close(); server.close();
 if (problems.length) { console.error('smoke: FAILED\n - ' + [...new Set(problems)].join('\n - ')); process.exit(1); }
 console.log('smoke: ok');

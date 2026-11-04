@@ -13,6 +13,8 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - Home screen: the recent-books row under the alcove is gone. Scroll up (or tap the "↑ The attic" cue at the top) to see recent guesses; the Shelf still lists every word. Say if you would rather reach the attic some other way. (attic thread)
 - Pull `main` and look at the held book (Descend, any run) and the alcove numeral plaque: does the stand and the bolts read right at your screen size? (PR 137, backlog 100/101)
 
+- Pull `main` and play an Unlimited run, answering well enough for a Folio or better: depth should now count up (it was NaN with an empty world). (hotfix, Unlimited descent)
+
 ## Standard preamble (add to every brief)
 - Serves nate's patterns: overhaul not tweak, everything is a book/shelf/page, handwritten and sectioned, words fully readable, dark and mysterious, rarity is the hero, integrated not bolted on, physical and smooth motion.
 - New code in new files under `src/`, one-line hooks in `main.js`/`styles.css`. Colors from `src/theme/colors.js` tokens only (hex ratchet tests).
@@ -810,3 +812,9 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** The letter ends on a curio that is not on any shelf you can find by looking; finishing the letter should lead somewhere.
 **Brief:** Goal: a reward for the 30th find (seeded hidden place). Files: `curioLog.js`. Done when: tested, no storage shape change.
 **Touches:** new files. **Conflicts:** none.
+
+### K4. Smoke every mode with a strong answer
+**Serves:** health.
+**Pitch:** The smoke test only plays Daily and now one Unlimited word; Practice and a full seven-word run to the Finis screen are untested.
+**Brief:** Goal: extend `scripts/smoke.mjs` to finish a whole run in each mode and check the final screen. Done when: CI stays under its current time.
+**Touches:** `scripts/smoke.mjs`. **Conflicts:** none.
