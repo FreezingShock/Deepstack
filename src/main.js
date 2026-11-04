@@ -2,14 +2,14 @@ import {hintLadder,rowsAfterHints} from './core/hints.js';
 import {applyCombo,comboLabel,comboNeeds,comboMultiplier} from './core/combo.js';
 import './styles.css';
 import {recordBook as recordSetBook,backfill as backfillSets} from './sets/sets.js';
-import {openSets,toastSetsDone,setsOpen,closeSets} from './sets/ui.js';
+import {setsBook,toastSetsDone} from './sets/ui.js';
 import {recapHTML,bindRecap} from './ui/results.js';
 import './ui/results.css';
 import './ui/card.css';
 import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
-import {homeHTML,bookify} from './ui/home.js';
+import {homeHTML,bookify,BOOK_PAGES} from './ui/home.js';
 import './ui/home.css';
 import {descendInto} from './ui/descend.js';
 import {initA11y} from './ui/a11y.js';
@@ -20,7 +20,7 @@ import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
 import {initBrowse} from './ui/browse.js';
 import {isLore,drawLoreMark,hitLoreBook,initLore} from './ui/lore.js';
 import './ui/lore.css';
-import {openShelfBook,openStatsBook} from './ui/bookMenus.js';
+import {shelfBook,statsBook} from './ui/bookMenus.js';
 import './ui/bookpages.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
 import './ui/ledge.css';
@@ -420,8 +420,7 @@ function showHome(){
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
- $('#bSets').onclick=()=>openSets(S);
- $('#bStats').onclick=openStats;$('#bAll').onclick=()=>openAll();
+ 
  bookify(ui.home);
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
@@ -583,13 +582,15 @@ function closeCard(){const L=$('#cardlayer');const o=cardOpts;cardOpts=null;L.cl
 addEventListener('keydown',e=>{
  if(!$('#cardlayer').hidden&&cardOpts&&cardOpts.nav&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){const b=$(e.key==='ArrowLeft'?'#cprev':'#cnext');if(b&&!b.disabled){e.preventDefault();b.click();}return;}
  if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'){e.preventDefault();closeCard();return;}
- if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(setsOpen())closeSets();else if(!$('#all').hidden)$('#all').hidden=true;else if(!$('#stats').hidden)$('#stats').hidden=true;else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
+ if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
  if(World.descending&&(e.key===' '||e.key==='Escape'||e.key==='Enter')){e.preventDefault();World.skipDown();}
 });
 
-/* ---------- shelf and stats: pages of an open book (src/ui/bookMenus.js) ---------- */
-const openAll=()=>openShelfBook($('#all'),{S,core,TIERS,spineImg,openCard,showTip,hideTip,rh:Math.round(clamp(innerHeight*.14,84,112))});
-const openStats=()=>openStatsBook($('#stats'),{S,st:computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt});
+/* ---------- shelf, sets and stats: pages of the menu books (src/ui/bookMenus.js, home.js BOOK_PAGES) ---------- */
+const bookOpenCard=()=>!$('#cardlayer').hidden;
+BOOK_PAGES.bAll=shelfBook({S,core,TIERS,spineImg,openCard,showTip,hideTip,rh:76,keepOnEsc:bookOpenCard});
+BOOK_PAGES.bSets={...setsBook(S),keepOnEsc:bookOpenCard};
+BOOK_PAGES.bStats={...statsBook({S,st:()=>computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt}),keepOnEsc:bookOpenCard};
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 
 applySound();

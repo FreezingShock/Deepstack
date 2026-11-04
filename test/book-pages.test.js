@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {chunk,pageLabel,turnTo} from '../src/ui/bookpages.js';
+import {chunk,toSpreads} from '../src/ui/bookpages.js';
 import {shelfPages,statsLeaves} from '../src/ui/bookMenus.js';
 import {FLOORS,floorStartFt} from '../src/core/floors.js';
 
@@ -8,16 +8,9 @@ test('chunk always returns at least one page',()=>{
  assert.deepEqual(chunk([],3),[[]]);
  assert.deepEqual(chunk([1,2,3,4,5],2),[[1,2],[3,4],[5]]);
 });
-test('page label and turning snap to spreads',()=>{
- assert.equal(pageLabel(0,6,false),'Pages 1–2 of 6');
- assert.equal(pageLabel(4,5,false),'Page 5 of 5');
- assert.equal(pageLabel(2,6,true),'Page 3 of 6');
- assert.equal(turnTo(0,6,false,1),2);
- assert.equal(turnTo(4,6,false,1),4);
- assert.equal(turnTo(2,6,false,-1),0);
- assert.equal(turnTo(0,6,false,-1),0);
- assert.equal(turnTo(1,6,true,1),2);
- assert.equal(turnTo(5,6,true,1),5);
+test('toSpreads pairs leaves and pads an odd last page',()=>{
+ assert.deepEqual(toSpreads(['a','b','c']),[{l:'a',r:'b'},{l:'c',r:''}]);
+ assert.equal(toSpreads([]).length,1);
 });
 test('shelf pages repeat a group heading when it spills over',()=>{
  const items=Array.from({length:5},(_,i)=>({b:{w:'w'+i},i}));

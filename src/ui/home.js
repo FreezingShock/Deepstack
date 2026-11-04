@@ -76,8 +76,8 @@ export function introSpreads(intro){
    Returns {el, close}. */
 export const BOOK_FLY_MS=600, BOOK_HOLD_MS=300, BOOK_SWING_MS=1000;
 export const BOOK_OPEN_MS=BOOK_FLY_MS+BOOK_HOLD_MS+BOOK_SWING_MS;
-export function openBook({from,colors={},title='',spreads=null,label='',onClose=()=>{}}){
- const sp=document.createElement('div');sp.className='bk-spread';sp.setAttribute('aria-hidden','true');
+export function openBook({from,colors={},title='',spreads=null,label='',cls='',keepOnEsc=null,onClose=()=>{}}){
+ const sp=document.createElement('div');sp.className='bk-spread'+(cls?' '+cls:'');sp.setAttribute('aria-hidden','true');
  const r=from||{left:innerWidth/2,top:innerHeight/2,width:0,height:0};
  sp.style.cssText=`--bk:${colors.bk};--bk2:${colors.bk2};--bk-gild:${colors.gild};--tex:${colors.tex||'none'};--fx:${r.left+r.width/2-innerWidth/2}px;--fy:${r.top+r.height/2-innerHeight/2}px`;
  sp.innerHTML='<div class="bs-board l"></div><div class="bs-board r"></div><div class="bs-page l"></div><div class="bs-page r"></div>'+
@@ -87,7 +87,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',onClose=
  requestAnimationFrame(()=>requestAnimationFrame(()=>sp.classList.add('go')));
  const timers=[];let idx=0,closed=false;
  const t=(fn,ms)=>timers.push(setTimeout(fn,ms));
- const close=()=>{if(closed)return;closed=true;timers.forEach(clearTimeout);document.removeEventListener('keydown',key);sp.classList.add('out');setTimeout(()=>{sp.remove();onClose();},400);};
+ const close=()=>{if(closed)return;closed=true;timers.forEach(clearTimeout);document.removeEventListener('keydown',key,true);sp.classList.add('out');setTimeout(()=>{sp.remove();onClose();},400);};
  const paint=()=>{
   const sd=spreads[idx],L=sp.querySelector('.bs-page.l'),R=sp.querySelector('.bs-page.r'),n=spreads.length;
   const foot=(side)=>{const num=idx*2+(side==='l'?1:2);const nav=n>1?(side==='l'?`<button class="bs-turn prev" ${idx?'':'disabled'} aria-label="Previous pages">‹</button>`:`<button class="bs-turn next" ${idx<n-1?'':'disabled'} aria-label="Next pages">›</button>`):'';
@@ -98,14 +98,15 @@ export function openBook({from,colors={},title='',spreads=null,label='',onClose=
   if(api.onPaint)api.onPaint(sp,idx);
  };
  const turn=d=>{const j=idx+d;if(j<0||j>=spreads.length)return;sp.classList.add('turning');setTimeout(()=>{idx=j;paint();sp.classList.remove('turning');},160);};
- const key=ev=>{if(ev.key==='Escape')close();else if(ev.key==='ArrowRight')turn(1);else if(ev.key==='ArrowLeft')turn(-1);};
- const api={el:sp,close,onPaint:null,get index(){return idx;}};
+ const key=ev=>{if(ev.key==='Escape'){if(!(keepOnEsc&&keepOnEsc()))close();return;}if(ev.target.closest&&ev.target.closest('input,textarea,select'))return;if(ev.key==='ArrowRight')turn(1);else if(ev.key==='ArrowLeft')turn(-1);};
+ /* swap the pages in place (filters, search); stays on spread i */
+ const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0){spreads=s;idx=Math.max(0,Math.min(i,s.length-1));paint();}};
  t(()=>sp.classList.add('open'),BOOK_FLY_MS+BOOK_HOLD_MS);
  if(spreads&&spreads.length){
   t(()=>{
    paint();sp.classList.add('intro');sp.setAttribute('role','dialog');sp.setAttribute('aria-label',label||title);sp.removeAttribute('aria-hidden');
-   document.addEventListener('keydown',key);
-   const f=sp.querySelector('.bs-start')||sp.querySelector('button');if(f)f.focus({preventScroll:true});
+   document.addEventListener('keydown',key,true);
+   const f=sp.querySelector('.bs-start')||sp.querySelector('.pg-in button,.pg-in input');if(f)f.focus({preventScroll:true});
   },BOOK_OPEN_MS-150);
  }
  return api;
@@ -114,20 +115,25 @@ export function openBook({from,colors={},title='',spreads=null,label='',onClose=
 /* Click-open for the menu books. Call after main.js has assigned the onclick handlers.
    Books with an intro stay open on their pages; others run their handler once open and
    the spread fades. Reduced motion skips straight to the handler. */
+/* Menu books whose pages are built live (Shelf, Sets, Stats). main.js registers
+   BOOK_PAGES[id]={spreads:()=>[{l,r}],onPaint(sp,api),keepOnEsc} and the book stays open on those pages. */
+export const BOOK_PAGES={};
 export function bookify(root,{wait=BOOK_OPEN_MS}={}){
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
  root.querySelectorAll('.hbook').forEach(el=>{
-  const go=el.onclick;if(!go)return;
+  const go=el.onclick;if(!go&&!BOOK_PAGES[el.id])return;
   el.onclick=e=>{
    if(root.classList.contains('book-opening'))return;
-   if(reduce){go.call(el,e);return;}
+   const pages=BOOK_PAGES[el.id];
+   if(reduce&&!pages){go.call(el,e);return;}
    const cs=getComputedStyle(el),intro=BOOK_INTROS[el.id];
    const title=el.querySelector('.hb-t')?.firstChild?.textContent?.trim()||'';
    root.classList.add('book-opening');el.classList.add('opening');
    const fin=()=>{el.classList.remove('opening');root.classList.remove('book-opening');};
-   const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h,spreads:intro?introSpreads(intro):null,onClose:fin,
+   const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onClose:fin,
     colors:{bk:cs.getPropertyValue('--bk'),bk2:cs.getPropertyValue('--bk2'),gild:cs.getPropertyValue('--bk-gild'),tex:cs.getPropertyValue('--tex')}});
-   if(intro){
+   if(pages){bk.onPaint=(sp,idx)=>pages.onPaint&&pages.onPaint(sp,bk,idx);}
+   else if(intro){
     bk.onPaint=sp=>{const st=sp.querySelector('.bs-start'),bb=sp.querySelector('.bs-back-btn');
      if(st)st.onclick=()=>{go.call(el,e);bk.close();};if(bb)bb.onclick=bk.close;};
    }else setTimeout(()=>{go.call(el,e);bk.close();},wait);

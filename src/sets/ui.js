@@ -1,21 +1,10 @@
 import './sets.css';
-import {openBook} from '../ui/bookpages.js';
+import {toSpreads} from '../ui/bookpages.js';
 import {TIERS, tierOf} from '../core/index.js';
 import {setStatus, bonusFt, MIN_SCORE} from './sets.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
-let layer = null, toastEl = null, toastT = 0;
-
-function ensure() {
-  if (layer) return layer;
-  layer = document.createElement('div'); layer.id = 'sets'; layer.hidden = true;
-  document.body.appendChild(layer);
-  return layer;
-}
-let ctl = null;
-export function closeSets() { if (layer) { layer.hidden = true; layer.innerHTML = ''; } ctl = null; }
-export const setsOpen = () => !!layer && !layer.hidden;
-
+let toastEl = null, toastT = 0;
 /* Pure page builder: an overview leaf, then one leaf per set. */
 export function setLeaves(S) {
   const st = setStatus(S), got = (S.sets && S.sets.got) || {};
@@ -35,10 +24,8 @@ export function setLeaves(S) {
   return [overview, ...pages];
 }
 
-export function openSets(S) {
-  const A = ensure();
-  ctl = openBook(A, {label: 'Book sets', colors: ['#4a2a63', '#26143a', '#d8b676'], leaves: setLeaves(S), cls: 'sets', onClose: () => { ctl = null; }});
-}
+/** Registry entry for home.js BOOK_PAGES. */
+export const setsBook = S => ({label: 'Book sets', spreads: () => toSpreads(setLeaves(S))});
 
 /** Brief banner when a book finishes a set. */
 export function toastSetsDone(sets) {
