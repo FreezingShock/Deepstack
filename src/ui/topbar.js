@@ -55,7 +55,7 @@ export function initTopbar({Sfx,doc=document}={}){
  };
  function openPanel(k,from){
   opener=from||opener;current=k;
-  layer.innerHTML=`<div class="tpbox" role="dialog" aria-modal="true" aria-labelledby="tpT"><button type="button" class="tpx" id="tpClose" aria-label="Close">×</button>${body[k]()}</div>`;
+  layer.innerHTML=`<div class="tpbox bookbox" role="dialog" aria-modal="true" aria-labelledby="tpT"><button type="button" class="tpx" id="tpClose" aria-label="Close">×</button>${body[k]()}</div>`;
   layer.classList.remove('leaving');layer.hidden=false;
   $('#tpClose').onclick=closePanel;
   if(k==='settings')wireSettings();

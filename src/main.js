@@ -40,6 +40,7 @@ import {snapshotRun,resumable} from './core/dailyRun.js';
 import {dailyBook} from './ui/dailyBook.js';
 import './ui/dailyBook.css';
 import './ui/bookpages.css';
+import './ui/bookStyle.css';
 import './ui/fonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
 import {drawAlcoveLanterns} from './ui/lanterns.js';
