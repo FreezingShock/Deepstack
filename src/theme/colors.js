@@ -2,6 +2,8 @@
 // `npm run gen:tokens` writes src/theme/tokens.css from this file; the canvas code imports it directly.
 // A test fails if tokens.css drifts from this file.
 export const COLORS={
+ 'tint-0a0604':'#0a0604',
+ 'tint-f3dfa8':'#f3dfa8',
  'black':'#000000',
  'white':'#ffffff',
  'parchment':'#f6ecd3',

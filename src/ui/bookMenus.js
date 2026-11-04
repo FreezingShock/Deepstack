@@ -2,22 +2,28 @@
    them to the paged book view. Main passes in what it owns (spine renderer, card opener, tooltips). */
 import {chunk,esc,toSpreads} from './bookpages.js';
 
-export const SHELF_PER_PAGE=18;
-
-/* Group entries -> pages. Each page is [{label,cont,items}] so a group that spills onto the next page repeats its heading. */
-export function shelfPages(groups,per=SHELF_PER_PAGE){
- const flat=[];
- for(const g of groups)g.items.forEach(x=>flat.push({label:g.label,x}));
- return chunk(flat,per).map(pg=>{
-  const secs=[];
-  pg.forEach((e,k)=>{
-   const last=secs[secs.length-1];
-   if(last&&last.label===e.label)last.items.push(e.x);
-   else secs.push({label:e.label,cont:k===0&&flat.indexOf(e)>0&&flat[flat.indexOf(e)-1].label===e.label,items:[e.x]});
+/* Shelf layout. Books lie flat in stacks (STACK_H high, STACKS_PER_SHELF side by side) on a wooden shelf; a labelled
+   plaque heads each section. Pages fill by a height budget: a shelf costs 1, a plaque PLAQUE_COST. */
+export const STACK_H=4,STACKS_PER_SHELF=2,PAGE_BUDGET=4.05,PLAQUE_COST=.35;
+export function shelfPlan(groups,{perShelf=STACK_H*STACKS_PER_SHELF,budget=PAGE_BUDGET,plaque=PLAQUE_COST}={}){
+ const pages=[];let cur=[],left=budget;
+ const flush=()=>{pages.push(cur);cur=[];left=budget;};
+ for(const g of groups){
+  const shelves=chunk(g.items,perShelf).filter(x=>x.length);
+  let sec=null;
+  shelves.forEach((sh,k)=>{
+   const need=sec?1:plaque+1;
+   if(left<need-1e-9){flush();sec=null;}
+   if(!sec){sec={label:g.label,cont:k>0,shelves:[]};cur.push(sec);left-=plaque;}
+   sec.shelves.push(sh);left-=1;
   });
-  return secs;
- });
+ }
+ if(cur.length||!pages.length)pages.push(cur);
+ return pages;
 }
+/* Deterministic little sideways offset so a stack looks piled, not machined. */
+export const stagger=w=>{let h=0;for(const c of String(w))h=(h*31+c.charCodeAt(0))>>>0;return (h%9)-4;};
+export const TEXTURES=['leather','cloth','worn','vellum','grain'];
 
 const fmtDay=k=>new Date(k+'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',timeZone:'UTC'});
 
@@ -47,23 +53,29 @@ export function statsBook({S,st,TIERS,FLOORS,floorStartFt}){
  return {label:'Stats',spreads:()=>toSpreads(statsLeaves(st(),S,{TIERS,FLOORS,floorStartFt}))};
 }
 
-let pen='',fTier=-1,fSort='new',fQ='',fFav=false,fGroup='none';
-/* Shelf: page 1 holds the search and filters, the following pages hold the books. */
-export function shelfBook({S,core,TIERS,spineImg,openCard,showTip,hideTip,rh=76,keepOnEsc}){
+let pen='',fTier=-1,fSort='new',fQ='',fFav=false,fGroup='tier';
+export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc}){
  const SORTS=core.SORTS;
  let list=[],countText='';
+ const book=(x)=>{const b=x.b,t=TIERS[b.tier],o=stagger(b.w);
+  return `<button class="sbook" data-i="${x.i}" data-tex="${TEXTURES[b.tier%TEXTURES.length]}" style="--t:${t.spine};--o:${o}px" data-tip="${esc(b.w)} \u00b7 ${t.name} \u00b7 ${b.score}" aria-label="${esc(b.w)}, ${t.name}, ${b.score} out of 100"><span class="sb-pages" aria-hidden="true"></span><span class="sb-spine"><i class="sb-band" aria-hidden="true"></i><span class="sb-t">${esc(b.w)}</span>${b.fav?'<i class="sb-fav" aria-hidden="true">\u2605</i>':''}<i class="sb-band" aria-hidden="true"></i></span></button>`;};
+ const stack=items=>`<div class="sstack">${items.map(book).join('')}</div>`;
+ const shelf=items=>`<div class="sshelf">${chunk(items,STACK_H).filter(c=>c.length).map(stack).join('')}</div>`;
  const build=()=>{
   list=core.filterShelf(S.shelf,{tier:fTier,q:fQ.trim().toLowerCase(),sort:fSort,fav:fFav});
   const groups=core.groupShelf(list,fGroup,TIERS.map(t=>t.name)),favN=S.shelf.filter(b=>b.fav).length;
+  if(fGroup==='tier')groups.sort((a,b)=>b.key-a.key);
+  if(fGroup==='none')groups.forEach(g=>{g.label='The collection';});
   const counts=TIERS.map(t=>S.shelf.filter(b=>b.tier===t.id).length);
-  const ctrl=`<h1>Your shelf</h1><div class="kicker">${S.shelf.length} ${S.shelf.length===1?'book':'books'}${list.length!==S.shelf.length?` · showing ${list.length}`:''}</div>
+  countText=`${S.shelf.length} ${S.shelf.length===1?'book':'books'}${list.length!==S.shelf.length?` \u00b7 showing ${list.length}`:''}`;
+  const ctrl=`<h1>Your shelf</h1><div class="kicker" data-count>${countText}</div>
    <input id="fq" type="search" placeholder="Find a word\u2026" value="${esc(fQ)}" aria-label="Find a word" autocomplete="off" spellcheck="false">
    <div class="chipgroup"><div class="kicker">Sort</div><div class="chips" role="group" aria-label="Sort">${Object.entries(SORTS).map(([k,v])=>`<button class="fchip" data-s="${k}" data-k="s${k}" aria-pressed="${fSort===k}">${v[0]}</button>`).join('')}</div></div>
-   <div class="chipgroup"><div class="kicker">Group</div><div class="chips" role="group" aria-label="Group by">${[['none','Flat'],['day','By day'],['tier','By tier']].map(([k,l])=>`<button class="fchip" data-g="${k}" data-k="g${k}" aria-pressed="${fGroup===k}">${l}</button>`).join('')}</div></div>
-   <div class="chipgroup"><div class="kicker">Show</div><div class="chips"><button class="fchip" id="ffav" data-k="fav" aria-pressed="${fFav}"${favN||fFav?'':' disabled'}>★ Favourites <small>${favN}</small></button></div></div>
+   <div class="chipgroup"><div class="kicker">Group</div><div class="chips" role="group" aria-label="Group by">${[['tier','By rarity'],['day','By day'],['none','Together']].map(([k,l])=>`<button class="fchip" data-g="${k}" data-k="g${k}" aria-pressed="${fGroup===k}">${l}</button>`).join('')}</div></div>
+   <div class="chipgroup"><div class="kicker">Show</div><div class="chips"><button class="fchip" id="ffav" data-k="fav" aria-pressed="${fFav}"${favN||fFav?'':' disabled'}>\u2605 Favourites <small>${favN}</small></button></div></div>
    <div class="chipgroup"><div class="kicker">Rarity</div><div class="chips"><button class="fchip" data-t="-1" data-k="t-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" data-k="t${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div></div>`;
   if(!list.length)return [ctrl,`<p class="empty">${S.shelf.length?'No book matches.':'Nothing here yet. Your first answer becomes your first book.'}</p>`];
-  const pages=shelfPages(groups).map(secs=>secs.map(s=>`${s.label?`<h2>${esc(s.label)}${s.cont?' · cont.':''} <small>${s.items.length}</small></h2>`:''}<div class="shelfgrid" style="--rh:${rh+24}px">${s.items.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',rh)}</div>`).join('')}</div>`).join(''));
+  const pages=shelfPlan(groups).map(secs=>secs.map(s=>`<section class="ssec"><div class="splaque"><span>${esc(s.label)}${s.cont?' \u00b7 cont.':''}</span></div><div class="scase">${s.shelves.map(shelf).join('')}</div></section>`).join(''));
   return [ctrl,...pages];
  };
  const bind=(root,ctl)=>{
@@ -76,10 +88,9 @@ export function shelfBook({S,core,TIERS,spineImg,openCard,showTip,hideTip,rh=76,
   /* typing repaints only the results page; the search box and the rest of the left page stay untouched */
   if(fq)fq.oninput=()=>{fQ=fq.value;ctl.setSpreads(toSpreads(build()),0,'r');const c=root.querySelector('[data-count]');if(c)c.textContent=countText;};
   if(pen){const c=root.querySelector(`[data-k="${pen}"]`);if(c)c.classList.add('pen');pen='';}
-  root.querySelectorAll('.shelfgrid img').forEach(im=>{
+  root.querySelectorAll('.sbook').forEach(im=>{
    const open=()=>{hideTip();const items=list.map(x=>x.b),b=S.shelf[+im.dataset.i];openCard(b,{fresh:false,nav:{items,i:items.indexOf(b)}});};
-   im.tabIndex=0;im.setAttribute('role','button');im.onclick=open;
-   im.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();open();}};
+   im.onclick=open;
    im.onmouseenter=im.onmousemove=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmouseleave=hideTip;
   });
  };

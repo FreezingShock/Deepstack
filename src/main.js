@@ -619,7 +619,7 @@ addEventListener('keydown',e=>{
 
 /* ---------- shelf, sets and stats: pages of the menu books (src/ui/bookMenus.js, home.js BOOK_PAGES) ---------- */
 const bookOpenCard=()=>!$('#cardlayer').hidden;
-BOOK_PAGES.bAll=shelfBook({S,core,TIERS,spineImg,openCard,showTip,hideTip,rh:76,keepOnEsc:bookOpenCard});
+BOOK_PAGES.bAll=shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc:bookOpenCard});
 BOOK_PAGES.bSets={...setsBook(S),keepOnEsc:bookOpenCard};
 BOOK_PAGES.bStats={...statsBook({S,st:()=>computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt}),keepOnEsc:bookOpenCard};
 const RHnow=()=>clamp(innerHeight*.22,108,172);
