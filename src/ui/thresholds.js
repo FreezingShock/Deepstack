@@ -312,9 +312,26 @@ export function drawThreshold(c, fl, W, y, rh, base, bx0, bx1) {
 }
 
 // The sign hangs in front of the shelves, so it is drawn after the bays (unclipped and level) and never cuts a long name.
-export function drawThresholdSign(c, fl, W, y, rh) {
+// Drawn live from a small cached sprite so it can swing on its chains (ui/thresholdPass.js); `sway` is radians about the hook.
+const signSprites = new Map();
+export function drawThresholdSign(c, fl, W, y, rh, sway = 0) {
   if (!SIGNS[fl.key]) return;
-  c.save(); SIGNS[fl.key](c, fl, signBox(W, y, fl.key === 'abyss' ? 32 : 26, rh), fl.name, fl.sub, numeralOf(fl)); c.restore();
+  const beam = fl.key === 'abyss' ? 32 : 26, b = signBox(W, y, beam, rh), pad = 36;
+  if (typeof document === 'undefined') { c.save(); SIGNS[fl.key](c, fl, b, fl.name, fl.sub, numeralOf(fl)); c.restore(); return; } // no DOM (tests): draw straight on
+  const dpr = c.getTransform?.().a || 1;
+  const key = `${fl.key}|${W}|${rh}|${dpr}`;
+  let sp = signSprites.get(key);
+  if (!sp) {
+    const o = document.createElement('canvas'), w = Math.ceil(b.w + pad * 2), h = Math.ceil(b.h + 12 + pad * 2);
+    o.width = Math.ceil(w * dpr); o.height = Math.ceil(h * dpr);
+    const s = o.getContext('2d'); s.setTransform(dpr, 0, 0, dpr, 0, 0);
+    s.translate(pad - b.x, pad + 12 - b.y);
+    SIGNS[fl.key](s, fl, {...b, y: b.y}, fl.name, fl.sub, numeralOf(fl));
+    sp = {o, w, h}; if (signSprites.size > 12) signSprites.clear(); signSprites.set(key, sp);
+  }
+  const hx = b.cx, hy = b.y - 12; // the hook on the beam, where the chains meet
+  c.save(); c.translate(hx, hy); if (sway) c.rotate(sway);
+  c.drawImage(sp.o, -(pad + b.w / 2), -pad, sp.w, sp.h); c.restore();
 }
 
 // Live parts: where the candles burn and water drips. Cheap on purpose; none when motion is reduced.
