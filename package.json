@@ -11,6 +11,7 @@
     "build:words": "node scripts/build-words.mjs",
     "fetch:model": "node scripts/fetch-model.mjs",
     "prebuild": "node scripts/fetch-model.mjs",
+    "gen:tokens": "node scripts/gen-tokens.mjs",
     "calibrate": "node scripts/calibrate.mjs"
   },
   "devDependencies": {
