@@ -58,6 +58,7 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-04 candle timer: asked for a candle that flickers faster at the end and gutters out -> urgency is shown by the object (flame), never red flashing (thread: candle timer)
 
 - 2026-11-04 attic: "i want the back fill to make you scroll up and for it to be an attic" -> a backfill is a place, not a silent migration: scroll up past the top of the Shelf into a dusty attic of crates (thread: attic)
+- 2026-11-04 world: asked for wall mounts and a reading stand (backlog E, via 'physically makes sense') -> every hung or held object needs a visible support; nate also wants threads to keep the backlog, his to-do list and preferences updated automatically.
 
 ## Changelog
 - 2026-11-04 initial version from project chat history.

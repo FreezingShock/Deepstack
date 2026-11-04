@@ -4,6 +4,7 @@ import {PALETTE} from '../theme/colors.js';
    no layout reads). The cursor pushes a lantern as it nears or sweeps past, and the glow warms with
    proximity and swing. prefers-reduced-motion / the in-game setting: lanterns hang still. */
 import {reducedMotion} from './settings.js';
+import {drawBolt, drawWallShadow} from './mounts.js';
 
 const RM = reducedMotion();
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -64,8 +65,10 @@ export function drawLantern(ctx, o) {
   ctx.save();
   ctx.translate(ax, ay);
   // ceiling bolt + iron plate (fixed, does not swing)
+  drawWallShadow(ctx, -7, -3, 14, 6, 3);
   ctx.fillStyle = PALETTE.oak2b1d12; ctx.fillRect(-7, -3, 14, 6); ctx.fillStyle = PALETTE.bronze6a4d30; ctx.fillRect(-7, -3, 14, 1.5);
   ctx.fillStyle = PALETTE.bronze41; ctx.beginPath(); ctx.arc(0, 1, 2.2, 0, 6.3); ctx.fill();
+  drawBolt(ctx, -4.6, 0, 1.2); drawBolt(ctx, 4.6, 0, 1.2);
   ctx.rotate(th);
   // chain: bows against the swing so it reads as flexible, links alternate face-on / edge-on
   const bow = RM ? 0 : clamp(s.w * 4, -7, 7), n = Math.max(4, Math.round(len / 6));

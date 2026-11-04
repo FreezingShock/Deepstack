@@ -476,12 +476,12 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: derive `fl` additively from old Daily results. Files: new `src/core/shelfFloors.js`. Done when: tolerates missing data, tested.
 **Touches:** core. **Conflicts:** attic (#126).
 
-### 100. Wall-hung things get a visible mount
+### 100. [x] Wall-hung things get a visible mount (PR pending)
 **Pitch:** Plaques, banners and lantern plates show their screws, brackets and a cast shadow on the wall, so nothing hangs from nothing.
 **Brief:** Goal: a mount helper (bolt, bracket, shadow) used by the numeral plaque, floor banner, tracker plaques and lanterns. Files: new `src/ui/mounts.js`, one-line hooks. Done when: mounts visible at 375 and 1280, a geometry test that every hung object's anchor lies on a surface.
 **Touches:** WORLD, tracker. **Conflicts:** 5 (alcove).
 
-### 101. The held book rests on something
+### 101. [x] The held book rests on something (PR pending)
 **Pitch:** The pulled book is presented on a reading stand or in a gloved hand of light instead of hovering mid-shelf.
 **Brief:** Goal: replace the hover pose with a lectern or lit cradle that rises with the pull, shadow on the shelves behind. Files: `src/main.js` pulled-target block (small), new `src/ui/lectern.js`. Done when: pose looks supported at 375 and 1280, reduced motion shows it already raised.
 **Touches:** MAIN (pull block), results. **Conflicts:** tier reveals thread.
@@ -709,3 +709,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** Inside the reading nook the room tone ducks and muffles a little, as if the alcove shields you from the hall.
 **Brief:** Goal: lowpass and duck the ambience bed while an alcove is open. Files: `src/sound/ambience.js`. Done when: smooth ramp, tested.
 **Touches:** FEEL hook. **Conflicts:** 95.
+
+### 140. Lectern per floor
+**Pitch:** The reading stand takes the floor's wood and metal: pale oak in the Archive, rusted iron in the Hollow, wet and swollen in the Sunken Vault.
+**Brief:** Goal: pass a floor palette into `lecternGeom`/draw helpers in `src/ui/lectern.js`. Done when: five floors distinct at 375 and 1280, reduced motion static. **Touches:** WORLD (held block). **Conflicts:** 2 (lighting).
+
+### 141. The stand holds a lit candle and dropped page
+**Pitch:** A stub of candle burns on the lectern lip and a loose page lies beside the held book, so the stand feels used.
+**Brief:** Goal: small props on the lip drawn by `lectern.js`, lit by the existing candle light. Done when: no overlap with the book at any width, tested. **Touches:** WORLD. **Conflicts:** 4 (curios).
+
+### 142. Mounts for the alcove numeral on phones
+**Pitch:** Check every hung thing at 375 px for bolts that crowd the text and give the narrow plaques a one-bolt variant.
+**Brief:** Goal: audit `plaqueBolts` at phone widths with 14-letter labels. Files: `src/ui/mounts.js`. Done when: screenshots attached. **Touches:** WORLD. **Conflicts:** 5.
