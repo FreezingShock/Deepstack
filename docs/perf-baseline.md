@@ -11,3 +11,16 @@ Baseline on main at 95e6aba, 2026-11-04, headless Chromium with software renderi
 | descent | 157 | 26 | 33.4 | 66.7 | 83.4 | 116.6 | 2.09 | 4.10 |
 
 "work" (time inside the rAF callback) is the steadier number to compare for canvas changes; interval p95 is quantised by the renderer.
+
+## Light map (item 2, PR #141), deep floors
+Same machine and renderer. Alcove open on each floor, cursor on the shelf, 5 s each, "work avg / p95" in ms inside the rAF callback. Before = main at e2427ce plus #135.
+
+| floor | 1280 before | 1280 after | 375 before | 375 after |
+|---|---|---|---|---|
+| stacks | 2.48 / 8.0 | 1.81 / 4.2 (no pass) | 1.47 / 5.5 | 1.94 / 6.4 (no pass) |
+| catacombs | 1.18 / 1.6 | 2.59 / 3.7 | 1.32 / 1.7 | 1.94 / 2.7 |
+| vault | 1.59 / 2.1 | 2.36 / 3.4 | 1.49 / 1.9 | 1.91 / 2.6 |
+| hollow | 1.07 / 1.5 | 1.78 / 2.4 | 1.29 / 1.6 | 1.67 / 2.1 |
+| abyss | 1.04 / 1.5 | 1.73 / 2.5 | 1.18 / 1.5 | 1.73 / 2.0 |
+
+Cost of the pass is about 0.5 to 1.4 ms per frame under software rendering, well inside a 16 ms frame. Stacks rows are noise (no pass runs there).

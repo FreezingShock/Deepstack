@@ -5,6 +5,7 @@ import {PALETTE} from '../theme/colors.js';
    proximity and swing. prefers-reduced-motion / the in-game setting: lanterns hang still. */
 import {reducedMotion} from './settings.js';
 import {drawBolt, drawWallShadow} from './mounts.js';
+import {addLight} from './lighting.js';
 
 const RM = reducedMotion();
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -102,6 +103,7 @@ export function drawLantern(ctx, o) {
   ctx.restore();
   // glow: centred on the swinging glass, warms when the cursor is near or it is swinging hard
   const gx = ax - Math.sin(th) * d, gyy = ay + Math.cos(th) * d, R = 150 + 30 * hot;
+  addLight(gx, gyy, 380 + 50 * hot, 1); // the world's light map keeps this pool lit
   ctx.globalCompositeOperation = 'lighter';
   const lg = ctx.createRadialGradient(gx, gyy, 0, gx, gyy, R);
   const al = (.34 - .18 * a) * fk * heat;
