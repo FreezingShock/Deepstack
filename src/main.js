@@ -54,7 +54,6 @@ import './core/replay.js';
 import './core/dailyRun.js';
 import {dailyBook} from './ui/dailyBook.js';
 import './ui/dailyBook.css';
-import './ui/attic.css';
 import './ui/dailyCalendar.css';
 import './ui/bookpages.css';
 import './ui/bookStyle.css';

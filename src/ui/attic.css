@@ -1,49 +1,13 @@
-/* The attic over the Shelf book: dark rafters, a skylight shaft with drifting dust, oak crates of earlier finds.
-   Only transform and opacity animate. Colours are tokens only. */
-.bk-spread .attic-cue{position:absolute;z-index:6;left:50%;top:-2px;transform:translate(-50%,-100%);margin:0;padding:4px 14px 6px;border:0;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--c-oak-2b1b10),var(--c-oak-1a110a));
- color:var(--c-brass-d8c08c);font:500 21px/1.1 var(--bs-hand);letter-spacing:.02em;cursor:pointer;pointer-events:auto;box-shadow:0 -2px 8px var(--c-black-alpha-88),inset 0 0 0 1px var(--c-oak-5a3d22);transition:color .2s,transform .25s}
-.bk-spread .attic-cue:hover,.bk-spread .attic-cue:focus-visible{color:var(--c-brass-f6d98a);transform:translate(-50%,calc(-100% - 3px))}
-.bk-spread.one .attic-cue{left:auto;right:14px;top:2px;transform:none;border-radius:0 0 6px 6px;font-size:19px}
-.bk-spread.one .attic-cue:hover,.bk-spread.one .attic-cue:focus-visible{transform:translateY(2px)}
-.bk-spread .attic-cue[hidden]{display:none}
-.attic{position:absolute;inset:-6px;z-index:30;overflow:hidden;border-radius:6px;pointer-events:auto;background:radial-gradient(120% 70% at 50% 0,var(--c-oak-2a1c10),var(--c-oak-120c06) 60%,var(--c-oak-0a0706));
- box-shadow:0 0 0 2px var(--c-oak-5a3d22),0 18px 40px var(--c-black-alpha-dd);transform:translateY(-104%);transition:transform var(--m-smooth) var(--e-settle)}
-.attic.up{transform:none}
-.attic[hidden]{display:none}
-/* rafters across the top */
-.at-beams{position:absolute;left:0;right:0;top:0;height:74px;pointer-events:none;background:linear-gradient(180deg,var(--c-black-alpha-bb),transparent)}
-.at-beams i{position:absolute;top:-10px;width:130%;height:22px;left:-15%;background:repeating-linear-gradient(90deg,var(--c-oak-3d2916) 0 3px,var(--c-oak-2b1b10) 3px 9px);box-shadow:0 5px 8px var(--c-black-alpha-aa)}
-.at-beams i:nth-child(1){transform:rotate(-7deg) translateY(10px)}
-.at-beams i:nth-child(2){transform:rotate(7deg) translateY(10px)}
-.at-beams i:nth-child(3){top:26px;height:12px;transform:none;opacity:.8}
-/* skylight shaft and dust */
-.at-sky{position:absolute;left:50%;top:0;width:min(420px,70%);height:100%;transform:translateX(-50%);pointer-events:none}
-.at-sky b{position:absolute;inset:0;background:linear-gradient(180deg,var(--c-amber-fff3c9),transparent 70%);opacity:.12;clip-path:polygon(34% 0,66% 0,100% 100%,0 100%);animation:atbreathe 7s ease-in-out infinite}
-.at-sky u{position:absolute;top:12%;width:3px;height:3px;border-radius:50%;background:var(--c-amber-fff3c9);opacity:.5;animation:atmote 11s linear infinite}
-.at-sky u:nth-of-type(1){left:44%}.at-sky u:nth-of-type(2){left:52%;animation-delay:-3s;animation-duration:14s}.at-sky u:nth-of-type(3){left:58%;animation-delay:-6s}.at-sky u:nth-of-type(4){left:48%;animation-delay:-8s;animation-duration:16s}.at-sky u:nth-of-type(5){left:40%;animation-delay:-10s}
-@keyframes atbreathe{50%{opacity:.2}}
-@keyframes atmote{0%{transform:translate(0,0);opacity:0}15%{opacity:.55}100%{transform:translate(24px,360px);opacity:0}}
-.at-scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:46px clamp(14px,5%,44px) 22px;scrollbar-width:thin;outline:0;overscroll-behavior:contain}
-.at-head{text-align:center;margin:0 auto 18px;max-width:440px}
-.bk-spread.menu .at-head h1{margin:0 0 4px;font:500 clamp(24px,3.4vw,34px)/1.1 var(--serif);letter-spacing:.14em;text-transform:uppercase;color:var(--c-brass-d8c08c);text-shadow:0 2px 8px var(--c-black)}
-.at-head p{margin:0 0 6px;font:italic 400 15px/1.45 var(--serif);color:var(--c-parchment-alpha-a8)}
-.bk-spread.menu .at-head .kicker{color:var(--c-brass-67-alpha-aa);margin:0}
-/* crates: slatted oak boxes holding the stacks */
-.at-crate{position:relative;margin:0 0 20px;padding:20px 0 0;border-radius:3px;background:repeating-linear-gradient(180deg,var(--c-oak-2b1b10) 0 22px,var(--c-oak-1a110a) 22px 24px);box-shadow:inset 0 0 20px var(--c-black-alpha-aa),0 0 0 1px var(--c-oak-0a0706),0 0 0 3px var(--c-oak-4a3322),0 8px 14px var(--c-black-alpha-88)}
-.at-tag{position:absolute;left:12px;top:-9px;z-index:3;display:flex;align-items:baseline;gap:10px;padding:2px 10px 3px;border-radius:2px;background:linear-gradient(180deg,var(--c-parchment-e6d8b2),var(--c-parchment-90));color:var(--c-oak-1c1209);box-shadow:0 2px 4px var(--c-black-alpha-aa);transform:rotate(-1.2deg)}
-.at-tag span{font:500 19px/1.1 var(--bs-hand)}
-.at-tag small{font:600 9px var(--label);letter-spacing:.16em;text-transform:uppercase;opacity:.65}
-.at-shelf{min-height:96px;padding-top:6px}
-.at-foot{display:flex;justify-content:center;padding-top:6px}
-.at-down{border:0;background:none;color:var(--c-brass-d8c08c);font:500 24px/1.1 var(--bs-hand);cursor:pointer;padding:4px 8px;border-bottom:2px solid var(--c-brass-67-alpha-88)}
-.at-down:hover,.at-down:focus-visible{color:var(--c-brass-f6d98a)}
-.bk-spread.attic-on .bs-corner{pointer-events:none}
-@media(max-width:560px){.at-tag span{font-size:17px}.at-head p{font-size:14px}.bk-spread.one .attic-cue{right:10px;padding:3px 10px 5px;font-size:17px}}
-/* phone: spines tighten so a 14-letter word stays readable */
-@media(max-width:480px){.at-shelf{gap:6px;padding-left:6px;padding-right:6px}.bk-spread.menu .at-shelf .sb-band:last-child{display:none}.bk-spread.menu .at-shelf .sb-t{font-size:10px;letter-spacing:.01em;padding:3px 1px}.bk-spread.menu .at-shelf .sb-spine{gap:3px;padding:0 3px 0 2px}}
-@media(prefers-reduced-motion:reduce){.attic{transition:none}.at-sky b,.at-sky u{animation:none}.at-sky u{display:none}.bk-spread .attic-cue{transition:none}}
-/* home: cue to climb up into the attic (recent guesses live there now) */
-.attic-home{position:absolute;z-index:6;top:10px;left:50%;transform:translateX(-50%);margin:0;padding:4px 14px 6px;border:0;border-radius:0 0 6px 6px;background:linear-gradient(180deg,var(--c-oak-2b1b10),var(--c-oak-1a110a));
+/* The attic is a room in the world canvas (world/atticRoom.js). These are the DOM controls around it:
+   the ladder cue on home, "Down the ladder" while up there, and the home panel sliding away. */
+.attic-cue-home{position:fixed;z-index:6;right:18px;top:78px;margin:0;padding:5px 14px 7px;border:0;border-radius:6px;background:linear-gradient(180deg,var(--c-oak-2b1b10),var(--c-oak-1a110a));
  color:var(--c-brass-d8c08c);font:500 20px/1.1 var(--bs-hand,var(--serif));cursor:pointer;box-shadow:0 2px 8px var(--c-black-alpha-88),inset 0 0 0 1px var(--c-oak-5a3d22);transition:color .2s,transform .25s}
-.attic-home:hover,.attic-home:focus-visible{color:var(--c-brass-f6d98a);transform:translate(-50%,2px)}
-@media(prefers-reduced-motion:reduce){.attic-home{transition:none}}
+.attic-cue-home:hover,.attic-cue-home:focus-visible{color:var(--c-brass-f6d98a);transform:translateY(-2px)}
+.attic-cue-home[hidden],.attic-down[hidden],#home[hidden]~.attic-cue-home,#home[hidden]~.attic-down{display:none}
+.attic-down{position:fixed;z-index:6;left:50%;top:64px;transform:translateX(-50%);margin:0;padding:4px 16px 6px;border:0;border-bottom:2px solid var(--c-brass-67-alpha-88);background:var(--c-black-alpha-88);border-radius:0 0 6px 6px;white-space:nowrap;
+ color:var(--c-brass-d8c08c);font:500 24px/1.1 var(--bs-hand,var(--serif));cursor:pointer}
+.attic-down:hover,.attic-down:focus-visible{color:var(--c-brass-f6d98a)}
+#home{transition:transform var(--m-smooth) var(--e-settle),opacity .45s}
+#home.attic-away{transform:translateY(70vh);opacity:0;pointer-events:none}
+@media(max-width:560px){.attic-down{font-size:20px;top:58px}.attic-cue-home{right:10px;top:64px;font-size:17px;padding:4px 10px 6px}}
+@media(prefers-reduced-motion:reduce){#home{transition:none}.attic-cue-home{transition:none}}
