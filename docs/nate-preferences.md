@@ -71,3 +71,7 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-04 floors: "make each floor a chapter", "make sure to spend time on these 1 and 2, they are important" -> floors must be unmistakable with the HUD hidden: a door, sign and wall material each, not a tint (thread: floors as chapters)
 - 2026-11-04 process: nate wants every thread/audit to automatically update the refinement list, his to-do list and these preferences when it finishes (thread: low-end mode)
 - 2026-11-04 attic: "have that be reserved to the attic, it just shows recent guesses, while the Shelf book shows all words" -> nothing shows recent books on the main screen; the attic is the home of recent guesses, the Shelf is the complete collection (thread: attic recents)
+
+
+
+- 2026-11-04 welcome: item 29 "no voice but ykwim, a complete overhaul of the welcome screen to be much more library like" -> UI furniture becomes library objects (index card, borrower's slip), not boxes (thread: welcome screen)
