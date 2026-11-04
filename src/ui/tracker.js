@@ -23,9 +23,9 @@ export function buildTracker(doc, floors, startOf, onJump) {
   const range = (f, i) => i + 1 < floors.length ? `${starts[i]}–${starts[i + 1]} ft` : `${starts[i]} ft and below`;
   nav.innerHTML = `<ol>${floors.map((f, i) =>
     `<li data-i="${i}" style="--fc:rgb(${f.lamp.join(',')})"><button type="button" tabindex="-1"><b>${esc(f.name)}</b><small>${range(f, i)}</small></button></li>`).join('')}</ol>` +
-    '<div class="rail" aria-hidden="true"><i class="fill"></i><i class="view"></i><i class="you"></i></div>';
+    `<div class="rail" aria-hidden="true">${floors.map(f => `<i class="seg" style="--fc:rgb(${f.lamp.join(',')})"></i>`).join('')}<i class="view"></i><i class="you"><b></b></i></div>`;
   const items = [...nav.querySelectorAll('li')], btns = items.map(li => li.firstChild);
-  const fill = nav.querySelector('.fill'), view = nav.querySelector('.view'), you = nav.querySelector('.you');
+  const segs = [...nav.querySelectorAll('.seg')], view = nav.querySelector('.view'), you = nav.querySelector('.you');
   btns.forEach((b, i) => { b.onclick = () => { if (!b.disabled) onJump(i); }; });
   let key = '';
   /** viewFt: depth on screen; youFt: your real depth; browsing: view differs from you. */
@@ -36,13 +36,14 @@ export function buildTracker(doc, floors, startOf, onJump) {
     const yf = railFraction(youFt, starts), vf = railFraction(viewFt, starts);
     you.style.top = `${yf * 100}%`;
     view.style.top = `${vf * 100}%`;
-    fill.style.height = `${yf * 100}%`;
     view.hidden = !browsing;
     let cur = 0;
     starts.forEach((s, i) => { if (viewFt >= s) cur = i; });
     items.forEach((li, i) => {
       const reached = youFt >= starts[i];
       li.classList.toggle('reached', reached);
+      segs[i].classList.toggle('reached', reached);
+      segs[i].classList.toggle('cur', i === cur);
       li.classList.toggle('cur', i === cur);
       btns[i].disabled = !reached;
       btns[i].tabIndex = reached ? 0 : -1;
