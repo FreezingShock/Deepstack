@@ -1,7 +1,7 @@
 .hintline{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 .hslip{position:relative;max-width:100%;padding:8px 12px 8px 16px;border-radius:2px;
   background:linear-gradient(#e7dcc0,#d9cca9);color:#2c2112;box-shadow:0 3px 8px #0008;
-  transform:rotate(var(--tilt,0deg));animation:hslip-in .5s cubic-bezier(.2,.9,.3,1.2) both;
+  transform:rotate(var(--tilt,0deg));animation:hslip-in var(--m-page) var(--e-spring) both;
   font:italic 400 15px/1.4 var(--serif)}
 .hslip .hpin{position:absolute;left:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#8a3a22;box-shadow:0 1px 2px #0008}
 .hslip .hcap{display:block;font:600 10px/1.2 var(--label,var(--serif));letter-spacing:.14em;text-transform:uppercase;color:#6b573a;margin-bottom:2px}

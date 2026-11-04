@@ -1,14 +1,14 @@
 /* Candle cursor. Only exists when cursorLight.js mounts it (fine pointer, motion not reduced). */
 html.candle-on,html.candle-on *{cursor:none!important}
 html.candle-on.candle-text :is(input,textarea,[contenteditable]){cursor:text!important}
-#candleCursor{position:fixed;inset:0;z-index:90;pointer-events:none;overflow:hidden;opacity:0;transition:opacity .22s cubic-bezier(.2,.8,.3,1)}
+#candleCursor{position:fixed;inset:0;z-index:90;pointer-events:none;overflow:hidden;opacity:0;transition:opacity var(--m-base) var(--e-settle)}
 #candleCursor.on{opacity:1}
 #candleCursor .cc-glow,#candleCursor .cc-flame{position:absolute;left:0;top:0;will-change:transform}
 /* pool of light: centred on the pointer; screen blend lifts spines without washing the dark */
 #candleCursor .cc-glow{width:0;height:0}
 #candleCursor .cc-glow::before{content:"";position:absolute;left:-190px;top:-190px;width:380px;height:380px;border-radius:50%;
  background:radial-gradient(circle,color-mix(in srgb,var(--c-amber-68) 42%,transparent) 0%,color-mix(in srgb,var(--c-amber-55) 18%,transparent) 38%,transparent 68%);
- mix-blend-mode:screen;transform:scale(1);transition:transform .35s cubic-bezier(.2,.8,.3,1),opacity .35s;animation:cc-breathe 3.4s ease-in-out infinite}
+ mix-blend-mode:screen;transform:scale(1);transition:transform var(--m-smooth) var(--e-settle),opacity var(--m-smooth) var(--e-settle);animation:cc-breathe 3.4s ease-in-out infinite}
 #candleCursor[data-state=hand] .cc-glow::before{transform:scale(1.3)}
 #candleCursor[data-state=text] .cc-glow::before{transform:scale(.8);opacity:.7}
 #candleCursor.press .cc-glow::before{transform:scale(.85)}
@@ -18,7 +18,7 @@ html.candle-on.candle-text :is(input,textarea,[contenteditable]){cursor:text!imp
 #candleCursor .cc-outer{fill:var(--c-amber-55);animation:cc-flicker 1.7s ease-in-out infinite}
 #candleCursor .cc-core{fill:var(--c-amber-fff4d6);animation:cc-flicker 1.1s ease-in-out infinite reverse}
 #candleCursor .cc-wick{stroke:var(--c-ink);stroke-width:1.6;stroke-linecap:round;fill:none}
-#candleCursor .cc-flame{transition:scale .3s cubic-bezier(.2,.8,.3,1),opacity .25s}
+#candleCursor .cc-flame{transition:scale var(--m-smooth) var(--e-spring),opacity var(--m-base) var(--e-settle)}
 #candleCursor[data-state=hand] .cc-flame{scale:1.25}
 #candleCursor[data-state=text] .cc-flame{opacity:0}
 #candleCursor.press .cc-flame{scale:.85}
