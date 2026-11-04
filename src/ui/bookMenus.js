@@ -1,9 +1,8 @@
 /* Shelf and Stats as pages of an open book. Pure leaf builders are exported for tests; the open* functions wire
    them to the paged book view. Main passes in what it owns (spine renderer, card opener, tooltips). */
-import {openBook,chunk,esc} from './bookpages.js';
+import {chunk,esc,toSpreads} from './bookpages.js';
 
 export const SHELF_PER_PAGE=18;
-const SHELF_COLORS=['#23406b','#10203a','#d0b36a'],STATS_COLORS=['#5b3a1d','#2d1c0d','#d8b676'];
 
 /* Group entries -> pages. Each page is [{label,cont,items}] so a group that spills onto the next page repeats its heading. */
 export function shelfPages(groups,per=SHELF_PER_PAGE){
@@ -43,15 +42,16 @@ export function statsLeaves(st,S,{TIERS,FLOORS,floorStartFt}){
  ];
 }
 
-export function openStatsBook(layer,{S,st,TIERS,FLOORS,floorStartFt}){
- return openBook(layer,{label:'Stats',colors:STATS_COLORS,leaves:statsLeaves(st,S,{TIERS,FLOORS,floorStartFt}),cls:'stats'});
+/* Book page registries for home.js BOOK_PAGES. */
+export function statsBook({S,st,TIERS,FLOORS,floorStartFt}){
+ return {label:'Stats',spreads:()=>toSpreads(statsLeaves(st(),S,{TIERS,FLOORS,floorStartFt}))};
 }
 
-/* Shelf: page 1 holds the search and filters, the following pages hold the books. */
 let fTier=-1,fSort='new',fQ='',fFav=false,fGroup='none';
-export function openShelfBook(layer,{S,core,TIERS,spineImg,openCard,showTip,hideTip,rh=100}){
+/* Shelf: page 1 holds the search and filters, the following pages hold the books. */
+export function shelfBook({S,core,TIERS,spineImg,openCard,showTip,hideTip,rh=76,keepOnEsc}){
  const SORTS=core.SORTS;
- let ctl,list=[];
+ let list=[];
  const build=()=>{
   list=core.filterShelf(S.shelf,{tier:fTier,q:fQ.trim().toLowerCase(),sort:fSort,fav:fFav});
   const groups=core.groupShelf(list,fGroup,TIERS.map(t=>t.name)),favN=S.shelf.filter(b=>b.fav).length;
@@ -63,11 +63,11 @@ export function openShelfBook(layer,{S,core,TIERS,spineImg,openCard,showTip,hide
    <div class="chipgroup"><div class="kicker">Show</div><div class="chips"><button class="fchip" id="ffav" aria-pressed="${fFav}"${favN||fFav?'':' disabled'}>★ Favourites <small>${favN}</small></button></div></div>
    <div class="chipgroup"><div class="kicker">Rarity</div><div class="chips"><button class="fchip" data-t="-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div></div>`;
   if(!list.length)return [ctrl,`<p class="empty">${S.shelf.length?'No book matches.':'Nothing here yet. Your first answer becomes your first book.'}</p>`];
-  const pages=shelfPages(groups).map(secs=>secs.map(s=>`${s.label?`<h2>${esc(s.label)}${s.cont?' · cont.':''} <small>${s.items.length}</small></h2>`:''}<div class="shelfgrid" style="--rh:${rh+22}px">${s.items.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',rh)}</div>`).join('')}</div>`).join(''));
+  const pages=shelfPages(groups).map(secs=>secs.map(s=>`${s.label?`<h2>${esc(s.label)}${s.cont?' · cont.':''} <small>${s.items.length}</small></h2>`:''}<div class="shelfgrid" style="--rh:${rh+24}px">${s.items.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',rh)}</div>`).join('')}</div>`).join(''));
   return [ctrl,...pages];
  };
- const bind=root=>{
-  const redo=(keep)=>ctl.setLeaves(build(),keep);
+ const bind=(root,ctl)=>{
+  const redo=()=>ctl.setSpreads(toSpreads(build()),0);
   root.querySelectorAll('.fchip[data-t]').forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;redo();});
   root.querySelectorAll('.fchip[data-s]').forEach(c=>c.onclick=()=>{fSort=c.dataset.s;redo();});
   root.querySelectorAll('.fchip[data-g]').forEach(c=>c.onclick=()=>{fGroup=c.dataset.g;redo();});
@@ -81,6 +81,5 @@ export function openShelfBook(layer,{S,core,TIERS,spineImg,openCard,showTip,hide
    im.onmouseenter=im.onmousemove=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmouseleave=hideTip;
   });
  };
- ctl=openBook(layer,{label:'Your shelf',colors:SHELF_COLORS,leaves:build(),cls:'shelf',onRender:bind,onClose:hideTip});
- return ctl;
+ return {label:'Your shelf',keepOnEsc,spreads:()=>toSpreads(build()),onPaint:(sp,ctl)=>bind(sp,ctl)};
 }
