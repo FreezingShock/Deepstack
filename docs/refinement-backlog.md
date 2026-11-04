@@ -216,7 +216,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: new synthesised sounds with a fake-AudioContext test. Files: new `src/sound/*.js`, one hook in FEEL. Done when: mute and volume respected, rate limits, `test/sfx.test.js` covers routing.
 **Touches:** FEEL hook. **Conflicts:** 24.
 
-### 24. Per-floor ambience
+### 24. Per-floor ambience [x] (this PR)
 **Serves:** dark, immersive.
 **Pitch:** Each floor has its own room tone that crossfades with depth.
 **Brief:** Goal: layered ambience (paper hush, stone drips, water, hollow wind, abyss drone). Files: new `src/sound/ambience.js`. Done when: silent when sound off, no clicks on start/stop, node cap tested.
@@ -697,3 +697,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** The wall lettering and the paper slip are lit from the candle's side and dim as the flame lowers, so time reads in the room, not only the corner.
 **Brief:** Goal: drive the existing `--fr` light through flame height. Files: `src/ui/candle.css`. Done when: legible at the last second, 375 and 1280 screenshots.
 **Touches:** run screen. **Conflicts:** 20.
+
+### F1. Floor-change cue
+**Serves:** dark and mysterious, immersive.
+**Pitch:** Crossing into a new floor gets a single low sound (a door, a breath of colder air) so you hear the floor change, not just the tone.
+**Brief:** Goal: one-shot cue on floor boundary, tied to the floor banner. Files: new `src/sound/floorcue.js`. Done when: once per crossing, silent when sound off.
+**Touches:** FEEL hook. **Conflicts:** none.
+
+### F2. Room tone reacts to the alcove
+**Serves:** integrated, physical.
+**Pitch:** Inside the reading nook the room tone ducks and muffles a little, as if the alcove shields you from the hall.
+**Brief:** Goal: lowpass and duck the ambience bed while an alcove is open. Files: `src/sound/ambience.js`. Done when: smooth ramp, tested.
+**Touches:** FEEL hook. **Conflicts:** 95.
