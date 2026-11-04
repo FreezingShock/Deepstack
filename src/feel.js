@@ -5,6 +5,8 @@ import { reducedMotion } from './ui/settings.js';
 import { createScribe } from './sound/scribe.js';
 import { createAmbience } from './sound/ambience.js';
 import { createSting } from './sound/thresholdSting.js';
+import { createScore } from './sound/score.js';
+import { Quality } from './ui/quality.js';
 const RM = reducedMotion();
 const rnd = (a, b) => a + Math.random() * (b - a);
 
@@ -125,21 +127,25 @@ export const Sfx = (() => {
   function stopAmbient() { timers.forEach(clearTimeout); timers = []; }
 
   const floorTone = createAmbience({ ctx: () => ctx, on: () => on, dest: () => master, send: () => wet, noiseBuf });
+  const score = createScore({ ctx: () => ctx, on: () => on, dest: () => master, send: () => wet }, { allowed: () => Quality.tier() !== 'low' });
+  Quality.subscribe(() => score.refresh());
   const scribe = createScribe({ ctx: () => ctx, on: () => on, out, noiseBuf });
   const sting = createSting({ ctx: () => ctx, on: () => on, out, noiseBuf });
   return {
     /** a floor door going by (key = floor key) */
-    threshold: key => sting.play(key),
+    threshold: key => { if (sting.play(key)) score.duck(2.5); },
+    /** candle fraction 1..0: the score thins as the flame burns down */
+    candle: fr => score.setCandle(fr),
     quill: () => scribe.quill(), paper: () => scribe.paper(), seal: () => scribe.seal(), land: () => scribe.land(),
     /** master volume 0..1 (settings panel) */
     volume(v) { vol = Math.max(0, Math.min(1, v)); if (master) master.gain.setTargetAtTime(.9 * vol, ctx.currentTime, .05); },
     set(v) {
       on = v;
-      if (v) { init(); if (!ctx) return; ctx.resume(); amb.gain.linearRampToValueAtTime(.07, ctx.currentTime + 1.5); setHum(); startAmbient(); floorTone.enable(true); floorTone.setDepth(depth); }
-      else { stopAmbient(); floorTone.enable(false); if (ctx) { amb.gain.linearRampToValueAtTime(0, ctx.currentTime + .4); setHum(); } }
+      if (v) { init(); if (!ctx) return; ctx.resume(); amb.gain.linearRampToValueAtTime(.07, ctx.currentTime + 1.5); setHum(); startAmbient(); floorTone.enable(true); floorTone.setDepth(depth); score.enable(true); score.setDepth(depth); }
+      else { stopAmbient(); floorTone.enable(false); score.enable(false); if (ctx) { amb.gain.linearRampToValueAtTime(0, ctx.currentTime + .4); setHum(); } }
     },
     /** depth in feet; drives hum pitch/level and how often drips and footsteps occur */
-    setDepth(ft) { if (Math.abs(ft - depth) < 8) return; depth = ft; setHum(); floorTone.setDepth(ft); },
+    setDepth(ft) { if (Math.abs(ft - depth) < 8) return; depth = ft; setHum(); floorTone.setDepth(ft); score.setDepth(ft); },
     /** page rustle: a few short papery grains, slightly different each time */
     flip() {
       const n = 3 + (Math.random() * 3 | 0);
@@ -156,6 +162,7 @@ export const Sfx = (() => {
     /** tier chime: a pentatonic bell phrase that grows with tier (1 = single soft note) */
     chime(t) {
       if (!t) return;
+      score.swell(t);
       const root = [0, 392, 440, 494, 523, 587, 659][t], voices = [0, 1, 2, 3, 4, 5, 6][t];
       const idx = [0, 2, 1, 3, 4, 6, 8].slice(0, voices);
       idx.forEach((k, i) => bell(note(root, k), i * .11, .07 - .005 * t, 1.2 + t * .25));
@@ -164,6 +171,7 @@ export const Sfx = (() => {
     /** dramatic sting for the top tiers: low swell, rising shimmer, then a wide bell chord */
     sting(t) {
       if (t < 5) return;
+      score.duck(3.5);
       const top = t >= 6, root = top ? 164.8 : 196;
       tone(root / 2, 0, 3.2, .1, { attack: .7, send: .7 }); tone(root / 4, 0, 3.6, .09, { attack: .9, send: .5 });
       noise(1.1, 'bandpass', 300, top ? 5200 : 3600, .09, { attack: .9, q: 1.5, send: .6 });

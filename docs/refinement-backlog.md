@@ -1133,3 +1133,20 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** The pinned note on the final screen ends lines with a dot ("Pamphlet · Pamphlet · Paperback ·") and shows a stray dash under line two.
 **Brief:** Goal: lay out the tier row as seven small stamps or break after the fourth, remove the dash, keep the plain text copy exactly as is. Files: `src/app/final.js`, `src/styles/result.css`. Done when: row never wraps mid-pair at 375 and 1280.
 **Touches:** RESULT. **Conflicts:** Q5.
+
+- [x] N9. A score that follows the descent (`src/sound/score.js`, this PR)
+
+### N9b. A music slider of its own
+**Pitch:** let me turn the score up or down apart from the room tone and effects, or off while keeping the room tone.
+**Brief:** Goal: a `Music` slider/toggle in Settings feeding `score.setLevel`. Files: new `src/ui/musicSetting.js`, one hook in `topbar.js`, `score.js` level multiplier. Done when: saved additively, 0 equals off, test with a fake context.
+**Touches:** SETTINGS, FEEL. **Conflicts:** F1, F2.
+
+### N9c. The score answers the reveal
+**Pitch:** each book tier gets its own two-bar cadence in the floor's key, so a Codex found in the Vault sounds different from one in the Stacks.
+**Brief:** Goal: tier-specific motifs transposed to the current floor mood, replacing the generic swell. Files: `src/sound/score.js` (`swell`). Done when: a test pins each tier's motif in the floor scale, voices stay capped.
+**Touches:** FEEL. **Conflicts:** reveal recipes.
+
+### N9d. Silence in the Hollow
+**Pitch:** let the score drop out entirely for a few seconds when you cross into the Hollow or Abyss, so the first notes back feel like a held breath.
+**Brief:** Goal: a door hook that mutes the score for 6 to 10 s then fades it in on the new mood. Files: `src/sound/score.js`, hook in `thresholdPass.js`. Done when: reduced-motion and sound-off unaffected, tested with a fake clock.
+**Touches:** FEEL. **Conflicts:** none.
