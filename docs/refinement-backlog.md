@@ -69,7 +69,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: redraw the alcove frame and ledge props, keep the word lettering area clear for the run screen thread. Files: new `src/ui/alcoveArt.js`. Done when: the ledge fits 7 books plus the skipped slot at 375 px, no overlap with the word at 14 letters.
 **Touches:** WORLD. **Conflicts:** run screen thread; sequence after it.
 
-### 6. Realistic hanging and physical sanity audit — [x] (PR #PRNUM, report: docs/physical-sanity-audit.md)
+### 6. Realistic hanging and physical sanity audit — [x] (PR #113, report: docs/physical-sanity-audit.md)
 **Serves:** "why are the lanterns hanging from nothing", "floating book".
 **Pitch:** Sweep the world for things that float, clip or lack support: lanterns, banners, plaques, ledge books, pulled books, lore halos.
 **Brief:** Goal: a screenshot audit of every floor at several scroll positions listing physics/logic glitches, then fix them (chains reach a ceiling, books rest on planks). Files: WORLD files. Done when: report in `docs/` with before/after crops, a test for any new geometry helper.
