@@ -793,7 +793,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: make the welcome rules card interactive. Files: `src/ui/welcome.css`, new `src/ui/welcome.js`. Done when: keyboard operable, reduced motion static, 375 and 1280 screenshots.
 **Touches:** HOME. **Conflicts:** 27.
 
-### W2. A librarian's desk on the ledge
+### W2. [x] A librarian's desk on the ledge (this PR)
 **Serves:** "things that live down there", hidden curios, physical sanity.
 **Pitch:** A small brass bell, an inkwell and a stamp sit on the niche ledge; the bell chimes, the stamp thumps a due date onto the borrower's slip.
 **Brief:** Goal: ledge props with one sound each. Files: new `src/ui/deskProps.js`. Done when: nothing floats, props hidden under 560 px.
@@ -823,6 +823,17 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: extend `scripts/smoke.mjs` to finish a whole run in each mode and check the final screen. Done when: CI stays under its current time.
 **Touches:** `scripts/smoke.mjs`. **Conflicts:** none.
 
+### W5. The bell calls the librarian
+**Serves:** things that live down there, discovery.
+**Pitch:** Ring the brass bell enough times (or at 3 a.m. by the clock) and something answers from the dark: a note slid across the ledge, a book that was not there before.
+**Brief:** Goal: a hidden reaction to repeated bell rings. Files: `src/ui/deskProps.js`, `curioLog.js` hook. Done when: seeded and tested, no storage shape change, nothing covers the books at 375 px.
+**Touches:** HOME. **Conflicts:** W2 follow-ups, K3.
+
+### W6. The stamp remembers
+**Serves:** physical sanity, library furniture you can touch.
+**Pitch:** The due date stamped on the Borrower's slip stays on it between visits, and a played Daily stamps the slip by itself with that day's date.
+**Brief:** Goal: persist the last stamp additively (`deepstack.v1` field `stamp`, tolerate missing). Files: `src/ui/deskProps.js`. Done when: tested, reload keeps the mark, old saves load.
+**Touches:** HOME, saves. **Conflicts:** W2 follow-ups.
 ### W1. Rules card you can pull out
 **Serves:** everything is a book/shelf/page, immersion through interaction.
 **Status:** [x] done (PR pending): the rules sit in a card-catalogue drawer on the niche ledge; pulling it slides the card out, a second face holds the combo and tier rules (`src/ui/welcome.js`, `welcome.css`).
