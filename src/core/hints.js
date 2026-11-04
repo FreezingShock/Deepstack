@@ -9,7 +9,8 @@ export const MIN_ROWS = 2; // hints can shrink a descent but never erase it
 
 /** A real example sentence with the word blanked, or null (the pool's templated fallback has no blank). */
 export function sentenceClue(w) {
-  return w.hint && w.hint.includes('___') ? w.hint : null;
+  // a sentence that still spells the word anywhere else (only the first use is blanked) gives it away
+  return w.hint && w.hint.includes('___') && !w.hint.toLowerCase().includes(w.w.toLowerCase()) ? w.hint : null;
 }
 
 /** A near-synonym: curated concept terms, else a short gloss fragment from the definition. */

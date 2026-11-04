@@ -2,6 +2,8 @@
 // `npm run gen:tokens` writes src/theme/tokens.css from this file; the canvas code imports it directly.
 // A test fails if tokens.css drifts from this file.
 export const COLORS={
+ 'tint-0a0604':'#0a0604',
+ 'tint-f3dfa8':'#f3dfa8',
  'black':'#000000',
  'white':'#ffffff',
  'parchment':'#f6ecd3',
@@ -411,3 +413,7 @@ export function tokenEntries(){
  for(const[f,c]of Object.entries(FLOOR_COLORS))for(const[k,v]of Object.entries(c))out.push([`--floor-${f}-${kebab(k)}`,v]);
  return out;
 }
+
+// camelCase view of every named color for JS/canvas code: PALETTE.parchment, PALETTE.oak24, PALETTE.blackAlphaCc ...
+const camel=s=>s.replace(/-([a-z0-9])/g,(_,c)=>c.toUpperCase());
+export const PALETTE=Object.fromEntries([...Object.entries(COLORS),...Object.entries(ALPHA)].map(([k,v])=>[camel(k),v]));

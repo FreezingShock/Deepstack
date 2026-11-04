@@ -1,3 +1,4 @@
+import {PALETTE} from '../theme/colors.js';
 /* Home screen markup. Kept separate from main.js so other features can add
    entries (modes, links) by pushing onto HOME_LINKS / HOME_STEPS without
    touching the layout. */
@@ -12,11 +13,11 @@ export const HOME_STEPS=[
    button id; color picks the leather (HOME_BOOK_COLORS). Other features can push
    onto HOME_LINKS. Layout, hover and open animation live in home.css (--bk-* vars). */
 export const HOME_BOOK_COLORS={
- red:['#6b1f1c','#3a0f0e','#c9803a'],
- green:['#27502f','#122a18','#d0b36a'],
- blue:['#23406b','#10203a','#d0b36a'],
- purple:['#4a2a63','#26143a','#d8b676'],
- brown:['#5b3a1d','#2d1c0d','#d8b676'],
+ red:[PALETTE.blood26,PALETTE.blood14,PALETTE.bronze51],
+ green:[PALETTE.oak23,PALETTE.oak122a18,PALETTE.brass62],
+ blue:[PALETTE.steel28,PALETTE.steel15,PALETTE.brass62],
+ purple:[PALETTE.violet28,PALETTE.violet15,PALETTE.brass65],
+ brown:[PALETTE.oak24,PALETTE.oak11,PALETTE.brass65],
 };
 /* stack: which pile the book lies in (0 = play modes, 1 = collection). */
 export const HOME_LINKS=[
@@ -63,6 +64,9 @@ export const pg={
  label:t=>`<div class="pg-label">${esc(t)}</div>`,
 };
 export function introSpreads(intro){
+ const narrow=typeof matchMedia==='function'&&matchMedia('(max-width:560px)').matches;
+ /* phones show one page at a time: keep the Start button on the first page */
+ if(narrow)return [{l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start">${esc(intro.btn)}</button><button class="bs-back-btn">Close the book</button></div>`,r:''}];
  return [{
   l:pg.head(intro.kicker,intro.h)+pg.body(intro.p),
   r:pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start">${esc(intro.btn)}</button><button class="bs-back-btn">Close the book</button></div>`,
@@ -97,20 +101,32 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  };
  /* a press anywhere outside the book closes it (ignoring other popups stacked on top) */
  const away=ev=>{if(sp.contains(ev.target)||(ev.target.closest&&ev.target.closest('#cardlayer,#topPanel,.tip')))return;close();};
+ /* One-page mode (phones): the spread shows a single page at a time and turning steps
+    through left then right pages; a blank facing page is skipped. */
+ const one=typeof matchMedia==='function'&&matchMedia('(max-width:560px)').matches;let side='l';
+ const flat=()=>spreads.flatMap((s,i)=>[{i,s:'l'},...(s.r?[{i,s:'r'}]:[])]);
  const paint=(only)=>{
   const sd=spreads[idx],L=sp.querySelector('.bs-page.l'),R=sp.querySelector('.bs-page.r'),n=spreads.length;
-  const foot=(side)=>{const num=idx*2+(side==='l'?1:2);const nav=n>1?(side==='l'?`<button class="bs-turn prev" ${idx?'':'disabled'} aria-label="Previous pages">‹</button>`:`<button class="bs-turn next" ${idx<n-1?'':'disabled'} aria-label="Next pages">›</button>`):'';
-   return `<div class="pg-foot ${side}">${side==='l'?nav+`<span>${num}</span>`:`<span>${num}</span>`+nav}</div>`;};
+  if(one&&side==='r'&&!sd.r)side='l';
+  const fl=one?flat():null,pos=one?fl.findIndex(f=>f.i===idx&&f.s===side):0;
+  sp.classList.toggle('one',one);if(one)sp.dataset.side=side;
+  const prevB=dis=>`<button class="bs-turn prev" ${dis?'disabled':''} aria-label="Previous page${one?'':'s'}">‹</button>`,nextB=dis=>`<button class="bs-turn next" ${dis?'disabled':''} aria-label="Next page${one?'':'s'}">›</button>`;
+  const foot=(sd2)=>{if(one){const m=fl.length;return `<div class="pg-foot ${sd2}">${m>1?prevB(pos<=0):''}<span>${pos+1}</span>${m>1?nextB(pos>=m-1):''}</div>`;}
+   const num=idx*2+(sd2==='l'?1:2);const nav=n>1?(sd2==='l'?prevB(!idx):nextB(idx>=n-1)):'';
+   return `<div class="pg-foot ${sd2}">${sd2==='l'?nav+`<span>${num}</span>`:`<span>${num}</span>`+nav}</div>`;};
   if(only!=='r')L.innerHTML=`<div class="pg-in">${sd.l}</div>`+foot('l');
   if(only!=='l')R.innerHTML=`<div class="pg-in">${sd.r}</div>`+foot('r');
-  const pv=sp.querySelector('.bs-turn.prev'),nx=sp.querySelector('.bs-turn.next');
-  if(pv)pv.onclick=()=>turn(-1);if(nx)nx.onclick=()=>turn(1);
+  if(one&&only==='r'){const f=L.querySelector('.pg-foot');if(f)f.outerHTML=foot('l');}
+  sp.querySelectorAll('.bs-turn.prev').forEach(b=>b.onclick=()=>turn(-1));sp.querySelectorAll('.bs-turn.next').forEach(b=>b.onclick=()=>turn(1));
   if(api.onPaint)api.onPaint(sp,idx);
  };
- const turn=d=>{const j=idx+d;if(j<0||j>=spreads.length)return;sp.classList.add('turning');setTimeout(()=>{idx=j;paint();sp.classList.remove('turning');},160);};
+ const turn=d=>{let j=idx+d,s2=side;
+  if(one){const fl=flat(),p=fl.findIndex(f=>f.i===idx&&f.s===side)+d;if(p<0||p>=fl.length)return;j=fl[p].i;s2=fl[p].s;}
+  else if(j<0||j>=spreads.length)return;
+  sp.classList.add('turning');setTimeout(()=>{idx=j;side=s2;paint();sp.classList.remove('turning');},160);};
  const key=ev=>{if(ev.key==='Escape'){if(!(keepOnEsc&&keepOnEsc()))close();return;}if(ev.target.closest&&ev.target.closest('input,textarea,select'))return;if(ev.key==='ArrowRight')turn(1);else if(ev.key==='ArrowLeft')turn(-1);};
  /* swap the pages in place (filters, search); stays on spread i. only 'r' or 'l' repaints just that page, so an input on the other page keeps focus */
- const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0,only){spreads=s;idx=Math.max(0,Math.min(i,s.length-1));paint(only);}};
+ const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0,only){spreads=s;idx=Math.max(0,Math.min(i,s.length-1));if(!only)side='l';paint(only);}};
  t(()=>sp.classList.add('open'),BOOK_FLY_MS+BOOK_HOLD_MS);
  if(spreads&&spreads.length){
   t(()=>{
