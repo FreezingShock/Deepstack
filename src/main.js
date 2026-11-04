@@ -205,7 +205,7 @@ const World=(()=>{
     for(const b of d.bs){if(b.x+b.w<bx0-50||b.x>bx1+50)continue;ctx.save();const bx=b.x+b.w/2;
      if(b.lying){ctx.translate(bx,base);ctx.rotate(-.04);bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,dust:a*.9,ribbon:b.rib},vt);}
      else{ctx.translate(bx,base);if(b.tilt){ctx.translate(b.w/2,0);ctx.rotate(b.tilt);ctx.translate(-b.w/2,0);}
-      if(layer===0){bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,dust:a*.8,ribbon:b.rib},vt);if(isLore(b))drawLoreMark(ctx,b);}
+      if(layer===0){bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,dust:a*.8,ribbon:b.rib},vt);if(isLore(b,W))drawLoreMark(ctx,b);}
       else{ctx.fillStyle=rgbs(b.col);ctx.fillRect(-b.w/2,-b.h,b.w,b.h);}}
      ctx.restore();}}
    if(layer===0){for(const pr of d.props)floorProp(pr,fl,bx0,bx1,y,base);for(const wb of d.webs){if(building&&wb.k==='strand')continue;if(wb.x>=bx0-120&&wb.x<=bx1+120)drawWeb(wb,y,a,fl.web);}
@@ -257,10 +257,10 @@ const World=(()=>{
  function drawLoreGlows(top,bot,camNow){
   for(let r=top;r<=bot;r++){const d=r?rows.get(r*2):null;if(!d)continue;
    const y=r*RH-camNow,base=y+RH-12,a=abn(r);
-   for(const b of d.bs){if(!isLore(b)||b.x+b.w<0||b.x>W||loreCovered(b,base,camNow))continue;
+   for(const b of d.bs){if(!isLore(b,W)||b.x+b.w<0||b.x>W||loreCovered(b,base,camNow))continue;
     ctx.save();
     if(a>.03){const i=Math.min(2,Math.max(0,Math.floor((b.x+b.w/2)/(W/3)))),th=(i===0?1:i===2?-1:0)*.085*a;if(th){const cx=(i+.5)*W/3,cy=y+RH/2;ctx.translate(cx,cy);ctx.rotate(th);ctx.translate(-cx,-cy);}}
-    ctx.beginPath();ctx.rect(-RH,y-RH,W+2*RH,RH+RH-40);ctx.clip(); // the next shelf's wall overdraws the last 28px of every book
+     
     ctx.translate(b.x+b.w/2,base);if(b.tilt){ctx.translate(b.w/2,0);ctx.rotate(b.tilt);ctx.translate(-b.w/2,0);}
     drawLoreGlow(ctx,b,vt);ctx.restore();}}}
  function drawNiche(row,nv,camNow,now){const t0=nv.t0;

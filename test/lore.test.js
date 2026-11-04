@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {isLore, hitLoreBook, loreWord} from '../src/ui/lore.js';
+import {isLore, loreClear, hitLoreBook, loreWord} from '../src/ui/lore.js';
 import {hashStr} from '../src/core/daily.js';
 
 const book = (o = {}) => ({x: 100, w: 28, h: 90, seed: 10, tilt: 0, lying: false, ...o});
@@ -20,15 +20,15 @@ test('about one in five thick books is marked, keeping the cost and clutter low'
 test('hit test finds a book on an upright row and ignores row 0 and gaps', () => {
   const b = book(), d = {bs: [b, book({x: 200, seed: 11})]};
   const rh = 150, r = 3, cam = 200, base = r * rh - cam + rh - 12;
-  assert.equal(hitLoreBook(d, r, rh, 900, cam, 0, 114, base - 40), b);
-  assert.equal(hitLoreBook(d, r, rh, 900, cam, 0, 114, base - 200), null); // above the book
-  assert.equal(hitLoreBook(d, r, rh, 900, cam, 0, 214, base - 40), null);  // unmarked neighbour
-  assert.equal(hitLoreBook(d, 0, rh, 900, cam, 0, 114, base - 40), null);  // row 0 is the player's shelf
+  assert.equal(hitLoreBook(d, r, rh, 2000, cam, 0, 114, base - 40), b);
+  assert.equal(hitLoreBook(d, r, rh, 2000, cam, 0, 114, base - 200), null); // above the book
+  assert.equal(hitLoreBook(d, r, rh, 2000, cam, 0, 214, base - 40), null);  // unmarked neighbour
+  assert.equal(hitLoreBook(d, 0, rh, 2000, cam, 0, 114, base - 40), null);  // row 0 is the player's shelf
 });
 
 test('hit test follows a leaning, tilted row', () => {
-  const rh = 150, r = 5, cam = 300, W = 900, a = 1, y = r * rh - cam, base = y + rh - 12;
-  const b = book({x: 40, tilt: .2});
+  const rh = 150, r = 5, cam = 300, W = 2000, a = 1, y = r * rh - cam, base = y + rh - 12;
+  const b = book({x: 80, tilt: .2});
   // forward-transform the book's centre the way the renderer does, then expect a hit there
   const th = .085 * a, cx = W / 6, cy = y + rh / 2;
   let lx = 0, ly = -b.h / 2; // local, before tilt
@@ -46,4 +46,14 @@ test('lore word is stable, skips excluded words and drifts harder with depth', (
   const avg = row => { let t = 0; for (let s = 0; s < 200; s++) t += loreWord(pool, row, s, hashStr).d; return t / 200; };
   assert.ok(avg(200) > avg(5) + 1);
   assert.equal(loreWord([], 1, 1, hashStr), null);
+});
+
+test('lore books keep a clear margin from the pillars, the bay edges and the alcove frame', () => {
+  const W = 2000; // bays are 667 wide; the alcove spans 620..1380
+  assert.ok(loreClear(book({x: 300}), W));
+  assert.ok(!loreClear(book({x: 20}), W));               // hugging the left edge of the first bay
+  assert.ok(!loreClear(book({x: 667 - 40}), W));         // next to a pillar
+  assert.ok(!loreClear(book({x: 600}), W));              // too close to the alcove frame
+  assert.ok(!loreClear(book({x: 900}), W));              // under the alcove
+  assert.ok(!isLore(book({x: 900}), W) && isLore(book({x: 300}), W));
 });
