@@ -14,9 +14,9 @@ export function effectiveDifficulty(d, translations) {
   return +Math.max(0.5, Math.min(10, d + Math.max(-0.8, Math.min(0.5, adj)))).toFixed(1);
 }
 
-/** Daily ramp: eases in (two accessible words), then climbs. The generated pool thins out above ~6.5. */
-export const RAMP_START = 1.8;
-export const RAMP_END = 6.6;
+/** Daily ramp: eases in (two accessible words), then climbs. Daily stays in words a good share of players know; the easy end is not glaringly obvious. */
+export const RAMP_START = 2.4;
+export const RAMP_END = 5.2;
 export function rampTargets(n) {
   return Array.from({length: n}, (_, i) => {
     const f = n > 1 ? i / (n - 1) : .5;
