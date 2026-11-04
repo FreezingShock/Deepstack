@@ -31,11 +31,39 @@
 .bk-spread.menu .chips{display:flex;flex-wrap:wrap;gap:2px 14px}
 .bk-spread.menu .chipgroup{margin-top:12px}
 .bk-spread.menu .chipgroup>.kicker{margin-bottom:6px}
-/* shelf pages: the spines stand on a dark wooden case set into the page */
-.bk-spread.menu .shelfgrid{--rh:112px;margin:0 -8px;padding:0 10px;border-radius:3px;box-shadow:inset 0 0 18px #000a,0 0 0 1px #3a2819;background:repeating-linear-gradient(to bottom,#140f0a 0 var(--rh),#3a2819 var(--rh) calc(var(--rh) + 12px));min-height:calc(var(--rh) + 12px)}
-.bk-spread.menu .shelfgrid .slot{height:calc(var(--rh) + 12px)}
-.bk-spread.menu .shelfgrid img{margin-bottom:-14px}
-.bk-spread.menu .shelfgrid+h2{margin-top:22px}
+/* shelf pages: sections with a brass plaque, books lying flat in stacks on wooden shelves.
+   Every book has a fixed pixel size (never scaled), so the word and the book keep their shape. */
+.bk-spread.menu .ssec{margin:0 0 14px}
+.bk-spread.menu .splaque{display:flex;justify-content:center;margin:0 0 -7px;position:relative;z-index:2}
+.bk-spread.menu .splaque span{position:relative;padding:5px 22px 4px;border-radius:3px;font:500 15px/1 var(--fell);letter-spacing:.14em;text-transform:uppercase;color:var(--c-oak-1c1209);
+ background:linear-gradient(180deg,var(--c-bronze-56),var(--c-bronze-40) 55%,var(--c-bronze-31));
+ box-shadow:inset 0 1px 0 rgba(255,240,200,.45),inset 0 -2px 3px rgba(0,0,0,.35),0 2px 6px var(--c-black-alpha-bb);text-shadow:0 1px 0 rgba(255,235,190,.35)}
+.bk-spread.menu .splaque span::before,.bk-spread.menu .splaque span::after{content:"";position:absolute;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:var(--c-brass-d8c08c);box-shadow:0 1px 1px var(--c-black-alpha-aa)}
+.bk-spread.menu .splaque span::before{left:8px}.bk-spread.menu .splaque span::after{right:8px}
+.bk-spread.menu .scase{padding:9px 0 0;border-radius:3px;background:linear-gradient(180deg,var(--c-oak-120d08),var(--c-oak-1a110a));box-shadow:inset 0 0 18px #000a,0 0 0 1px var(--c-oak-2b1b10),0 0 0 3px var(--c-oak-5a3d22)}
+.bk-spread.menu .sshelf{position:relative;display:flex;align-items:flex-end;justify-content:space-around;gap:12px;padding:0 12px 11px;min-height:112px}
+.bk-spread.menu .sshelf::after{content:"";position:absolute;left:0;right:0;bottom:0;height:11px;background:linear-gradient(180deg,var(--c-oak-4d3623),var(--c-oak-2b1b10) 70%,var(--c-oak-0d0805));box-shadow:0 -1px 0 rgba(255,214,160,.14) inset}
+.bk-spread.menu .sstack{position:relative;z-index:1;flex:1 1 0;max-width:176px;min-width:0;display:flex;flex-direction:column-reverse;gap:2px}
+/* a lying book: leather spine, gilt rules either side of the title, page block peeking out */
+.bk-spread.menu .sbook{--bk:color-mix(in srgb,var(--t) 50%,#1a1008);--bk2:color-mix(in srgb,var(--t) 26%,#0a0604);--gild:color-mix(in srgb,var(--t) 62%,#f3dfa8);--tex:none;
+ position:relative;display:block;flex:none;width:100%;height:24px;padding:0;border:0;background:none;cursor:pointer;text-align:left;transform:translateX(var(--o,0px));transition:transform .2s cubic-bezier(.2,.8,.3,1),filter .2s}
+.bk-spread.menu .sbook[data-tex=leather]{--tex:radial-gradient(#0000002e 1px,transparent 1.4px) 0 0/4px 4px,radial-gradient(#ffffff12 1px,transparent 1.4px) 2px 2px/5px 5px}
+.bk-spread.menu .sbook[data-tex=cloth]{--tex:repeating-linear-gradient(0deg,#0000002a 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,#ffffff10 0 1px,transparent 1px 3px)}
+.bk-spread.menu .sbook[data-tex=worn]{--tex:radial-gradient(ellipse at 20% 30%,#ffffff1f,transparent 40%),radial-gradient(ellipse at 80% 70%,#0000004d,transparent 45%),radial-gradient(#0000002a 1px,transparent 1.5px) 0 0/3px 3px}
+.bk-spread.menu .sbook[data-tex=vellum]{--tex:repeating-linear-gradient(100deg,#ffffff0d 0 2px,transparent 2px 7px),radial-gradient(#00000026 1px,transparent 1.4px) 0 0/6px 6px}
+.bk-spread.menu .sbook[data-tex=grain]{--tex:repeating-linear-gradient(90deg,#00000024 0 1px,transparent 1px 5px),repeating-linear-gradient(88deg,#ffffff0c 0 2px,transparent 2px 9px)}
+.bk-spread.menu .sb-pages{position:absolute;inset:2px 0 2px 8px;border-radius:2px 4px 4px 2px;background:repeating-linear-gradient(0deg,var(--c-parchment-e6d8b2) 0 2px,var(--c-brass-bfb08a) 2px 3px);box-shadow:inset 0 0 6px #0008}
+.bk-spread.menu .sb-spine{position:absolute;inset:0 6px 0 0;display:flex;align-items:center;gap:6px;padding:0 6px 0 4px;border-radius:3px 5px 5px 3px;
+ background:var(--tex),linear-gradient(180deg,#ffffff2a 0,transparent 20%,#0000005c 100%),linear-gradient(90deg,var(--bk2),var(--bk) 10%,var(--bk) 90%,var(--bk2));
+ box-shadow:inset 0 1px 0 #ffffff40,inset 0 -2px 3px #000a,inset 2px 0 4px #0007,0 3px 6px -2px #000}
+.bk-spread.menu .sb-band{flex:none;align-self:stretch;width:5px;border-left:1px solid #0009;border-right:1px solid #ffffff22;background:linear-gradient(90deg,#0000004d,#ffffff1f 40%,#0000003d)}
+.bk-spread.menu .sb-band:first-child{margin-left:-4px;width:7px;border-radius:3px 0 0 3px}
+.bk-spread.menu .sb-t{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:500 12.5px/1 var(--serif);letter-spacing:.07em;text-transform:uppercase;text-align:center;color:var(--gild);text-shadow:0 1px 0 #0009;
+ padding:3px 4px;border:1px solid color-mix(in srgb,var(--gild) 50%,transparent);border-width:1px 0}
+.bk-spread.menu .sb-fav{flex:none;font:400 11px/1 var(--sans);color:var(--c-amber-92);font-style:normal;text-shadow:0 0 6px #000}
+.bk-spread.menu .sbook:hover,.bk-spread.menu .sbook:focus-visible{transform:translateX(calc(var(--o,0px) + 7px));filter:brightness(1.18);z-index:3}
+.bk-spread.menu .sbook:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.bk-spread.menu .sbook{transition:none}}
 .bk-spread.menu .toc{list-style:none;margin:0;padding:0}
 .bk-spread.menu .toc li{display:flex;align-items:baseline;gap:8px;padding:3px 0;font:400 16px var(--serif)}
 .bk-spread.menu .toc li::after{content:"";order:1;flex:1;border-bottom:1px dotted var(--mute);opacity:.5}
@@ -76,7 +104,7 @@
 .bk-spread.menu .floors b{font:500 19px var(--serif)}
 .bk-spread.menu .floors small{display:block;font:italic 400 14px var(--serif);color:var(--mute)}
 .bk-spread.menu .floors .ft{float:right;font:600 11px var(--sans);letter-spacing:.1em;color:var(--mute)}
-@media(max-width:700px){.bk-spread.menu .bigs{grid-template-columns:1fr 1fr}.bk-spread.menu .shelfgrid{margin:0 -4px}}
+@media(max-width:700px){.bk-spread.menu .bigs{grid-template-columns:1fr 1fr}}
 
 /* a card opened from a menu book sits above the book */
 body:has(.bk-spread) #cardlayer{z-index:100}

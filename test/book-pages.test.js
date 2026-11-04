@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {chunk,toSpreads} from '../src/ui/bookpages.js';
-import {shelfPages,statsLeaves} from '../src/ui/bookMenus.js';
+import {shelfPlan,stagger,statsLeaves} from '../src/ui/bookMenus.js';
 import {FLOORS,floorStartFt} from '../src/core/floors.js';
 
 test('chunk always returns at least one page',()=>{
@@ -12,13 +12,19 @@ test('toSpreads pairs leaves and pads an odd last page',()=>{
  assert.deepEqual(toSpreads(['a','b','c']),[{l:'a',r:'b'},{l:'c',r:''}]);
  assert.equal(toSpreads([]).length,1);
 });
-test('shelf pages repeat a group heading when it spills over',()=>{
- const items=Array.from({length:5},(_,i)=>({b:{w:'w'+i},i}));
- const pages=shelfPages([{label:'Codex',items}],3);
- assert.equal(pages.length,2);
- assert.equal(pages[0][0].cont,false);
- assert.equal(pages[1][0].cont,true);
- assert.equal(pages[1][0].items.length,2);
+test('shelf plan fills shelves of eight and keeps each plaque with a shelf',()=>{
+ const mk=n=>Array.from({length:n},(_,i)=>({b:{w:'w'+i},i}));
+ const pages=shelfPlan([{label:'Codex',items:mk(30)},{label:'Folio',items:mk(3)}]);
+ const all=pages.flat();
+ assert.equal(all.flatMap(s=>s.shelves).flat().length,33);
+ for(const s of all){assert.ok(s.shelves.length>=1);for(const sh of s.shelves)assert.ok(sh.length<=8);}
+ for(const pg of pages){const cost=pg.reduce((n,s)=>n+.35+s.shelves.length,0);assert.ok(cost<=4.05+1e-9,String(cost));}
+ assert.equal(all[0].cont,false);assert.equal(pages[1][0].cont,true);
+ assert.equal(shelfPlan([]).length,1);
+});
+test('stagger is small and stable',()=>{
+ assert.equal(stagger('frost'),stagger('frost'));
+ for(const w of ['a','tempest','glacier'])assert.ok(Math.abs(stagger(w))<=4);
 });
 test('stats leaves: one empty page, several when there are runs',()=>{
  const TIERS=Array.from({length:7},(_,i)=>({id:i,name:'T'+i,spine:'#fff'}));
