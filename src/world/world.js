@@ -1,4 +1,6 @@
 import {tierBase,mixc,LEATHER,RIBBONS,bookArt,rgbs} from '../ui/bookArt.js';
+import {plaqueShadow,plaqueMount} from '../ui/mounts.js';
+import {lecternGeom,drawLecternBack,drawLecternLip} from '../ui/lectern.js';
 import {PALETTE} from '../theme/colors.js';
 import {worldCovered,frameInterval} from '../ui/canvasCover.js';
 import {worldDpr} from '../ui/dprCap.js';
@@ -217,7 +219,7 @@ export const World=(()=>{
   // wall lanterns, hung from chains on the arch
   drawAlcoveLanterns(ctx,{x,y,w,h,r,lc,a,now,row});
   // numeral plaque on the arch
-  if(nv.label){ctx.font='600 13px Newsreader,Georgia,serif';const tw=ctx.measureText(nv.label).width+26,px=x+w/2-tw/2,py=y-12;const pg=ctx.createLinearGradient(0,py,0,py+24);pg.addColorStop(0,PALETTE.bronze35);pg.addColorStop(1,PALETTE.oak3d2916);ctx.fillStyle=pg;ctx.fillRect(px,py,tw,24);ctx.strokeStyle=PALETTE.brass;ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,tw-1,23);ctx.fillStyle=PALETTE.parchmentF3e3bd;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(nv.label,x+w/2,py+12.5);}
+  if(nv.label){ctx.font='600 13px Newsreader,Georgia,serif';const tw=ctx.measureText(nv.label).width+26,px=x+w/2-tw/2,py=y-12;plaqueShadow(ctx,px,py,tw,24);const pg=ctx.createLinearGradient(0,py,0,py+24);pg.addColorStop(0,PALETTE.bronze35);pg.addColorStop(1,PALETTE.oak3d2916);ctx.fillStyle=pg;ctx.fillRect(px,py,tw,24);ctx.strokeStyle=PALETTE.brass;ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,tw-1,23);ctx.fillStyle=PALETTE.parchmentF3e3bd;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(nv.label,x+w/2,py+12.5);plaqueMount(ctx,px,py,tw,24);}
   if(nv.res)drawNicheResult(nv.res,x,y,w,h,now);
   // this run's books stand on the ledge in word order; a skipped word leaves an empty slot
   const nk=nookMetrics(w);nv.hit=nv.books&&nv.books.length?drawLedge(ctx,{books:nv.books,x,y,w,h,now,RH,inset:nk.inset,maxH:nk.maxBookH,dims:b=>bookDims({w:b.w,tier:b.tier},RH),bookArt,ribbons:RIBBONS,hash:hashStr}):null;
@@ -263,7 +265,9 @@ export const World=(()=>{
    if(settle>0){ctx.save();ctx.globalCompositeOperation='lighter';const gg=ctx.createRadialGradient(bx,by0-bh/2,0,bx,by0-bh/2,bh*1.4);gg.addColorStop(0,T.spine+'bb');gg.addColorStop(1,T.spine+'00');ctx.globalAlpha=(.28+.35*T.id/6)*settle*(.85+.15*Math.sin(vt*5))*(1-e*.4);ctx.fillStyle=gg;ctx.fillRect(bx-bh*1.5,by0-bh*1.5,bh*3,bh*3);ctx.restore();}
    if(e>0){ // lifted off the shelf: it casts a soft shadow on the books behind, so it reads as held in front of them, not floating
     ctx.save();ctx.shadowColor=`rgba(0,0,0,${.6*e})`;ctx.shadowBlur=30*s*DPR;ctx.shadowOffsetX=-6000*DPR+8*e;ctx.shadowOffsetY=14*e*DPR;ctx.fillStyle='rgba(0,0,0,1)';ctx.fillRect(px-bw*s/2+6000,py-bh*s,bw*s,bh*s);ctx.restore();}
-   ctx.save();ctx.translate(px,py);ctx.scale(s,s);bookArt(ctx,{w:bw,h:bh,tier:st.tier,seed:st.seed,word:st.word,ribbon:st.tier>=1?RIBBONS[st.tier%5]:null},vt);ctx.restore();}
+   const lg0=e>0?lecternGeom(px,py,bw,bh,s,RM?1:e):null;if(lg0)drawLecternBack(ctx,lg0,RM?1:Math.min(1,e*1.6)); // the stand rises with the pull; reduced motion shows it already raised
+   ctx.save();ctx.translate(px,py);ctx.scale(s,s);bookArt(ctx,{w:bw,h:bh,tier:st.tier,seed:st.seed,word:st.word,ribbon:st.tier>=1?RIBBONS[st.tier%5]:null},vt);ctx.restore();
+   if(lg0)drawLecternLip(ctx,lg0,RM?1:Math.min(1,e*1.6));}
   // darkness / lamp (shrinks with abandonment)
   const lx=W/2,ly=H*.5,lr=Math.hypot(W,H)*(.6-.2*a)*atm.lampR;
   const lg=ctx.createRadialGradient(lx,ly,0,lx,ly,lr);lg.addColorStop(0,'rgba(0,0,0,0)');lg.addColorStop(.3,`rgba(6,4,2,${.2+.25*a})`);lg.addColorStop(1,`rgba(3,2,2,${.93+.06*a})`);ctx.fillStyle=lg;ctx.fillRect(0,0,W,H);

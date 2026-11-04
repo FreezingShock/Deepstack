@@ -1,0 +1,6 @@
+/* the floor banner is a plate screwed to the wall: a bolt in each corner of its rules (src/ui/mounts.js has the canvas twins) */
+#floorBanner b::before,#floorBanner b::after,#floorBanner i::before,#floorBanner i::after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e2c88e,#8a6a3c 55%,#2d2012);box-shadow:0 1px 2px rgba(0,0,0,.8)}
+#floorBanner b::before{left:calc(12% - 3px);top:11px}
+#floorBanner b::after{right:calc(12% - 3px);top:11px}
+#floorBanner i::before{left:calc(12% - 3px);bottom:13px}
+#floorBanner i::after{right:calc(12% - 3px);bottom:13px}
