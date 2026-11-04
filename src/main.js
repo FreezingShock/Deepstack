@@ -479,7 +479,7 @@ function showHome(){
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
 }
-$('#mark').onclick=()=>{if(World.busy&&World.stActive)return;if(run)return leaveRun();showHome();};
+$('#mark').onclick=()=>{if(World.busy&&World.stActive)return;if(run||ui.home.hidden)return leaveRun();showHome();};
 async function leaveRun(){run=null;ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;await World.ascend();showHome();}
 /* shelf hover/click on canvas */
 const cvEl=$('#world');
