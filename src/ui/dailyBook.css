@@ -1,0 +1,44 @@
+/* The Daily book: handwritten ledger pages. Scoped to .dly inside the menu book spreads. */
+.bk-spread.menu .dly{--hand:'Caveat','Segoe Script','Bradley Hand',cursive}
+.bk-spread.menu .dly .dly-date{font:600 clamp(22px,2.6vw,28px)/1.15 var(--hand);color:var(--c-oak-4a3a22);margin:2px 0 6px}
+.bk-spread.menu .dly .dly-no{font:600 clamp(30px,4vw,44px)/1 var(--hand);color:var(--bk);transform:rotate(-1.5deg);transform-origin:left;margin:6px 0 10px}
+.bk-spread.menu .dly .dly-line{font:500 23px/1.25 var(--hand);color:var(--ink);margin:6px 0 10px}
+.bk-spread.menu .dly .dly-tally{list-style:none;margin:6px 0 10px;padding:0;display:flex;flex-direction:column;gap:0}
+.bk-spread.menu .dly .dly-tally li{font:500 22px/1.5 var(--hand);color:var(--c-oak-4a3a22);border-bottom:1px dashed var(--rule)}
+.bk-spread.menu .dly .dly-tally b{font:600 26px var(--hand);color:var(--bk);margin-right:6px}
+.bk-spread.menu .dly h2{font-family:var(--hand);font-weight:600;font-size:24px;letter-spacing:.02em;text-transform:none;color:var(--bk);border-bottom:1.5px solid var(--rule)}
+/* contents: handwritten index with dotted leaders */
+.bk-spread.menu .dly .dly-toc{list-style:none;margin:0;padding:0}
+.bk-spread.menu .dly .dly-go{width:100%;display:flex;align-items:baseline;gap:8px;padding:1px 2px;border:0;background:none;cursor:pointer;text-align:left;color:var(--c-oak-4a3a22);font:500 22px/1.35 var(--hand)}
+.bk-spread.menu .dly .dly-go .no{font-weight:600;color:var(--bk);min-width:3.4em}
+.bk-spread.menu .dly .dly-go i{order:2;flex:1;border-bottom:1px dotted var(--mute);opacity:.6;transform:translateY(-4px)}
+.bk-spread.menu .dly .dly-go .dt{order:1}
+.bk-spread.menu .dly .dly-go b{order:3;font:600 20px var(--hand);color:var(--mute)}
+.bk-spread.menu .dly .dly-go b.ok{color:var(--bk)}
+.bk-spread.menu .dly .dly-go:hover,.bk-spread.menu .dly .dly-go:focus-visible{color:var(--bk);outline:0;text-decoration:underline wavy;text-decoration-thickness:1px;text-underline-offset:4px}
+/* a day: words and definitions */
+.bk-spread.menu .dly .dly-words{list-style:none;margin:12px 0 0;padding:0;counter-reset:dw;display:flex;flex-direction:column;gap:7px}
+.bk-spread.menu .dly .dly-words li{counter-increment:dw;position:relative;padding:0 0 6px 28px;border-bottom:1px dashed var(--rule)}
+.bk-spread.menu .dly .dly-words li::before{content:counter(dw);position:absolute;left:0;top:0;font:600 24px/1.1 var(--hand);color:var(--bk)}
+.bk-spread.menu .dly .dly-words .w{display:block;font:600 26px/1.1 var(--hand);color:var(--ink)}
+.bk-spread.menu .dly .dly-words .w small{font:italic 500 18px var(--hand);color:var(--mute)}
+.bk-spread.menu .dly .dly-words .d{display:block;font:500 20px/1.2 var(--hand);color:var(--c-oak-4a3a22)}
+.bk-spread.menu .dly .dly-words.sealed .w{color:var(--mute);letter-spacing:.3em}
+.bk-spread.menu .dly .dly-words.sealed .d{font-style:italic;opacity:.6}
+/* results */
+.bk-spread.menu .dly .dly-sum{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 10px;font:500 21px var(--hand);color:var(--c-oak-4a3a22)}
+.bk-spread.menu .dly .dly-sum b{font:600 28px var(--hand);color:var(--bk)}
+.bk-spread.menu .dly .dly-res{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.bk-spread.menu .dly .dly-res li{padding-bottom:5px;border-bottom:1px dashed var(--rule)}
+.bk-spread.menu .dly .dly-res .row{display:flex;align-items:baseline;gap:8px;font:600 24px/1.15 var(--hand);color:var(--ink)}
+.bk-spread.menu .dly .dly-res .w{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.bk-spread.menu .dly .dly-res .dot{width:9px;height:9px;border-radius:50%;align-self:center;flex:none}
+.bk-spread.menu .dly .dly-res .t{font:500 19px var(--hand);color:var(--mute)}
+.bk-spread.menu .dly .dly-res b{font:600 22px var(--hand);color:var(--bk);min-width:3.6em;text-align:right}
+.bk-spread.menu .dly .dly-res .said{font:italic 500 19px/1.2 var(--hand);color:var(--c-oak-4a3a22);padding-left:4px}
+.bk-spread.menu .dly .dly-empty{font:italic 500 22px/1.3 var(--hand);color:var(--mute);margin:18px 0}
+@media(max-width:560px){
+ .bk-spread.menu .dly .dly-words .d,.bk-spread.menu .dly .dly-res .said{font-size:19px}
+}
+.bk-spread.menu .dly .dly-words.sealed li{display:flex;align-items:baseline;gap:10px}
+.bk-spread.menu .dly .dly-words.sealed .d{margin-left:auto;font-size:18px}

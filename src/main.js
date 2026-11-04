@@ -27,6 +27,8 @@ import {loreCovered as loreCoveredAt} from './ui/loreCover.js';
 import {isLore,drawLoreMark,drawLoreGlow,hitLoreBook,initLore} from './ui/lore.js';
 import './ui/lore.css';
 import {shelfBook,statsBook} from './ui/bookMenus.js';
+import {dailyBook} from './ui/dailyBook.js';
+import './ui/dailyBook.css';
 import './ui/bookpages.css';
 import './ui/fonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
@@ -34,7 +36,7 @@ import {drawAlcoveLanterns} from './ui/lanterns.js';
 import './ui/ledge.css';
 import './ui/buttons.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
-const wordsReady=loadWords();
+const wordsReady=loadWords();let wordsLoaded=false;wordsReady.then(()=>{wordsLoaded=true;},()=>{wordsLoaded=true;});
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const RM=reducedMotion();
 const sleep=ms=>new Promise(r=>setTimeout(r,RM?Math.min(ms,30):ms));
@@ -48,7 +50,7 @@ S.rating=core.loadRating(S.rating);
 const save=()=>store.set('deepstack.v1',S);
 backfillSets(S);
 const utc=()=>new Date().toISOString().slice(0,10);
-const dailyNo=()=>Math.floor((Date.parse(utc())-Date.parse('2026-01-01'))/864e5)+1;
+const dailyNo=()=>Math.max(1,core.dailyNumber(utc()));
 const HINT_LABEL={sentence:'used in a sentence',synonym:'a related word',opening:'how the definition begins'};
 function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);Sfx.set(S.sound);}
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
@@ -599,7 +601,7 @@ function openCard(b,opts={}){
    <p class="def">${esc(b.def)}</p>
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
    <div class="chips">
-    ${opts.fresh?`<span><b>+${b.ft} ft</b> \u00b7 ${opts.depth1} ft</span>`:b.t?`<span>${b.mode==='daily'?'No. '+b.no+' \u00b7 ':''}${new Date(b.t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</span>`:''}
+    ${opts.fresh?`<span><b>+${b.ft} ft</b> \u00b7 ${opts.depth1} ft</span>`:b.t?`<span>${b.mode==='daily'?'No. '+Math.max(1,core.dailyNumber(new Date(b.t).toISOString().slice(0,10)))+' \u00b7 ':''}${new Date(b.t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</span>`:''}
     ${opts.fresh&&b.combo?`<span class="cb">Combo <b>${comboLabel(b.combo.mult)}</b> \u00b7 ${b.combo.n} in a row</span>`:opts.fresh&&opts.broke?`<span>Combo broken</span>`:''}
     <span class="cs"><b id="cn">${opts.fresh?0:b.score}</b>/100<div class="meter"><i id="mt" style="width:${opts.fresh?0:b.score}%"></i></div></span>
    </div>
@@ -632,6 +634,7 @@ addEventListener('keydown',e=>{
 const bookOpenCard=()=>!$('#cardlayer').hidden;
 BOOK_PAGES.bAll=shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc:bookOpenCard});
 BOOK_PAGES.bSets={...setsBook(S),keepOnEsc:bookOpenCard};
+BOOK_PAGES.bDaily={...dailyBook({S,today:utc,streak:()=>computeStats(S,utc()).streak,wordsReady,wordsLoaded:()=>wordsLoaded}),keepOnEsc:bookOpenCard};
 BOOK_PAGES.bStats={...statsBook({S,st:()=>computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt}),keepOnEsc:bookOpenCard};
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 
