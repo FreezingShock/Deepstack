@@ -322,10 +322,21 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Files: `vite.config.js`, loader, fonts. Done when: transfer measured before/after, fonts committed so no third-party request.
 **Touches:** JUDGE loader, CORE words, fonts. **Conflicts:** judge and word pool threads.
 
-### 40. Low-end mode
+### 40. [x] Low-end mode (PR TBD)
 **Pitch:** Detect slow devices and lower particles, DPR and canvas fps automatically, with a manual setting.
 **Brief:** Files: new `src/ui/quality.js`, settings. Done when: quality tiers tested via a mock, other items respect it.
 **Touches:** settings, WORLD (read). **Conflicts:** particles, 38.
+**Done:** `src/ui/quality.js` (`Quality.params()` / `.scale(n)` / `.subscribe()`, tiers high/medium/low, auto from device memory, cores, data saver, then steps down if the first ~90 frames median over 28 ms). Settings panel has a Graphics row (Auto/High/Medium/Low), stored in `deepstack.quality.v1`. Wired: world DPR, 30 fps cap and dust count on low, FX particle count/cap/DPR, ambient creatures off on low. New effects (floors, lighting, fallen books, curios, ambience) should read `Quality.params()` (`glow`, `ambient`, `particles`, `dust`) instead of adding their own checks.
+
+### 68. Wire new effects into Quality
+**Pitch:** Make sure every effect landed after low-end mode obeys the Graphics setting.
+**Brief:** Goal: audit lighting, fallen books, curios, ambience and floor effects for `Quality.params()` use (glow off on low, counts scaled). Files: those effects, `test/quality.test.js`. Done when: a test fails if a new rAF effect ignores Quality.
+**Touches:** each effect file. **Conflicts:** run after 1, 2, F, 4, 24 land.
+
+### 69. Graphics preview in settings
+**Pitch:** Switching Graphics should show what changes without leaving the panel.
+**Brief:** Goal: live FPS readout (from `?perf` stats) beside the Graphics row. Files: `src/ui/topbar.js`, `src/ui/perfStats.js`. Done when: readout updates at 2 Hz only while the panel is open.
+**Touches:** topbar. **Conflicts:** none.
 
 ### 41. Memory soak
 **Pitch:** 100 headless runs prove memory and listener counts stay flat.

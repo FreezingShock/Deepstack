@@ -3,6 +3,7 @@ import {plaqueShadow,plaqueMount} from '../ui/mounts.js';
 import {lecternGeom,drawLecternBack,drawLecternLip} from '../ui/lectern.js';
 import {PALETTE} from '../theme/colors.js';
 import {worldCovered,frameInterval} from '../ui/canvasCover.js';
+import {Quality} from '../ui/quality.js';
 import {worldDpr} from '../ui/dprCap.js';
 import {Feel,Sfx} from '../feel.js';
 import {travelEase,travelMs} from '../ui/camMotion.js';
@@ -33,7 +34,7 @@ export const World=(()=>{
  const barPx=()=>52+(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat'))||0);
  function nicheBox(){const nw=Math.min(W-24,760),NT=barPx()+16,NB=H-RH-BM-10;return{x:(W-nw)/2,w:nw,t:NT,h:NB-NT,b:NB};}
  function setNicheVars(){const n=nicheBox(),r=document.documentElement.style;r.setProperty('--nx',n.x+'px');r.setProperty('--nw',n.w+'px');r.setProperty('--nt',n.t+'px');r.setProperty('--nb',(H-n.b)+'px');r.setProperty('--nook',nookMetrics(W).reserve+'px');}
- function resize(){W=innerWidth;H=innerHeight;DPR=worldDpr(W,H,devicePixelRatio); // capped at ~6 MP so huge screens stay light
+ function resize(){W=innerWidth;H=innerHeight;DPR=worldDpr(W,H,Math.min(devicePixelRatio||1,Quality.params().dprMax)); // capped at ~6 MP so huge screens stay light
   cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);RH=clamp(H*.22,108,172);BM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);rows.clear();
   document.documentElement.style.setProperty('--shelfH',(RH+BM+10)+'px');setNicheVars();document.documentElement.style.setProperty('--rh',Math.round(RH*.8)+'px');if(!st)cam=restCam(restRow);}
  // where the book for row r is pulled from: a random spot along that shelf, stable for the row
@@ -216,7 +217,8 @@ export const World=(()=>{
  let lastDraw=0,coverChk=0,covNow=false;
  function frame(now){
   if(now-coverChk>100){coverChk=now;covNow=worldCovered();} // DOM probe at 10 Hz, not per frame
-  const gap=frameInterval({covered:covNow,busy:!!st||!!rest,feelActive:Feel.ts!==1||!!Feel.ox||!!Feel.oy});
+  Quality.sample(now);
+  const gap=Math.max(Quality.params().frameMs,frameInterval({covered:covNow,busy:!!st||!!rest,feelActive:Feel.ts!==1||!!Feel.ox||!!Feel.oy}));
   if(gap&&now-lastDraw<gap-4){requestAnimationFrame(frame);return;}
   lastDraw=now;
   const rdt=Math.min(gap?.12:.05,(now-last)/1000);last=now;Feel.tick(rdt);const dt=rdt*Feel.ts;vt+=dt*(st&&st.skip?6:1);cv.style.transform=Feel.ox||Feel.oy?`translate(${Feel.ox}px,${Feel.oy}px)`:'';{const cl=document.getElementById('cardlayer');if(cl)cl.style.transform=cv.style.transform;}
@@ -271,7 +273,7 @@ export const World=(()=>{
   if(st){const zi=st.prog>=1?st.tier:Math.min(st.tier,tierOf(st.prog*st.score));const zc=TIERS[zi].spine;g=ctx.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*.6);g.addColorStop(0,zc+'26');g.addColorStop(1,zc+'00');ctx.fillStyle=g;ctx.globalAlpha=.5+.5*settle;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;gaugeCb&&gaugeCb(zi,st);}
   if(!RM){ // dust batched: 8 alpha buckets, one path and fill each, instead of a style string and fill per mote
    const dm=Math.max(W,H)*.45,bk=dustB;for(const b of bk)b.length=0;
-   for(const p of dust){p.y-=dt*(5+p.z*14);p.x+=Math.sin(vt*.6+p.ph)*dt*8;const yy=((p.y+camNow*(.25+p.z*.5))%H+H)%H,xx=(p.x%W+W)%W;const dist=Math.hypot(xx-lx,yy-ly)/dm;const al=Math.max(0,1-dist)*(.15+.5*Math.abs(Math.sin(vt*1.3+p.ph)))*(.7+a);const k=Math.min(7,al*9|0);if(al>.01)bk[k].push(xx,yy,p.r*(.6+p.z));}
+   for(let di=0,dn=Math.min(dust.length,Quality.params().dust);di<dn;di++){const p=dust[di];p.y-=dt*(5+p.z*14);p.x+=Math.sin(vt*.6+p.ph)*dt*8;const yy=((p.y+camNow*(.25+p.z*.5))%H+H)%H,xx=(p.x%W+W)%W;const dist=Math.hypot(xx-lx,yy-ly)/dm;const al=Math.max(0,1-dist)*(.15+.5*Math.abs(Math.sin(vt*1.3+p.ph)))*(.7+a);const k=Math.min(7,al*9|0);if(al>.01)bk[k].push(xx,yy,p.r*(.6+p.z));}
    for(let k=0;k<8;k++){const b=bk[k];if(!b.length)continue;ctx.fillStyle=DUST_STYLE[k];ctx.beginPath();for(let i=0;i<b.length;i+=3){ctx.moveTo(b[i]+b[i+2],b[i+1]);ctx.arc(b[i],b[i+1],b[i+2],0,6.3);}ctx.fill();}}
   if(!RM)drawMoths(lx,ly,a,dt);
   drawAmbient(ctx,ambItems,vt,'glow',atm.lamp);
@@ -290,7 +292,7 @@ export const World=(()=>{
  let rest=null,flick=0,flickV=0,flickT=0;
  const dustB=Array.from({length:8},()=>[]),DUST_STYLE=Array.from({length:8},(_,k)=>`rgba(255,226,170,${((k+.5)/9).toFixed(3)})`);
  for(let i=0;i<100;i++)dust.push({x:Math.random()*5000,y:Math.random()*3000,z:Math.random(),r:.8+Math.random()*1.6,ph:Math.random()*6});
- addEventListener('resize',resize);resize();requestAnimationFrame(frame);
+ addEventListener('resize',resize);Quality.subscribe(resize);resize();requestAnimationFrame(frame);
  cv.addEventListener('pointerdown',e=>{if(st)st.skip=true;});
  return{
   setShelf(b){shelf=b;},hits:()=>hits,
