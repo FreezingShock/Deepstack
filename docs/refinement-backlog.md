@@ -140,7 +140,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: strip the card to one focal point per tier, details behind a tap. Files: `card.css`, new `cardDetails.js`. Done when: a test asserts at most 3 visible text elements by default, details reachable by keyboard, Folio and above visibly grander than Hardbound.
 **Touches:** card, MAIN hook. **Conflicts:** tier reveals thread; sequence after it.
 
-### 17. Tier-specific book dressing on the card
+### [x] 17. Tier-specific book dressing on the card (tierFrames.css, CSS-only, no shared book library yet)
 **Serves:** rarity hero, book objects.
 **Pitch:** The book on the card looks like its tier: foil sheen on Codex, rune glow on Grimoire, shimmer on Apocrypha.
 **Brief:** Goal: pure CSS/canvas treatments driven by the book object library (7). Files: new `tierFrames.js` + css. Done when: seven-tier strip screenshot, tokens only, reduced motion static.
