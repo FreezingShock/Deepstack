@@ -55,7 +55,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: 2 or 3 ambient creatures/events per floor, each rare and quiet, never over text or panels (respect the particles rules). Files: new `src/ui/ambient.js`. Done when: spawn rates capped, none covers the alcove or HUD (test via exclusion rects), off in reduced motion and low quality mode (35).
 **Touches:** WORLD. **Conflicts:** Particles thread (#83), 2.
 
-### 4. Hidden things to find
+### 4. Hidden things to find [x] shipped as curios
 **Serves:** immersion, lore books.
 **Pitch:** More than words hide on the shelves: a loose page, a bookmark ribbon, a locked book that opens at a depth, a marginal note someone left.
 **Brief:** Goal: 3 new rare shelf curiosities revealed on hover, seeded per row like lore books (pure function of the row seed, no storage). Files: new `src/ui/curios.js`. Done when: hover reveals with the same halo rules as lore books (tight, never near the alcove or pillars), determinism test, touch alternative.
@@ -353,6 +353,18 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** Credits list Wiktionary, model, fonts and a short "what's new" shown once per version.
 **Brief:** Files: `topbar.js` credits, new `changelog.js`. Done when: once-per-version test, licences present.
 **Touches:** `topbar.js`. **Conflicts:** none.
+
+### 60. More secrets in the stacks
+**Serves:** immersion, things that live down there.
+**Pitch:** "things that live down there": curios that react to depth, such as eyes in the gaps below the Hollow, a book that is warm only in the Abyss.
+**Brief:** Goal: add 2 to 3 depth-gated curio kinds beside the shelf curios. Files: `src/ui/curios.js`. Done when: per-floor determinism test, same halo rules.
+**Touches:** new files, WORLD hook. **Conflicts:** ambient life (3).
+
+### 61. Collect the curios
+**Serves:** persistent shelf, lore.
+**Pitch:** Curios you have found are listed in a handwritten page of the Collection, so hunting feels like it counts.
+**Brief:** Goal: record found curios additively in the save and show them in a book page. Files: new `src/ui/curioLog.js`. Done when: save tolerates missing field, page readable at 375 px.
+**Touches:** BOOK, new files. **Conflicts:** none.
 
 ---
 

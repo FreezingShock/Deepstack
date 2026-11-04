@@ -32,6 +32,8 @@ import {fitSpine,spineFont,resetSpineMeasure} from './ui/spineLabel.js';
 import {loreCovered as loreCoveredAt} from './ui/loreCover.js';
 import {isLore,drawLoreMark,drawLoreGlow,hitLoreBook,initLore} from './ui/lore.js';
 import './ui/lore.css';
+import {isCurio,drawCurioMark,hitCurio,initCurios} from './ui/curios.js';
+import './ui/curios.css';
 import {shelfBook,statsBook} from './ui/bookMenus.js';
 import {replayLayout,ROMAN} from './core/replay.js';
 import {snapshotRun,resumable} from './core/dailyRun.js';
@@ -242,7 +244,7 @@ const World=(()=>{
     for(const b of d.bs){if(b.x+b.w<bx0-50||b.x>bx1+50)continue;ctx.save();const bx=b.x+b.w/2;
      if(b.lying){ctx.translate(bx,base);ctx.rotate(-.04);bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,dust:a*.9,ribbon:b.rib},vt);}
      else{ctx.translate(bx,base);if(b.tilt){ctx.translate(b.w/2,0);ctx.rotate(b.tilt);ctx.translate(-b.w/2,0);}
-      if(layer===0){bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,dust:a*.8,ribbon:b.rib},vt);if(isLore(b,W))drawLoreMark(ctx,b);}
+      if(layer===0){bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,dust:a*.8,ribbon:b.rib},vt);if(isLore(b,W))drawLoreMark(ctx,b);else if(isCurio(b,W))drawCurioMark(ctx,b);}
       else{ctx.fillStyle=rgbs(b.col);ctx.fillRect(-b.w/2,-b.h,b.w,b.h);}}
      ctx.restore();}}
    if(layer===0){for(const pr of d.props)floorProp(pr,fl,bx0,bx1,y,base);for(const wb of d.webs){if(building&&wb.k==='strand')continue;if(wb.x>=bx0-120&&wb.x<=bx1+120)drawWeb(wb,y,a,fl.web);}
@@ -295,7 +297,7 @@ const World=(()=>{
  function drawLoreGlows(top,bot,camNow){
   for(let r=top;r<=bot;r++){const d=r?rows.get(r*2):null;if(!d)continue;
    const y=r*RH-camNow,base=y+RH-12,a=abn(r);
-   for(const b of d.bs){if(!isLore(b,W)||b.x+b.w<0||b.x>W||loreCovered(b,base,camNow))continue;
+   for(const b of d.bs){if(!(isLore(b,W)||isCurio(b,W))||b.x+b.w<0||b.x>W||loreCovered(b,base,camNow))continue;
     ctx.save();
     if(a>.03){const i=Math.min(2,Math.max(0,Math.floor((b.x+b.w/2)/(W/3)))),th=(i===0?1:i===2?-1:0)*.085*a;if(th){const cx=(i+.5)*W/3,cy=y+RH/2;ctx.translate(cx,cy);ctx.rotate(th);ctx.translate(-cx,-cy);}}
      
@@ -401,7 +403,7 @@ const World=(()=>{
  return{
   setShelf(b){shelf=b;},hits:()=>hits,
   // the lore book under a screen point, if any: {row, book}
-  loreAt(x,y){const r=Math.floor((y+lastCam)/RH),b=hitLoreBook(rows.get(r*2),r,RH,W,lastCam,abn(r),x,y,(b,base)=>loreCovered(b,base,lastCam));return b?{row:r,book:b}:null;},get shelfVisible(){return shelfVisible;},get restRow(){return restRow;},get busy(){return !!st||!!rest;},
+  loreAt(x,y){const r=Math.floor((y+lastCam)/RH),b=hitLoreBook(rows.get(r*2),r,RH,W,lastCam,abn(r),x,y,(b,base)=>loreCovered(b,base,lastCam));return b?{row:r,book:b}:null;},curioAt(x,y){const r=Math.floor((y+lastCam)/RH),b=hitCurio(rows.get(r*2),r,RH,W,lastCam,abn(r),x,y,(b,base)=>loreCovered(b,base,lastCam));return b?{row:r,book:b}:null;},get shelfVisible(){return shelfVisible;},get restRow(){return restRow;},get busy(){return !!st||!!rest;},
   reset(){rows.clear();taken.clear();niches.clear();restRow=0;st=null;rest=null;cam=restCam(0);},
   clearNiches(){niches.clear();},
   // put a finished descent back (see core/replay.js): alcoves, emptied shelf slots, camera at the top
@@ -499,6 +501,9 @@ cvEl.addEventListener('click',e=>{if(World.stActive||World.restRow!==0||!(ui.sta
 /* lore books: thick background books reveal a word; never one from the current run or today's daily */
 {let dk='',dw=[];initLore({world:World,canvas:cvEl,pool:WORDS,hash:hashStr,enabled:()=>!World.busy,
  exclude:()=>{if(dk!==utc()){dk=utc();dw=dailyWords(dk,7).map(w=>w.w);}return run?[...dw,...run.words.map(w=>w.w)]:dw;}});}
+
+/* curios: rare thin books hide a loose page, a ribbon, a sealed clasp or a marginal note */
+initCurios({world:World,canvas:cvEl,enabled:()=>!World.busy});
 
 /* ---------- judge status (model download) ---------- */
 function paintJudge(st){const el=$('#jstat');if(!el)return;
