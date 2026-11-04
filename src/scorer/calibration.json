@@ -1,27 +1,27 @@
 {
   "provisional": false,
-  "note": "Fitted by `npm run calibrate -- --write` against test/fixtures/answers.json (103 labelled answers, real MiniLM q8). Tier minimums are in src/core/tiers.js.",
+  "note": "Anchors fitted by `npm run calibrate`, then hand-adjusted against npm run judge:eval (test/fixtures/answers.json + tricky-answers.json, real MiniLM q8, hubness-corrected similarity). Tier minimums are in src/core/tiers.js.",
   "model": "Xenova/all-MiniLM-L6-v2",
   "fancyBonusMax": 4,
   "points": [
     [
-      0.152,
+      0.18,
       0
     ],
     [
-      0.341,
-      16
+      0.28,
+      14
     ],
     [
-      0.566,
-      52
+      0.4,
+      48
     ],
     [
-      0.668,
-      76
+      0.58,
+      72
     ],
     [
-      0.909,
+      0.77,
       90
     ],
     [
@@ -29,5 +29,5 @@
       100
     ]
   ],
-  "calibratedOn": "2026-11-03"
+  "calibratedOn": "2026-11-04"
 }

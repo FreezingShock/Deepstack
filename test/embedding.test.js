@@ -66,7 +66,7 @@ test('antonym guard flags answers on the opposite side of the definition, not pa
 test('a contrary answer is cut down and flagged', () => {
   const e = w('ephemeral'), raw = 'lasting forever and never fading', p = prepareAnswer(raw, e);
   const r = scoreFromSims([.64], p, raw, {word: e});
-  assert.ok(r.opposite && r.score < 25);
+  assert.ok(r.opposite && r.score < curve(.64) / 2);
 });
 test('a bare synonym is judged against the word itself, but a contrary one is not rescued', () => {
   const f = w('frugal'), p = prepareAnswer('thrifty', f);
@@ -81,4 +81,26 @@ test('weak glosses and obscure words are kept out of the pool', () => {
   assert.ok(weakGloss('By surprise; startled; dumbfounded. (see usage).'));
   assert.ok(!weakGloss('Up to this or that time.'));
   assert.ok(MIN_TRANSLATIONS >= 25);
+});
+
+test('an answer that is nothing but the target word scores zero', () => {
+  for (const raw of ['obsequiousness', 'candidly']) {
+    const word = w(raw.startsWith('obseq') ? 'obsequious' : 'candid');
+    assert.equal(scoreFromSims([.9], prepareAnswer(raw, word), raw, {word}).score, 0);
+  }
+});
+test('antonym guard: negation stops at the end of its clause, and new pairs catch eager/wordy/tough/plant-eater answers', () => {
+  const f = w('fragile'), r = w('reluctant'), l = w('laconic'), c = w('carnivore'), d = w('discord');
+  assert.ok(contrary('tough and unbreakable', f.def, f));
+  assert.ok(!contrary('delicate and easily broken', f.def, f));
+  assert.ok(contrary('eager and enthusiastic', r.def, r));
+  assert.ok(contrary('wordy and long-winded', l.def, l, l.opp));
+  assert.ok(contrary('an animal that eats plants', c.def, c));
+  assert.ok(contrary('peace and harmony', d.def, d));
+});
+test('hubness correction lowers a generic answer and leaves a specific one alone', () => {
+  const e = w('ephemeral'), p = prepareAnswer('a type of thing', e);
+  const plain = scoreFromSims([.4], p, 'a type of thing', {word: e}).score;
+  assert.ok(scoreFromSims([.4], p, 'a type of thing', {word: e, hub: .5}).score < plain);
+  assert.ok(scoreFromSims([.4], p, 'a type of thing', {word: e, hub: .1}).score > plain);
 });

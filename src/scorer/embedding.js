@@ -1,6 +1,7 @@
 // Pure scoring math for the embedding judge (no model code, so it runs in Node tests).
 import {analyze} from './lexical.js';
 import {contrary} from './antonyms.js';
+import {HUB_BETA, HUB_REF} from './hubness.js';
 import calibration from './calibration.json' with {type: 'json'};
 
 export const cosine = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; }; // vectors are unit length
@@ -42,11 +43,13 @@ const SYNONYM_MIN = .42, SYNONYM_CAP = .55;
  * @param {string} rawText the answer as typed
  * @param {{word?:object, wordSim?:number, points?:number[][]}} ctx word: the target (enables the antonym guard);
  *   wordSim: cosine of the answer with the target word itself (lets a bare synonym such as "thrifty" count);
- *   points: curve override used while calibrating
+ *   hub: highest cosine of the answer to the distractor definitions (hubness.js); points: curve override used while calibrating
  * @returns {{score:number,sim:number,opposite:boolean}}
  */
 export function scoreFromSims(sims, prepared, rawText, ctx = {}) {
+  if (!prepared.text) return {score: 0, sim: 0, opposite: false}; // nothing left once the target word (or a form of it) is removed
   let sim = Math.max(...sims);
+  if (ctx.hub != null) sim -= HUB_BETA * (ctx.hub - HUB_REF); // see hubness.js
   const contrarian = !!ctx.word && contrary(rawText, ctx.word.def, ctx.word, ctx.word.opp || '');
   // A one- or two-word answer is a synonym attempt; it is compared with the word itself, not just the longer definition.
   if (!contrarian && ctx.wordSim >= SYNONYM_MIN && prepared.content <= 2) sim = Math.max(sim, Math.min(SYNONYM_CAP, ctx.wordSim + .05));

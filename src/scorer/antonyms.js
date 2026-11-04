@@ -5,7 +5,7 @@ import {analyze, stem, match} from './lexical.js';
 
 // Each entry: [side A terms, side B terms]. Matched on stems, so list base forms.
 const PAIRS = [
-  ['brief, short, fleeting, temporary, transient, momentary, passing, short-lived, ephemeral', 'long, forever, eternal, permanent, endless, perpetual, everlasting, immortal'],
+  ['brief, short, fleeting, temporary, transient, momentary, passing, short-lived, ephemeral', 'long, forever, eternal, permanent, endless, perpetual, everlasting, immortal, enduring, endure, ages, centuries, decades, timeless'],
   ['brave, courage, courageous, bold, fearless, valiant, heroic, daring', 'cowardly, coward, timid, fearful, afraid, fear, frightened, craven, meek'],
   ['honest, truthful, frank, candid, sincere, truth, open, straightforward', 'lie, lying, liar, dishonest, deceit, deceive, deceptive, false, hide, hiding, conceal, secretive, untruthful'],
   ['frugal, thrifty, sparing, economical, stingy, miserly', 'lavish, extravagant, wasteful, waste, spend, spending, squander, generous, splurge, luxurious, luxury'],
@@ -36,6 +36,13 @@ const PAIRS = [
   ['visible, overt', 'secret, covert, concealed, confidential'],
   ['anger, angry, rage, wrath, irritate, annoy, furious', 'pacify, placate, soothe, appease, calm'],
   ['praise, flatter, compliment, commend, laud', 'insult, mock, ridicule, scorn, deride, belittle, disparage'],
+  // Added with the tricky-answer eval set (test/fixtures/tricky-answers.json): pairs whose antonyms the embedding scores as near-matches.
+  ['reluctant, unwilling, hesitant, loath, disinclined, averse', 'eager, willing, keen, enthusiastic, avid, zealous'],
+  ['terse, curt, concise, succinct, taciturn, reticent, reserved, silent', 'verbose, talkative, chatty, loquacious, garrulous, winded, rambling, outgoing, gabby'],
+  ['fragile, breakable, brittle, flimsy, frail, delicate', 'tough, durable, unbreakable, rugged, hardy, solid'],
+  ['peace, concord, accord, unity, cooperation, amity', 'discord, conflict, strife, quarrel, dispute, friction, hostility, feud'],
+  ['meat, flesh, carnivore, carnivorous, predator, predatory', 'plant, herbivore, herbivorous, vegetarian, vegan, grass, vegetable'],
+  ['break, violate, breach, infringe, disregard, flout, transgress', 'follow, obey, comply, abide, adhere, uphold'],
 ];
 
 const compiled = PAIRS.map(p => p.map(side => side.split(',').map(t => stem(t.trim().replace(/-/g, ''))).filter(Boolean)));
@@ -44,13 +51,17 @@ const hit = (stems, terms) => stems.some(s => terms.some(t => match(s, t) >= .85
 /** Which side of each group a text lands on. Negated terms ("not wasting", "lacking courage") count for the opposite side. */
 const NEG = /\b(without|lacking|lacks|lack of|devoid of|free of|never|no longer|unable to)\b/gi;
 export function sidesOf(text, word) {
-  const A = analyze(text.replace(NEG, ' not '), word), out = new Set();
+  const out = new Set();
   const place = (toks, flip) => compiled.forEach((g, i) => {
     const stems = toks.map(t => t.s);
     if (hit(stems, g[0])) out.add(`${i}:${flip ? 1 : 0}`);
     if (hit(stems, g[1])) out.add(`${i}:${flip ? 0 : 1}`);
   });
-  place(A.pos, false); place(A.neg, true);
+  // A negation only reaches to the end of its own clause: "not sturdy; of delicate material" must not flip "delicate".
+  for (const clause of text.replace(NEG, ' not ').split(/[;.()]/)) {
+    const A = analyze(clause, word);
+    place(A.pos, false); place(A.neg, true);
+  }
   return out;
 }
 
