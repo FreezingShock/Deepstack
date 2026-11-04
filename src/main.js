@@ -28,7 +28,7 @@ const save=()=>store.set('deepstack.v1',S);
 backfillSets(S);
 const utc=()=>new Date().toISOString().slice(0,10);
 const dailyNo=()=>Math.floor((Date.parse(utc())-Date.parse('2026-01-01'))/864e5)+1;
-const HINT_LABEL={letters:'first letter',sentence:'sentence',synonym:'a near word'};
+const HINT_LABEL={sentence:'used in a sentence',synonym:'a related word',opening:'how the definition begins'};
 function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);b.textContent=S.sound?'Sound on':'Sound';Sfx.set(S.sound);}
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
 initA11y();

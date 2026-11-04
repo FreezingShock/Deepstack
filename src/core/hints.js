@@ -4,13 +4,8 @@
 import {selfReferential} from './wordPool.js';
 
 /** Rows deducted from a word's descent. A row is about 4 ft; an answer earns 3 to 35 rows. */
-export const HINT_COST = {letters: 1, sentence: 2, synonym: 3};
+export const HINT_COST = {sentence: 1, synonym: 2, opening: 3};
 export const MIN_ROWS = 2; // hints can shrink a descent but never erase it
-
-/** Shape only: first letter and length. Always available. */
-export function lettersClue(w) {
-  return `Begins with “${w.w[0]}” · ${w.w.length} letters`;
-}
 
 /** A real example sentence with the word blanked, or null (the pool's templated fallback has no blank). */
 export function sentenceClue(w) {
@@ -30,11 +25,23 @@ export function synonymClue(w) {
   return short[0] || null;
 }
 
-/** The ordered ladder of hints this word can give: [{kind, cost, text}]. */
+/** The first few words of the definition, trailed by an ellipsis. Withheld for short definitions,
+ *  where a fragment would be most of the answer. */
+export function openingClue(w) {
+  const words = w.def.replace(/\.$/, '').split(/;\s*/)[0].replace(/^(to|a|an|the)\s+/i, '').split(/\s+/).filter(Boolean);
+  if (words.length < 5) return null;
+  const n = Math.max(2, Math.min(4, Math.floor(words.length * 0.35)));
+  const head = words.slice(0, n).join(' ');
+  return head.toLowerCase().includes(w.w.toLowerCase()) ? null : head + '\u2026';
+}
+
+/** The ordered ladder of hints this word can give: [{kind, cost, text}]. Sentence leads when the
+ *  data has a real one; otherwise the ladder simply starts at the next meaning hint. */
 export function hintLadder(w) {
-  const out = [{kind: 'letters', cost: HINT_COST.letters, text: lettersClue(w)}];
+  const out = [];
   const s = sentenceClue(w); if (s) out.push({kind: 'sentence', cost: HINT_COST.sentence, text: s});
   const y = synonymClue(w); if (y) out.push({kind: 'synonym', cost: HINT_COST.synonym, text: y});
+  const o = openingClue(w); if (o) out.push({kind: 'opening', cost: HINT_COST.opening, text: o});
   return out;
 }
 
