@@ -5,3 +5,4 @@
 #curio b{font:600 12px Cinzel,Georgia,serif;letter-spacing:.08em;text-transform:uppercase;color:var(--c-bronze-6a5638)}
 #curio p{margin:5px 0 0;font:italic 400 14px/1.4 Newsreader,Georgia,serif}
 @media (prefers-reduced-motion:reduce){#curio{transition:none;transform:none}}
+#curio small{display:block;margin:6px 0 0;font:400 11px Cinzel,Georgia,serif;letter-spacing:.08em;color:var(--c-bronze-6a5638);opacity:.85}

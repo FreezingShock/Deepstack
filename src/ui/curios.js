@@ -27,7 +27,7 @@ export const curioKind = b => KINDS[mix(b.seed | 0) % KINDS.length];
 export function curioText(row, b) {
   const h = mix((row * 7919 + (b.seed | 0)) | 0), kind = curioKind(b);
   if (kind === 'sealed') {
-    if (row < SEALED_BELOW) return {kind, label: KIND_LABEL.sealed, text: 'Locked. The clasp will not give, not yet. Come back lower.'};
+    if (row < SEALED_BELOW) return {kind, label: KIND_LABEL.sealed, locked: true, text: 'Locked. The clasp will not give, not yet. Come back lower.'};
     return {kind, label: KIND_LABEL.sealed, text: SEALED[h % SEALED.length]};
   }
   const list = kind === 'page' ? PAGES : (h & 1 ? RIBBONS : NOTES);
@@ -58,7 +58,7 @@ export {drawLoreGlow as drawCurioGlow};
 export const hitCurio = (d, r, rh, W, cam, a, px, py, covered) => hitLoreBook(d, r, rh, W, cam, a, px, py, covered, isCurio);
 
 /** Hover (or tap) reveals the curio's slip; anything else puts it back. */
-export function initCurios({world, canvas, enabled, doc = document}) {
+export function initCurios({world, canvas, enabled, doc = document, hint = () => '', onOpen = () => {}}) {
   const card = doc.createElement('div');
   card.id = 'curio'; card.setAttribute('role', 'note'); card.hidden = true;
   doc.body.appendChild(card);
@@ -69,7 +69,7 @@ export function initCurios({world, canvas, enabled, doc = document}) {
     if (shown === hit.book) return;
     const c = curioText(hit.row, hit.book);
     shown = hit.book;
-    card.innerHTML = `<b>${esc(c.label)}</b><p>${esc(c.text)}</p>`;
+    const h = hint(hit); card.innerHTML = `<b>${esc(c.label)}</b><p>${esc(c.text)}</p>${h ? `<small>${esc(h)}</small>` : ''}`;
     card.hidden = false; card.classList.remove('on');
     const r = card.getBoundingClientRect();
     card.style.left = Math.max(10, Math.min(innerWidth - r.width - 10, x - r.width / 2)) + 'px';
@@ -81,6 +81,13 @@ export function initCurios({world, canvas, enabled, doc = document}) {
     const hit = world.curioAt(e.clientX, e.clientY);
     if (hit) { canvas.style.cursor = 'help'; reveal(hit, e.clientX, e.clientY); return; }
     if (shown) hide();
+  });
+  canvas.addEventListener('click', e => {
+    if (!enabled()) return;
+    const hit = world.curioAt(e.clientX, e.clientY);
+    if (!hit) return;
+    onOpen(hit, e.clientX, e.clientY);
+    shown = null; reveal(hit, e.clientX, e.clientY);
   });
   canvas.addEventListener('pointerleave', hide);
   canvas.addEventListener('pointerdown', e => {

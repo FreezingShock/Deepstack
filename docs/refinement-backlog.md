@@ -66,7 +66,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: 2 or 3 ambient creatures/events per floor, each rare and quiet, never over text or panels (respect the particles rules). Files: new `src/ui/ambient.js`. Done when: spawn rates capped, none covers the alcove or HUD (test via exclusion rects), off in reduced motion and low quality mode (35).
 **Touches:** WORLD. **Conflicts:** Particles thread (#83), 2.
 
-### 4. Hidden things to find [x] shipped as curios
+### 4. Hidden things to find [x] shipped as curios; made clickable and collectible (PR pending)
 **Serves:** immersion, lore books.
 **Pitch:** More than words hide on the shelves: a loose page, a bookmark ribbon, a locked book that opens at a depth, a marginal note someone left.
 **Brief:** Goal: 3 new rare shelf curiosities revealed on hover, seeded per row like lore books (pure function of the row seed, no storage). Files: new `src/ui/curios.js`. Done when: hover reveals with the same halo rules as lore books (tight, never near the alcove or pillars), determinism test, touch alternative.
@@ -444,7 +444,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: add 2 to 3 depth-gated curio kinds beside the shelf curios. Files: `src/ui/curios.js`. Done when: per-floor determinism test, same halo rules.
 **Touches:** new files, WORLD hook. **Conflicts:** ambient life (3).
 
-### 61. Collect the curios
+### 61. [x] Collect the curios (curio thread: Curios pages at the end of the Stats book)
 **Serves:** persistent shelf, lore.
 **Pitch:** Curios you have found are listed in a handwritten page of the Collection, so hunting feels like it counts.
 **Brief:** Goal: record found curios additively in the save and show them in a book page. Files: new `src/ui/curioLog.js`. Done when: save tolerates missing field, page readable at 375 px.
@@ -792,3 +792,21 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** A small brass bell, an inkwell and a stamp sit on the niche ledge; the bell chimes, the stamp thumps a due date onto the borrower's slip.
 **Brief:** Goal: ledge props with one sound each. Files: new `src/ui/deskProps.js`. Done when: nothing floats, props hidden under 560 px.
 **Touches:** HOME, ledge. **Conflicts:** 4.
+
+### K1. Curio you can carry
+**Serves:** discovery, reward for looking.
+**Pitch:** A curio, once kept, can be pinned to the reading stand or the nook desk, so what you found is visible in the world.
+**Brief:** Goal: show up to 3 kept curios on the nook ledge. Files: new `src/ui/curioDesk.js`, `alcoveArt.js` hook. Done when: nothing overlaps the word at 375 px.
+**Touches:** HOME. **Conflicts:** 90, E.
+
+### K2. Depth-gated curios (60) with sound
+**Serves:** things that live down there.
+**Pitch:** Eyes in the gaps below the Hollow, a book that is warm only in the Abyss, each with a small sound when opened.
+**Brief:** Goal: add 2 kinds to `curios.js` plus the cabinet rows. Done when: per-floor determinism test.
+**Touches:** `curios.js`. **Conflicts:** 95.
+
+### K3. The last curio
+**Serves:** lore, discovery.
+**Pitch:** The letter ends on a curio that is not on any shelf you can find by looking; finishing the letter should lead somewhere.
+**Brief:** Goal: a reward for the 30th find (seeded hidden place). Files: `curioLog.js`. Done when: tested, no storage shape change.
+**Touches:** new files. **Conflicts:** none.
