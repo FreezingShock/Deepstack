@@ -32,13 +32,13 @@ export function finalHTML(d, S, o) {
   const kicker = d.mode === 'unlimited' ? (d.placing ? 'Placement' : 'Unlimited') : d.practice ? 'Practice run' : 'Daily No. ' + o.no;
   const lex = d.mode === 'unlimited' ? `<span>Lexicon <b>${d.lex}</b>${d.placing ? '' : ` (${d.lex >= d.lex0 ? '+' : '\u2212'}${Math.abs(d.lex - d.lex0)})`} \u00b7 ${esc(o.levelTitle(d.lex / 10))}</span>` : '';
   return `<div class="sheet fin">
-  <p class="fkick">${kicker}</p>
-  <h1 class="title ftitle">Descent complete</h1>
-  <div class="bigd"><span id="cnt">0</span><small>ft deep</small></div>
+  <div class="fhead"><p class="fkick">${kicker}</p>
+  <h1 class="title ftitle">Descent complete</h1></div>
+  <div class="fleft"><div class="bigd"><span id="cnt">0</span><small>ft deep</small></div>
   <p class="fsub">${o.floorName ? `<span>Reached <b>${esc(o.floorName)}</b></span>` : ''}<span>Average <b>${d.avg}</b></span><span>Rarest <b>${esc(o.rarest)}</b></span>${lex}</p>
-  <div class="spineimgs" id="sp">${o.spines}</div>
-  ${recapHTML(d, S)}
-  <div class="slipwrap fslip"><i class="pin"></i><div class="slip"><pre class="share pe" id="shr">${esc(o.txt)}</pre></div></div>
+  <div class="spineimgs" id="sp">${o.spines}</div></div>
+  <div class="fright">${recapHTML(d, S)}
+  <div class="slipwrap fslip"><i class="pin"></i><div class="slip"><pre class="share pe" id="shr">${esc(o.txt)}</pre></div></div></div>
   <div class="row"><button class="btn pri" id="cp">Copy result</button><button class="btn" id="up">Back to the surface</button></div></div>`;
 }
 

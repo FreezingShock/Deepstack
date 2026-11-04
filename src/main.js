@@ -51,6 +51,8 @@ import './ui/bookStyle.css';
 import './ui/statsPages.css';
 import './ui/penInk.css';
 import './ui/ink.css';
+import './ui/inkInput.css';
+import {attachInk} from './ui/inkInput.js';
 import './ui/fonts.css';
 import './ui/googleFonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
@@ -582,6 +584,7 @@ function showWord(){
  World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
+ attachInk(ta);
  ta.oninput=()=>{Sfx.quill();const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
  run.ladder=hintLadder(w);run.hintN=0;paintHintBtn();
  $('#hint').onclick=useHint;$('#skip').onclick=()=>submit(true);

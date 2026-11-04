@@ -28,6 +28,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [~] Daily fairness and streaks
 - [~] Particles off panels and text (#83)
 - [~] Home button from Today's Result (bug)
+- [x] Results screen fits one view, no scroll (this PR)
 - [x] Done: Daily book (#72), fonts (#73), results screen (#74), tagline (#75), smooth glides (#76, #79), page-corner flips (#77), replay descent (#78), top shelves and planks (#68, #80), shelf duplicates (#70), readable recent spines (#71), lore books hover and halo (#45, #57, #67), chained lanterns (#41), top bar (#31), floors and tracker (#33), menu books (#35-#39, #46), tokens (#49-#62), judge worker (#61), phone layout (#60, #64), canvas throttling (#51).
 
 ## Conflict map
@@ -157,7 +158,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: drawn candle with flame height tied to time left. Files: new `src/ui/candle.js` + css; hook. Done when: flame function tested (full, half, last 10 s, zero), reduced motion steady flame.
 **Touches:** MAIN hook. **Conflicts:** run screen thread (it may already include this; check before starting).
 
-### 20. Quill and ink input
+### 20. Quill and ink input — [x] done (PR pending)
 **Serves:** handwritten, tactile.
 **Pitch:** The answer box looks like writing on parchment: a quill cursor, ink settling on each letter, a blotter on Enter (Enter still submits, no word count).
 **Brief:** Goal: restyle the input only, keep behaviour. Files: new `src/ui/inkInput.js` + css. Done when: IME and mobile keyboard work, long answers scroll, typing sound still rate-limited.
@@ -447,6 +448,18 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** A shared stagger step so lists of books, rows and chips rise in one rhythm instead of hand-set delays.
 **Brief:** Goal: `stagger(i)` in `motion.js` plus `--m-stagger`. Files: `motion.js`, css delays. Done when: delay literals removed from `home.css`. **Touches:** css. **Conflicts:** 66.
 
+### 69. Per-word results as a shelf you can open
+**Serves:** "it shouldnt be like that" (results must not scroll); "everything is a book".
+**Pitch:** The results word list becomes the spines strip itself: hover a spine for tier and score, click to open its card, so the list can shrink further on phones.
+**Brief:** Goal: merge the spine strip and the word list on `src/ui/results.js`. Done when: phone keeps one view with spines visible, 14-letter word unclipped.
+**Touches:** results only. **Conflicts:** mini-book result card thread.
+
+### 70. Phone results keeps the share note
+**Serves:** "share note cut off", "words must be fully readable".
+**Pitch:** On phones the share note and stat tiles are hidden to fit one view. Bring the note back as a pull-up slip from the Copy button.
+**Brief:** Goal: a tap on Copy result lifts the torn note over the list, then drops it. Files: `src/ui/results.js`, `results.css`. Done when: no scroll at 375x667 and the note shows complete.
+**Touches:** results only. **Conflicts:** none.
+
 ## Suggested batches
 - **Overhaul wave 1 (his favourite kind):** 7, 8, 11, 12, 16 (book objects, opening, shelf bays, almanac, reveal card). Run 7 first; 8 and 11 after.
 - **Make the library darker:** 1, 2, 3, 6 (sections, light, life, physical audit). Sequence after floors #81.
@@ -537,4 +550,17 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** A book that missed a rarity by a few points keeps its crimson ribbon tab on the shelf and on its result card ("3 short of Codex"), so near misses are collectable stories.
 **Brief:** Goal: reuse `closeGap` from `chain.js` on the shelf spines and the book card. Files: shelf draw hook, `bookCard.css`. Done when: tokens only, 14-letter spine still readable at 375 px.
 **Touches:** shelf, card. **Conflicts:** 7, 16.
+
+
+### 78. Ink the typed answer on the result card
+**Serves:** handwritten, integrated.
+**Pitch:** The player's own answer reappears on the result card and book page in the same wet-to-dry ink, as if they had just written it.
+**Brief:** Goal: reuse `inkRuns` from `src/ui/inkInput.js` to show the answer in handwriting. Files: new `src/ui/inkAnswer.js`, card hook. Done when: long answer wraps at 375 px, reduced motion static.
+**Touches:** card. **Conflicts:** 17.
+
+### 79. Ink colour that follows the floor
+**Serves:** dark and mysterious.
+**Pitch:** Deeper slips get darker, older ink: iron-gall black in the Archive, sepia and then faded violet below the Hollow.
+**Brief:** Goal: one ink token per floor on the answer slip. Files: `inkInput.css`, `colors.js`. Done when: tokens only, contrast still readable.
+**Touches:** colors. **Conflicts:** 81.
 
