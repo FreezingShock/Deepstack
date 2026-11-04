@@ -29,6 +29,8 @@ catch (e) { console.log('smoke: no browser, skipping:', e.message.split('\n')[0]
 // Fonts and the embedding model come from third parties; keep CI offline-safe and fast. A blocked model makes the
 // app use its lexical judge, which is deterministic. Failed-resource console lines for these hosts are expected.
 const BLOCKED = /^https?:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|huggingface\.co|[^/]*\.hf\.co|cdn\.jsdelivr\.net)\//;
+// Optional same-origin assets: self-hosted model/runtime and the gitignored local font files may legitimately be absent.
+const OPTIONAL = /\/(models|ort|fonts)\//;
 const problems = [];
 const fail = msg => { problems.push(msg); };
 const T = 15000;
@@ -41,10 +43,10 @@ async function newPage() {
   page.on('console', m => {
     if (m.type() !== 'error') return;
     if (BLOCKED.test(m.location()?.url || '')) return;
-    if (/Failed to load resource/.test(m.text()) && !m.location()?.url?.startsWith(url)) return;
+    if (/Failed to load resource/.test(m.text()) && (!m.location()?.url?.startsWith(url) || OPTIONAL.test(m.location().url))) return;
     fail(`console.error: ${m.text()}`);
   });
-  page.on('requestfailed', r => { if (r.url().startsWith(url) && !/\/(models|ort)\//.test(r.url())) fail(`request failed: ${r.url()}`); });
+  page.on('requestfailed', r => { if (r.url().startsWith(url) && !OPTIONAL.test(r.url())) fail(`request failed: ${r.url()}`); });
   return page;
 }
 
