@@ -49,6 +49,8 @@ import { particleVisibility } from './ui/particleMask.js';
 import './ui/polish.css';
 import './ui/runScreen.css';
 import {paintRun} from './ui/runScreen.js';
+import {hintSlipHtml,hintButtonLabel,skipButtonLabel} from './ui/hintSlips.js';
+import './ui/hintSlips.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();let wordsLoaded=false;wordsReady.then(()=>{wordsLoaded=true;},()=>{wordsLoaded=true;});
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -555,10 +557,10 @@ function showWord(){
  clearInterval(timerId);
  timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);paintRun(left,run.limit);if(left<=0)submit(!$('#ans').value.trim());},100);
 }
-function paintHintBtn(){const b=$('#hint');if(!b)return;const n=run.ladder[run.hintN];b.disabled=!n;b.textContent=n?`Hint: ${HINT_LABEL[n.kind]} (\u2212${n.cost*FT|0} ft)`:'No more hints';}
+function paintHintBtn(){const b=$('#hint');if(!b)return;const n=run.ladder[run.hintN];b.disabled=!n;b.textContent=hintButtonLabel(n,n?n.cost*FT|0:0,run.ladder.length-run.hintN);const k=$('#skip');if(k)k.textContent=skipButtonLabel(run.combo,run.hintN);}
 function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;run.hintSpent=(run.hintSpent||0)+n.cost;
- const hl=$('#hl');const line=n.kind==='sentence'?esc(n.text).replace('___',`<mark>${esc(run.words[run.i].w)}</mark>`):esc(n.text);
- hl.innerHTML+=`<div>${line}</div>`;requestAnimationFrame(()=>hl.classList.add('on'));paintHintBtn();$('#ans').focus({preventScroll:true});}
+ const hl=$('#hl');
+ hl.insertAdjacentHTML('beforeend',hintSlipHtml(n,run.words[run.i].w,n.cost*FT|0,run.hintN));Sfx.flip&&Sfx.flip();requestAnimationFrame(()=>hl.classList.add('on'));paintHintBtn();$('#ans').focus({preventScroll:true});}
 async function submit(skipped){
  if(!run||run.busy)return;const w=run.words[run.i];let text=$('#ans').value.trim();
  if(!skipped&&!text){const f=$('#fld');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');return;}
