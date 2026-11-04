@@ -79,3 +79,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-04 attic: "it should be separate from the Shelf book and instead be a scrollupable room thats above the shelfs that has cobwebs, supports / beams, and look like an actual attic where books are stacked" -> the attic is a place in the world, not a panel or book page: a scroll-up room above the shelves with roof, beams, cobwebs and books lying in piles (thread: attic room)
 
 - 2026-11-04 welcome v2: "note cards on each side should be more readable, todays result more centralized", "stylize the word Deepstack" -> pinned cards must be legible at normal size and vertically centred on the Descend/Result block; the title is a gilt wordmark, not plain serif (thread: welcome screen)
+- 2026-11-04 attic: "Earlier finds should go in the attic" -> no "Earlier finds" bay on the Shelf's floor view; floorless books live in the attic (thread: attic room)

@@ -31,9 +31,10 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Lore books (click a thick spine to reveal word and definition) | `src/ui/lore.js`, `loreCover.js` | B | Pure function of the row seed. Revealing is hover based; no touch affordance beyond tap. |
 | Curios (rare thin spines: loose page, ribbon, sealed book, marginal note) | `src/ui/curios.js` | B | Hover slip, click opens with a small animation (`curioFx.js`), keeps the find in `S.curios` (additive), toast, and Curios pages with a letter that unlocks line by line at the end of the Stats book (`curioLog.js`). Sealed books open below row 40. Little copy so far. |
 | Home screen: sectioned menu books (Play/Collection/Records), carved Descend plaque, Daily book | `src/ui/home.js`, `home.css`, `bookMenus.js`, `dailyBook.js`, `ledge.js` | B | Menu books open as paged parchment spreads with corner flips (#77). Open/close v3 (#103): cover swing under 600 ms, endpapers, page-block edges, ribbon drop, shut thud with sound, fade under reduced motion (`bookOpenFx.js`). Welcome overhaul (backlog 29): rules are a pinned catalogue card, records a borrower's slip, "The Reading Room" kicker (`welcome.css`); cards show at 1000 px and wider, rules inline on tablets, hidden on phones. Librarian's desk (W2): a brass bell, an inkwell and a due-date stamp stand on the niche ledge, each a button with one sound; the stamp thumps DUE +14 days onto the slip; hidden under 560 px (`deskProps.js`/`.css`). |
+| Home screen: sectioned menu books (Play/Collection/Records), carved Descend plaque, Daily book | `src/ui/home.js`, `home.css`, `bookMenus.js`, `dailyBook.js`, `ledge.js` | B | Menu books open as paged parchment spreads with corner flips (#77). Open/close v3 (#103): cover swing under 600 ms, endpapers, page-block edges, ribbon drop, shut thud with sound, fade under reduced motion (`bookOpenFx.js`). Welcome overhaul (backlog 29): rules are a pinned catalogue card, records a borrower's slip, "The Reading Room" kicker (`welcome.css`); cards show at 1000 px and wider, rules inline on tablets, hidden on phones. The rules card is a card-catalogue drawer: pull (button, Enter/Space) to slide the card out, Turn to flip to combo and tier rules, Esc closes; static under reduced motion (`welcome.js`). |
 | Book spreads: Shelf, Sets, Stats, Daily | `src/ui/bookpages.js`, `browse.js`, `sets/ui.js` | B | Shelf collapses duplicates per tier (#70). Search and tier filters exist. Stats is a four-page almanac (`statsPages.js`): streak tally marks, Lexicon line, tier spine stacks, floor cross-section. Pages are inked (`ink.js`): pen divider, section underlines, margin doodle and note, occasional blot (#105). |
 | Book spreads: Shelf, Sets, Stats, Daily | `src/ui/bookpages.js`, `browse.js`, `sets/ui.js` | B | Shelf collapses duplicates per tier (#70). Search and tier filters exist. Stats is a four-page almanac (`statsPages.js`): streak tally marks, Lexicon line, tier spine stacks, floor cross-section. |
-| Attic: a room in the world canvas above the top shelves. Scroll up on home (wheel, swipe, ArrowUp, ladder cue) and the camera climbs into a gabled roof space: rafters, collar beam, posts, cobwebs, round window with a light shaft and dust, hanging lamp, "THE ATTIC" sign, and books lying in piles (recent guesses last 12 first, then floorless earlier finds). Tap a book to open it. Not part of the Shelf book. | `src/world/atticRoom.js`, `src/ui/atticHome.js`, `attic.css`, `src/core/attic.js` | B | Static room cached offscreen; only books, lamp and dust animate. Down: Escape, ArrowDown, swipe up, wheel down or the ladder button. Floor bay mode lists floorless books under Earlier finds. |
+| Attic: a room in the world canvas above the top shelves. Scroll up on home (wheel, swipe, ArrowUp, ladder cue) and the camera climbs into a gabled roof space: rafters, collar beam, posts, cobwebs, round window with a light shaft and dust, hanging lamp, "THE ATTIC" sign, and books lying in piles (recent guesses last 12 first, then floorless earlier finds). Tap a book to open it. Not part of the Shelf book. | `src/world/atticRoom.js`, `src/ui/atticHome.js`, `attic.css`, `src/core/attic.js` | B | Static room cached offscreen; only books, lamp and dust animate. Down: Escape, ArrowDown, swipe up, wheel down or the ladder button. Floorless books are not in the Shelf's floor bays; they live only here (and in the other Shelf bay modes). |
 | Book spreads: Shelf, Sets, Stats, Daily | `src/ui/bookpages.js`, `browse.js`, `sets/ui.js` | B | Shelf collapses duplicates per tier (#70). Search and tier filters exist. Stats is a four-page almanac (`statsPages.js`): streak tally marks, Lexicon line, tier spine stacks, floor cross-section. |
 | Book art: one `bookArt` for canvas world, ledge and DOM spine images | `src/ui/bookArt.js` | B | Seven tier materials from the tier colour; lettering never squeezed. DOM card/menu books still CSS (backlog 7a). |
 | Book spreads: Shelf, Sets, Stats, Daily | `src/ui/bookpages.js`, `browse.js`, `sets/ui.js` | B | Shelf is a library section: bays by rarity, floor found, set or Daily date, brass labels, ladder, piled copies, pull-a-book (`shelfBays.js`); new books save `fl` (floor). Stats is a four-page almanac (`statsPages.js`): streak tally marks, Lexicon line, tier spine stacks, floor cross-section. |
@@ -63,7 +64,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Feature | Files | Q | State and known gaps |
 |---|---|---|---|
 | Save in `localStorage` key `deepstack.v1` (additive fields; falls back to memory if blocked) | `src/main.js` (`store`) | B | No export/import, no versioned migrations, shelf capped. |
-| CI: tests, build, headless boot smoke (clicks Descend and every menu book), seeded screenshot snapshots | `.github/workflows/ci.yml`, `scripts/smoke.mjs`, `snapshots.mjs`, `test/snapshots/` | A | Snapshots are tolerant (10% pixel diff). No mobile snapshots, no axe run. Docs-only changes (`*.md`, `docs/`) skip install/build/browser steps. |
+| CI: tests, build, headless boot smoke (clicks Descend and every menu book), seeded screenshot snapshots | `.github/workflows/ci.yml`, `scripts/smoke.mjs`, `snapshots.mjs`, `test/snapshots/` | A | Snapshots are tolerant (10% pixel diff). No mobile snapshots, no axe run. Jobs: `scope`, `test` and `build` in parallel, then `smoke` and `snapshots` as parallel matrix jobs, then the single required `check` aggregator. Docs-only changes (`*.md`, `docs/`) skip everything heavy. |
 | Auto-merge workflow | `.github/workflows/automerge.yml` | A | Squash, requires `check`. |
 | Judge benchmark | `scripts/judge-bench.mjs` | A | Compares worker, forced-main, blocked-worker. |
 
@@ -90,7 +91,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-04. Do not edit by hand._
 | `src/app/util.js` | 8 |  | - |
 | `src/core/attic.js` | 60 | The attic: where books with no known floor live. New books save the floor they were found  | attic |
 | `src/core/boot.js` | 11 | Load-path scheduling: heavy downloads (word list, judge model) start after the first paint | load-path |
-| `src/core/combo.js` | 27 | Combo multiplier: consecutive answers at Folio or better chain a bonus on the depth earned | combo, floors, ledge-story, unlimited-combo |
+| `src/core/combo.js` | 27 | Combo multiplier: consecutive answers at Folio or better chain a bonus on the depth earned | combo, floors, ledge-story, rules-card, unlimited-combo |
 | `src/core/daily.js` | 29 |  | daily-book, difficulty-ramp, embedding, lore, scorer, unlimited |
 | `src/core/dailyRun.js` | 14 | A Daily in progress, saved after every word so quitting (or a reload) resumes where the pl | daily-run |
 | `src/core/difficulty.js` | 42 | Difficulty ramp and fairness filters for the generated word pool. | difficulty-ramp |
@@ -105,12 +106,12 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-04. Do not edit by hand._
 | `src/core/shelf.js` | 34 | Pure shelf logic: filtering, sorting and grouping. Books are entries of S.shelf; | shelf-bays, shelf |
 | `src/core/stats.js` | 45 | Pure stats derived from saved state, so nothing extra has to be stored and old saves keep  | stats, streak |
 | `src/core/streak.js` | 27 | Streaks derived from the saved Daily results (S.daily keys, UTC days), so they cannot drif | streak |
-| `src/core/tiers.js` | 19 |  | book-art, ledge-story, theme-tokens |
+| `src/core/tiers.js` | 19 |  | book-art, ledge-story, rules-card, theme-tokens |
 | `src/core/unlimited.js` | 63 | Unlimited mode: an ~8 word placement test, then an Elo-style rating (the Lexicon, 0-100) t | unlimited |
 | `src/core/wordPool.js` | 101 | Builds the playable word pool from public/data/words.json (see scripts/build-words.mjs). | difficulty-ramp, embedding, hints-no-spelling, hints, sets |
 | `src/core/words.js` | 47 | [word,pos,difficulty,definition,hintSentence,[[label,weight,"term, term, multi word"]...], | difficulty-ramp, embedding, feedback, hints-no-spelling, hints, scorer, sets, unlimited |
 | `src/feel.js` | 172 | Sound, ambience and "juice". Everything is synthesized with WebAudio (no assets). | - |
-| `src/main.js` | 147 |  | book-style, buttons |
+| `src/main.js` | 149 |  | book-style, buttons |
 | `src/scorer/antonyms.js` | 74 | Embeddings place antonyms close together ("lasting forever" ~ "lasting briefly"), so the e | embedding |
 | `src/scorer/embedding.js` | 81 | Pure scoring math for the embedding judge (no model code, so it runs in Node tests). | embedding, judge-relations |
 | `src/scorer/engine.js` | 49 | The actual model loader/runner. Runs inside the judge worker (worker.js) or, as a fallback | - |
@@ -147,7 +148,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-04. Do not edit by hand._
 | `src/ui/atticHome.js` | 44 | Getting into the attic from home. The attic is a room in the world canvas above the top sh | - |
 | `src/ui/bookArt.js` | 169 | The one way to draw a book spine. Used by the canvas world (shelves, ledge, held book) and | book-art |
 | `src/ui/bookCard.css` | 42 | Result card as a small open book (loaded after card.css, same selectors, so it wins). | css-sanity |
-| `src/ui/bookMenus.js` | 93 | Shelf and Stats as pages of an open book. Pure leaf builders are exported for tests; the o | book-pages, pen-ink, shelf-bays |
+| `src/ui/bookMenus.js` | 94 | Shelf and Stats as pages of an open book. Pure leaf builders are exported for tests; the o | book-pages, pen-ink, shelf-bays |
 | `src/ui/bookOpenFx.css` | 33 | Book opening and closing v3: timings come from --o- | book-open-fx |
 | `src/ui/bookOpenFx.js` | 34 | Book opening and closing choreography (v3). Pure timing plus small DOM helpers used by ope | book-open-fx |
 | `src/ui/bookStyle.css` | 32 | Shared book style. One set of tokens and one single-page container so every panel (Setting | book-style |
@@ -186,7 +187,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-04. Do not edit by hand._
 | `src/ui/hintSlips.css` | 12 |  | hint-slips |
 | `src/ui/hintSlips.js` | 31 | Hint and skip presentation. Hints arrive as small pinned slips beside the answer, each lab | hint-slips |
 | `src/ui/home.css` | 279 | Home screen: hierarchy = title > Descend plaque > records > sections. | book-open-fx, book-page-flip, book-style, home-book-stacks, home-books, home-layout, home-niche, home, pen-ink, phone-book-pages |
-| `src/ui/home.js` | 214 |  | book-open-fx, book-page-flip, book-style, home-book-stacks, home-books, home-layout, home-niche, home, pen-ink, phone-book-pages |
+| `src/ui/home.js` | 215 |  | book-open-fx, book-page-flip, book-style, home-book-stacks, home-books, home-layout, home-niche, home, pen-ink, phone-book-pages |
 | `src/ui/homeLayout.js` | 27 | Home composition: one lit reading room in three zones (title, plaque, stacks) with a fixed | home-layout |
 | `src/ui/ink.css` | 20 | Hand-drawn page furniture (src/ui/ink.js). Pure decoration: pointer-events off, text colou | ink |
 | `src/ui/ink.js` | 62 | Hand-drawn page furniture for the menu books: a pen divider under each page title, a wobbl | ink |
@@ -225,7 +226,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-04. Do not edit by hand._
 | `src/ui/screenFx.js` | 27 | A short dark dip over the canvas world, used to hide an instant swap of what the world sho | screen-fx |
 | `src/ui/settings.js` | 42 | Player settings: sound volume, reduced motion, text size, high contrast. | settings |
 | `src/ui/shelfBays.css` | 33 | Shelf bays: brass labels with a count, a leaning library ladder with a rail, piled copies, | shelf-bays |
-| `src/ui/shelfBays.js` | 40 | Shelf bays: the Shelf book is a small library section. Books are shelved in labelled bays  | shelf-bays |
+| `src/ui/shelfBays.js` | 39 | Shelf bays: the Shelf book is a small library section. Books are shelved in labelled bays  | shelf-bays |
 | `src/ui/spineLabel.js` | 35 | Spine lettering for the books standing on the home shelf. The old spines had a fixed label | book-art, spine-label |
 | `src/ui/statsPages.css` | 56 | The Almanac: hand-kept stats pages inside the menu book. Scoped to .alm. Colours via token | stats-almanac |
 | `src/ui/statsPages.js` | 94 | Stats as an almanac: four hand-kept pages built from saves that already exist (dailies, S. | stats-almanac |
@@ -236,7 +237,8 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-04. Do not edit by hand._
 | `src/ui/topbar.js` | 97 | Library-themed top bar: brass plaque, wooden lintel, and the buttons on it | book-style |
 | `src/ui/tracker.js` | 62 | Depth tracker: a side rail with one segment per themed floor, its depth range, and where y | phone-book-pages, tracker |
 | `src/ui/transitions.js` | 48 | Smooth screen transitions. Screens are toggled with the `hidden` attribute elsewhere; | screen-fx, transitions |
-| `src/ui/welcome.css` | 49 | Welcome screen as a reading room: the rules are a catalogue card and the records a borrowe | css-sanity |
+| `src/ui/welcome.css` | 89 | Welcome screen as a reading room: the rules are a catalogue card and the records a borrowe | rules-card |
+| `src/ui/welcome.js` | 62 | The home rules card: a card-catalogue drawer on the niche ledge. Pulling it slides the car | rules-card |
 | `src/world/atticRoom.js` | 176 | The attic room: a real place above the top shelves of the world canvas. Scroll up from hom | attic-room |
 | `src/world/bookArt.js` | 18 |  | book-art |
 | `src/world/world.js` | 337 |  | home-niche |

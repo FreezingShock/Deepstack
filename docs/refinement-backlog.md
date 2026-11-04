@@ -743,9 +743,13 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** Check every hung thing at 375 px for bolts that crowd the text and give the narrow plaques a one-bolt variant.
 **Brief:** Goal: audit `plaqueBolts` at phone widths with 14-letter labels. Files: `src/ui/mounts.js`. Done when: screenshots attached. **Touches:** WORLD. **Conflicts:** 5.
 
-### CI1. Shard the browser checks
+### CI1. [x] Shard the browser checks (PR pending)
 **Pitch:** Smoke and snapshots are about 35 to 55 s of a 75 to 120 s run; splitting snapshots into two parallel jobs would cut the wait further.
 **Brief:** Goal: run `snapshots.mjs` per viewport/screen group in a matrix, keeping one required `check` job that depends on them. Files: `.github/workflows/ci.yml`, `scripts/snapshots.mjs`. Done when: median green time drops and `check` is still the only required context. **Touches:** TOOLING. **Conflicts:** none.
+
+### CI3. Shard snapshots per screen
+**Pitch:** Snapshots is one sequential flow in one browser, so it is now the longest browser job; splitting its screens into independent jobs would shorten it further.
+**Brief:** Goal: make each screen in `scripts/snapshots.mjs` reachable without replaying the earlier ones (seeded localStorage), then add them to the `browser` matrix in `ci.yml`. Done when: snapshots job time drops and `check` stays the only required context. **Touches:** TOOLING. **Conflicts:** none.
 
 ### CI2. Merge queue for bursts of PRs
 **Pitch:** If strict up-to-date is ever turned on, a merge queue tests PRs together instead of making each one re-run after every merge.
@@ -830,3 +834,18 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** The due date stamped on the Borrower's slip stays on it between visits, and a played Daily stamps the slip by itself with that day's date.
 **Brief:** Goal: persist the last stamp additively (`deepstack.v1` field `stamp`, tolerate missing). Files: `src/ui/deskProps.js`. Done when: tested, reload keeps the mark, old saves load.
 **Touches:** HOME, saves. **Conflicts:** W2 follow-ups.
+### W1. Rules card you can pull out
+**Serves:** everything is a book/shelf/page, immersion through interaction.
+**Status:** [x] done (PR pending): the rules sit in a card-catalogue drawer on the niche ledge; pulling it slides the card out, a second face holds the combo and tier rules (`src/ui/welcome.js`, `welcome.css`).
+
+### W3. A card for every floor
+**Serves:** everything is a book/shelf/page, dark and mysterious with depth.
+**Pitch:** Each floor's drawer card tells you its own rule of the house once you reach it: the Hollow's lamps burn lower, the Abyss asks for silence.
+**Brief:** Goal: a third face on the rules card per unlocked floor, flipping through faces (`src/ui/welcome.js`, `nextState`). Done when: keyboard operable, reduced motion static, tested.
+**Touches:** HOME. **Conflicts:** none.
+
+### W4. Drawer you can hear
+**Serves:** physical and smooth motion.
+**Pitch:** The catalogue drawer rumbles out on wooden runners, the card flips with a paper flick, and the drawer shuts with a soft thud.
+**Brief:** Goal: three small sounds hooked to open, turn and close. Files: `src/ui/welcome.js`, `src/sound/`. Done when: respects volume and reduced motion, tested.
+**Touches:** HOME, sound. **Conflicts:** 4.
