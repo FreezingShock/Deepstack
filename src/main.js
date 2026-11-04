@@ -16,6 +16,7 @@ import './ui/results.js';
 import './ui/results.css';
 import './ui/card.css';
 import './ui/bookCard.css';
+import './ui/coverSigil.css';
 import './ui/tierFrames.css';
 import './ui/reveal.css';
 import './ui/reveal.js';

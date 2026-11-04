@@ -4,6 +4,7 @@
 // so a shelf full of spines costs one drawImage each.
 import {TIERS} from '../core/tiers.js';
 import {mulberry, hashStr} from '../core/daily.js';
+import {SETS} from '../sets/sets.js';
 
 const PAPER = [255, 232, 190];
 const mix = (c, t, f) => c.map((v, i) => Math.round(v + (t[i] - v) * f));
@@ -13,7 +14,12 @@ const BMP = 64, CAP = 600;
 export const RINGS = ['single', 'double', 'dotted', 'ticked', 'broken'];
 export const CORES = ['runes', 'star', 'knot', 'petals'];
 
-/** Pure description of the sigil for a word. Same word, same spec. */
+/** The set a word belongs to (or null). Set members share one ring so a complete set reads as a family. */
+export const setIndexOf = word => { const w = String(word || '').toLowerCase().trim(); const i = SETS.findIndex(s => s.words.includes(w)); return i < 0 ? -1 : i; };
+/** The ring that marks set number i: every set gets its own (ring, second ring) pair, so no two sets match. */
+export const setRing = i => ({ring: RINGS[i % RINGS.length], ring2: Math.floor(i / RINGS.length) % 2 === 1});
+
+/** Pure description of the sigil for a word. Same word, same spec. Words in a book set take the set's ring but keep their own core. */
 export function sigilSpec(word) {
   const w = String(word || '').toLowerCase().trim(), rng = mulberry(hashStr('sigil|' + w));
   const pick = a => a[Math.floor(rng() * a.length)];
@@ -21,11 +27,14 @@ export function sigilSpec(word) {
   const core = pick(CORES);
   const arm = [];                                             // a random polyline for one arm, mirrored n times
   for (let i = 0, k = 2 + Math.floor(rng() * 3); i < k; i++) arm.push([+(.18 + .62 * (i + 1) / k + (rng() - .5) * .1).toFixed(3), +((rng() - .3) * .5).toFixed(3)]);
-  return {
+  const spec = {
     ring: pick(RINGS), ring2: rng() < .45, n, core, arm,
     skip: 2 + Math.floor(rng() * Math.max(1, Math.floor((n - 1) / 2))), // star polygon {n/skip}
     mirror: rng() < .5, pip: pick(['dot', 'diamond', 'ring', 'none']), rot: Math.floor(rng() * 360)
   };
+  const si = setIndexOf(w);
+  if (si >= 0) { Object.assign(spec, setRing(si)); spec.set = SETS[si].id; }   // drawn after the rng, so cores stay unchanged
+  return spec;
 }
 
 const TAU = Math.PI * 2;
@@ -66,35 +75,35 @@ export function sigilColor(tier) {
   return tier >= 4 ? mix(base, PAPER, .45) : mix(base, PAPER, .6);
 }
 
-function render(word, tier) {
+function render(word, tier, size = BMP) {
   if (typeof document === 'undefined') return null;
-  const cv = document.createElement('canvas'); cv.width = cv.height = BMP;
+  const cv = document.createElement('canvas'); cv.width = cv.height = size;
   const c = cv.getContext('2d'); if (!c) return null;
-  const s = sigilSpec(word), col = sigilColor(tier), R = BMP / 2 - 4;
-  c.translate(BMP / 2, BMP / 2);
+  const s = sigilSpec(word), col = sigilColor(tier), R = size / 2 - 4 * size / BMP, k = size / BMP;
+  c.translate(size / 2, size / 2);
   c.lineCap = 'round'; c.lineJoin = 'round';
   c.save(); c.rotate(s.rot * Math.PI / 180);
-  c.translate(1.2, 1.4); c.strokeStyle = c.fillStyle = 'rgba(0,0,0,.65)'; c.lineWidth = 3.2; paths(c, s, R); c.restore();   // pressed shadow
+  c.translate(1.2 * k, 1.4 * k); c.strokeStyle = c.fillStyle = 'rgba(0,0,0,.65)'; c.lineWidth = 3.2 * k; paths(c, s, R); c.restore();   // pressed shadow
   c.save(); c.rotate(s.rot * Math.PI / 180);
-  c.strokeStyle = c.fillStyle = `rgb(${col[0]},${col[1]},${col[2]})`; c.lineWidth = 2.6; paths(c, s, R); c.restore();
+  c.strokeStyle = c.fillStyle = `rgb(${col[0]},${col[1]},${col[2]})`; c.lineWidth = 2.6 * k; paths(c, s, R); c.restore();
   return cv;
 }
 
 const cache = new Map();
 export const sigilCacheSize = () => cache.size;
-export function sigilBitmap(word, tier) {
-  const k = tier + '|' + String(word).toLowerCase();
+export function sigilBitmap(word, tier, size = BMP) {
+  const k = tier + '|' + size + '|' + String(word).toLowerCase();
   if (cache.has(k)) { const v = cache.get(k); cache.delete(k); cache.set(k, v); return v; }
-  const v = render(word, tier);
+  const v = render(word, tier, size);
   cache.set(k, v);
   if (cache.size > CAP) cache.delete(cache.keys().next().value);
   return v;
 }
 
 /** Stamp the word's sigil centred at (x, y) with radius r, on the cover. Returns false when it drew nothing. */
-export function drawSigil(c, word, tier, x, y, r, alpha = .85) {
+export function drawSigil(c, word, tier, x, y, r, alpha = .85, size = BMP) {
   if (!word || r < 2) return false;
-  const b = sigilBitmap(word, tier); if (!b) return false;
+  const b = sigilBitmap(word, tier, size); if (!b) return false;
   c.save(); c.globalAlpha = alpha; c.drawImage(b, x - r, y - r, r * 2, r * 2); c.restore();
   return true;
 }
