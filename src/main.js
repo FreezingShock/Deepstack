@@ -325,7 +325,7 @@ function countUp(el,to,ms,from=0){if(RM){el.textContent=to;return;}const t0=perf
 const floorBanner=$('#floorBanner');let bannerT=0;
 function announceFloor(f){
  floorBanner.innerHTML=`<small>Floor ${['I','II','III','IV','V','VI','VII','VIII'][f.id]} \u00b7 ${floorStartFt(f)} ft</small><b>${esc(f.name)}</b><i>${esc(f.sub)}</i>`;
- floorBanner.style.setProperty('--fc',`rgb(${f.lamp.join(',')})`);floorBanner.classList.remove('on');void floorBanner.offsetWidth;floorBanner.classList.add('on');
+ floorBanner.style.setProperty('--fc',`rgb(${f.lamp.join(',')})`);floorBanner.style.setProperty('--fcd',`rgba(${f.lamp.join(',')},.32)`);floorBanner.dataset.motif=f.motif;floorBanner.classList.remove('on');void floorBanner.offsetWidth;floorBanner.classList.add('on');
  clearTimeout(bannerT);bannerT=setTimeout(()=>floorBanner.classList.remove('on'),RM?2500:4200);}
 World.onDepth(v=>{const e=$('#dnum');if(e.textContent!==String(v))e.textContent=v;
  const f=floorAtFt(v);$('#dfloor').textContent=f.id?f.name:'';
