@@ -331,7 +331,25 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Files: new `src/core/save.js`, `saveIO.js`. Done when: v1 fixtures load, round trip, unknown fields preserved, corrupt save quarantined, import never lowers streak.
 **Touches:** MAIN `store`, settings. **Conflicts:** 42.
 
-### 45. Judge v2 reference senses
+### 45. [x] Judge v2: Wiktionary relations (this PR)
+_Shipped as word relations (synonyms, near synonyms, related, antonyms, definition links in `public/data/relations.json`) instead of paraphrase vectors; see PLAN.md. Follow-ups: 90, 91, 92._
+
+### 90. Judge knows common synonyms of rare words
+**Pitch:** Bare synonyms still miss when Wiktionary has no list ("curt" for laconic, "friction" for discord). Add a small frequency-filtered thesaurus of everyday words and score answers against it.
+**Brief:** Files: `scripts/build-relations.mjs`, `public/data/relations.json`. Done when: `npm run judge:eval` good/synonym in band beats 79% on `relation-answers.json` without wrong answers rising.
+**Touches:** JUDGE. **Conflicts:** none.
+
+### 91. Why this score (judge explains itself)
+**Pitch:** The result card says in one handwritten line what the judge noticed: "Reticent is a synonym of taciturn", "you reached the idea through 'miserly'".
+**Brief:** Files: new `src/ui/judgeNote.js`; `judgeAnswer` already returns relation hits. Done when: card line appears for relation hits only, never clips at 375px, test pins the wording.
+**Touches:** MAIN card hook. **Conflicts:** 16.
+
+### 92. Bad Wiktionary glosses out of the pool
+**Pitch:** Words like callous ("Having calluses") and brazen ("Brass-like in appearance") are asked with the wrong sense, so right answers score 0. Prefer the sense that has synonyms and a figurative gloss.
+**Brief:** Files: `scripts/build-words.mjs`, `src/core/wordPool.js`. Done when: listed words use their common sense and a test pins five examples.
+**Touches:** CORE data. **Conflicts:** 46, word pool thread.
+
+### 45-old. Judge v2 reference senses (superseded)
 **Pitch:** Several paraphrased senses per word embedded at build time and shipped as vectors.
 **Brief:** Files: `scripts/`, `src/scorer/`. Done when: calibration beats 97/103, worker parity test passes.
 **Touches:** JUDGE. **Conflicts:** judge thread; start after it.

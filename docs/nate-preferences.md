@@ -30,6 +30,8 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 - 2026-11-04 results screen: "not spanning the whole vertical page and having to scroll, it shouldnt be like that" -> every screen must fit one view at 1280x720 and 375x667, compact instead of scrolling (pattern 10)
 - Alcove vs level effects (2026-11-04): the water and other floor effects should be drawn separately from the alcove so the alcove stays a clean reading nook; "physical sanity audit" confirmed as a wanted pass.
 
+- 2026-11-04 Judge: "be more forgiving based on the words, try to find relations from the input words to the definition, if so then its close" (synonym, related or definition-linked words count as close). Asked for rigorous work with before/after numbers.
+
 ## 3. How he works
 
 - Starts many threads at once (picked 11 menu numbers in one message) and wants them "all working in conjunction". Wants independence checked between threads.

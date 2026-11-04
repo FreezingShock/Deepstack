@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "node --test test/*.test.js",
     "build:words": "node scripts/build-words.mjs",
+    "build:relations": "node scripts/build-relations.mjs",
     "fetch:model": "node scripts/fetch-model.mjs",
     "prebuild": "node scripts/fetch-model.mjs",
     "gen:tokens": "node scripts/gen-tokens.mjs",

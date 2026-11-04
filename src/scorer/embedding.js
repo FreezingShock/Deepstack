@@ -36,12 +36,15 @@ export function prepareAnswer(text, word) {
 }
 
 const SYNONYM_MIN = .42, SYNONYM_CAP = .55;
+/** How much a Wiktionary relation is worth, as a floor on the similarity (see relations.js). Fitted with npm run judge:eval. */
+export const RELATION = {syn: .50, boost: .12, rel: .40, near: .36, link0: .28, linkSlope: .10, synSimMin: .55, synSimCap: .56, grpDiscount: .08};
 
 /**
  * @param {number[]} sims cosine of the answer against each reference text
  * @param {object} prepared result of prepareAnswer
  * @param {string} rawText the answer as typed
- * @param {{word?:object, wordSim?:number, points?:number[][]}} ctx word: the target (enables the antonym guard);
+ * @param {{word?:object, wordSim?:number, points?:number[][], rel?:object, synSim?:number, grpSim?:number}} ctx
+ *   rel: relate() result (synonym / related / definition links); synSim: cosine to the closest single synonym; grpSim: cosine to the synonym list; word: the target (enables the antonym guard);
  *   wordSim: cosine of the answer with the target word itself (lets a bare synonym such as "thrifty" count);
  *   hub: highest cosine of the answer to the distractor definitions (hubness.js); points: curve override used while calibrating
  * @returns {{score:number,sim:number,opposite:boolean}}
@@ -50,9 +53,21 @@ export function scoreFromSims(sims, prepared, rawText, ctx = {}) {
   if (!prepared.text) return {score: 0, sim: 0, opposite: false}; // nothing left once the target word (or a form of it) is removed
   let sim = Math.max(...sims);
   if (ctx.hub != null) sim -= HUB_BETA * (ctx.hub - HUB_REF); // see hubness.js
-  const contrarian = !!ctx.word && contrary(rawText, ctx.word.def, ctx.word, ctx.word.opp || '');
+  const rel = ctx.rel, T = RELATION;
+  const relOpp = !!rel && !rel.syn.length && prepared.content <= 3 && (rel.ant.length > 0 || rel.flip.length > 0); // an antonym, or a negated synonym
+  const contrarian = relOpp || (!!ctx.word && contrary(rawText, ctx.word.def, ctx.word, ctx.word.opp || ''));
   // A one- or two-word answer is a synonym attempt; it is compared with the word itself, not just the longer definition.
   if (!contrarian && ctx.wordSim >= SYNONYM_MIN && prepared.content <= 2) sim = Math.max(sim, Math.min(SYNONYM_CAP, ctx.wordSim + .05));
+  if (!contrarian) {
+    // An answer that is just the related word earns a floor; a synonym amid other words is only a hint (it may sit in an unrelated phrase), so it lifts what the embedding already saw.
+    const bare = rel?.extra === 0;
+    if (rel?.syn.length) sim = Math.max(sim, bare ? T.syn : Math.min(T.syn - .05, sim + T.boost));
+    else if (bare && (rel?.hyp.length || rel?.rel.length)) sim = Math.max(sim, T.rel);
+    else if (bare && rel?.near.length) sim = Math.max(sim, T.near);
+    if (rel?.links.length) sim = Math.max(sim, T.link0 + T.linkSlope * rel.cover);
+    if (ctx.synSim >= T.synSimMin && prepared.content <= 2 && !rel?.extra) sim = Math.max(sim, Math.min(T.synSimCap, ctx.synSim));
+    if (ctx.grpSim != null) sim = Math.max(sim, ctx.grpSim - T.grpDiscount);
+  }
   let s = curve(sim, ctx.points);
   let opposite = false;
   if (OPPOSITE.test(rawText) && s > 20) { s *= .3; opposite = true; }

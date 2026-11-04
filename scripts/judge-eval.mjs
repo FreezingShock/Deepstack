@@ -1,6 +1,7 @@
 // Measures the local judge against the labelled answer sets (test/fixtures/answers.json + tricky-answers.json).
 //   npm run judge:eval                 run the real model, print the report
 //   npm run judge:eval -- --cache f    keep raw model output in f so reruns (after tweaking the scoring math) are instant
+//   npm run judge:eval -- --no-rel     score without the Wiktionary relations (the pre-v2 judge), for before/after
 //   npm run judge:eval -- --verbose    list every answer outside its expected band
 //   npm run judge:eval -- --fit        also propose new calibration.json points (add --write to save them); `npm run calibrate` is this
 // Needs the MiniLM weights (Hugging Face or a populated cache), like `npm run calibrate`.
@@ -9,11 +10,16 @@ import {WORDS} from '../src/core/words.js';
 import {hubTexts, hubSim} from '../src/scorer/hubness.js';
 import {buildPool} from '../src/core/wordPool.js';
 import {cosine, referenceTexts, prepareAnswer, scoreFromSims} from '../src/scorer/embedding.js';
+import {setRelations, relate, relationTexts} from '../src/scorer/relations.js';
 
 const arg = n => { const i = process.argv.indexOf(n); return i < 0 ? null : (process.argv[i + 1] ?? true); };
 const read = p => JSON.parse(readFileSync(new URL(p, import.meta.url)));
 WORDS.push(...buildPool(read('../public/data/words.json')).filter(p => !WORDS.some(w => w.w === p.w)));
-const rows = [...read('../test/fixtures/answers.json'), ...read('../test/fixtures/tricky-answers.json')];
+const noRel = process.argv.includes('--no-rel');
+const REL = noRel || !existsSync(new URL('../public/data/relations.json', import.meta.url)) ? null : read('../public/data/relations.json').rel;
+setRelations(REL);
+const fixtures = ['answers', 'tricky-answers', 'relation-answers'].filter(f => existsSync(new URL(`../test/fixtures/${f}.json`, import.meta.url)));
+const rows = fixtures.flatMap(f => read(`../test/fixtures/${f}.json`).map(r => ({...r, set: f})));
 const wordOf = n => WORDS.find(x => x.w === n);
 
 // Expected score band per label. Same as calibrate, plus the labels only the tricky set uses.
@@ -30,10 +36,15 @@ async function rawSims() {
   const refs = new Map(), wvec = new Map(), out = [], hubVecs = await emb(hubTexts);
   for (const r of rows) {
     const w = wordOf(r.word);
-    if (!refs.has(w.w)) { refs.set(w.w, await emb(referenceTexts(w))); wvec.set(w.w, (await emb([w.w]))[0]); }
-    const prep = prepareAnswer(r.answer, w);
+    if (!refs.has(w.w)) {
+      const {group, singles} = relationTexts(w, REL), extra = [...(group ? [group] : []), ...singles];
+      const all = await emb([...referenceTexts(w), ...extra]), n = referenceTexts(w).length;
+      refs.set(w.w, {defs: all.slice(0, n), grp: group ? all[n] : null, singles: all.slice(n + (group ? 1 : 0))}); wvec.set(w.w, (await emb([w.w]))[0]);
+    }
+    const prep = prepareAnswer(r.answer, w), R = refs.get(w.w);
     const [a] = await emb([prep.text || r.answer]);
-    out.push({sims: refs.get(w.w).map(v => cosine(a, v)), wordSim: cosine(a, wvec.get(w.w)), hub: hubSim(a, hubVecs, w)});
+    out.push({sims: R.defs.map(v => cosine(a, v)), wordSim: cosine(a, wvec.get(w.w)), hub: hubSim(a, hubVecs, w),
+      synSim: R.singles.length ? Math.max(...R.singles.map(v => cosine(a, v))) : null, grpSim: R.grp ? cosine(a, R.grp) : null});
   }
   if (cache) writeFileSync(cache, JSON.stringify(out));
   return out;
@@ -42,7 +53,7 @@ async function rawSims() {
 const raw = await rawSims();
 const scored = rows.map((r, i) => {
   const w = wordOf(r.word), prep = prepareAnswer(r.answer, w);
-  const s = scoreFromSims(raw[i].sims, prep, r.answer, {word: w, wordSim: raw[i].wordSim});
+  const s = scoreFromSims(raw[i].sims, prep, r.answer, {word: w, wordSim: raw[i].wordSim, hub: raw[i].hub, synSim: raw[i].synSim, grpSim: raw[i].grpSim, rel: REL ? relate(r.answer, w, REL) : null});
   return {...r, score: s.score};
 });
 
@@ -62,6 +73,12 @@ const auc = wins / (goods.length * bads.length);
 
 console.log('label/kind              n  in-band  mean');
 for (const [k, v] of Object.entries(byKind).sort()) console.log(k.padEnd(22), String(v.n).padStart(3), pct(v.ok, v.n).padStart(7), (v.sum / v.n).toFixed(0).padStart(6));
+for (const f of fixtures) { // per fixture file, so the fresh relation set can be read on its own
+  const sub = scored.filter(o => o.set === f), ok = sub.filter(o => o.score >= BAND[o.label][0] && o.score <= BAND[o.label][1]).length;
+  const g = sub.filter(o => o.label === 'good' || o.label === 'exact'), b = sub.filter(o => BAD.has(o.label));
+  let w2 = 0; for (const x of g) for (const y of b) w2 += x.score > y.score ? 1 : x.score === y.score ? .5 : 0;
+  console.log(`  ${f.padEnd(18)} ${String(sub.length).padStart(3)} answers  in band ${pct(ok, sub.length)}  AUC ${(w2 / (g.length * b.length)).toFixed(3)}`);
+}
 console.log(`\nin band: ${inBand}/${scored.length} (${pct(inBand, scored.length).trim()})   good-vs-bad AUC: ${auc.toFixed(3)}`);
 console.log('SUMMARY', JSON.stringify({inBand, n: scored.length, auc: +auc.toFixed(3), ...Object.fromEntries(Object.entries(byLabel).map(([k, v]) => [k, +(v.ok / v.n).toFixed(2)]))}));
 
