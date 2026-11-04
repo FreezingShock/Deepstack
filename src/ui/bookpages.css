@@ -24,7 +24,7 @@
 .bk-spread.menu .fchip[aria-pressed="true"]::after{content:"";position:absolute;left:-2px;right:-2px;bottom:0;height:9px;background:var(--bk);
  -webkit-mask:var(--pen-stroke) center/100% 100% no-repeat;
  mask:var(--pen-stroke) center/100% 100% no-repeat}
-.bk-spread.menu .fchip.pen[aria-pressed="true"]::after{animation:penstroke .5s cubic-bezier(.4,.1,.3,1) both}
+.bk-spread.menu .fchip.pen[aria-pressed="true"]::after{animation:penstroke var(--m-page) var(--e-ink) both}
 @keyframes penstroke{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 .bk-spread.menu .fchip[disabled]{opacity:.35;cursor:default}
 .bk-spread.menu .fchip .dot{width:8px;height:8px;border-radius:50%;display:inline-block;align-self:center}
@@ -46,7 +46,7 @@
 .bk-spread.menu .sstack{position:relative;z-index:1;flex:1 1 0;max-width:176px;min-width:0;display:flex;flex-direction:column-reverse;gap:2px}
 /* a lying book: leather spine, gilt rules either side of the title, page block peeking out */
 .bk-spread.menu .sbook{--bk:color-mix(in srgb,var(--t) 50%,var(--c-oak-7));--bk2:color-mix(in srgb,var(--t) 26%,var(--c-tint-0a0604));--gild:color-mix(in srgb,var(--t) 62%,var(--c-tint-f3dfa8));--tex:none;
- position:relative;display:block;flex:none;width:100%;height:24px;padding:0;border:0;background:none;cursor:pointer;text-align:left;transform:translateX(var(--o,0px));transition:transform .2s cubic-bezier(.2,.8,.3,1),filter .2s}
+ position:relative;display:block;flex:none;width:100%;height:24px;padding:0;border:0;background:none;cursor:pointer;text-align:left;transform:translateX(var(--o,0px));transition:transform var(--m-base) var(--e-settle),filter var(--m-base)}
 .bk-spread.menu .sbook[data-tex=leather]{--tex:radial-gradient(var(--c-black-alpha-2e) 1px,transparent 1.4px) 0 0/4px 4px,radial-gradient(var(--c-white-alpha-12) 1px,transparent 1.4px) 2px 2px/5px 5px}
 .bk-spread.menu .sbook[data-tex=cloth]{--tex:repeating-linear-gradient(0deg,var(--c-black-alpha-2a) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,var(--c-white-alpha-10) 0 1px,transparent 1px 3px)}
 .bk-spread.menu .sbook[data-tex=worn]{--tex:radial-gradient(ellipse at 20% 30%,var(--c-white-alpha-1f),transparent 40%),radial-gradient(ellipse at 80% 70%,var(--c-black-alpha-4d),transparent 45%),radial-gradient(var(--c-black-alpha-2a) 1px,transparent 1.5px) 0 0/3px 3px}

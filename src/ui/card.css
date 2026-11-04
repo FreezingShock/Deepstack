@@ -27,6 +27,6 @@
 .book .page .favbtn,.book .page .cardnav,.book .page .cardnav .btn{color:var(--tx);border-color:var(--c-white-alpha-33)}
 .book .page .favbtn[aria-pressed="true"]{color:var(--th);border-color:var(--th)}
 .book .page :focus-visible{outline:3px solid var(--c-white);outline-offset:3px;box-shadow:none}
-.book.open .tierbar b{animation:tierin .7s cubic-bezier(.2,.8,.2,1) both}
+.book.open .tierbar b{animation:tierin var(--m-page) var(--e-settle) both}
 @keyframes tierin{from{opacity:0;transform:scale(.86);letter-spacing:.2em}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.book.open .tierbar b{animation:none}}

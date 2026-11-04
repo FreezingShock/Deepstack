@@ -1,5 +1,5 @@
 /* Popup for clicking a lore book on the background shelves: a small parchment slip, like the shelf tooltip. */
-#lore{position:fixed;z-index:65;max-width:min(300px,calc(100vw - 20px));box-sizing:border-box;padding:10px 14px 12px;background:var(--c-parchment-88);color:var(--c-ink);border:1px solid var(--c-bronze-38);border-radius:2px;box-shadow:0 8px 24px var(--c-black-alpha-cc),0 0 0 3px var(--c-black-alpha-66);pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity .18s,transform .18s}
+#lore{position:fixed;z-index:65;max-width:min(300px,calc(100vw - 20px));box-sizing:border-box;padding:10px 14px 12px;background:var(--c-parchment-88);color:var(--c-ink);border:1px solid var(--c-bronze-38);border-radius:2px;box-shadow:0 8px 24px var(--c-black-alpha-cc),0 0 0 3px var(--c-black-alpha-66);pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity var(--m-quick),transform var(--m-quick)}
 #lore[hidden]{display:none}
 #lore.on{opacity:1;transform:none}
 #lore b{font:600 18px "IM Fell English",Georgia,serif;letter-spacing:.02em}

@@ -1,3 +1,4 @@
+import {DUR,ease} from './motion.js';
 /* Pen underline for book-page tabs and filters. The underline under the chosen word slides (and stretches) from the
    previously chosen word to the new one, like a pen moved across the line. Pure DOM, no layout cost until a click.
    penMark(root,key) just before the page is repainted; penPlay(root) just after. */
@@ -20,5 +21,5 @@ export function penPlay(root){
  if(reduced()||!f||!to.width||Math.abs(f.top-to.top)>6||typeof c.animate!=='function'){c.classList.add('pen');return;}
  const dx=f.left-to.left,sx=Math.max(.2,f.width/to.width);
  c.animate([{transformOrigin:'0 50%',transform:`translateX(${dx}px) scaleX(${sx})`},{transformOrigin:'0 50%',transform:'none'}],
-  {duration:Math.min(520,260+Math.abs(dx)*.5),easing:'cubic-bezier(.4,.1,.3,1)',pseudoElement:'::after'});
+  {duration:Math.min(DUR.page,DUR.base+Math.abs(dx)*.5),easing:ease('ink'),pseudoElement:'::after'});
 }

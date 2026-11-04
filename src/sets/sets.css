@@ -6,6 +6,6 @@
 .setwords li.has{color:var(--ink)}
 .setwords .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 .setwords .dot.empty{border:1px solid var(--c-parchment-alpha-55)}
-#settoast{position:fixed;left:50%;top:64px;transform:translate(-50%,-12px);z-index:90;background:var(--c-oak-8);border:1px solid var(--c-amber);color:var(--c-parchment);padding:10px 18px;border-radius:3px;font:400 16px var(--serif);text-align:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;box-shadow:0 10px 30px var(--c-black-alpha-aa)}
+#settoast{position:fixed;left:50%;top:64px;transform:translate(-50%,-12px);z-index:90;background:var(--c-oak-8);border:1px solid var(--c-amber);color:var(--c-parchment);padding:10px 18px;border-radius:3px;font:400 16px var(--serif);text-align:center;opacity:0;pointer-events:none;transition:opacity var(--m-base),transform var(--m-base);box-shadow:0 10px 30px var(--c-black-alpha-aa)}
 #settoast.on{opacity:1;transform:translate(-50%,0)}
 #settoast span{color:var(--c-amber);font-weight:600}

@@ -1,11 +1,11 @@
 /* Soft entrances for the chrome that used to pop in with the screens, plus the world dip (screenFx.js). */
-#depthHud:not([hidden]),#shelfcap:not([hidden]){animation:chromein .45s ease-out both}
+#depthHud:not([hidden]),#shelfcap:not([hidden]){animation:chromein var(--m-smooth) var(--e-settle) both}
 @keyframes chromein{from{opacity:0}}
-.ghost-fade{pointer-events:none;animation:chromeout .26s ease-in both}
+.ghost-fade{pointer-events:none;animation:chromeout var(--m-base) var(--e-accelerate) both}
 @keyframes chromeout{to{opacity:0}}
-.world-dip{position:fixed;inset:0;z-index:55;pointer-events:none;background:var(--c-black);opacity:0;transition:opacity .22s ease-in}
+.world-dip{position:fixed;inset:0;z-index:55;pointer-events:none;background:var(--c-black);opacity:0;transition:opacity var(--m-base) var(--e-accelerate)}
 .world-dip.on{opacity:1}
-.world-dip.lift{opacity:0;transition:opacity .4s ease-out}
-#topPanel.leaving{animation:tpout .16s ease-in both;pointer-events:none}
+.world-dip.lift{opacity:0;transition:opacity var(--m-smooth) var(--e-settle)}
+#topPanel.leaving{animation:tpout var(--m-quick) var(--e-accelerate) both;pointer-events:none}
 @keyframes tpout{to{opacity:0}}
 @media(prefers-reduced-motion:reduce){.ghost-fade,#depthHud:not([hidden]),#shelfcap:not([hidden]){animation:none}.world-dip{display:none}}
