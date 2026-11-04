@@ -133,6 +133,13 @@ await step('home returns', async () => {
   await realClick(page, '#mark', 'Deepstack home mark');
 });
 
+// Leaving mid-run must not hand out a fresh Daily: starting again resumes at the next unanswered word
+await step('resume daily after leaving mid-run', async () => {
+  if (await page.locator('#bPlay').count() === 0) return;
+  await realClick(page, '#bPlay', 'Descend');
+  await page.locator('#stage .wlabel', {hasText: 'Word 3'}).waitFor({state: 'visible', timeout: T}).catch(() => fail('Daily did not resume at word 3'));
+});
+
 await browser.close(); server.close();
 if (problems.length) { console.error('smoke: FAILED\n - ' + [...new Set(problems)].join('\n - ')); process.exit(1); }
 console.log('smoke: ok');

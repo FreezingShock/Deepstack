@@ -33,7 +33,8 @@ import {loreCovered as loreCoveredAt} from './ui/loreCover.js';
 import {isLore,drawLoreMark,drawLoreGlow,hitLoreBook,initLore} from './ui/lore.js';
 import './ui/lore.css';
 import {shelfBook,statsBook} from './ui/bookMenus.js';
-import {replayLayout} from './core/replay.js';
+import {replayLayout,ROMAN} from './core/replay.js';
+import {snapshotRun,resumable} from './core/dailyRun.js';
 import {dailyBook} from './ui/dailyBook.js';
 import './ui/dailyBook.css';
 import './ui/bookpages.css';
@@ -510,6 +511,13 @@ async function startDaily(practice){
  prepareWords(words).catch(()=>{});
  World.reset();World.setShelf([]);
  run={practice,day,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0};
+ const saved=practice?null:resumable(S,day,words.length);
+ if(saved){run.results=saved.results.map(r=>({...r}));run.combo=saved.combo;run.setBonus=saved.setBonus;run.i=run.results.length;run.depthRows=run.results.reduce((n,r)=>n+(r.rows||0),0);
+  const L=replayLayout(run.results,{gapRows:World.nextRows(),ftPerRow:FT});L.niches[L.niches.length-1].label=ROMAN[run.i]||'FINIS';World.restore(L);
+  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent=String(Math.round(L.finalRow*FT));
+  if(L.finalRow>0)await World.glide(L.finalRow,400);
+  if(run.i>=words.length)finishRun();else showWord();
+  return;}
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
@@ -570,6 +578,7 @@ async function submit(skipped){
  World.fillNiche(nicheRow,{w:w.w,pos:w.pos,answer:text,score:j.score,tier:t,ft:book.ft,verdict:book.verdict,skipped},run.results.slice());
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
  if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}save();}
+ if(!run.practice&&run.mode!=='unlimited'){S.dailyRun=snapshotRun(run);save();}
  const depth1=Math.round((World.restRow+rows)*FT);
  openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length;if(!last&&run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id));prepareWords([run.words[run.i]]).catch(()=>{});}const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
 }
@@ -579,7 +588,7 @@ function finishRun(){
  const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,isDaily=r.mode!=='unlimited',depth=isDaily?worldDepth:worldDepth+setBonus; // Daily depth is words only: set bonuses depend on each player's collection, so they stay out of the shared score
  const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});}
- else if(!r.practice){if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);save();}
+ else if(!r.practice){delete S.dailyRun;if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);save();}
  showFinal(d,false);
 }
 const BLK='▁▂▃▄▅▆▇';
