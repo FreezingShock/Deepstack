@@ -76,3 +76,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 
 
 - 2026-11-04 welcome: item 29 "no voice but ykwim, a complete overhaul of the welcome screen to be much more library like" -> UI furniture becomes library objects (index card, borrower's slip), not boxes (thread: welcome screen)
+- 2026-11-04 attic: "it should be separate from the Shelf book and instead be a scrollupable room thats above the shelfs that has cobwebs, supports / beams, and look like an actual attic where books are stacked" -> the attic is a place in the world, not a panel or book page: a scroll-up room above the shelves with roof, beams, cobwebs and books lying in piles (thread: attic room)

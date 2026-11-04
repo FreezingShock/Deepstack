@@ -27,7 +27,7 @@ export function showHome(){
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
  
  bookify(ui.home);applyHomeTier(ui.home);
- bindAtticHome(ui.home,{count:Math.min(12,S.shelf.length),openShelf:()=>$('#bAll')&&$('#bAll').click()});
+ bindAtticHome(ui.home,{shelf:S.shelf});
  setBookSfx(n=>n==="whoosh"?Sfx.whoosh(.22):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
