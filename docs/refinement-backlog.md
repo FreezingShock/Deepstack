@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Scroll up into the attic and tap an earlier find that has no floor: a slip asks which floor it was found on, the pen underlines your pick and the book leaves the attic for that floor's bay on the Shelf. Check the slip reads at your screen size. (dust-off thread, PR #156)
 - Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Borrower's ledger on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
 - Scroll up into the attic and back a few times (also Escape, swipe, with reduced motion): a ladder now slides in from the left and its rungs pass you as you rise, and the room brightens as the skylight comes overhead. Say if it is too long or too dark at the start. (attic climb thread)
 - Play a few books at every tier and say if the ceremony feels right: Codex gets a faint flash, Grimoire a rune and sting, Apocrypha waits for its implosion, then flash and cover swing. Also try Settings > Graphics low (no rune, fewer rays). (reveal recipes)
@@ -634,6 +635,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** Tap a dusty book in the attic and "Dust it off" writes its floor with a pen stroke and carries it down to its bay.
 **Brief:** Goal: let nate choose a floor for floorless books. Files: `src/ui/attic.js`, `src/core/attic.js`. Done when: `fl` saved additively, book leaves the attic, tested.
 **Touches:** BOOK, CORE. **Conflicts:** 11.
+**Status:** [x] done (dust-off slip, `src/ui/atticDust.js`; PR #156).
 
 ### 76. [x] Cobwebs and dust on attic books (PR #152)
 **Serves:** dark and mysterious; deeper is darker.
@@ -925,3 +927,13 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** Deep floors scatter torn pages and a dust puff around fallen books, thicker below the Hollow.
 **Brief:** Goal: add a `pages` kind and dust specks to `placeFallen`. Files: `src/ui/fallenBooks.js`, `test/fallen-books.test.js`. Done when: still seeded and non-overlapping.
 **Touches:** WORLD. **Conflicts:** 4.
+
+### AT5. Dust-off carries the book down
+**Serves:** physical, integrated not bolted on.
+**Pitch:** After you write the floor, the book lifts off the pile, drops through the hatch and you see it settle into its bay on that floor instead of the slip just fading.
+**Brief:** Goal: a short carry animation from the attic pile to the Shelf bay it joined, then a one-line "Shelved in The Catacombs". Files: new `src/ui/atticCarry.js`, light hook in `atticDust.js`. Done when: reduced motion cuts, 375 px screenshot. **Touches:** WORLD, BOOK. **Conflicts:** 76, AT4.
+
+### AT6. Dust off a whole crate
+**Serves:** less fiddly, everything is a book.
+**Pitch:** Earlier finds in a month's crate often came from one run; let me dust a whole crate off with one floor choice, then fix single books after.
+**Brief:** Goal: "Dust the crate" on the slip, writing one floor to every floorless book of that month via `dustOff`. Files: `src/ui/atticDust.js`, `src/core/attic.js`. Done when: tested. **Touches:** CORE. **Conflicts:** 75.
