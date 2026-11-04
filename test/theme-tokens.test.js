@@ -26,7 +26,8 @@ test('alpha tokens are 8-digit and opaque tokens are 6-digit',()=>{
 
 // Ratchet: files listed here were converted to tokens; they may not gain raw hex colors.
 // Lower (or add) a file's number when you convert it. New code should use var(--c-*) or import src/theme/colors.js.
-const budget=JSON.parse(readFileSync('test/fixtures/hex-budget.json','utf8'));
+// One JSON file per conversion PR (hex-budget*.json) so parallel PRs never conflict.
+const budget=Object.assign({},...readdirSync('test/fixtures').filter(f=>/^hex-budget.*\.json$/.test(f)).map(f=>JSON.parse(readFileSync('test/fixtures/'+f,'utf8'))));
 const count=f=>(readFileSync(f,'utf8').match(/#[0-9a-fA-F]{8}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3,4}\b/g)||[]).length;
 for(const[f,max]of Object.entries(budget))test(`${f} stays within ${max} raw hex colors`,()=>{
  assert.ok(count(f)<=max,`${f} has ${count(f)} raw hex colors (budget ${max}); use a token from src/theme/colors.js`);
