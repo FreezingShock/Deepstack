@@ -23,6 +23,7 @@ import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
 import {homeHTML,bookify,BOOK_PAGES} from './ui/home.js';
 import './ui/home.css';
+import {watchHomeLayout,applyHomeTier} from './ui/homeLayout.js';
 import {descendInto} from './ui/descend.js';
 import {travelEase,travelMs} from './ui/camMotion.js';
 import {initA11y} from './ui/a11y.js';
@@ -430,6 +431,7 @@ const NOHOVER=matchMedia('(hover:none)').matches;
 function showTip(t,x,y){if(NOHOVER)return;tip.textContent=t;tip.style.opacity=1;tip.style.left=clamp(x+14,6,innerWidth-200)+'px';tip.style.top=(y-34)+'px';}
 const hideTip=()=>tip.style.opacity=0;
 const ui={home:$('#home'),stage:$('#stage'),final:$('#final'),cap:$('#shelfcap'),hud:$('#depthHud'),gauge:$('#gauge'),skip:$('#skiph')};
+watchHomeLayout(ui.home);
 function type(el,text,speed=14){return new Promise(res=>{if(RM||!speed){el.textContent=text;return res();}let i=0;const id=setInterval(()=>{i++;el.textContent=text.slice(0,i);if(i%3===0)Sfx.key();if(i>=text.length){clearInterval(id);res();}},speed);});}
 function countUp(el,to,ms,from=0){if(RM){el.textContent=to;return;}const t0=performance.now();(function f(n){const u=Math.min(1,(n-t0)/ms),e=1-Math.pow(1-u,3);el.textContent=Math.round(from+(to-from)*e);if(u<1)requestAnimationFrame(f);})(t0);}
 const floorBanner=$('#floorBanner');let bannerT=0;
@@ -484,7 +486,7 @@ function showHome(){
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
  
- bookify(ui.home);
+ bookify(ui.home);applyHomeTier(ui.home);
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
 }
