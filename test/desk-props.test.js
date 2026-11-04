@@ -8,14 +8,16 @@ test('dueStamp adds the loan period and rolls over months and years', () => {
   assert.equal(dueStamp(new Date(2026, 10, 4)), 'DUE 18 NOV');
   assert.equal(dueStamp(new Date(2026, 11, 25)), 'DUE 8 JAN');
 });
-test('three props: bell, inkwell, stamp, each with a label and one known sound', () => {
-  assert.deepEqual(PROPS.map(p => p.id), ['bell', 'ink', 'stamp']);
-  for (const p of PROPS) { assert.ok(p.label && p.svg.startsWith('<svg')); assert.ok(['chime1', 'quill', 'thud'].includes(p.sfx)); }
+test('two props, one per piece of furniture: bell on the cabinet, stamp on the ledger (inkwell retired in the overhaul)', () => {
+  assert.deepEqual(PROPS.map(p => p.id), ['bell', 'stamp']);
+  for (const p of PROPS) { assert.ok(p.label && p.svg.startsWith('<svg')); assert.ok(['chime1', 'thud'].includes(p.sfx)); }
 });
-test('css hides the props below 560 px and keeps them on the ledge line', () => {
+test('props mount into the furniture slots and stamp the ledger', () => {
+  const w = readFileSync(new URL('../src/ui/welcome.js', import.meta.url), 'utf8');
+  assert.match(w, /data-prop-slot="bell"/);
+  assert.match(w, /data-prop-slot="stamp"/);
   const css = readFileSync(new URL('../src/ui/deskProps.css', import.meta.url), 'utf8');
-  assert.match(css, /\.desk-props\{[^}]*display:none/);
-  assert.match(css, /@media\(min-width:561px\)\{\.desk-props\{display:block\}\}/);
-  assert.match(css, /\.desk-props\{[^}]*bottom:3px/);
+  assert.match(css, /\.dp\{position:absolute;bottom:calc\(100% - 2px\)/);
+  assert.match(css, /\.home \.ledger \.dp-mark/);
   assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/);
 });
