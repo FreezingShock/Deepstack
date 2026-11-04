@@ -20,6 +20,8 @@ import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
 import {initBrowse} from './ui/browse.js';
 import {isLore,drawLoreMark,hitLoreBook,initLore} from './ui/lore.js';
 import './ui/lore.css';
+import {openShelfBook,openStatsBook} from './ui/bookMenus.js';
+import './ui/bookpages.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
 import './ui/ledge.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
@@ -585,57 +587,9 @@ addEventListener('keydown',e=>{
  if(World.descending&&(e.key===' '||e.key==='Escape'||e.key==='Enter')){e.preventDefault();World.skipDown();}
 });
 
-/* ---------- shelf overlay ---------- */
-let fTier=-1,fSort='new',fQ='',fFav=false,fGroup='none';
-const SORTS=core.SORTS;
-function openAll(keepFocus){
- const A=$('#all');A.hidden=false;
- const q=fQ.trim().toLowerCase();
- const list=core.filterShelf(S.shelf,{tier:fTier,q,sort:fSort,fav:fFav}),groups=core.groupShelf(list,fGroup,TIERS.map(t=>t.name)),favN=S.shelf.filter(b=>b.fav).length;
- const counts=TIERS.map(t=>S.shelf.filter(b=>b.tier===t.id).length);
- A.innerHTML=`<div class="sheet panel" role="dialog" aria-modal="true" aria-label="Your shelf"><button class="x" id="aclose" aria-label="Close">×</button>
-  <h1 class="title small">Your shelf</h1><div class="meta">${S.shelf.length} ${S.shelf.length===1?'book':'books'}${list.length!==S.shelf.length?` · showing ${list.length}`:''}</div>
-  <div class="shelftools"><input id="fq" type="search" placeholder="Find a word" value="${esc(fQ)}" aria-label="Find a word" autocomplete="off" spellcheck="false">
-   <div class="sorts" role="group" aria-label="Sort">${Object.entries(SORTS).map(([k,v])=>`<button class="fchip" data-s="${k}" aria-pressed="${fSort===k}">${v[0]}</button>`).join('')}</div></div>
-  <div class="filters"><button class="fchip" id="ffav" aria-pressed="${fFav}"${favN||fFav?'':' disabled'}>★ Favourites <small>${favN}</small></button><span class="sorts" role="group" aria-label="Group by">${[['none','Flat'],['day','By day'],['tier','By tier']].map(([k,l])=>`<button class="fchip" data-g="${k}" aria-pressed="${fGroup===k}">${l}</button>`).join('')}</span></div>
-  <div class="filters"><button class="fchip" data-t="-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div>
-  ${list.length?groups.map(g=>`${g.label?`<h2 class="sec">${esc(g.label)} <small>${g.items.length}</small></h2>`:''}<div class="shelfgrid">${g.items.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',Math.round(RHnow()*.8))}</div>`).join('')}</div>`).join('')
-   :`<p class="empty">${S.shelf.length?'No book matches.':'Nothing here yet. Your first answer becomes your first book.'}</p>`}</div>`;
- $$('.fchip[data-t]',A).forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;openAll();});
- $$('.fchip[data-s]',A).forEach(c=>c.onclick=()=>{fSort=c.dataset.s;openAll();});
- $$('.fchip[data-g]',A).forEach(c=>c.onclick=()=>{fGroup=c.dataset.g;openAll();});
- $('#ffav').onclick=()=>{fFav=!fFav;openAll();};
- const fq=$('#fq');fq.oninput=()=>{fQ=fq.value;const pos=fq.selectionStart;openAll(true);const n=$('#fq');n.focus();n.setSelectionRange(pos,pos);};
- $$('img',A).forEach(im=>{const open=()=>{hideTip();const items=list.map(x=>x.b),k=items.indexOf(S.shelf[+im.dataset.i]);openCard(S.shelf[+im.dataset.i],{fresh:false,nav:{items,i:k}});};
-  im.tabIndex=0;im.setAttribute('role','button');im.onclick=open;im.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();open();}};
-  im.onmouseenter=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmousemove=e=>showTip(im.dataset.tip,e.clientX,e.clientY);im.onmouseleave=hideTip;});
- $('#aclose').onclick=()=>{A.hidden=true;hideTip();};A.onclick=e=>{if(e.target===A){A.hidden=true;hideTip();}};
- if(!keepFocus)$('#aclose').focus({preventScroll:true});
-}
-/* ---------- stats overlay ---------- */
-function openStats(){
- const A=$('#stats'),st=computeStats(S,utc());A.hidden=false;
- const maxT=Math.max(1,...st.tiers),maxD=Math.max(1,...st.recent.map(r=>r.depth));
- const fmtDay=k=>new Date(k+'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',timeZone:'UTC'});
- const big=(n,l,sub)=>`<div class="big"><b>${n}</b><span>${l}</span>${sub?`<em>${sub}</em>`:''}</div>`;
- A.innerHTML=`<div class="sheet panel" role="dialog" aria-modal="true" aria-label="Stats"><button class="x" id="sclose" aria-label="Close">×</button>
-  <h1 class="title small">Stats</h1>
-  ${st.runs?`<div class="bigs">
-   ${big(st.streak,'Day streak','best '+st.bestStreak)}
-   ${big(st.deepest+'<small> ft</small>','Deepest dive',st.deepestDay?fmtDay(st.deepestDay):'')}
-   ${big(st.runs,st.runs===1?'Daily played':'Dailies played',st.totalFt.toLocaleString()+' ft in total')}
-   ${big(st.avg,'Avg closeness',st.answered+' answered')}
-  </div>
-  ${st.best?`<p class="bestbook">Closest answer: <b>${esc(st.best.w)}</b>, ${st.best.score}/100 · <span style="color:${TIERS[st.best.tier].spine}">${TIERS[st.best.tier].name}</span></p>`:''}
-  <h2 class="sec">Books by tier</h2>
-  <div class="tierbars">${TIERS.map(t=>`<div class="tb"><span class="tn">${t.name}</span><span class="track"><i style="width:${st.tiers[t.id]/maxT*100}%;background:${t.spine}"></i></span><b>${st.tiers[t.id]}</b></div>`).join('')}</div>
-  <h2 class="sec">Recent descents</h2>
-  <div class="recent" role="img" aria-label="Depth of your last ${st.recent.length} dailies">${st.recent.map(r=>`<div class="rc" title="${fmtDay(r.day)}: ${r.depth} ft"><i style="height:${Math.max(6,r.depth/maxD*100)}%;background:${TIERS[r.best].spine}"></i><span>${r.day.slice(8)}</span></div>`).join('')}</div>
-  <p class="meta">Bars are depth in feet, coloured by your rarest book that day.</p>`
-  :`<p class="empty">Finish your first Daily and your numbers show up here: streak, deepest dive and every tier you have shelved.</p>`}
-  </div>`;
- $('#sclose').onclick=()=>{A.hidden=true;};A.onclick=e=>{if(e.target===A)A.hidden=true;};$('#sclose').focus({preventScroll:true});
-}
+/* ---------- shelf and stats: pages of an open book (src/ui/bookMenus.js) ---------- */
+const openAll=()=>openShelfBook($('#all'),{S,core,TIERS,spineImg,openCard,showTip,hideTip,rh:Math.round(clamp(innerHeight*.14,84,112))});
+const openStats=()=>openStatsBook($('#stats'),{S,st:computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt});
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 
 applySound();

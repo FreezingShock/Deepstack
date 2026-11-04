@@ -1,4 +1,5 @@
 import './sets.css';
+import {openBook} from '../ui/bookpages.js';
 import {TIERS, tierOf} from '../core/index.js';
 import {setStatus, bonusFt, MIN_SCORE} from './sets.js';
 
@@ -11,28 +12,32 @@ function ensure() {
   document.body.appendChild(layer);
   return layer;
 }
-export function closeSets() { if (layer) layer.hidden = true; }
+let ctl = null;
+export function closeSets() { if (layer) { layer.hidden = true; layer.innerHTML = ''; } ctl = null; }
 export const setsOpen = () => !!layer && !layer.hidden;
 
-export function openSets(S) {
-  const A = ensure(), st = setStatus(S), got = (S.sets && S.sets.got) || {};
+/* Pure page builder: an overview leaf, then one leaf per set. */
+export function setLeaves(S) {
+  const st = setStatus(S), got = (S.sets && S.sets.got) || {};
   const done = st.filter(s => s.complete).length, bonus = bonusFt(S);
-  A.hidden = false;
-  A.innerHTML = `<div class="sheet panel" role="dialog" aria-modal="true" aria-label="Book sets"><button class="x" id="setclose" aria-label="Close">×</button>
-   <h1 class="title small">Book sets</h1>
-   <div class="meta">${done} of ${st.length} complete${bonus ? ` · +${bonus} ft bonus depth` : ''}</div>
-   <p class="setnote">Collect every word in a set with an answer of at least ${MIN_SCORE}/100 and it pays out bonus depth.</p>
-   <div class="setlist">${st.map(s => `<section class="setcard${s.complete ? ' done' : ''}">
-     <div class="sethead"><h2>${esc(s.name)}</h2><span class="setprog">${s.n}/${s.total}${s.complete ? ' · +' + s.bonus + ' ft' : ''}</span></div>
-     <p class="setblurb">${esc(s.blurb)}</p>
-     <div class="setbar"><i style="width:${s.n / s.total * 100}%"></i></div>
-     <ul class="setwords">${s.words.map(w => {
-       const sc = got[w] || 0, has = sc >= MIN_SCORE;
-       return `<li class="${has ? 'has' : ''}">${has ? `<i class="dot" style="background:${TIERS[tierOf(sc)].spine}"></i>` : '<i class="dot empty"></i>'}${esc(w)}</li>`;
-     }).join('')}</ul></section>`).join('')}</div></div>`;
-  const x = A.querySelector('#setclose');
-  x.onclick = closeSets; A.onclick = e => { if (e.target === A) closeSets(); };
-  x.focus({preventScroll: true});
+  const overview = `<h1>Book sets</h1><div class="kicker">${done} of ${st.length} complete${bonus ? ` \u00b7 +${bonus} ft bonus depth` : ''}</div>
+   <p class="note">Collect every word in a set with an answer of at least ${MIN_SCORE}/100 and it pays out bonus depth.</p>
+   <h2>Contents</h2><ul class="toc">${st.map(s => `<li><span>${esc(s.name)}</span><b>${s.n}/${s.total}${s.complete ? ' \u2713' : ''}</b></li>`).join('')}</ul>`;
+  const pages = st.map(s => `<div class="setpage${s.complete ? ' done' : ''}"><div class="kicker">Set</div><h1>${esc(s.name)}</h1>
+   <p class="note">${esc(s.blurb)}</p>
+   <div class="setbar"><i style="width:${s.n / s.total * 100}%"></i></div>
+   <div class="setprog">${s.n} of ${s.total} collected \u00b7 ${s.bonus} ft reward</div>
+   ${s.complete ? `<span class="seal">Complete${s.doneAt && s.doneAt !== 'earlier' ? ' \u00b7 ' + esc(s.doneAt) : ''}</span>` : ''}
+   <ul class="setwords">${s.words.map(w => {
+     const sc = got[w] || 0, has = sc >= MIN_SCORE;
+     return `<li class="${has ? 'has' : ''}">${has ? `<i class="dot" style="background:${TIERS[tierOf(sc)].spine}"></i>` : '<i class="dot empty"></i>'}${esc(w)}${has ? `<em>${sc}/100</em>` : ''}</li>`;
+   }).join('')}</ul></div>`);
+  return [overview, ...pages];
+}
+
+export function openSets(S) {
+  const A = ensure();
+  ctl = openBook(A, {label: 'Book sets', colors: ['#4a2a63', '#26143a', '#d8b676'], leaves: setLeaves(S), cls: 'sets', onClose: () => { ctl = null; }});
 }
 
 /** Brief banner when a book finishes a set. */
