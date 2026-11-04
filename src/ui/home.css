@@ -75,7 +75,9 @@
 .bk-spread.go .bs-cover{transform:rotateY(-178deg)}
 @media(max-width:700px){
  .hshelf li{margin-left:0!important}
- .hbook{height:38px}
+ .hbook{height:34px}
+ .hshelf{gap:1px}
+ .home .tagline{margin-bottom:6px}
  .hb-t{font-size:16px}
  .hb-n{display:none}
  .hbook:hover,.hbook:focus-visible{transform:translateX(8px)}
