@@ -23,6 +23,7 @@ import {isLore,drawLoreMark,drawLoreGlow,hitLoreBook,initLore} from './ui/lore.j
 import './ui/lore.css';
 import {shelfBook,statsBook} from './ui/bookMenus.js';
 import './ui/bookpages.css';
+import './ui/fonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
 import {drawAlcoveLanterns} from './ui/lanterns.js';
 import './ui/ledge.css';
