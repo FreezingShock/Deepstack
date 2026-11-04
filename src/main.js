@@ -10,6 +10,8 @@ import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
 import {homeHTML} from './ui/home.js';
+import './ui/home.css';
+import {descendInto} from './ui/descend.js';
 import {initA11y} from './ui/a11y.js';
 import {initTransitions} from './ui/transitions.js';
 import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
@@ -378,7 +380,7 @@ function showHome(){
  ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:'',lexicon:core.lexicon});
  paintJudge(modelStatus());
  World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
- $('#bPlay')&&($('#bPlay').onclick=()=>startDaily(false));
+ $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
  $('#bSets').onclick=()=>openSets(S);
