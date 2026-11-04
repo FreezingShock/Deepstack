@@ -1,5 +1,5 @@
 # Fonts
 
-`anthropic-serif/` holds the proprietary Anthropic Serif (Text + Display, 6 weights each with italics, woff2).
-It is gitignored because this repo is public. Put the woff2 files there locally; without them the game falls
-back to Newsreader. Originals (.otf) are in the project's shared files.
+`anthropic-serif/` holds Anthropic Serif (Text + Display, Light to Extrabold with italics, woff2).
+It is proprietary; it is committed here with the repo owner's confirmation that they may redistribute it.
+If the files are removed, the game falls back to Newsreader. Originals (.otf) are in the project's shared files.

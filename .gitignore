@@ -2,4 +2,3 @@ node_modules
 dist
 public/models/
 public/ort/
-public/fonts/anthropic-serif/
