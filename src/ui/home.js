@@ -1,4 +1,5 @@
 import {PALETTE} from '../theme/colors.js';
+import {decorate as inkPage} from './ink.js';
 /* Home screen markup. Kept separate from main.js so other features can add
    entries (modes, links) by pushing onto HOME_LINKS / HOME_STEPS without
    touching the layout. */
@@ -197,7 +198,7 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
    const fin=()=>{el.classList.remove('opening');root.classList.remove('book-opening');};
    const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onClose:fin,
     colors:{bk:cs.getPropertyValue('--bk'),bk2:cs.getPropertyValue('--bk2'),gild:cs.getPropertyValue('--bk-gild'),tex:cs.getPropertyValue('--tex')}});
-   if(pages){bk.onPaint=(sp,idx)=>pages.onPaint&&pages.onPaint(sp,bk,idx);}
+   if(pages){bk.onPaint=(sp,idx)=>{inkPage(sp,pages.label);pages.onPaint&&pages.onPaint(sp,bk,idx);};}
    else if(intro){
     bk.onPaint=sp=>{const st=sp.querySelector('.bs-start'),bb=sp.querySelector('.bs-back-btn');
      if(st)st.onclick=()=>{go.call(el,e);bk.close();};if(bb)bb.onclick=bk.close;};
