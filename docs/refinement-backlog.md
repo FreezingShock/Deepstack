@@ -375,3 +375,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 - **Feel:** 22 first, then 23, 24, 26.
 - **Parallel-safe quick wins:** 4, 9, 15, 24, 33, 37, 48, 50.
 - **Foundations (alone):** 42 + 43 together, then 44.
+
+### 51. Perf budget in CI
+**Pitch:** CI runs `scripts/perf.mjs` and warns when work-per-frame p95 regresses past a stored baseline.
+**Brief:** Files: new `scripts/perfCheck.mjs`, CI step. Done when: tolerant threshold (software rendering is noisy), baseline file committed. **Touches:** CI. **Conflicts:** none.
