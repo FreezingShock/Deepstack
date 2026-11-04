@@ -171,15 +171,15 @@ function lyingBook(c,x,y,w,h,spine,word,rot,fav,age=0,seed=1){
 /* Paint the room (and what moves in it) at screen offset ry (top of the room). Returns hit rects in screen space,
    topmost first. */
 export function drawAttic(ctx,room,o){
- const {W,A,ry,items,TIERS,vt,RM}=o;
+ const {W,A,ry,items,TIERS,vt,RM}=o,lit=o.lit==null?1:o.lit; // lit: 0 dark .. 1 skylight at full (grows as you climb)
  ctx.drawImage(room.cv,0,ry,W,A);
  /* dust in the shaft + lamp glow (additive) */
  const {win}=room;
  ctx.save();ctx.globalCompositeOperation='lighter';
- if(!RM)for(let k=0;k<18;k++){const ph=k*1.7,u=((vt*.02+k*.137)%1),x=win.x+Math.sin(vt*.3+ph)*win.r*(1+u*3)+(k%2?1:-1)*u*W*.03,y=ry+win.y+u*(A-win.y),al=Math.sin(u*Math.PI)*.5;
+ if(!RM)for(let k=0;k<18;k++){const ph=k*1.7,u=((vt*.02+k*.137)%1),x=win.x+Math.sin(vt*.3+ph)*win.r*(1+u*3)+(k%2?1:-1)*u*W*.03,y=ry+win.y+u*(A-win.y),al=Math.sin(u*Math.PI)*.5*lit;
   ctx.fillStyle=rgb(255,236,190,al);ctx.beginPath();ctx.arc(x,y,1+(k%3)*.5,0,6.3);ctx.fill();}
  const lx=W*.7,ly=ry+A*EAVE*.55+46,fl=RM?1:1+.06*Math.sin(vt*11)+.04*Math.sin(vt*23);
- const lg=ctx.createRadialGradient(lx,ly,0,lx,ly,A*.5*fl);lg.addColorStop(0,rgb(255,190,100,.2));lg.addColorStop(1,rgb(255,150,60,0));ctx.fillStyle=lg;ctx.fillRect(lx-A*.55,ly-A*.55,A*1.1,A*1.1);
+ const lg=ctx.createRadialGradient(lx,ly,0,lx,ly,A*.5*fl);lg.addColorStop(0,rgb(255,190,100,.2*lit));lg.addColorStop(1,rgb(255,150,60,0));ctx.fillStyle=lg;ctx.fillRect(lx-A*.55,ly-A*.55,A*1.1,A*1.1);
  ctx.restore();
  ctx.strokeStyle=rgb(40,28,16);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(lx,ry+A*EAVE*.55+5);ctx.lineTo(lx,ly-10);ctx.stroke();
  ctx.fillStyle=rgb(255,214,130);ctx.fillRect(lx-5,ly-10,10,16);ctx.strokeStyle=rgb(120,84,40);ctx.lineWidth=1.4;ctx.strokeRect(lx-5,ly-10,10,16);
@@ -200,6 +200,9 @@ export function drawAttic(ctx,room,o){
    ctx.font=`500 ${fs}px "Fuzzy Bubbles",Georgia,serif`;const tw=ctx.measureText(label).width+14;
    ctx.save();ctx.translate(p.x,y-8*s);ctx.rotate(-.03);ctx.fillStyle=rgb(236,224,190);ctx.fillRect(-tw/2,-fs-2,tw,fs+8);ctx.fillStyle=rgb(40,28,16);ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(label,0,0);ctx.restore();}
  }
+ /* the skylight grows as you rise: the whole room starts in shadow and brightens, with a window bloom on top */
+ if(lit<1){ctx.fillStyle=rgb(4,3,2,(1-lit)*.78);ctx.fillRect(0,ry,W,A);}
+ if(lit>0){ctx.save();ctx.globalCompositeOperation='lighter';const wb=ctx.createRadialGradient(win.x,ry+win.y,0,win.x,ry+win.y,Math.max(W,A)*.55);wb.addColorStop(0,rgb(255,240,200,.16*lit*(1-lit*.5)));wb.addColorStop(1,rgb(255,240,200,0));ctx.fillStyle=wb;ctx.fillRect(0,ry,W,A);ctx.restore();}
  if(hidden>0){ctx.fillStyle=rgb(216,192,140,.8);ctx.font='italic 14px "Anthropic Serif Text",Georgia,serif';ctx.textAlign='center';ctx.fillText(`and ${hidden} more on the Shelf`,W/2,ry+A-6);}
  return hits;
 }

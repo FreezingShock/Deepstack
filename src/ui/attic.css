@@ -7,7 +7,7 @@
 .attic-down{position:fixed;z-index:6;left:50%;top:64px;transform:translateX(-50%);margin:0;padding:4px 16px 6px;border:0;border-bottom:2px solid var(--c-brass-67-alpha-88);background:var(--c-black-alpha-88);border-radius:0 0 6px 6px;white-space:nowrap;
  color:var(--c-brass-d8c08c);font:500 24px/1.1 var(--bs-hand,var(--serif));cursor:pointer}
 .attic-down:hover,.attic-down:focus-visible{color:var(--c-brass-f6d98a)}
-#home{transition:transform var(--m-smooth) var(--e-settle),opacity .45s}
-#home.attic-away{transform:translateY(70vh);opacity:0;pointer-events:none}
+/* the panel rides with the world camera (atticHome.js sets its transform and opacity every frame), so no transition */
+#home.attic-away{pointer-events:none}
 @media(max-width:560px){.attic-down{font-size:20px;top:58px}.attic-cue-home{right:10px;top:64px;font-size:17px;padding:4px 10px 6px}}
-@media(prefers-reduced-motion:reduce){#home{transition:none}.attic-cue-home{transition:none}}
+@media(prefers-reduced-motion:reduce){.attic-cue-home{transition:none}}

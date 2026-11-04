@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Scroll up into the attic and back a few times (also Escape, swipe, with reduced motion): a ladder now slides in from the left and its rungs pass you as you rise, and the room brightens as the skylight comes overhead. Say if it is too long or too dark at the start. (attic climb thread)
 - Play down to 252 ft (Catacombs), 454 ft (Sunken Vault), 706 ft (Hollow) and 1008 ft (Abyss) and say which door still feels like "just a tint": each floor's first row now has a sign, a doorway scene and its own wall (item 1).
 
 Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
@@ -619,7 +620,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** The scratch speeds up when typing fast, softens on pauses, and gives a small flourish when the answer is sent.
 **Brief:** Goal: scale quill level and length by keystroke rate. Files: `src/sound/scribe.js`. Done when: rate-limit test still passes, no more nodes than the voice cap.
 **Touches:** FEEL hook. **Conflicts:** 23 follow-ups.
-### 74. Attic: ladder, rafters and a real climb
+### 74. [x] Attic: ladder, rafters and a real climb (PR pending)
 **Serves:** immersion through interaction, physical motion.
 **Pitch:** The attic lowers like a hatch today. Make the climb physical: the book tilts up, a ladder slides in, the skylight light grows as you rise.
 **Brief:** Goal: a short climb transition into the attic and back. Files: `src/ui/attic.css`, `attic.js`. Done when: reduced motion cuts, wheel and swipe still work.
@@ -861,3 +862,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** A faint dust sheet drapes the oldest pile in the back row and lifts when you hover it.
 **Brief:** Goal: pile-level dust layer. Files: `src/world/atticRoom.js`. Done when: tokens only, titles readable.
 **Touches:** WORLD. **Conflicts:** 74.
+
+### AT3. Ladder rungs you can hear
+**Serves:** tactile, immersive, physical.
+**Pitch:** Each rung that passes on the climb gives a soft wooden tap, and the ladder creaks as it settles; quieter when you come down.
+**Brief:** Goal: tie one tick per rung to `ladderGeom` rung crossings in `src/world/atticClimb.js`. Files: `src/world/atticClimb.js`, `src/sound/`. Done when: respects the sound toggle and the voice cap, silent under reduced motion.
+**Touches:** FEEL hook, WORLD. **Conflicts:** none.
+
+### AT4. Climb the ladder by hand
+**Serves:** physical, integrated not bolted on.
+**Pitch:** Drag the ladder (or the whole room) up and down so you climb at your own pace instead of a fixed climb, and the light follows your finger.
+**Brief:** Goal: map pointer drag to the attic climb progress with a snap to open or closed on release. Files: `src/ui/atticHome.js`, `src/world/world.js`. Done when: wheel, swipe and Escape still work, reduced motion stays instant.
+**Touches:** WORLD. **Conflicts:** 75, 76.

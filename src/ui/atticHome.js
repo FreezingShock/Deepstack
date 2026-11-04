@@ -15,6 +15,14 @@ function sync(open){
  if(down)down.hidden=!open;
  if(open&&down)down.focus({preventScroll:true});
 }
+/* The home panel sits in the alcove, which is part of the world. While the camera climbs, move the panel by exactly the
+   same pixels as the world (same frame, same easing) so it stays inside the alcove instead of sliding on its own clock. */
+function rideHome(px,t){
+ if(!home)return;
+ if(px<=0){home.style.transform='';home.style.opacity='';return;}
+ home.style.transform=`translate3d(0,${px.toFixed(1)}px,0)`;
+ home.style.opacity=String(Math.max(0,1-t*1.7));
+}
 export function bindAtticHome(homeEl,{shelf=[]}={}){
  home=homeEl;
  const items=atticAll(shelf);count=items.length;
@@ -28,6 +36,7 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
  cue.textContent=`↑ The attic · ${count}`;
  cue.setAttribute('aria-label',`Climb up to the attic: ${count} ${count===1?'book':'books'}`);
  World.setAttic(false,{instant:true});World.onAttic(sync);sync(false);
+ World.onAtticMove(rideHome);
  if(!wired){wired=true;
   addEventListener('wheel',e=>{if(World.atticOpen){if(e.deltaY>2)close();}else if(e.deltaY<-2&&count&&ui().live)open();},{passive:true});
   addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input,textarea,select'))return;
