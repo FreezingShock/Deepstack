@@ -12,80 +12,127 @@ concurrency:
 permissions:
   contents: read
 
+# Layout: scope -> (test | build -> browser[smoke, snapshots]) -> check.
+# Unit tests run beside the build instead of before it, and the two browser checks run as separate
+# parallel jobs. "check" is the only required status: it aggregates everything, so add or rename
+# jobs freely as long as they stay in check's `needs`.
 jobs:
-  # Single required status check: name it "check" in branch protection / rulesets.
-  # pull_request runs against the merge result with main, so conflicts with already-merged PRs show up here.
-  check:
+  # Docs/notes-only changes (*.md, docs/) cannot affect the app, so every heavy job is skipped.
+  # pull_request checks out the merge commit, so HEAD^1 is main and the diff is exactly this PR's changes.
+  scope:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
+    outputs:
+      heavy: ${{ steps.scope.outputs.heavy }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
-      # Docs/notes-only changes (*.md, docs/) cannot affect the app, so skip install, build and browser steps.
-      # The job still runs and reports "check", so the required status is satisfied in seconds.
-      # pull_request checks out the merge commit, so HEAD^1 is main and the diff is exactly this PR's changes.
-      - name: Detect docs-only change
-        id: scope
+      - id: scope
         run: |
           files=$(git diff --name-only HEAD^1 HEAD || true)
           echo "$files"
           if [ -n "$files" ] && ! echo "$files" | grep -qvE '(^docs/|\.md$)'; then
             echo "heavy=false" >> "$GITHUB_OUTPUT"
-            echo "Docs-only change: skipping build and browser steps."
+            echo "Docs-only change: skipping build and browser jobs."
           else
             echo "heavy=true" >> "$GITHUB_OUTPUT"
           fi
-      - if: steps.scope.outputs.heavy == 'true'
-        uses: actions/setup-node@v4
+
+  test:
+    needs: scope
+    if: needs.scope.outputs.heavy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - if: steps.scope.outputs.heavy == 'true'
-        run: npm ci
-      - if: steps.scope.outputs.heavy == 'true'
-        run: npm test
+      - run: npm ci
+      - run: npm test
+
+  build:
+    needs: scope
+    if: needs.scope.outputs.heavy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
       # Self-hosted embedding model: cache it so the build doesn't re-download from Hugging Face.
-      - if: steps.scope.outputs.heavy == 'true'
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: public/models
           key: model-${{ hashFiles('src/scorer/model.js') }}
       # prebuild tries to self-host the embedding model and skips gracefully if the network blocks it.
-      - if: steps.scope.outputs.heavy == 'true'
-        run: npm run build
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  # One job per browser check, in parallel. Each serves dist on its own random port.
+  browser:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        script: [smoke, snapshots]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
       - name: Get Playwright version
-        if: steps.scope.outputs.heavy == 'true'
         id: pw
         run: echo "v=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
-      - if: steps.scope.outputs.heavy == 'true'
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         id: pwcache
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.v }}
       - name: Install Chromium
-        if: steps.scope.outputs.heavy == 'true'
         run: |
           if [ "${{ steps.pwcache.outputs.cache-hit }}" = "true" ]; then
             npx playwright install-deps chromium
           else
             npx playwright install --with-deps chromium
           fi
-      # Both scripts serve the build on their own random port, so they can run side by side.
-      - name: Smoke test and screenshot snapshots (in parallel)
-        if: steps.scope.outputs.heavy == 'true'
-        run: |
-          node scripts/smoke.mjs & smoke=$!
-          node scripts/snapshots.mjs & snaps=$!
-          rc=0
-          wait $smoke || rc=1
-          wait $snaps || rc=1
-          exit $rc
+      - run: node scripts/${{ matrix.script }}.mjs
       - name: Upload snapshot diffs
-        if: failure()
+        if: failure() && matrix.script == 'snapshots'
         uses: actions/upload-artifact@v4
         with:
           name: snapshot-diffs
           path: snapshot-diffs/
           if-no-files-found: ignore
+
+  # The single required status check: name it "check" in branch protection / rulesets.
+  # Runs even when upstream jobs fail or are skipped; passes only if none failed or were cancelled
+  # (skipped is fine: that is the docs-only path).
+  check:
+    if: always()
+    needs: [scope, test, build, browser]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: |
+          echo '${{ toJSON(needs) }}'
+          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job failed."; exit 1
+          fi
