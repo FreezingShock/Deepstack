@@ -9,7 +9,7 @@ import './ui/card.css';
 import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
-import {homeHTML} from './ui/home.js';
+import {homeHTML,bookify} from './ui/home.js';
 import './ui/home.css';
 import {descendInto} from './ui/descend.js';
 import {initA11y} from './ui/a11y.js';
@@ -415,6 +415,7 @@ function showHome(){
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
  $('#bSets').onclick=()=>openSets(S);
  $('#bStats').onclick=openStats;$('#bAll').onclick=()=>openAll();
+ bookify(ui.home);
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
 }
