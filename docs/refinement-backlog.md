@@ -9,6 +9,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Scroll up into the attic and back a few times (also Escape, swipe, with reduced motion): a ladder now slides in from the left and its rungs pass you as you rise, and the room brightens as the skylight comes overhead. Say if it is too long or too dark at the start. (attic climb thread)
 - Play a few books at every tier and say if the ceremony feels right: Codex gets a faint flash, Grimoire a rune and sting, Apocrypha waits for its implosion, then flash and cover swing. Also try Settings > Graphics low (no rune, fewer rays). (reveal recipes)
 - Play down to 252 ft (Catacombs), 454 ft (Sunken Vault), 706 ft (Hollow) and 1008 ft (Abyss) and say which door still feels like "just a tint": each floor's first row now has a sign, a doorway scene and its own wall (item 1).
+- Scroll up into the attic and look at the piles at your screen size: they should now vary (trunk, crate, slumped, heap) with no dark band under each book. Say what is still too uniform. (attic piles)
 
 Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 
@@ -978,3 +979,13 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** every shelf row still builds its own wall gradient each time it is redrawn; one cached strip per floor would do.
 **Brief:** Goal: reuse a per-floor wall sprite in `drawRowLive` instead of `createLinearGradient`. Files: `src/world/world.js`. Done when: p95 not worse and snapshots unchanged.
 **Touches:** WORLD. **Conflicts:** floors threads.
+
+### AT12. Books lean on the beams and crates
+**Pitch:** the piles now differ (trunk, crate, slumped, heap) but nothing rests on the roof beams or leans against the posts and ladder.
+**Brief:** Goal: a few books wedged on the low beams and propped against the side posts, hit rects still tappable. Files: new `src/world/atticLean.js`, one hook in `atticRoom.js`. Done when: titles readable at 375/1280/1640.
+**Touches:** WORLD. **Conflicts:** other attic threads.
+
+### AT13. Pile layout remembers its shape
+**Pitch:** a new book re-chunks the piles so shapes shuffle; each pile should keep its look as books are added.
+**Brief:** Goal: derive pile kind from the oldest book in it, not its order. Files: `src/world/atticRoom.js` layoutPiles + test. Done when: adding a book changes at most the newest pile.
+**Touches:** WORLD. **Conflicts:** none.

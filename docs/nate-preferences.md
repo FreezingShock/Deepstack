@@ -88,3 +88,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-04 attic: "Earlier finds should go in the attic" -> floorless books live in the attic, not the Shelf; the way back to a bay is dusting them off with a pen-written floor.
 - 2026-11-04 attic: asked for "all attic and home refinements" to start, so the attic should read as a lived-in room (trunks, sheeted dress form, rug, ladder hatch, swaying lantern), not an empty box.
 - 2026-11-04 library rules card: "refine this note page that appears for RULES OF THE HOUSE and instead be LIBRARY RULES" -> the card is titled LIBRARY RULES and should read as a printed library catalogue card (frame, rod hole, serif type), not lined notebook paper (thread: home drawer and record overhaul)
+- 2026-11-04 attic piles: "it shouldnt be as uniform, add some variety to the locations" and "weird shadow" -> no per-book shadows; vary pile height, shape and base (crates, trunks) across the attic floor.
