@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Pick from the Q1 to Q16 audit menu (end of this file). Q11 needs your call: should a 0/100 answer still earn a free book? (audit thread)
 - Descend past a floor door (Archive 101 ft, Catacombs 252 ft and deeper) and say if the half-speed hold at the door, the one-time swing of the sign and the quiet floor sound feel right or too subtle; also check Settings reduced motion removes the hold and swing. (door walk-through thread)
 - Play a run and answer with plain synonyms of rare words ("curt" for laconic, "blunt" or "forthright" for candid, "conscientious" for diligent): they should now land in Paperback or better. Tell me any everyday word that still scores 0 or any wrong word that scores well. (judge thesaurus, backlog 90)
 - Open `?perf` on your own machine at home, mid-run and during a descent and tell me the p95 and whether it feels smoother or the same: the headless box can only see JS cost, and your GPU is the real test for the glow-cache change (item 38).
@@ -1036,3 +1037,99 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 ### S4. A set's ring on its Sets page and complete-set seal
 **Pitch:** the Sets book should show each set's ring as its crest, and completing a set stamps the ring in wax.
 **Brief:** Goal: render `setRing(i)` via a ring-only sigil on each set leaf; wax-seal state when `done`. Files: `src/sets/ui.js`, `src/ui/sigil.js`. Done when: six distinct crests, a test pins set to crest. **Touches:** SETS. **Conflicts:** none.
+
+## Q. Audit 2026-11-04 (fresh walk of main at 1640, 1280 and 375; screenshots in `screenshots/audit/`)
+
+### Q1. Open books hide the home scene behind them
+**Serves:** integrated not bolted on, dark and mysterious.
+**Pitch:** Every menu book opens over the home screen but the gilt "Deepstack" wordmark, chains and plaque still peek out above its top edge, half-cut, which reads as a glitch.
+**Brief:** Goal: while a book is open, dim and lower the home hero (wordmark, lanterns, No. plaque, mantel) so only shelves show behind the book. Files: `src/ui/bookOpen.css` (or a new `bookBackdrop.css`), hook where `#home.book-opening` is set. Done when: no wordmark pixels above the book at 1280 and 1640, close restores it with the existing motion language, reduced motion has no fade.
+**Touches:** HOME, books. **Conflicts:** 104, N-series home threads.
+
+### Q2. Phone run screen: the answer slip is a sliver
+**Serves:** words fully readable, overhaul not tweak.
+**Pitch:** At 375x667 the pinned slip shows two lines ("your / own / wor…" is cut off), the Hint button runs under the depth rail, and the bottom third of the screen is empty shelf.
+**Brief:** Goal: give the slip the free space (taller, text starts level with the quill), move the depth rail to a slim strip that never overlaps controls, keep Hint and Skip inside the alcove. Files: `src/styles/responsive.css` or new `src/styles/phone-run.css`. Done when: a 14-letter word, the longest hint label and the on-screen keyboard open all fit at 375x667 and 360x640, Riddle Shelf included.
+**Touches:** RUN, phone. **Conflicts:** Spacing and type pass, 95.
+
+### Q3. [x] Settings: Graphics "Low" clipped on phones (this PR)
+**Pitch:** The four Graphics choices ran past the panel at 375 so Low was half off-screen. Now the legend takes its own line and the buttons share the width (test pins the rule).
+**Touches:** settings. **Conflicts:** 55 (written settings).
+
+### Q4. Filter page overflows the book page with no way to tell
+**Serves:** words fully readable, everything is a page.
+**Pitch:** On the Shelf book the Sort, Bay, Show and Rarity lists run past the bottom of page 1 ("Hardbound / Folio" cut mid-line at 1640, "Paperback" cut at 375) and the right page is empty for a new player.
+**Brief:** Goal: fit the filters (two rows of handwritten words, rarity as one row of tier-coloured ticks) or let the page scroll under a deckled fade, and use the empty right page for something useful (the first tier shelf, or a hand-drawn "your first answer goes here"). Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: nothing is clipped at 375x667 or 1280x720 with 0 and 60 books.
+**Touches:** SHELF book. **Conflicts:** 11, 82.
+
+### Q5. Descent complete is still boxes and a half-empty alcove
+**Serves:** everything is a book/page, no outlined rectangles, rarity is the hero.
+**Pitch:** The final screen has outlined stat tiles (Answered / Best book / Combo), outlined Copy and Back buttons, and a small column of text in the upper half with the lower 40% of the alcove empty.
+**Brief:** Goal: rebuild as the closing page of a ledger: tallies written in ink, the seven books lined on the ledge as the hero, Copy and Back as handwritten words with the pen underline, depth numeral large. Files: `src/app/final.js`, `src/styles/result.css` or new `src/ui/finalPage.css`. Done when: fits one view at 1280x720 and 375x667, 14-letter word does not clip, share note unchanged.
+**Touches:** RESULT. **Conflicts:** 16, 70, Q16.
+
+### Q6. "Next word" ribbon is a flat grey banner on every tier
+**Serves:** rarity is the hero, tier material.
+**Pitch:** The ribbon button under the result card stays plain grey whether the book is a Pamphlet or an Apocrypha, and the frame around the card is grey too, so the card looks the same dull colour for every tier; "0 /100" also has a stray space.
+**Brief:** Goal: tint ribbon, frame and Enter key from the tier's own material (silk for Folio, wax red for Grimoire, aqua thread for Apocrypha), keep Pamphlet grey. Fix the "0 /100" spacing. Files: `src/ui/tierFrames.css`, `src/app/card.js`. Done when: seven tiers screenshot side by side, contrast of the label passes on each.
+**Touches:** RESULT. **Conflicts:** 17, 64, R4.
+
+### Q7. Empty pages for a new player
+**Serves:** persistent world, handwritten.
+**Pitch:** A fresh save shows an Almanac that is two-thirds blank, a Shelf with an empty right page, the Riddle book with half a page of nothing, and "one at a time" written twice on the Sets spread.
+**Brief:** Goal: one empty-state pass: a hand-drawn faint outline or sketch per book (an empty shelf, a sealed ledger, a riddle slip), one line of written invitation, no repeated notes. Files: `src/ui/bookPages.js` and the almanac/sets files, new `src/ui/emptyPages.css`. Done when: every menu book at 0 played looks finished at 1280 and 375.
+**Touches:** books. **Conflicts:** 54, 55, 56.
+
+### Q8. Home: loose air between Descend and the book stacks
+**Serves:** spacing and polish, dark and mysterious.
+**Pitch:** At 1280 and 1640 there is about 100 px of dead space between "Daily No. 2" and the first book, the mantel shelf holds one candle, and floating dust specks sit on the caption like stray marks.
+**Brief:** Goal: tighten the vertical rhythm (move the stacks up or give the gap a purpose: the streak candles, a hanging sign), keep dust away from text. Files: `src/styles/home-base.css`, `src/ui/mantel.css`. Done when: balanced at 1000x700, 1280x800, 1640x900 and nothing overlaps the cabinet or ledger.
+**Touches:** HOME. **Conflicts:** 94, 95, N16 to N18.
+
+### Q9. "Preparing the judge, 100%" lingers in the top bar
+**Serves:** honest answers, integrated.
+**Pitch:** The status shows "Preparing the judge, 100%" on home even when nothing is loading; at 375 it also squeezes the bar.
+**Brief:** Goal: when the model is ready show nothing (or a small brass "Judge ready" lamp that fades after 3 s); when it fails say so plainly and that the simpler judge is in use. Files: `src/ui/topbar.js`. Done when: tests pin the three states, no layout shift on phone.
+**Touches:** top bar, JUDGE. **Conflicts:** none.
+
+### Q10. The quill sits on the first letter of the placeholder
+**Serves:** words fully readable, handwritten.
+**Pitch:** In the answer slip the quill icon overlaps "your own words…" (it reads "I your") and on the Riddle slip it covers the "T" of "The word…".
+**Brief:** Goal: indent the placeholder and text start past the quill, or draw the quill in the margin beside the red rule. Files: `src/ui/quill.css`. Done when: placeholder and typed text start clear of the quill at 375 and 1640.
+**Touches:** RUN. **Conflicts:** 20, 67.
+
+### Q11. A 0/100 answer still earns a free book and 13 ft
+**Serves:** rarity is the hero, variety over repetition.
+**Pitch:** Typing something unrelated gives a Pamphlet and +13 ft just like an honest try, so rarity at the bottom means nothing; nate decides whether a miss should cost something.
+**Brief:** Goal: pick one (needs nate): a 0 becomes a "damp, unreadable" pamphlet that stays off the shelf, or the descent stalls at the same depth, or leave as is. Files: `src/core/scoring.js`, `src/app/card.js`. Done when: Daily score rules unchanged, test pins the choice.
+**Touches:** CORE, RESULT. **Conflicts:** Judge accuracy, Daily fairness.
+
+### Q12. Open books on a phone cover the top bar and clip the ribbon
+**Serves:** integrated not bolted on, spacing.
+**Pitch:** At 375 the open Shelf and Almanac books slide over the Sound, Credits and Settings buttons and the bookmark ribbon is cut off at the right edge as an unreadable stub.
+**Brief:** Goal: start the book below the top bar, keep the ribbon fully inside the cover, keep Close reachable without scrolling. Files: `src/ui/bookOpen.css`. Done when: all six menu books screenshot clean at 375x667 and 360x640.
+**Touches:** books, phone. **Conflicts:** 104, 95.
+
+### Q13. Written calls to action never wrap
+**Serves:** words fully readable, handwritten.
+**Pitch:** "Start the Riddle Shelf" wraps to "Shelf" alone on its own line while "Start Unlimited" fits; Close the book sits tight beneath it.
+**Brief:** Goal: shorten or scale the handwritten CTA so it stays on one line ("Start the Riddles"), give the pen underline and Close a consistent gap. Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: all six books' CTAs on one line at 1280 and 375.
+**Touches:** books. **Conflicts:** Q7.
+
+### Q14. Daily calendar header has stray marks
+**Serves:** spacing and polish, handwritten.
+**Pitch:** The "‹ November 2026" header has a tiny back arrow, a blue underline that runs off the right edge of the page, and small dash ornaments on the margin of page 1.
+**Brief:** Goal: a clear hand-drawn previous and next arrow pair, the underline kept inside the text block, the corner dashes removed or made a real page-curl. Files: `src/ui/dailyBook.js`, its css. Done when: screenshot at 1280 and 375, arrows hit 44 px.
+**Touches:** Daily book. **Conflicts:** 13, 62, 63.
+
+### Q15. Fine print is too dim on dark
+**Serves:** words fully readable.
+**Pitch:** Floor ranges in the depth rail ("101 to 252 ft"), locked floor names, the key hints under the slip ("Enter to submit, Alt+H hint") and the share note are small grey on dark and hard to read.
+**Brief:** Goal: audit every small label on dark surfaces for 4.5:1 contrast and 12 px minimum, lift values in tokens. Files: `src/theme/colors.js`, `src/ui/depthRail.css`, `src/styles/run.css`. Done when: a test lists the pairs and passes, no screenshot differences beyond text.
+**Touches:** RUN, tokens. **Conflicts:** Keyboard controls and accessibility.
+
+### Q16. Share note wraps in an awkward place
+**Serves:** words fully readable, handwritten.
+**Pitch:** The pinned note on the final screen ends lines with a dot ("Pamphlet · Pamphlet · Paperback ·") and shows a stray dash under line two.
+**Brief:** Goal: lay out the tier row as seven small stamps or break after the fourth, remove the dash, keep the plain text copy exactly as is. Files: `src/app/final.js`, `src/styles/result.css`. Done when: row never wraps mid-pair at 375 and 1280.
+**Touches:** RESULT. **Conflicts:** Q5.
