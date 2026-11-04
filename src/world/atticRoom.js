@@ -5,6 +5,8 @@
    books, the lamp glow and the dust move. Pure layout (layoutPiles) is exported for tests. */
 
 import {PALETTE} from '../theme/colors.js';
+import {paintProps,drawLantern,lanternPos,swayAngle} from './atticProps.js';
+import {Quality} from '../ui/quality.js';
 
 const rgb=(r,g,b,a=1)=>`rgba(${r|0},${g|0},${b|0},${a})`;
 const hexRgb=h=>{const n=parseInt(String(h).slice(1,7),16);return[n>>16&255,n>>8&255,n&255];};
@@ -120,6 +122,7 @@ export function buildRoom(W,A,DPR=1,seed=7){
  c.strokeStyle=rgb(40,28,16);c.lineWidth=1.4;c.beginPath();c.moveTo(sg.x-sw*.4,sg.y-sh/2);c.lineTo(sg.x-sw*.4,sg.y-sh/2-A*.05);c.moveTo(sg.x+sw*.4,sg.y-sh/2);c.lineTo(sg.x+sw*.4,sg.y-sh/2-A*.05);c.stroke();
  /* corner webs low on the posts and in the far floor corners */
  web(c,W*.045+10,A*.6,1,-1,W*.05,.16);web(c,W*.955-10,A*.6,-1,-1,W*.05,.16);
+ paintProps(c,geometry(W,A),W,A);
  return{cv,win:{x:wc.x,y:wc.y,r:wr},geo:geometry(W,A)};
 }
 
@@ -178,11 +181,10 @@ export function drawAttic(ctx,room,o){
  ctx.save();ctx.globalCompositeOperation='lighter';
  if(!RM)for(let k=0;k<18;k++){const ph=k*1.7,u=((vt*.02+k*.137)%1),x=win.x+Math.sin(vt*.3+ph)*win.r*(1+u*3)+(k%2?1:-1)*u*W*.03,y=ry+win.y+u*(A-win.y),al=Math.sin(u*Math.PI)*.5*lit;
   ctx.fillStyle=rgb(255,236,190,al);ctx.beginPath();ctx.arc(x,y,1+(k%3)*.5,0,6.3);ctx.fill();}
- const lx=W*.7,ly=ry+A*EAVE*.55+46,fl=RM?1:1+.06*Math.sin(vt*11)+.04*Math.sin(vt*23);
+ const q=Quality.params(),sw=lanternPos(W,ry,A,EAVE,swayAngle(vt,{RM,glow:q.glow})),lx=sw.x,ly=sw.y+5,fl=RM?1:1+.06*Math.sin(vt*11)+.04*Math.sin(vt*23);
  const lg=ctx.createRadialGradient(lx,ly,0,lx,ly,A*.5*fl);lg.addColorStop(0,rgb(255,190,100,.2*lit));lg.addColorStop(1,rgb(255,150,60,0));ctx.fillStyle=lg;ctx.fillRect(lx-A*.55,ly-A*.55,A*1.1,A*1.1);
  ctx.restore();
- ctx.strokeStyle=rgb(40,28,16);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(lx,ry+A*EAVE*.55+5);ctx.lineTo(lx,ly-10);ctx.stroke();
- ctx.fillStyle=rgb(255,214,130);ctx.fillRect(lx-5,ly-10,10,16);ctx.strokeStyle=rgb(120,84,40);ctx.lineWidth=1.4;ctx.strokeRect(lx-5,ly-10,10,16);
+ drawLantern(ctx,W,ry,A,EAVE,vt,{RM,glow:q.glow});
  /* piles, back rows first */
  const {piles,hidden}=layoutPiles(items,W),hits=[],phone=W<600;
  const now=Date.now(),rank=new Map(items.map((x,k)=>[x,k]));
