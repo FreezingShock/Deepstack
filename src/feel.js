@@ -3,6 +3,7 @@
 
 import { reducedMotion } from './ui/settings.js';
 import { createScribe } from './sound/scribe.js';
+import { createAmbience } from './sound/ambience.js';
 const RM = reducedMotion();
 const rnd = (a, b) => a + Math.random() * (b - a);
 
@@ -122,6 +123,7 @@ export const Sfx = (() => {
   function startAmbient() { stopAmbient(); schedule('drip', 3, 9); schedule('steps', 28, 70); }
   function stopAmbient() { timers.forEach(clearTimeout); timers = []; }
 
+  const floorTone = createAmbience({ ctx: () => ctx, on: () => on, dest: () => master, send: () => wet, noiseBuf });
   const scribe = createScribe({ ctx: () => ctx, on: () => on, out, noiseBuf });
   return {
     quill: () => scribe.quill(), paper: () => scribe.paper(), seal: () => scribe.seal(), land: () => scribe.land(),
@@ -129,11 +131,11 @@ export const Sfx = (() => {
     volume(v) { vol = Math.max(0, Math.min(1, v)); if (master) master.gain.setTargetAtTime(.9 * vol, ctx.currentTime, .05); },
     set(v) {
       on = v;
-      if (v) { init(); if (!ctx) return; ctx.resume(); amb.gain.linearRampToValueAtTime(.07, ctx.currentTime + 1.5); setHum(); startAmbient(); }
-      else { stopAmbient(); if (ctx) { amb.gain.linearRampToValueAtTime(0, ctx.currentTime + .4); setHum(); } }
+      if (v) { init(); if (!ctx) return; ctx.resume(); amb.gain.linearRampToValueAtTime(.07, ctx.currentTime + 1.5); setHum(); startAmbient(); floorTone.enable(true); floorTone.setDepth(depth); }
+      else { stopAmbient(); floorTone.enable(false); if (ctx) { amb.gain.linearRampToValueAtTime(0, ctx.currentTime + .4); setHum(); } }
     },
     /** depth in feet; drives hum pitch/level and how often drips and footsteps occur */
-    setDepth(ft) { if (Math.abs(ft - depth) < 8) return; depth = ft; setHum(); },
+    setDepth(ft) { if (Math.abs(ft - depth) < 8) return; depth = ft; setHum(); floorTone.setDepth(ft); },
     /** page rustle: a few short papery grains, slightly different each time */
     flip() {
       const n = 3 + (Math.random() * 3 | 0);
