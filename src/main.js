@@ -496,10 +496,10 @@ let run=null,timerId=0;
 async function startDaily(practice){
  await wordsReady;
  if(modelStatus().state==='loading')await whenReady(8000);
- const words=dailyWords(utc(),7);
+ const day=utc(),words=dailyWords(day,7);
  prepareWords(words).catch(()=>{});
  World.reset();World.setShelf([]);
- run={practice,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0};
+ run={practice,day,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0};
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
@@ -566,10 +566,10 @@ async function submit(skipped){
 function verdictFor(j,t,w){if(j.empty)return 'Nothing written.';if(j.opposite)return 'That points the other way. The word means close to the opposite.';const T=TIERS[t];return T.lines[(w.id+j.score)%T.lines.length];}
 function finishRun(){
  const r=run;const books=r.results;const avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length);const best=Math.max(...books.map(b=>b.tier));
- const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,depth=worldDepth+setBonus;
+ const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,isDaily=r.mode!=='unlimited',depth=isDaily?worldDepth:worldDepth+setBonus; // Daily depth is words only: set bonuses depend on each player's collection, so they stay out of the shared score
  const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});}
- else if(!r.practice){S.daily[utc()]=d;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak.n=S.streak.last===y?S.streak.n+1:(S.streak.last===utc()?S.streak.n:1);S.streak.last=utc();S.bestDepth=Math.max(S.bestDepth,depth);save();}
+ else if(!r.practice){if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);save();}
  showFinal(d,false);
 }
 const BLK='▁▂▃▄▅▆▇';
