@@ -68,5 +68,5 @@ test('shipped relations.json: covers the curated words and stays a sane size', (
   assert.equal(d.version, 1);
   for (const w of ['taciturn', 'sycophant', 'frugal', 'ephemeral']) assert.ok(d.rel[w]?.s?.length >= 3, w);
   assert.ok(Object.keys(d.rel).length > 10000);
-  for (const [k, v] of Object.entries(d.rel)) { for (const f of Object.keys(v)) assert.ok(['s', 'h', 'r', 'a', 'n'].includes(f), k); }
+  for (const [k, v] of Object.entries(d.rel)) { for (const f of Object.keys(v)) assert.ok(['s', 'c', 'h', 'r', 'a', 'n'].includes(f), k); }
 });

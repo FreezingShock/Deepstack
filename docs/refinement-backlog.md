@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Descend past a floor door (Archive 101 ft, Catacombs 252 ft and deeper) and say if the half-speed hold at the door, the one-time swing of the sign and the quiet floor sound feel right or too subtle; also check Settings reduced motion removes the hold and swing. (door walk-through thread)
+- Play a run and answer with plain synonyms of rare words ("curt" for laconic, "blunt" or "forthright" for candid, "conscientious" for diligent): they should now land in Paperback or better. Tell me any everyday word that still scores 0 or any wrong word that scores well. (judge thesaurus, backlog 90)
 - Open `?perf` on your own machine at home, mid-run and during a descent and tell me the p95 and whether it feels smoother or the same: the headless box can only see JS cost, and your GPU is the real test for the glow-cache change (item 38).
 - Scroll up into the attic and tap an earlier find that has no floor: a slip asks which floor it was found on, the pen underlines your pick and the book leaves the attic for that floor's bay on the Shelf. Check the slip reads at your screen size. (dust-off thread, PR #156)
 - Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Borrower's ledger on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
@@ -388,7 +389,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 ### 45. [x] Judge v2: Wiktionary relations (this PR)
 _Shipped as word relations (synonyms, near synonyms, related, antonyms, definition links in `public/data/relations.json`) instead of paraphrase vectors; see PLAN.md. Follow-ups: 90, 91, 92._
 
-### 90. Judge knows common synonyms of rare words
+### 90. [x] Judge knows common synonyms of rare words (PR pending)
 **Pitch:** Bare synonyms still miss when Wiktionary has no list ("curt" for laconic, "friction" for discord). Add a small frequency-filtered thesaurus of everyday words and score answers against it.
 **Brief:** Files: `scripts/build-relations.mjs`, `public/data/relations.json`. Done when: `npm run judge:eval` good/synonym in band beats 79% on `relation-answers.json` without wrong answers rising.
 **Touches:** JUDGE. **Conflicts:** none.
@@ -1007,3 +1008,12 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** stamp the sigil big on the opened/DOM book covers too.
 **Brief:** Goal: reuse `drawSigil`. Files: `src/ui/bookOpenFx.js`, `src/ui/bookCard.css`. Done when: same word, same sigil everywhere.
 **Touches:** BOOK. **Conflicts:** 7a.
+### 93. Judge says what it noticed in the thesaurus
+**Pitch:** The `c` lists are separate, so the result card can name where a hit came from ("curt is an everyday word for laconic").
+**Brief:** Goal: expose which list matched in `relate()` so item 91's handwritten line can phrase it. Files: `src/scorer/relations.js`, `src/ui/judgeNote.js`. Done when: test pins wording per list.
+**Touches:** JUDGE. **Conflicts:** 91.
+
+### 94. Phrases and two-word synonyms
+**Pitch:** "show-off", "drive away" and "cast out" still miss because the frequency filter and the matcher stay with single words.
+**Brief:** Goal: admit common two-word synonyms from WordNet into `c`, match them in `terms()`. Files: `scripts/lib/wordnet.mjs`, `src/scorer/relations.js`. Done when: judge:eval good/synonym passes 88% with wrong answers not rising.
+**Touches:** JUDGE. **Conflicts:** none.

@@ -29,7 +29,7 @@ const keyOf = s => norm(s).split(' ').map(stem).join(' ');
 function setOf(word, field, rel = REL) {
   const id = word + '|' + field;
   let s = stemSets.get(id);
-  if (!s) { s = new Set((rel?.[word]?.[field] || []).map(keyOf)); stemSets.set(id, s); }
+  if (!s) { s = new Set([...(rel?.[word]?.[field] || []), ...(field === 's' ? rel?.[word]?.c || [] : [])].map(keyOf)); stemSets.set(id, s); } // c = everyday synonyms (WordNet, Moby) count as synonyms
   return s;
 }
 /** Synonyms of every key that shares this stem (inflections of one word), as a stemmed Set. */
