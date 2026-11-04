@@ -322,7 +322,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Files: `vite.config.js`, loader, fonts. Done when: transfer measured before/after, fonts committed so no third-party request.
 **Touches:** JUDGE loader, CORE words, fonts. **Conflicts:** judge and word pool threads.
 
-### 40. [x] Low-end mode (PR TBD)
+### 40. [x] Low-end mode (#138)
 **Pitch:** Detect slow devices and lower particles, DPR and canvas fps automatically, with a manual setting.
 **Brief:** Files: new `src/ui/quality.js`, settings. Done when: quality tiers tested via a mock, other items respect it.
 **Touches:** settings, WORLD (read). **Conflicts:** particles, 38.
