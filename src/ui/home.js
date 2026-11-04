@@ -8,19 +8,22 @@ export const HOME_STEPS=[
  {n:3,h:'Descend',p:'Every answer becomes a book. Better answers go deeper.'},
 ];
 
-/* Secondary entries, grouped into sections. id becomes the button id; group picks
-   the section (see HOME_GROUPS). Other features can push onto HOME_LINKS. */
-export const HOME_GROUPS=[
- {id:'play',h:'Play'},
- {id:'collection',h:'Collection'},
- {id:'records',h:'Records'},
-];
+/* Secondary entries, drawn as books lying sideways in a stack. id becomes the
+   button id; color picks the leather (HOME_BOOK_COLORS). Other features can push
+   onto HOME_LINKS. Layout, hover and open animation live in home.css (--bk-* vars). */
+export const HOME_BOOK_COLORS={
+ red:['#6b1f1c','#3a0f0e','#c9803a'],
+ green:['#27502f','#122a18','#d0b36a'],
+ blue:['#23406b','#10203a','#d0b36a'],
+ purple:['#4a2a63','#26143a','#d8b676'],
+ brown:['#5b3a1d','#2d1c0d','#d8b676'],
+};
 export const HOME_LINKS=[
- {id:'bUnl',group:'play',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>s.rating&&s.rating.placed?'Lexicon '+x.lexicon(s.rating.L):'placement'},
- {id:'bPrac',group:'play',label:'Practice run',note:'Same words, no pressure'},
- {id:'bAll',group:'collection',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
- {id:'bSets',group:'collection',label:'Sets',note:'Themed collections'},
- {id:'bStats',group:'records',label:'Stats',note:'Streaks, depth and tiers'},
+ {id:'bUnl',color:'red',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>s.rating&&s.rating.placed?'Lexicon '+x.lexicon(s.rating.L):'placement'},
+ {id:'bPrac',tex:'cloth',color:'green',label:'Practice',note:'Same words, no pressure'},
+ {id:'bAll',tex:'worn',color:'blue',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
+ {id:'bSets',tex:'vellum',color:'purple',label:'Sets',note:'Themed collections'},
+ {id:'bStats',tex:'grain',color:'brown',label:'Stats',note:'Streaks, depth and tiers'},
 ];
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -28,12 +31,9 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
  const ctx={lexicon};
  const steps=HOME_STEPS.map(s=>`<li class="step"><span class="hn" aria-hidden="true">${s.n}</span><b>${esc(s.h)}</b><span>${esc(s.p)}</span></li>`).join('');
- const item=l=>{const b=l.badge?l.badge(S,ctx):'';return `<li><button class="hl" id="${l.id}"><span class="hl-t">${esc(l.label)}${b?` <small>${esc(b)}</small>`:''}</span>${l.note?`<span class="hl-n">${esc(l.note)}</span>`:''}</button></li>`;};
- const known=new Set(HOME_GROUPS.map(g=>g.id));
- const secs=[...HOME_GROUPS,{id:'more',h:'More'}].map(g=>{
-  const ls=HOME_LINKS.filter(l=>g.id==='more'?!known.has(l.group):l.group===g.id);
-  return ls.length?`<section class="hsec" aria-labelledby="hs-${g.id}"><h2 id="hs-${g.id}">${esc(g.h)}</h2><ul>${ls.map(item).join('')}</ul></section>`:'';
- }).join('');
+ const book=l=>{const b=l.badge?l.badge(S,ctx):'';const c=HOME_BOOK_COLORS[l.color]||HOME_BOOK_COLORS.brown;
+  return `<li><button class="hbook" data-tex="${l.tex||'leather'}" id="${l.id}" style="--bk:${c[0]};--bk2:${c[1]};--bk-gild:${c[2]}"><span class="hb-pages" aria-hidden="true"></span><span class="hb-spine"><i class="hb-band" aria-hidden="true"></i><span class="hb-t">${esc(l.label)}${b?` <small>${esc(b)}</small>`:''}</span>${l.note?`<span class="hb-n">${esc(l.note)}</span>`:''}<i class="hb-band" aria-hidden="true"></i></span></button></li>`;};
+ const secs=`<ul class="hshelf">${HOME_LINKS.map(book).join('')}</ul>`;
  return `<div class="sheet home">
   <h1 class="title">Deepstack</h1>
   <p class="tagline">Explain a hard word. The closer you get to its true meaning, the deeper into the library you descend.</p>
@@ -41,6 +41,30 @@ export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
   ${d?`<div class="row"><button class="btn pri big" id="bRes">Today’s result</button></div><p class="next" id="nextd"></p>`
      :`<div class="row"><button class="descend" id="bPlay"><i class="d-flame" aria-hidden="true"></i><span class="d-t">Descend</span><i class="d-chev" aria-hidden="true"></i></button></div><p class="next daily-tag">Daily No. ${no}</p>`}
   <div class="stats" aria-label="Your records"><span>Streak <b>${st.streak}</b></span><span>Deepest <b>${st.deepest} ft</b></span><span>Books <b>${S.shelf.length}</b></span>${floorName?`<span>Floor <b>${esc(floorName)}</b></span>`:''}</div>
-  <nav class="hsecs" aria-label="Game sections">${secs}</nav>
+  <nav class="hsecs" aria-label="Menu books">${secs}</nav>
   <div class="judgestat" id="jstat" aria-live="polite"></div></div>`;
+}
+
+
+/* Click-open: the book flies to the middle of the screen and opens into a
+   two-page spread, then the original handler runs (its menu appears over it) and the
+   spread fades away. Call after main.js has assigned the onclick handlers.
+   Reduced motion skips straight to the handler. */
+export const BOOK_OPEN_MS=900;
+export function bookify(root,{wait=BOOK_OPEN_MS}={}){
+ const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+ root.querySelectorAll('.hbook').forEach(el=>{
+  const go=el.onclick;if(!go)return;
+  el.onclick=e=>{
+   if(root.classList.contains('book-opening'))return;
+   if(reduce){go.call(el,e);return;}
+   const r=el.getBoundingClientRect(),cs=getComputedStyle(el);
+   const sp=document.createElement('div');sp.className='bk-spread';sp.setAttribute('aria-hidden','true');
+   sp.style.cssText=`--bk:${cs.getPropertyValue('--bk')};--bk2:${cs.getPropertyValue('--bk2')};--bk-gild:${cs.getPropertyValue('--bk-gild')};--fx:${r.left+r.width/2-innerWidth/2}px;--fy:${r.top+r.height/2-innerHeight/2}px`;
+   sp.innerHTML='<div class="bs-back"></div><div class="bs-page l"></div><div class="bs-page r"></div><div class="bs-cover"><span>'+(el.querySelector('.hb-t')?.firstChild?.textContent||'')+'</span></div>';
+   document.body.appendChild(sp);root.classList.add('book-opening');el.classList.add('opening');
+   requestAnimationFrame(()=>requestAnimationFrame(()=>sp.classList.add('go')));
+   setTimeout(()=>{go.call(el,e);sp.classList.add('out');setTimeout(()=>{sp.remove();el.classList.remove('opening');root.classList.remove('book-opening');},400);},wait);
+  };
+ });
 }

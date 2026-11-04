@@ -17,10 +17,9 @@ test('links are extensible',()=>{
  HOME_LINKS.pop();
 });
 
-test('links are grouped into labelled sections; unknown groups fall into More',()=>{
- HOME_LINKS.push({id:'bY',label:'Odd',group:'nope'});
+test('menu entries render as books with their ids',()=>{
  const h=homeHTML({...base,d:null});
- HOME_LINKS.pop();
- for(const g of ['Play','Collection','Records','More'])assert.ok(h.includes('>'+g+'</h2>'),g);
+ for(const id of ['bUnl','bPrac','bAll','bSets','bStats'])assert.ok(h.includes('id="'+id+'"'),id);
+ assert.equal((h.match(/class="hbook"/g)||[]).length,5);
  assert.ok(h.includes('id="bPlay"')&&h.includes('class="descend"'));
 });

@@ -27,26 +27,58 @@
 .home .next{margin-top:10px}
 /* records strip */
 .home .stats{margin:12px 0 2px;padding:7px 18px;border-top:1px solid #f6ecd32a;border-bottom:1px solid #f6ecd32a;gap:6px 26px}
-/* sections */
-.hsecs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;margin-top:10px;text-align:left}
-.hsec{background:#0a0704b8;border:1px solid #f6ecd31f;border-radius:4px;padding:8px 8px 4px}
-.hsec h2{margin:0 0 4px;padding:0 4px 5px;border-bottom:1px solid #f6ecd32a;font:600 11px var(--sans);letter-spacing:.26em;text-transform:uppercase;color:#d8b676}
-.hsec ul{list-style:none;margin:0;padding:0}
-.hl{display:flex;flex-direction:column;align-items:flex-start;gap:0;width:100%;padding:5px 6px;border-radius:3px;text-align:left;transition:background .15s}
-.hl:hover{background:#f6ecd31a}
-.hl-t{font:400 18px/1.2 var(--serif);color:var(--ink)}
-.hl-t small{font:600 10px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#d8b676;margin-left:4px}
-.hl-n{font:400 12px/1.25 var(--sans);color:var(--mute)}
-.hl:hover .hl-t{color:#fff}
+/* menu books: lying sideways in a stack, spines facing out */
+.hsecs{width:100%;margin-top:10px;display:flex;justify-content:center;perspective:900px}
+.hshelf{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;width:min(440px,100%)}
+.hshelf li{display:block;padding:0;border:0;background:none}
+.hshelf li:nth-child(2){margin-left:18px}.hshelf li:nth-child(3){margin-left:-8px}.hshelf li:nth-child(4){margin-left:12px}.hshelf li:nth-child(5){margin-left:-4px}
+/* texture per book: --tex is layered over the leather colour */
+.hbook[data-tex=leather]{--tex:radial-gradient(#0000002e 1px,transparent 1.4px) 0 0/4px 4px,radial-gradient(#ffffff12 1px,transparent 1.4px) 2px 2px/5px 5px}
+.hbook[data-tex=cloth]{--tex:repeating-linear-gradient(0deg,#0000002a 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,#ffffff10 0 1px,transparent 1px 3px)}
+.hbook[data-tex=worn]{--tex:radial-gradient(ellipse at 20% 30%,#ffffff1f,transparent 40%),radial-gradient(ellipse at 80% 70%,#0000004d,transparent 45%),radial-gradient(#0000002a 1px,transparent 1.5px) 0 0/3px 3px}
+.hbook[data-tex=vellum]{--tex:repeating-linear-gradient(100deg,#ffffff0d 0 2px,transparent 2px 7px),radial-gradient(#00000026 1px,transparent 1.4px) 0 0/6px 6px}
+.hbook[data-tex=grain]{--tex:repeating-linear-gradient(90deg,#00000024 0 1px,transparent 1px 5px),repeating-linear-gradient(88deg,#ffffff0c 0 2px,transparent 2px 9px)}
+.hbook{--bk:#5b3a1d;--bk2:#2d1c0d;--bk-gild:#d8b676;--tex:none;position:relative;display:block;width:100%;height:40px;padding:0;cursor:pointer;text-align:left;transform-style:preserve-3d;transition:transform .3s cubic-bezier(.2,.8,.3,1);color:#f6ecd3}
+.hb-pages{position:absolute;inset:3px 0 3px 10px;border-radius:2px 5px 5px 2px;background:repeating-linear-gradient(0deg,#efe3c4 0 2px,#bfb08a 2px 3px);box-shadow:inset 0 0 8px #0008;transition:transform .3s cubic-bezier(.2,.8,.3,1)}
+.hb-spine{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 10px 0 6px;border-radius:3px 6px 6px 3px;transform-origin:50% 100%;transition:transform .3s cubic-bezier(.2,.8,.3,1),filter .25s;
+ background:var(--tex),linear-gradient(180deg,#ffffff2a 0,transparent 18%,#0000005c 100%),linear-gradient(90deg,var(--bk2),var(--bk) 10%,var(--bk) 90%,var(--bk2));
+ box-shadow:inset 0 1px 0 #ffffff40,inset 0 -2px 4px #000a,inset 3px 0 5px #0007,inset -3px 0 5px #0006,0 4px 10px -3px #000}
+/* raised bands (ridges) and gilt rules, like a real spine */
+.hb-band{flex:none;align-self:stretch;width:7px;margin:0;border-left:1px solid #0009;border-right:1px solid #ffffff22;background:linear-gradient(90deg,#0000004d,#ffffff1f 40%,#0000003d);box-shadow:inset 0 0 0 1px #0003}
+.hb-band:first-child{width:9px;margin-left:-6px;border-radius:3px 0 0 3px}
+.hb-band:last-child{margin-left:auto;margin-right:-4px;border-radius:0 5px 5px 0}
+.hb-t{flex:none;font:500 18px/1 var(--serif);color:var(--bk-gild);text-shadow:0 1px 0 #0009,0 0 8px #0006;letter-spacing:.08em;text-transform:uppercase;padding:2px 10px;border:1px solid color-mix(in srgb,var(--bk-gild) 55%,transparent);border-width:1px 0;background:linear-gradient(#0000002e,#00000014)}
+.hb-t small{font:600 9px var(--sans);letter-spacing:.1em;color:#f6ecd3cc;margin-left:6px}
+.hb-n{flex:1;min-width:0;font:italic 400 12px/1.2 var(--serif);color:#f6ecd3a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* hover/focus: slide out, tilt the cover up to peek at the pages inside */
+.hbook:hover,.hbook:focus-visible{transform:translateX(18px)}
+.hbook:hover .hb-spine,.hbook:focus-visible .hb-spine{transform:rotateX(-32deg) translateY(-5px);filter:brightness(1.2)}
+.hbook:hover .hb-pages,.hbook:focus-visible .hb-pages{transform:translateX(9px);background:repeating-linear-gradient(0deg,#efe3c4 0 2px,#bfb08a 2px 3px),#fff}
+.hbook:focus-visible{outline:2px solid #ffd9a0;outline-offset:4px}
+.hbook.opening{visibility:hidden}
+.book-opening .hbook:not(.opening){opacity:.3;transition:opacity .3s}
+.book-opening{pointer-events:none}
+/* click: a two-page spread flies to the middle and the cover swings open */
+.bk-spread{position:fixed;left:50%;top:50%;z-index:95;width:min(560px,86vw);height:min(360px,52vh);perspective:1400px;pointer-events:none;
+ transform:translate(calc(-50% + var(--fx)),calc(-50% + var(--fy))) scale(.5,.1);opacity:1;
+ transition:transform .55s cubic-bezier(.4,0,.2,1),opacity .35s}
+.bk-spread.go{transform:translate(-50%,-50%) scale(1,1)}
+.bk-spread.out{opacity:0}
+.bs-back,.bs-page,.bs-cover{position:absolute;top:0;bottom:0}
+.bs-back{left:-10px;right:-10px;top:-8px;bottom:-8px;border-radius:6px;background:var(--tex,none),linear-gradient(135deg,var(--bk),var(--bk2));box-shadow:0 0 0 1px #000,0 24px 60px -10px #000,0 0 60px -10px #ffb04c66}
+.bs-page{width:50%;background:repeating-linear-gradient(0deg,transparent 0 23px,#7a5a3020 23px 24px),linear-gradient(90deg,#d9c9a3,#efe3c4 45%,#e6d8b4);box-shadow:inset 0 0 30px #5b3a1d55}
+.bs-page.l{left:0;border-radius:3px 0 0 3px;box-shadow:inset -18px 0 22px -10px #0007,inset 0 0 30px #5b3a1d55}
+.bs-page.r{right:0;border-radius:0 3px 3px 0;box-shadow:inset 18px 0 22px -10px #0007,inset 0 0 30px #5b3a1d55}
+.bs-cover{left:50%;width:50%;transform-origin:0 50%;transform-style:preserve-3d;border-radius:0 5px 5px 0;display:flex;align-items:center;justify-content:center;
+ background:linear-gradient(90deg,var(--bk2),var(--bk) 12%,var(--bk)),var(--bk);box-shadow:inset 0 0 0 6px var(--bk2),inset 0 0 0 7px var(--bk-gild);transition:transform .6s .35s cubic-bezier(.5,0,.2,1);backface-visibility:hidden}
+.bs-cover span{font:500 28px var(--serif);letter-spacing:.2em;text-transform:uppercase;color:var(--bk-gild);text-shadow:0 1px 3px #000}
+.bk-spread.go .bs-cover{transform:rotateY(-178deg)}
 @media(max-width:700px){
- .hsecs{grid-template-columns:1fr;gap:6px}
- .hsec{display:flex;align-items:center;gap:6px;padding:4px 8px}
- .hsec h2{flex:none;width:76px;margin:0;padding:0;border:0;font-size:10px;letter-spacing:.2em}
- .hsec ul{display:flex;flex-wrap:wrap;flex:1}
- .hsec li{flex:1 1 auto}
- .hl{min-height:44px;justify-content:center;padding:4px 8px}
- .hl-n{display:none}
- .hl-t{font-size:17px}
+ .hshelf li{margin-left:0!important}
+ .hbook{height:38px}
+ .hb-t{font-size:16px}
+ .hb-n{display:none}
+ .hbook:hover,.hbook:focus-visible{transform:translateX(8px)}
  .home .how{gap:6px;margin-bottom:12px}
  .home .how .step{grid-template-columns:1fr;justify-items:center;text-align:center;padding:8px 4px;gap:2px}
  .home .how .step span:last-child{display:none}
@@ -56,7 +88,7 @@
  .d-t{font-size:22px}
 }
 @media(max-height:900px){.home .how .step span:last-child{display:none}.home .how{margin-bottom:12px}}
-@media(max-height:800px){.hl-n{display:none}.home .title{font-size:clamp(36px,6vw,56px)}}
+@media(max-height:800px){.hb-n{display:none}.home .title{font-size:clamp(36px,6vw,56px)}}
 @media(max-width:700px){.home .stats{display:none}.home .how .step{white-space:nowrap}.home .next{margin-top:6px}}
 /* transition into the game */
 .home.descending{pointer-events:none;animation:hsink .65s cubic-bezier(.5,0,.8,.4) forwards}
@@ -65,4 +97,5 @@
 @keyframes vclose{to{clip-path:circle(150vmax at var(--vx) var(--vy))}}
 .descend-veil.lift{clip-path:none;animation:vlift .65s ease forwards}
 @keyframes vlift{to{opacity:0}}
-@media(prefers-reduced-motion:reduce){.descend,.d-flame,.d-chev{animation:none}.descend-veil{display:none}}
+@media(prefers-reduced-motion:reduce){.descend,.d-flame,.d-chev{animation:none}.hbook,.hb-spine,.hb-pages{transition:none}.hbook:hover .hb-spine,.hbook:focus-visible .hb-spine{transform:none}.hbook.opening{transform:none}.bk-spread{transition:none}.bk-spread .bs-cover{transition:none}.descend-veil{display:none}}
+@media(max-height:900px){.home .stats{display:none}}
