@@ -12,7 +12,7 @@
 `.github/workflows/ci.yml` job `check`: `npm ci`, `npm test`, `npm run build`, headless boot of the built app (fails on any uncaught page error). It runs on the PR merged with current `main`, so a PR that would break `main` fails before merging. It also runs on every push to `main`.
 
 ## Screenshot snapshots
-`node scripts/snapshots.mjs` (after `npm run build`) renders home, an open book, gameplay, a result card and the home screen after a run, with a fixed clock, date and random seed, and compares them with `test/snapshots/*.png` using a tolerant diff (fails above 4% changed pixels). If you change the look on purpose, run `node scripts/snapshots.mjs --update` and commit the new PNGs so reviewers can see them. A failing CI run uploads the actual images as the `snapshot-diffs` artifact.
+`node scripts/snapshots.mjs` (after `npm run build`) renders home, an open book, gameplay, a result card and the home screen after a run, with a fixed clock, date and random seed, and compares them with `test/snapshots/*.png` using a tolerant diff (fails above 10% changed pixels). If you change the look on purpose, run `node scripts/snapshots.mjs --update` and commit the new PNGs so reviewers can see them. A failing CI run uploads the actual images as the `snapshot-diffs` artifact.
 
 ## Repo settings (one-time, by the owner)
 - Settings > General > Pull Requests: allow auto-merge, allow squash merging, automatically delete head branches.

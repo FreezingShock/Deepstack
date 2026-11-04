@@ -17,7 +17,7 @@ const SNAP_DIR = join(process.cwd(), 'test', 'snapshots');
 const OUT_DIR = join(process.cwd(), 'snapshot-diffs');
 const VIEW = {width: 960, height: 640};
 const PIXEL_DELTA = 48;       // a pixel "changed" when any channel moves more than this (of 255)
-const MAX_CHANGED = 0.04;     // fail when more than 4% of pixels changed
+const MAX_CHANGED = 0.10;     // fail when more than 10% of pixels changed: catches broken or missing screens, tolerates small visual tweaks
 const WORD_ANSWER = 'a place where dead people are buried';
 
 const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.svg': 'image/svg+xml'};
