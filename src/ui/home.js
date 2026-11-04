@@ -43,8 +43,7 @@ export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
   ${d?`<div class="row"><button class="btn pri big" id="bRes">Today’s result</button></div><p class="next" id="nextd"></p>`
      :`<div class="row"><button class="descend" id="bPlay"><i class="d-flame" aria-hidden="true"></i><span class="d-t">Descend</span><i class="d-chev" aria-hidden="true"></i></button></div><p class="next daily-tag">Daily No. ${no}</p>`}
   <div class="stats" aria-label="Your records"><span>Streak <b>${st.streak}</b></span><span>Deepest <b>${st.deepest} ft</b></span><span>Books <b>${S.shelf.length}</b></span>${floorName?`<span>Floor <b>${esc(floorName)}</b></span>`:''}</div>
-  <nav class="hsecs" aria-label="Menu books">${secs}</nav>
-  <div class="judgestat" id="jstat" aria-live="polite"></div></div>`;
+  <nav class="hsecs" aria-label="Menu books">${secs}</nav></div>`;
 }
 
 
