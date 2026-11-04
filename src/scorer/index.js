@@ -3,6 +3,7 @@
 import {judge as lexicalJudge} from './lexical.js';
 import {cosine, referenceTexts, prepareAnswer, scoreFromSims} from './embedding.js';
 import {embed, whenReady, modelStatus} from './model.js';
+import {hubTexts, hubSim} from './hubness.js';
 export {startModelLoad, onModelStatus, modelStatus, whenReady} from './model.js';
 
 const refCache = new Map(); // word -> Promise<{texts, vecs}>
@@ -11,10 +12,13 @@ const refsFor = w => {
   return refCache.get(w.w);
 };
 
+let hubVecs = null; // embeddings of the distractor definitions, computed once per page
+const hubFor = () => (hubVecs ??= embed(hubTexts).catch(e => { hubVecs = null; throw e; }));
+
 /** Embed the day's definitions up front (cheap: a handful of short texts). No-op until the model is ready. */
 export async function prepareWords(words) {
   if (modelStatus().state !== 'ready') return;
-  await Promise.all(words.map(refsFor));
+  await Promise.all([hubFor(), ...words.map(refsFor)]);
 }
 
 // Without concept lists the lexical scorer can only reward definition-word overlap; keep that as an honest, rough fallback.
@@ -31,8 +35,8 @@ export async function judgeAnswer(text, word) {
   if (!(await whenReady(6000))) return fallback(text, word);
   try {
     const prep = prepareAnswer(text, word);
-    const [{vecs, wordVec}, [a]] = await Promise.all([refsFor(word), embed([prep.text || text])]);
-    const r = scoreFromSims(vecs.map(v => cosine(a, v)), prep, text, {word, wordSim: cosine(a, wordVec)});
+    const [{vecs, wordVec}, [a], hv] = await Promise.all([refsFor(word), embed([prep.text || text]), hubFor()]);
+    const r = scoreFromSims(vecs.map(v => cosine(a, v)), prep, text, {word, wordSim: cosine(a, wordVec), hub: hubSim(a, hv, word)});
     return {score: r.score, sim: r.sim, caught: lex.caught, missed: lex.missed, opposite: r.opposite || lex.opposite,
       usedWord: lex.usedWord, empty: false, words: lex.words, engine: 'embedding'};
   } catch (err) {
