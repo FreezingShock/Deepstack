@@ -7,10 +7,10 @@
 .bk-spread .pen-ink{position:relative;background:none;border:0;border-radius:0;box-shadow:none;text-shadow:none}
 .bk-spread .pen-ink::after{content:"";position:absolute;left:-2px;right:-2px;bottom:0;height:9px;background:var(--bk);pointer-events:none;
  -webkit-mask:var(--pen-stroke) center/100% 100% no-repeat;mask:var(--pen-stroke) center/100% 100% no-repeat;
- clip-path:inset(0 100% 0 0);transition:clip-path .45s cubic-bezier(.4,.1,.3,1)}
+ clip-path:inset(0 100% 0 0);transition:clip-path var(--m-smooth) var(--e-ink)}
 .bk-spread .pen-ink:hover::after,.bk-spread .pen-ink:focus-visible::after{clip-path:inset(0 0 0 0)}
 /* the main action rests with a faint stroke already under it */
-.bk-spread .pen-ink.rest::after{clip-path:inset(0 0 0 0);opacity:.35;transition:opacity .3s}
+.bk-spread .pen-ink.rest::after{clip-path:inset(0 0 0 0);opacity:.35;transition:opacity var(--m-base)}
 .bk-spread .pen-ink.rest:hover::after,.bk-spread .pen-ink.rest:focus-visible::after{opacity:1}
 
 .bk-spread .bs-start,.bk-spread.one .bs-start{padding:6px 6px 13px;min-height:44px;font:600 clamp(28px,3.2vw,36px)/1.1 var(--pen-hand);letter-spacing:0;text-transform:none;color:var(--bk)}

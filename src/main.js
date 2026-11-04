@@ -3,6 +3,7 @@ import {PALETTE} from './theme/colors.js';
 import {hintLadder,rowsAfterHints} from './core/hints.js';
 import {applyCombo,comboLabel,comboNeeds,comboMultiplier} from './core/combo.js';
 import './theme/tokens.css';
+import './ui/motion.css'; // motion language tokens (src/ui/motion.js)
 import './styles.css';
 import {frameInterval,worldCovered} from './ui/canvasCover.js';
 import {recordBook as recordSetBook,backfill as backfillSets} from './sets/sets.js';

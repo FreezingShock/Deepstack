@@ -170,10 +170,11 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## D. Motion, sound and feel (smooth, physical)
 
-### 22. Motion language
+### 22. [x] Motion language (PR pending)
 **Serves:** smooth motion.
 **Pitch:** One set of durations and easings (accelerate, cruise, settle) for every move: page flips, book opens, camera glides, modal enters.
 **Brief:** Goal: a `motion.js` of named presets used by new code, with an audit of existing hard-coded durations. Files: new `src/ui/motion.js`, tests. Done when: preset table documented, no animation over 1.2 s except the long glides (clamped 1.2-2.5 s), reduced-motion branch in one place.
+**Done:** `src/ui/motion.js` + `motion.css` (tokens `--m-*` durations, `--e-*` easings), 112 CSS declarations migrated, `test/motion.test.js` bans raw easings. Presets: press 80, quick 160, base 240, smooth 360, page 560, linger 1000 ms; accelerate / cruise / settle / spring / press / ink; glides stay in `camMotion.js` (1.2-2.5 s). Exempt: infinite ambient loops, keyframe-timed banners, `animation-duration` overrides. Reduced motion collapses all tokens in `motion.css`.
 **Touches:** new files. **Conflicts:** transitions thread.
 
 ### 23. Typing, page and seal sounds [x] (PR pending)
@@ -418,6 +419,21 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Serves:** pages that feel written.
 **Pitch:** Margin notes that read the numbers back in a hand ("Deepest yet. The Vault is close.") with a pen-drawn arrow to the marker.
 **Brief:** Goal: a small pure `almanacNotes(st)` picking one line per page. Done when: a test per note rule. **Touches:** new file. **Conflicts:** 9.
+
+### 66. Motion in JS: one timer for everything
+**Serves:** smooth, uniform.
+**Pitch:** Replace the remaining hard-coded `setTimeout(..., 400/700/1400)` waits with `after('page')` etc. so JS and CSS can never drift apart.
+**Brief:** Goal: migrate JS timing in `home.js`, `descend.js`, `reveal.js`, `transitions.js`, `main.js` to `motion.js` helpers. Done when: a test greps for raw ms waits. **Touches:** hooks in `main.js`. **Conflicts:** 42.
+
+### 67. Transform-only audit
+**Serves:** performant.
+**Pitch:** Find transitions on width, top, left, box-shadow and filter and move them to transform/opacity, measured with `?perf`.
+**Brief:** Goal: list and fix layout-triggering animations (`.meter`, `#tracker .you`, `.track i`). Done when: before/after p95 frame times in the PR. **Touches:** css. **Conflicts:** 43.
+
+### 68. Per-element stagger preset
+**Serves:** physical motion.
+**Pitch:** A shared stagger step so lists of books, rows and chips rise in one rhythm instead of hand-set delays.
+**Brief:** Goal: `stagger(i)` in `motion.js` plus `--m-stagger`. Files: `motion.js`, css delays. Done when: delay literals removed from `home.css`. **Touches:** css. **Conflicts:** 66.
 
 ## Suggested batches
 - **Overhaul wave 1 (his favourite kind):** 7, 8, 11, 12, 16 (book objects, opening, shelf bays, almanac, reveal card). Run 7 first; 8 and 11 after.
