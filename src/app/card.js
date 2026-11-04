@@ -6,6 +6,7 @@ import {Sfx,Feel} from '../feel.js';
 import {feedbackHTML} from '../ui/feedback.js';
 import {TIERS,save} from './state.js';
 import {$,RM,esc,sleep} from './util.js';
+import {stampCover} from '../ui/coverSigil.js';
 import {FX} from './fx.js';
 import {countUp} from './chrome.js';
 
@@ -36,7 +37,7 @@ export function openCard(b,opts={}){
   <div class="cover"><span class="ct">${T.rar}</span><div class="orn"></div><div class="cw">${esc(b.w)}</div><div class="orn"></div><span class="ct">${T.name}</span></div>
  </div>`;
  L.hidden=false;requestAnimationFrame(()=>L.classList.add('on'));
- const bk=$('#bk');
+ const bk=$('#bk');stampCover(bk.querySelector('.cover'),b.w,b.tier);
  if(opts.fresh){const pl0=revealPlan(b.tier);bk.classList.add('rvc');bk.style.setProperty('--cv-ms',pl0.cover.ms+'ms');bk.style.setProperty('--cv-delay',pl0.cover.delay+'ms');setTimeout(async()=>{Sfx.paper();if(pl0.sound.sting)Sfx.sting(b.tier);if(pl0.shake)Feel.shake(pl0.shake.amp,pl0.shake.ms);if(pl0.slow)Feel.slowmo(pl0.slow.scale,pl0.slow.ms);bk.classList.add('open');{const pl=playReveal(L,b.tier,T.spine,RM);if(pl.ink)bk.classList.add('rv-ink');if(pl.pulse)bk.classList.add('rv-pulse');}{const rc=bk.getBoundingClientRect();FX.reveal(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier);const hh=$('#halo');if(hh)hh.classList.add('go');}await sleep(380+pl0.cover.delay);if(cardOpts!==opts)return;Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);if(cardOpts!==opts)return;$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.settle(rc.left+rc.width/2,rc.top+80,b.tier);}$('#go').focus();},220);}
  else{bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
  $('#go').onclick=closeCard;
