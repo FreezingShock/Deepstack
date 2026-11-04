@@ -15,6 +15,7 @@ const svg=k=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke
 
 const CREDITS=[
  ['Word meanings','Definitions and word data come from <a href="https://en.wiktionary.org" target="_blank" rel="noopener">Wiktionary</a>, parsed by <a href="https://kaikki.org" target="_blank" rel="noopener">kaikki.org</a> (Wiktextract). Licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.'],
+ ['Synonyms','Everyday synonyms come from <a href="https://wordnet.princeton.edu" target="_blank" rel="noopener">Princeton WordNet</a> (WordNet licence) and the public-domain Moby Thesaurus; word frequency from the OpenSubtitles list by hermitdave.'],
  ['The judge','Your answers are scored on your own device by the <a href="https://huggingface.co/Xenova/all-MiniLM-L6-v2" target="_blank" rel="noopener">all-MiniLM-L6-v2</a> sentence model (Sentence-Transformers, Apache 2.0, ONNX build by Xenova), run in the browser with Transformers.js. Nothing you write is sent anywhere.'],
  ['Made by','Deepstack was created by nate.'],
 ];
