@@ -69,7 +69,7 @@ export function showWord(){
  run.ladder=hintLadder(w);run.hintN=0;paintHintBtn();
  $('#hint').onclick=useHint;$('#skip').onclick=()=>submit(true);
  clearInterval(timerId);
- timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);paintRun(left,run.limit);if(left<=0)submit(!$('#ans').value.trim());},100);
+ timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;Sfx.candle(fr);f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);paintRun(left,run.limit);if(left<=0)submit(!$('#ans').value.trim());},100);
 }
 export function paintHintBtn(){const b=$('#hint');if(!b)return;const n=run.ladder[run.hintN];b.disabled=!n;b.textContent=hintButtonLabel(n,n?(run.freeHint?0:n.cost*FT|0):0,run.ladder.length-run.hintN);const k=$('#skip');if(k)k.textContent=skipButtonLabel(run.combo,run.hintN);}
 export function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;const free=!!run.freeHint;run.freeHint=false;if(!free)run.hintSpent=(run.hintSpent||0)+n.cost;
@@ -78,7 +78,7 @@ export function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN]
 export async function submit(skipped){
  if(!run||run.busy)return;const w=run.words[run.i];let text=$('#ans').value.trim();
  if(!skipped&&!text){const f=$('#fld');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');return;}
- run.busy=true;clearInterval(timerId);
+ run.busy=true;clearInterval(timerId);Sfx.candle(1);
  const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w);
  const t=tierOf(j.score);
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
