@@ -3,6 +3,7 @@
 import {chunk,esc,toSpreads} from './bookpages.js';
 import {statsLeaves} from './statsPages.js';
 export {statsLeaves};
+import {penMark,penPlay} from './penInk.js';
 
 /* Shelf layout. Books lie flat in stacks (STACK_H high, STACKS_PER_SHELF side by side) on a wooden shelf; a labelled
    plaque heads each section. Pages fill by a height budget: a shelf costs 1, a plaque PLAQUE_COST. */
@@ -43,7 +44,7 @@ export function statsBook({S,st,TIERS,FLOORS,floorStartFt}){
  return {label:'Stats',spreads:()=>toSpreads(statsLeaves(st(),S,{TIERS,FLOORS,floorStartFt}))};
 }
 
-let pen='',fTier=-1,fSort='new',fQ='',fFav=false,fGroup='tier';
+let fTier=-1,fSort='new',fQ='',fFav=false,fGroup='tier';
 export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc}){
  const SORTS=core.SORTS;
  let list=[],countText='';
@@ -71,7 +72,7 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc}){
   return [ctrl,...pages];
  };
  const bind=(root,ctl)=>{
-  const redo=k=>{pen=k||'';ctl.setSpreads(toSpreads(build()),0);};
+  const redo=k=>{penMark(root,k);ctl.setSpreads(toSpreads(build()),0);};
   root.querySelectorAll('.fchip[data-t]').forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;redo(c.dataset.k);});
   root.querySelectorAll('.fchip[data-s]').forEach(c=>c.onclick=()=>{fSort=c.dataset.s;redo(c.dataset.k);});
   root.querySelectorAll('.fchip[data-g]').forEach(c=>c.onclick=()=>{fGroup=c.dataset.g;redo(c.dataset.k);});
@@ -79,7 +80,7 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc}){
   const fq=root.querySelector('#fq');
   /* typing repaints only the results page; the search box and the rest of the left page stay untouched */
   if(fq)fq.oninput=()=>{fQ=fq.value;ctl.setSpreads(toSpreads(build()),0,'r');const c=root.querySelector('[data-count]');if(c)c.textContent=countText;};
-  if(pen){const c=root.querySelector(`[data-k="${pen}"]`);if(c)c.classList.add('pen');pen='';}
+  penPlay(root);
   root.querySelectorAll('.sbook').forEach(im=>{
    const open=()=>{hideTip();const items=list.map(x=>x.b),b=S.shelf[+im.dataset.i];openCard(b,{fresh:false,nav:{items,i:items.indexOf(b)}});};
    im.onclick=open;

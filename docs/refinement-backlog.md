@@ -94,7 +94,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: a decorations helper that adds hand-drawn dividers/underlines (SVG stroke-draw animation) to page headings across Shelf, Sets, Stats and Daily. Files: new `src/ui/ink.js` + `ink.css`; light edits in BOOK files. Done when: stroke-draw respects reduced motion, text contrast unchanged, one headings test.
 **Touches:** new files, BOOK. **Conflicts:** 8, 10.
 
-### 10. Tabs and filters as handwriting (finish it)
+### 10. Tabs and filters as handwriting (finish it) [x] (PR pending)
 **Serves:** handwritten, pen underline.
 **Pitch:** Every filter, tab and toggle in every book is a written word with a pen-drawn underline that animates between choices; the search field is handwriting and only repaints results.
 **Brief:** Goal: audit all remaining pill/button-style controls inside book pages and convert them; keep focus rings visible. Files: BOOK css/js. Done when: no `.bbtn` or pill inside `.bookpage` (css test), keyboard focus visible, typing in search does not rebuild the page (existing test extended).
@@ -354,6 +354,17 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** Credits list Wiktionary, model, fonts and a short "what's new" shown once per version.
 **Brief:** Files: `topbar.js` credits, new `changelog.js`. Done when: once-per-version test, licences present.
 **Touches:** `topbar.js`. **Conflicts:** none.
+### 54. Pen-written page titles and counts
+**Serves:** handwritten, pages that feel written.
+**Pitch:** Book headings, "8 books · showing 1" and the tier counts are written in with the same pen stroke when a page opens, so no page appears printed.
+**Brief:** Goal: reuse `--pen-stroke` and `penInk.js` to draw page titles and counters in on open. Files: new `src/ui/penWrite.js`. Done when: reduced motion shows them at rest, 14-letter titles fit at 375.
+**Touches:** BOOK. **Conflicts:** 9, 12.
+
+### 55. Written settings and credits panels
+**Serves:** one shared book style, integrated.
+**Pitch:** Settings and Credits stop being button panels: toggles become handwritten words that cross themselves out when off, sliders become pen ticks.
+**Brief:** Goal: apply the pen-ink controls to the pop-up panels. Files: `settings.js`, `topbar.js`, new css. Done when: keyboard focus visible, no filled pill inside panels (css test).
+**Touches:** HOME. **Conflicts:** 7, a11y thread.
 
 ### 60. More secrets in the stacks
 **Serves:** immersion, things that live down there.
