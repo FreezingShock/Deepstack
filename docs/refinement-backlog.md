@@ -5,6 +5,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 ## What nate needs to do
 - Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Borrower's ledger on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
 - Scroll up into the attic and back a few times (also Escape, swipe, with reduced motion): a ladder now slides in from the left and its rungs pass you as you rise, and the room brightens as the skylight comes overhead. Say if it is too long or too dark at the start. (attic climb thread)
+- Play a few books at every tier and say if the ceremony feels right: Codex gets a faint flash, Grimoire a rune and sting, Apocrypha waits for its implosion, then flash and cover swing. Also try Settings > Graphics low (no rune, fewer rays). (reveal recipes)
 - Play down to 252 ft (Catacombs), 454 ft (Sunken Vault), 706 ft (Hollow) and 1008 ft (Abyss) and say which door still feels like "just a tint": each floor's first row now has a sign, a doorway scene and its own wall (item 1).
 
 Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
@@ -758,7 +759,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** If strict up-to-date is ever turned on, a merge queue tests PRs together instead of making each one re-run after every merge.
 **Brief:** Goal: only relevant if main starts breaking from semantic conflicts between parallel PRs. Needs nate to enable it in repo settings and add a `merge_group` trigger to CI. **Touches:** TOOLING. **Conflicts:** none.
 
-### R1. Reveal ceremony beats per tier
+### R1. [x] Reveal ceremony beats per tier (reveal-recipes PR; table in `revealRecipes.js` `revealCeremony`)
 **Serves:** rarity is the hero, overhaul.
 **Pitch:** "completely overhaul the particle system on book reveal ... more stylized and polished": the particles are done, now the rest of the reveal (backdrop rays, cover, sound) should share the same per-tier recipe.
 **Brief:** Goal: drive rays, rune and screen flash from `src/ui/revealRecipes.js` so one table defines a tier's whole reveal. Files: `src/ui/reveal.js`, `revealRecipes.js`. Done when: tests pin it, frame time measured on a real GPU.
@@ -769,6 +770,24 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** Particles scale with the Graphics setting instead of guessing.
 **Brief:** Goal: once `src/ui/quality.js` is on main, make `qualityScale()` in `revealFx.js` read `Quality.params()` instead of `data-quality`. Done when: low mode throws about a third of the particles, tested.
 **Touches:** reveal. **Conflicts:** 40.
+
+### R3. Ceremony sound recipes
+**Serves:** rarity is the hero, sounds line up with the motion language.
+**Pitch:** "one recipe per tier reveal": the flash, rays and cover now come from one table, but the audio cues (paper, chime, sting) are still picked in `feel.js` by tier number.
+**Brief:** Goal: add per-tier cue lists (timing, layers) to `revealCeremony` and let `Sfx` play them, so the sting lands on the flash and the cover creak matches the cover time. Files: `src/ui/revealRecipes.js`, `src/feel.js`. Done when: tests pin cue timing against `flash.at` and `cover.delay`.
+**Touches:** reveal, sound. **Conflicts:** 24.
+
+### R4. Reveal cover materials
+**Serves:** rarity is the hero, everything is a book.
+**Pitch:** the cover only changes speed per tier; each tier's cover could crack, unlatch, unseal or burn open in its own way.
+**Brief:** Goal: add a `cover.style` field to the ceremony table (wax seal snap, clasp, chain, glow seam) with CSS in `reveal.css`. Done when: all seven covers differ at a glance in a screenshot strip at 1280 and 375.
+**Touches:** card, reveal. **Conflicts:** 16.
+
+### R5. Measure the ceremony on a real GPU
+**Serves:** performance.
+**Pitch:** frame cost of rays, rune and flash was only checked under software rendering.
+**Brief:** Goal: run `scripts/perf.mjs` with Apocrypha reveals on a real GPU (or nate's machine) and record the frame time per tier in `docs/perf-baseline.md`. Done when: numbers per tier at high, medium and low are in the doc.
+**Touches:** TOOLING. **Conflicts:** none.
 
 ### D1. Walk through the door
 **Serves:** immersion, motion.

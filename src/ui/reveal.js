@@ -1,25 +1,38 @@
-/* Rarity-escalating backdrop for the book reveal. Pamphlet is deliberately plain; each tier adds one more layer. */
-export function revealPlan(tier){
- const t=Math.max(0,Math.min(6,tier|0));
- return{
-  tier:t,
-  vignette:t>=3?Math.min(.62,.18+(t-3)*.14):0,
-  rays:t>=3?(t>=6?14:t>=5?10:t>=4?8:6):0,
-  rune:t>=5,
-  embers:t>=5?(t>=6?18:10):0,
-  banner:t>=4,
-  ink:t>=4,
-  hold:t>=6?1900:t>=5?1300:t>=4?900:0
- };
+/* Rarity-escalating backdrop, screen flash and cover timing for the book reveal. The numbers all live in
+   revealRecipes.js (revealCeremony), so one table defines a tier's whole reveal. Pamphlet is deliberately plain. */
+import {ceremonyFor, tint} from './revealRecipes.js';
+import {Quality} from './quality.js';
+
+export function revealPlan(tier, params = Quality.params()) {
+ const t = Math.max(0, Math.min(6, tier | 0)), c = ceremonyFor(t, params);
+ return {tier: t, vignette: c.vig, rays: c.rays, rayA: c.rayA, spin: c.spin, rune: c.rune, runeSpin: c.runeSpin, embers: c.embers,
+  banner: t >= 4, ink: c.ink, pulse: c.pulse, hold: c.hold, flash: c.flash, cover: c.cover, sound: c.sound, shake: c.shake, slow: c.slow};
 }
-export function playReveal(layerHost,tier,color,RM){
- const p=revealPlan(tier);if(RM||p.tier<3)return p;
- const el=document.createElement('div');el.className='rvl rvl-t'+p.tier;el.style.setProperty('--rc',color);el.style.setProperty('--rv',p.vignette);
- let h='<i class="rvl-vig"></i>';
- if(p.rays)h+=`<i class="rvl-rays" style="--n:${p.rays}"></i>`;
- if(p.rune)h+='<i class="rvl-rune"></i>';
- el.innerHTML=h;layerHost.insertBefore(el,layerHost.firstChild);
- requestAnimationFrame(()=>el.classList.add('on'));
- setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),1400);},2600+p.hold);
+/** Screen flash from the tier colour. Opacity-only on one fixed layer, so it costs one composite. */
+export function playFlash(color, f, host = document.body) {
+ if (!f) return;
+ const el = document.createElement('div');
+ el.className = 'rvl-flash';
+ el.style.cssText = `--fc:${tint(color, f.hue)};--fp:${f.peak};--fu:${f.up}ms;--fd:${f.down}ms`;
+ setTimeout(() => {
+  host.appendChild(el);
+  requestAnimationFrame(() => { el.classList.add('on'); setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), f.down + 80); }, f.up); });
+ }, f.at);
+}
+export function playReveal(layerHost, tier, color, RM) {
+ const p = revealPlan(tier);
+ if (RM) return p;
+ if (p.flash) playFlash(color, p.flash);
+ if (p.tier < 3) return p;
+ const el = document.createElement('div');
+ el.className = 'rvl rvl-t' + p.tier;
+ el.style.setProperty('--rc', color); el.style.setProperty('--rv', p.vignette);
+ el.style.setProperty('--ra', p.rayA + '%'); el.style.setProperty('--rs', p.spin + 's'); el.style.setProperty('--rr', p.runeSpin + 's');
+ let h = '<i class="rvl-vig"></i>';
+ if (p.rays) h += `<i class="rvl-rays" style="--n:${p.rays}"></i>`;
+ if (p.rune) h += '<i class="rvl-rune"></i>';
+ el.innerHTML = h; layerHost.insertBefore(el, layerHost.firstChild);
+ requestAnimationFrame(() => el.classList.add('on'));
+ setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 1400); }, 2600 + p.hold);
  return p;
 }
