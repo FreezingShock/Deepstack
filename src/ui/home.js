@@ -46,6 +46,11 @@ export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
 }
 
 
+/* Books that open onto an intro page with a Start button instead of a menu. */
+export const BOOK_INTROS={
+ bUnl:{h:'Unlimited',p:'Words keep coming, matched to your level. Your answers are rated, and your Lexicon rating rises and falls with how closely you explain each one.',pts:['No daily limit','Adaptive difficulty','Rated against the real definition'],btn:'Start Unlimited'},
+ bPrac:{h:'Practice',p:'The same seven words as today’s Daily, with no pressure: your answers are not recorded to your streak or your records.',pts:['Seven words, forty-five seconds each','Hints available','Does not count toward the Daily'],btn:'Start Practice'},
+};
 /* Click-open: the book flies to the middle of the screen and opens into a
    two-page spread, then the original handler runs (its menu appears over it) and the
    spread fades away. Call after main.js has assigned the onclick handlers.
@@ -64,7 +69,20 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
    sp.innerHTML='<div class="bs-back"></div><div class="bs-page l"></div><div class="bs-page r"></div><div class="bs-cover"><span>'+(el.querySelector('.hb-t')?.firstChild?.textContent||'')+'</span></div>';
    document.body.appendChild(sp);root.classList.add('book-opening');el.classList.add('opening');
    requestAnimationFrame(()=>requestAnimationFrame(()=>sp.classList.add('go')));
-   setTimeout(()=>{go.call(el,e);sp.classList.add('out');setTimeout(()=>{sp.remove();el.classList.remove('opening');root.classList.remove('book-opening');},400);},wait);
+   const done=()=>{sp.classList.add('out');setTimeout(()=>{sp.remove();el.classList.remove('opening');root.classList.remove('book-opening');document.removeEventListener('keydown',esc);},400);};
+   const intro=BOOK_INTROS[el.id];
+   const esc=ev=>{if(ev.key==='Escape')done();};
+   setTimeout(()=>{
+    if(!intro){go.call(el,e);done();return;}
+    const li=intro.pts.map(t=>`<li>${t}</li>`).join('');
+    sp.querySelector('.bs-page.l').innerHTML=`<h2>${intro.h}</h2><p>${intro.p}</p>`;
+    sp.querySelector('.bs-page.r').innerHTML=`<ul>${li}</ul><button class="bs-start">${intro.btn}</button><button class="bs-back-btn">Close the book</button>`;
+    sp.classList.add('intro');sp.setAttribute('role','dialog');sp.setAttribute('aria-label',intro.h);sp.removeAttribute('aria-hidden');
+    const st=sp.querySelector('.bs-start');st.focus({preventScroll:true});
+    st.onclick=()=>{go.call(el,e);done();};
+    sp.querySelector('.bs-back-btn').onclick=done;
+    document.addEventListener('keydown',esc);
+   },wait);
   };
  });
 }
