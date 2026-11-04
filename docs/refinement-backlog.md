@@ -1018,3 +1018,12 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: admit common two-word synonyms from WordNet into `c`, match them in `terms()`. Files: `scripts/lib/wordnet.mjs`, `src/scorer/relations.js`. Done when: judge:eval good/synonym passes 88% with wrong answers not rising.
 **Touches:** JUDGE. **Conflicts:** none.
 - [x] N11. Streak candles on the mantel (`src/ui/mantel.js`, this PR). New ideas: N16 candles burn down through the day, N17 hover a candle for its day and word, N18 milestone candlesticks at 7/30/100 (briefs in the project notes).
+### N13a. Back stacks catch the lamp
+**Pitch:** the far shelves should pick up a faint glow when a lantern or the candle is near, so the depth reads even on dark floors.
+**Brief:** Goal: tint back-stack bands near `addLight()` sources. Files: `src/world/backStacks.js`, `src/ui/lighting.js` hook. Done when: within 1 ms of the N13 baseline, off on low quality.
+**Touches:** WORLD. **Conflicts:** 2 (lighting).
+
+### N13b. Things in the far stacks
+**Pitch:** a ladder, a hanging lamp or a distant reader's lit window now and then in the back row, never in the way.
+**Brief:** Goal: seeded rare props baked into the per-floor back tile. Files: `src/world/backStacks.js`. Done when: at most one per floor tile, none on the Hollow and Abyss except a single faint light.
+**Touches:** WORLD. **Conflicts:** none.
