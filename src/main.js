@@ -2,6 +2,7 @@ import {hintLadder,rowsAfterHints} from './core/hints.js';
 import {applyCombo,comboLabel,comboNeeds,comboMultiplier} from './core/combo.js';
 import './theme/tokens.css';
 import './styles.css';
+import {frameInterval,worldCovered} from './ui/canvasCover.js';
 import {recordBook as recordSetBook,backfill as backfillSets} from './sets/sets.js';
 import {setsBook,toastSetsDone} from './sets/ui.js';
 import {recapHTML,bindRecap} from './ui/results.js';
@@ -294,8 +295,13 @@ const World=(()=>{
  const ease=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
  const shade=(hx,f)=>{const n=parseInt(hx.slice(1),16);return `rgb(${(n>>16)*f|0},${(n>>8&255)*f|0},${(n&255)*f|0})`;};
  let shelfVisible=0,lastCam=0;
+ let lastDraw=0,coverChk=0,covNow=false;
  function frame(now){
-  const rdt=Math.min(.05,(now-last)/1000);last=now;Feel.tick(rdt);const dt=rdt*Feel.ts;vt+=dt*(st&&st.skip?6:1);cv.style.transform=Feel.ox||Feel.oy?`translate(${Feel.ox}px,${Feel.oy}px)`:'';{const cl=document.getElementById('cardlayer');if(cl)cl.style.transform=cv.style.transform;}
+  if(now-coverChk>100){coverChk=now;covNow=worldCovered();} // DOM probe at 10 Hz, not per frame
+  const gap=frameInterval({covered:covNow,busy:!!st||!!rest,feelActive:Feel.ts!==1||!!Feel.ox||!!Feel.oy});
+  if(gap&&now-lastDraw<gap-4){requestAnimationFrame(frame);return;}
+  lastDraw=now;
+  const rdt=Math.min(gap?.12:.05,(now-last)/1000);last=now;Feel.tick(rdt);const dt=rdt*Feel.ts;vt+=dt*(st&&st.skip?6:1);cv.style.transform=Feel.ox||Feel.oy?`translate(${Feel.ox}px,${Feel.oy}px)`:'';{const cl=document.getElementById('cardlayer');if(cl)cl.style.transform=cv.style.transform;}
   let camNow=cam,settle=0,pull=0;
   if(st){
    if(st.phase==='down'){const u=Math.min(1,st.t/st.dur);st.t+=dt*(st.skip?6:1);camNow=st.cam0+(st.cam1-st.cam0)*ease(u);st.prog=u;if(u>=1){st.phase='settle';st.pt=0;Sfx.thud();}}
