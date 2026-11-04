@@ -815,7 +815,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: reuse `THRESHOLDS`/wall materials to paint small swatches. Files: `tracker.js`, `statsPages.js`. Done when: 375 and 1280 screenshots, long floor name readable.
 **Touches:** HOME, tracker. **Conflicts:** 2.
 
-### AT1. Attic clutter and props
+### AT1. [x] Attic clutter and props (PR #153)
 **Pitch:** The attic reads as a room now; fill it with trunks, a dress form under a sheet, a rolled rug, a ladder hatch, hanging lantern sway.
 **Brief:** Goal: add static props to `buildRoom` in `src/world/atticRoom.js` without covering the book piles. Done when: screenshots at 1280 and 375. **Touches:** WORLD. **Conflicts:** 74.
 
@@ -949,3 +949,18 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Serves:** less fiddly, everything is a book.
 **Pitch:** Earlier finds in a month's crate often came from one run; let me dust a whole crate off with one floor choice, then fix single books after.
 **Brief:** Goal: "Dust the crate" on the slip, writing one floor to every floorless book of that month via `dustOff`. Files: `src/ui/atticDust.js`, `src/core/attic.js`. Done when: tested. **Touches:** CORE. **Conflicts:** 75.
+
+### AT3. Open the trunks
+**Serves:** immersion through interaction.
+**Pitch:** Tap an attic trunk and its lid creaks open to show a few old books or a curio, then closes again.
+**Brief:** Goal: hit rects for the trunks from `src/world/atticProps.js`, a lid-open draw state, reduced-motion static. Done when: 375 and 1280 screenshots. **Touches:** WORLD. **Conflicts:** 74, 75.
+
+### AT4. Moths round the attic lantern
+**Serves:** living world, performance as a feature.
+**Pitch:** A few moths orbit the swaying lantern and the window shaft; none on low quality.
+**Brief:** Goal: draw 3 to 5 moths from `lanternPos()` using `Quality.params()` counts. Done when: no cost on low, reduced motion static. **Touches:** WORLD. **Conflicts:** none.
+
+### AT5. Sheet that stirs
+**Serves:** atmosphere.
+**Pitch:** The dress-form sheet shifts slightly when you climb in, as if disturbed by the draught.
+**Brief:** Goal: one-off settle animation for the sheet when the attic opens, in the shared motion language. **Touches:** WORLD. **Conflicts:** none.
