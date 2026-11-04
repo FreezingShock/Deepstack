@@ -48,6 +48,7 @@ export function hitLoreBook(d, r, rh, W, cam, a, px, py, covered = () => false) 
   if (!d || r === 0) return null;
   const y = r * rh - cam, base = y + rh - 12;
   if (py < y - 40 || py > base + 4) return null;
+  const seen = y + rh - 40; // the next shelf's wall hides the last 28px of every book
   if (a > .03) { // the row is drawn as three leaning thirds: undo the lean of the one under the point
     const i = Math.min(2, Math.max(0, Math.floor(px / (W / 3))));
     const th = (i === 0 ? 1 : i === 2 ? -1 : 0) * .085 * a;
@@ -63,7 +64,7 @@ export function hitLoreBook(d, r, rh, W, cam, a, px, py, covered = () => false) 
       const ox = b.w / 2, dx = lx - ox, s = Math.sin(-b.tilt), k = Math.cos(-b.tilt);
       lx = ox + dx * k - ly * s; ly = dx * s + ly * k;
     }
-    if (lx >= -b.w / 2 && lx <= b.w / 2 && ly >= -b.h && ly <= 2) return b;
+    if (lx >= -b.w / 2 && lx <= b.w / 2 && ly >= -b.h && ly <= 2 && py <= seen) return b;
   }
   return null;
 }
@@ -94,32 +95,38 @@ export function initLore({world, canvas, pool, hash, exclude, enabled, doc = doc
   const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
   const close = () => { card.classList.remove('on'); card.hidden = true; };
 
-  let down = null;
-  canvas.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
-  canvas.addEventListener('pointermove', e => {
-    if (e.buttons || !enabled()) return;
-    const hit = world.loreAt(e.clientX, e.clientY);
-    if (hit) canvas.style.cursor = 'pointer';
-    else if (canvas.style.cursor === 'pointer' && !world.hits().some(h => e.clientX >= h.x && e.clientX <= h.x + h.w && e.clientY >= h.y && e.clientY <= h.y + h.h)) canvas.style.cursor = '';
-  });
-  canvas.addEventListener('click', e => {
-    const dragged = down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6;
-    if (dragged || !enabled()) return;
-    const hit = world.loreAt(e.clientX, e.clientY);
-    if (!hit) return;
+  // Hovering a lore book reveals its word (a tap does the same on touch screens); nothing needs a click.
+  let shown = null;
+  const reveal = (hit, x, y) => {
+    if (shown === hit.book) return;
     const w = loreWord(pool, hit.row, hit.book.seed, hash, new Set(exclude()));
     if (!w) return;
+    shown = hit.book;
     card.innerHTML = `<b>${esc(w.w)}</b> <i>${esc(w.pos)}</i><p>${esc(w.def)}</p>`;
     card.hidden = false; card.classList.remove('on');
     const r = card.getBoundingClientRect(), vw = innerWidth, vh = innerHeight;
-    card.style.left = Math.max(10, Math.min(vw - r.width - 10, e.clientX - r.width / 2)) + 'px';
-    card.style.top = Math.max(10, Math.min(vh - r.height - 10, e.clientY - r.height - 24)) + 'px';
+    card.style.left = Math.max(10, Math.min(vw - r.width - 10, x - r.width / 2)) + 'px';
+    card.style.top = Math.max(10, Math.min(vh - r.height - 10, y - r.height - 24)) + 'px';
     void card.offsetWidth; card.classList.add('on');
+  };
+  const hide = () => { shown = null; close(); };
+  canvas.addEventListener('pointermove', e => {
+    if (e.buttons || !enabled()) { if (shown) hide(); return; }
+    const hit = world.loreAt(e.clientX, e.clientY);
+    if (hit) { canvas.style.cursor = 'help'; reveal(hit, e.clientX, e.clientY); return; }
+    if (shown) hide();
+    if (canvas.style.cursor === 'help') canvas.style.cursor = '';
+  });
+  canvas.addEventListener('pointerleave', hide);
+  canvas.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' || !enabled()) return;
+    const hit = world.loreAt(e.clientX, e.clientY);
+    if (hit) reveal(hit, e.clientX, e.clientY); else hide();
   });
   // Anything else the player does puts the book back: typing, clicking, scrolling, resizing.
-  addEventListener('pointerdown', close, true);
-  addEventListener('keydown', close, true);
-  addEventListener('wheel', close, {passive: true});
-  addEventListener('resize', close);
-  return {close};
+  addEventListener('pointerdown', e => { if (e.target !== canvas) hide(); }, true);
+  addEventListener('keydown', hide, true);
+  addEventListener('wheel', hide, {passive: true});
+  addEventListener('resize', hide);
+  return {close: hide};
 }

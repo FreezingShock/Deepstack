@@ -251,11 +251,12 @@ const World=(()=>{
  function loreCovered(b,base,cam_){const n=nicheBox();if(b.x+b.w<=n.x||b.x>=n.x+n.w)return false;
   for(const [nr] of niches){const ny=n.t+(nr*RH-(H-RH-BM))-cam_;if(base>ny&&base-b.h<ny+n.h)return true;}return false;}
  function drawLoreGlows(top,bot,camNow){
-  for(let r=Math.max(1,top);r<=bot;r++){const d=rows.get(r*2);if(!d)continue;
+  for(let r=top;r<=bot;r++){const d=r?rows.get(r*2):null;if(!d)continue;
    const y=r*RH-camNow,base=y+RH-12,a=abn(r);
    for(const b of d.bs){if(!isLore(b)||b.x+b.w<0||b.x>W||loreCovered(b,base,camNow))continue;
     ctx.save();
     if(a>.03){const i=Math.min(2,Math.max(0,Math.floor((b.x+b.w/2)/(W/3)))),th=(i===0?1:i===2?-1:0)*.085*a;if(th){const cx=(i+.5)*W/3,cy=y+RH/2;ctx.translate(cx,cy);ctx.rotate(th);ctx.translate(-cx,-cy);}}
+    ctx.beginPath();ctx.rect(-RH,y-RH,W+2*RH,RH+RH-40);ctx.clip(); // the next shelf's wall overdraws the last 28px of every book
     ctx.translate(b.x+b.w/2,base);if(b.tilt){ctx.translate(b.w/2,0);ctx.rotate(b.tilt);ctx.translate(-b.w/2,0);}
     drawLoreGlow(ctx,b,vt);ctx.restore();}}}
  function drawNiche(row,nv,camNow,now){const t0=nv.t0;
