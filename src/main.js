@@ -612,6 +612,7 @@ async function submit(skipped){
  FX.burst(innerWidth/2,innerHeight*.5,t,16+t*8);
  run.results.push({...book,skipped});run.depthRows+=rows;
  World.fillNiche(nicheRow,{w:w.w,pos:w.pos,answer:text,score:j.score,tier:t,ft:book.ft,verdict:book.verdict,skipped},run.results.slice());
+ if(cb.chain)setTimeout(()=>Sfx.link(cb.chain),120);else if(cb.broke)setTimeout(()=>Sfx.clunk(),200); // the ledge chain gains a link or lets go
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
  if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}save();}
  if(!run.practice&&run.mode!=='unlimited'){S.dailyRun=snapshotRun(run);save();}
