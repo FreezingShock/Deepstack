@@ -6,6 +6,9 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 
 **Keeping this alive (every thread):** when your PR merges, (1) tick your item here and update your row in the inventory, (2) append any new taste nate expressed in your thread to `nate-preferences.md` (one dated line under the matching pattern), (3) add 2 to 3 fresh items to the end of this file that follow from what he asked, in his wording and in the same format. Keep edits to a few lines so threads do not conflict.
 
+## What nate needs to do
+- Pull `main` and look at the held book (Descend, any run) and the alcove numeral plaque: does the stand and the bolts read right at your screen size? (PR 137, backlog 100/101)
+
 ## Standard preamble (add to every brief)
 - Serves nate's patterns: overhaul not tweak, everything is a book/shelf/page, handwritten and sectioned, words fully readable, dark and mysterious, rarity is the hero, integrated not bolted on, physical and smooth motion.
 - New code in new files under `src/`, one-line hooks in `main.js`/`styles.css`. Colors from `src/theme/colors.js` tokens only (hex ratchet tests).
