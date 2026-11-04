@@ -3,12 +3,14 @@
 export const MAX_SCALE = 0.8;
 
 // Pure layout. Returns {s, items:[{i, dx, w, skipped}]} with dx measured from the alcove's left edge.
-export function ledgeLayout(books, w, dims) {
+export function ledgeLayout(books, w, dims, maxH = 0) {
   const raw = books.map(b => (b.skipped ? 20 : dims(b).w));
   const sum = raw.reduce((a, v) => a + v + 6, 0);
   // wide alcoves: books gather in the right corner, clear of the answer controls (the candle holds the left)
-  const zone = w >= 640 ? w * 0.27 : w - 90;
-  const s = Math.min(MAX_SCALE, Math.max(0.3, zone / Math.max(1, sum)));
+  const zone = w >= 640 ? Math.max(100, Math.min(w * 0.27, w / 2 - 250)) : w - 90;
+  let s = Math.min(MAX_SCALE, Math.max(0.3, zone / Math.max(1, sum)));
+  // narrow alcoves keep the books in a strip below the answer controls: never taller than it
+  if (maxH > 0) { const tall = Math.max(1, ...books.map(b => (b.skipped ? 0 : dims(b).h))); s = Math.min(s, maxH / tall); }
   let x = w >= 640 ? w - 34 - sum * s : (w - sum * s) / 2;
   return {s, items: raw.map((rw, i) => { const it = {i, dx: x, w: rw * s, skipped: !!books[i].skipped}; x += (rw + 6) * s; return it; })};
 }
@@ -28,7 +30,7 @@ export function ledgeTip(b, tiers) {
 // Canvas drawing. Returns screen-space hit rects.
 export function drawLedge(ctx, o) {
   const {books, x, y, w, h, now, dims, bookArt, ribbons, hash} = o;
-  const L = ledgeLayout(books, w, dims), base = y + h, hits = [];
+  const L = ledgeLayout(books, w, dims, o.maxH), base = y + h - (o.inset || 0), hits = [];
   for (const it of L.items) {
     const b = books[it.i], cx = x + it.dx + it.w / 2;
     ctx.save();
