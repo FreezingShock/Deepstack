@@ -40,6 +40,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Feature | Files | Q | State and known gaps |
 |---|---|---|---|
 | Synthesised audio (WebAudio, no assets): room tone, reverb, key ticks, page flip, thud, chime and sting per tier, drips, steps | `src/feel.js` | B | Calm by design. No music; no per-floor ambience beyond depth-linked tone; zero tests. |
+| Desk sounds: quill scratch while typing, paper on page turns/reveal, wax-seal press on submit, heavy book landing (rate limited, voice cap, fake-context test) | `src/sound/scribe.js`, `test/sfx.test.js` | B | Hooked via `Sfx.quill/paper/seal/land`. Not yet tied to the motion presets (item 22). Seal does not vary by tier yet. |
 | Screen shake and slow-motion (`Feel`) | `src/feel.js` | B | Respect reduced motion. Tactile/particles threads in flight (#82, #83). |
 | Colour tokens (single source `colors.js` -> `tokens.css`; hex ratchet tests) | `src/theme/*`, `scripts/gen-tokens.mjs`, `test/fixtures/hex-budget*.json` | A | CSS and JS migrated (#49-#62). |
 | Fonts: Anthropic Serif (self-hosted woff2), Cinzel, Fuzzy Bubbles, Special Elite | `src/ui/fonts.css`, `public/fonts/` | B | Cinzel, Fuzzy Bubbles and Special Elite still come from Google Fonts (third-party request). |
