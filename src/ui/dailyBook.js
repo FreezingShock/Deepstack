@@ -5,6 +5,7 @@
 import {esc,chunk,toSpreads} from './bookpages.js';
 import {dailyKeys,dailyNumber,dailyWords} from '../core/daily.js';
 import {TIERS} from '../core/tiers.js';
+import {calendarLeaf,monthOf} from './dailyCalendar.js';
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -78,23 +79,26 @@ export function dayLeaves(e){
  return [left,right];
 }
 
-export function dailyLeaves(S,today,{wordsFor,streak=0}={}){
+export function dailyLeaves(S,today,{wordsFor,streak=0,month=monthOf(today)}={}){
  const entries=dailyEntries(S,today,wordsFor);
- /* cover + contents come first; pad to a whole spread so every day starts on a left page */
+ /* cover + calendar + contents come first; pad to a whole spread so every day starts on a left page */
  const nContents=contentsLeaves(entries,0).length;
- let prefix=1+nContents;const pad=prefix%2;
+ let prefix=2+nContents;const pad=prefix%2;
  const start=(prefix+pad)/2;
- const lead=[coverLeaf(S,today,entries,streak),...contentsLeaves(entries,start)];
+ const spreadOf=new Map(entries.map((e,i)=>[e.key,start+i]));
+ const lead=[coverLeaf(S,today,entries,streak),calendarLeaf(S,today,month,{spreadOf:k=>spreadOf.get(k),streak}),...contentsLeaves(entries,start)];
  if(pad)lead.push(`<div class="dly"><h2>Memoranda</h2><p class="dly-empty">Every day since No. 1 is written in this book, one spread to a day. Words you have not played are still readable once the day is over.</p></div>`);
  return {entries,start,leaves:[...lead,...entries.flatMap(dayLeaves)]};
 }
 
 /** Registry entry for home.js BOOK_PAGES. today() and streak() are read at open time. wordsReady re-lays the pages once the word list has loaded. */
 export function dailyBook({S,today,streak=()=>0,wordsReady=null,wordsLoaded=()=>true}){
- const build=()=>toSpreads(dailyLeaves(S,today(),{streak:streak()}).leaves);
+ let month=null;
+ const build=()=>toSpreads(dailyLeaves(S,today(),{streak:streak(),month:month||monthOf(today())}).leaves);
  let waiting=false;
- return {label:'The Daily',spreads:build,onPaint:(sp,ctl)=>{
-  sp.querySelectorAll('.dly-go').forEach(b=>b.onclick=()=>ctl.setSpreads(build(),+b.dataset.spread));
+ return {label:'The Daily',spreads:()=>{month=null;return build();},onPaint:(sp,ctl)=>{
+  sp.querySelectorAll('.dly-go,.cal-d[data-spread]').forEach(b=>b.onclick=()=>ctl.setSpreads(build(),+b.dataset.spread));
+  sp.querySelectorAll('.cal-nav[data-month]').forEach(b=>b.onclick=()=>{month=b.dataset.month;ctl.setSpreads(build(),ctl.index);});
   if(wordsReady&&!wordsLoaded()&&!waiting){waiting=true;wordsReady.catch(()=>{}).then(()=>{waiting=false;ctl.setSpreads(build(),ctl.index);});}
  }};
 }

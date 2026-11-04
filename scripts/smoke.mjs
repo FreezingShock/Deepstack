@@ -96,6 +96,24 @@ for (const [id, name] of [['bDaily', 'Daily'], ['bUnl', 'Unlimited'], ['bPrac', 
   });
 }
 
+// 1b. The Daily book opens on its calendar; tapping a day turns to that day, and the page is set in the handwriting face
+await step('daily calendar selects a day', async () => {
+  await realClick(page, '#bDaily', 'Daily book');
+  const dlg = page.locator('[role=dialog].intro').first();
+  await dlg.waitFor({state: 'visible', timeout: T}).catch(() => { fail('Daily book never opened'); throw new Error('stop'); });
+  const day = dlg.locator('button.cal-d[data-spread]').first();
+  await day.waitFor({state: 'visible', timeout: T}).catch(() => { fail('Daily calendar has no selectable day'); throw new Error('stop'); });
+  const fam = await day.evaluate(el => getComputedStyle(el).fontFamily);
+  if (!/Fuzzy Bubbles/.test(fam)) fail(`Daily calendar not in the handwriting face: ${fam}`);
+  const asked = await page.evaluate(() => [...document.querySelectorAll('link[href*="fonts.googleapis"]')].some(l => /Fuzzy\+Bubbles/.test(l.href)));
+  if (!asked) fail('page never requests the Fuzzy Bubbles face');
+  await day.click();
+  await dlg.locator('.dly-words').first().waitFor({state: 'visible', timeout: T}).catch(() => fail('tapping a calendar day did not open its entry'));
+  await page.keyboard.press('Escape');
+  await page.locator('[role=dialog].intro').waitFor({state: 'detached', timeout: T}).catch(() => fail('Daily book did not close'));
+  await page.locator('#home.book-opening').waitFor({state: 'detached', timeout: T}).catch(() => {});
+});
+
 // 2. Descend, play one word through the judge to the result card, then on to word 2
 await step('descend and play one word', async () => {
   if (await page.locator('#bPlay').count() === 0) { console.log('smoke: daily already played, skipping descend'); return; }

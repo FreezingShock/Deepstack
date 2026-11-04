@@ -112,7 +112,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: three to four stats pages from existing saves (`S.rating.hist`, dailies, shelf). Files: new `src/ui/statsPages.js`. Done when: empty states are written ("Nothing shelved yet."), 60-point history tested, tally marks match streak, phone layout verified.
 **Touches:** BOOK. **Conflicts:** 10.
 
-### 13. Daily book calendar and margins
+### 13. [x] Daily book calendar and margins (PR pending)
 **Serves:** Daily book, handwritten.
 **Pitch:** The Daily book gains a month calendar page (circled days you played, tier ink colours), a "this week" spread, and a margin note with your streak.
 **Brief:** Goal: calendar page from existing saves, no new fields. Files: `dailyBook.js`, new `dailyCalendar.js`. Done when: UTC day-key edge test, Daily No. numbering shown, handwriting font loads (smoke test checks the face is in the document).
@@ -366,6 +366,18 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** Curios you have found are listed in a handwritten page of the Collection, so hunting feels like it counts.
 **Brief:** Goal: record found curios additively in the save and show them in a book page. Files: new `src/ui/curioLog.js`. Done when: save tolerates missing field, page readable at 375 px.
 **Touches:** BOOK, new files. **Conflicts:** none.
+
+### 62. Calendar that fills in as you play
+**Serves:** Daily book, handwritten, rarity is the hero.
+**Pitch:** Played days get a pen-drawn circle that finishes itself (animated stroke) in the tier ink, and the month page shows a small tally of rarest books that month.
+**Brief:** Goal: animate the circles on open (reduced-motion: drawn instantly) and add a "rarest this month" margin line. Files: `dailyCalendar.js`, `dailyCalendar.css`. Done when: reduced-motion test, 375 px screenshot.
+**Touches:** BOOK. **Conflicts:** 10.
+
+### 63. Daily book: this week as a spread
+**Serves:** Daily book, one entry per day.
+**Pitch:** A weekly page of seven small tabs (Mon to Sun) with each day's words as ghost text and your best book circled, so the week reads like a diary.
+**Brief:** Goal: replace the "This week" strip with a full leaf reachable from the calendar. Files: `dailyCalendar.js`, `dailyBook.js`. Done when: week boundary (UTC Monday) test, tap a tab opens that day.
+**Touches:** BOOK. **Conflicts:** 10.
 
 ---
 
