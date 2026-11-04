@@ -235,6 +235,10 @@ const PROPS = {
 
 // The doorway: the middle bay of the threshold row holds no books, only this scene, so a floor change reads at a glance.
 export const doorSpan = W => [W / 3 + 9, 2 * W / 3 - 9];
+// A thin glowing edge round the doorway, so the deepest doors still show when the world is almost black.
+function rim(c, d, col) {
+  c.save(); c.strokeStyle = col; c.lineWidth = 2; c.shadowColor = col; c.shadowBlur = 10; c.strokeRect(d.x + 1, d.y + 1, d.w - 2, d.h - 2); c.restore();
+}
 const TABLEAUS = {
   archive(c, fl, d) { // a wall of tiny brass-pulled drawers, a few lit from inside
     const rg = mulberry(5), cw = 30, ch = 20;
@@ -265,11 +269,23 @@ const TABLEAUS = {
     c.strokeStyle = 'rgba(120,220,220,.12)'; for (let k = 1; k < 4; k++) { c.beginPath(); for (let x = d.x; x <= d.x + d.w; x += 8) { const yy = top + k * 14 + Math.sin(x * .04 + k) * 3; x === d.x ? c.moveTo(x, yy) : c.lineTo(x, yy); } c.stroke(); }
     c.restore();
   },
-  hollow(c, fl, d) { // empty shelves into the dark, boards bare, a mist at the bottom
-    c.fillStyle = 'rgba(3,2,6,.95)'; c.fillRect(d.x, d.y, d.w, d.h);
-    c.strokeStyle = 'rgba(80,66,110,.55)'; c.lineWidth = 3; for (let k = 1; k < 3; k++) { const yy = d.y + d.h * k / 3; c.beginPath(); c.moveTo(d.x, yy); c.lineTo(d.x + d.w, yy); c.stroke(); }
-    const g = c.createLinearGradient(0, d.y + d.h * .5, 0, d.y + d.h); g.addColorStop(0, 'rgba(120,90,180,0)'); g.addColorStop(1, 'rgba(120,90,180,.3)'); c.fillStyle = g; c.fillRect(d.x, d.y + d.h * .5, d.w, d.h * .5);
-    c.fillStyle = 'rgba(200,170,255,.8)'; c.shadowColor = 'rgba(190,150,255,.9)'; c.shadowBlur = 8; const ex = d.x + d.w * .62, ey = d.y + d.h * .45; c.beginPath(); c.ellipse(ex, ey, 2.4, 1.5, 0, 0, TAU); c.ellipse(ex + 11, ey, 2.4, 1.5, 0, 0, TAU); c.fill(); c.shadowBlur = 0;
+  hollow(c, fl, d) { // shelves of nameless pale books with gaps, mist at the floor, eyes watching from a gap
+    c.fillStyle = 'rgba(8,5,16,.95)'; c.fillRect(d.x, d.y, d.w, d.h);
+    const rg = mulberry(19), tiers = 2, th = d.h / tiers;
+    for (let k = 0; k < tiers; k++) {
+      const by = d.y + th * (k + 1) - 3;
+      c.fillStyle = 'rgba(120,96,170,.8)'; c.fillRect(d.x, by, d.w, 3); // bare board
+      for (let x = d.x + 6; x < d.x + d.w - 8;) {
+        const w = 6 + rg() * 9, h = th * (.45 + rg() * .35);
+        if (rg() < .3) { x += w * 2; continue; } // a gap where a book was
+        c.fillStyle = `rgba(${150 + rg() * 30 | 0},${130 + rg() * 30 | 0},${190 + rg() * 30 | 0},.55)`; c.fillRect(x, by - h, w, h); // no title, no lettering
+        c.fillStyle = 'rgba(0,0,0,.25)'; c.fillRect(x + w - 2, by - h, 2, h);
+        x += w + 1;
+      }
+    }
+    const g = c.createLinearGradient(0, d.y + d.h * .5, 0, d.y + d.h); g.addColorStop(0, 'rgba(150,110,220,0)'); g.addColorStop(1, 'rgba(150,110,220,.4)'); c.fillStyle = g; c.fillRect(d.x, d.y + d.h * .5, d.w, d.h * .5);
+    c.fillStyle = 'rgba(225,200,255,.95)'; c.shadowColor = 'rgba(190,150,255,.95)'; c.shadowBlur = 10; const ex = d.x + d.w * .7, ey = d.y + d.h * .3; c.beginPath(); c.ellipse(ex, ey, 2.6, 1.7, 0, 0, TAU); c.ellipse(ex + 12, ey, 2.6, 1.7, 0, 0, TAU); c.fill(); c.shadowBlur = 0;
+    rim(c, d, 'rgba(190,150,255,.55)');
   },
   abyss(c, fl, d) { // a monolith of black glass cracked with red light
     c.fillStyle = 'rgba(0,0,0,.96)'; c.fillRect(d.x, d.y, d.w, d.h);
@@ -279,6 +295,7 @@ const TABLEAUS = {
       while (y < d.y + d.h) { x += (rg() - .5) * 26; y += 10 + rg() * 16; c.lineTo(x, y); } c.stroke();
     }
     c.shadowBlur = 0;
+    rim(c, d, 'rgba(255,70,90,.6)');
   }
 };
 
