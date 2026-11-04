@@ -7,7 +7,23 @@ const MIN_WIDTH = 24;      // only the thick spines (rows draw widths of 10-32)
 const EVERY = 5;           // about one in five of those
 
 /** Is this background book (an entry of a generated row) a lore book? */
-export const isLore = b => !!b && !b.lying && b.w >= MIN_WIDTH && b.seed % EVERY === 0;
+export const isLore = (b, W) => !!b && !b.lying && b.w >= MIN_WIDTH && b.seed % EVERY === 0 && (!W || loreClear(b, W));
+
+/** Horizontal room a lore book's glow may use: its bay between pillars, and outside the alcove frame. */
+export function loreBounds(b, W) {
+  const cx = b.x + b.w / 2, bay = W / 3, i = Math.min(2, Math.max(0, Math.floor(cx / bay)));
+  let lo = i * bay + 14, hi = (i + 1) * bay - 14;
+  const nw = Math.min(W - 24, 760), nx = (W - nw) / 2;
+  if (cx < nx) hi = Math.min(hi, nx - 6); else if (cx > nx + nw) lo = Math.max(lo, nx + nw + 6);
+  return [lo, hi];
+}
+
+/** A lore book needs a clear margin from the pillars between bays and from the alcove frame. */
+export function loreClear(b, W, margin = 34) {
+  const [lo, hi] = loreBounds(b, W), nw = Math.min(W - 24, 760), nx = (W - nw) / 2;
+  if (b.x + b.w > nx - 6 && b.x < nx + nw + 6) return false; // under the alcove
+  return b.x - lo >= margin && hi - (b.x + b.w) >= margin;
+}
 
 /** Small brass tag near the head of a marked spine; drawn in book-local space (origin: bottom centre). */
 export function drawLoreMark(c, b) {
@@ -21,17 +37,28 @@ export function drawLoreMark(c, b) {
   c.restore();
 }
 
-/** Pulsing glow, outline and sparkle around a lore book; drawn in book-local space, after the alcoves. */
+/**
+ * A soft, tight halo around one spine plus a faint light along its two edges; drawn in book-local space
+ * after the alcoves. Nothing is clipped: every layer fades to nothing by its own edge, and the
+ * book's last 28px (hidden by the next shelf's wall) are left out so no band shows on the shelf.
+ */
 export function drawLoreGlow(c, b, t) {
-  const pulse = .5 + .5 * Math.sin(t * 2.4 + b.seed), h = b.h, w = b.w;
+  const pulse = .5 + .5 * Math.sin(t * 2.4 + b.seed), w = b.w, h = b.h, hid = 28;
+  const vis = Math.max(20, h - hid), cy = -hid - vis / 2;           // centre of the visible part of the spine
   c.save();
   c.globalCompositeOperation = 'lighter';
-  const g = c.createRadialGradient(0, -h * .55, 0, 0, -h * .55, h * .75 + 14);
-  g.addColorStop(0, `rgba(255,214,120,${.30 + .22 * pulse})`); g.addColorStop(1, 'rgba(255,190,80,0)');
-  c.fillStyle = g; c.fillRect(-h, -h * 1.4, h * 2, h * 1.6);
-  c.globalCompositeOperation = 'source-over';
-  c.lineWidth = 1.5; c.strokeStyle = `rgba(255,224,140,${.55 + .35 * pulse})`;
-  c.strokeRect(-w / 2 - .5, -h - .5, w + 1, h + 1);
+  c.translate(0, cy); c.scale(1, (vis / 2 + 18) / (w / 2 + 18)); // an ellipse hugging the spine
+  const g = c.createRadialGradient(0, 0, w * .2, 0, 0, w / 2 + 18);
+  g.addColorStop(0, `rgba(255,205,110,${.4 + .2 * pulse})`); g.addColorStop(1, 'rgba(255,190,80,0)');
+  c.fillStyle = g; c.beginPath(); c.arc(0, 0, w / 2 + 18, 0, Math.PI * 2); c.fill();
+  c.restore();
+  c.save();
+  c.globalCompositeOperation = 'lighter';
+  const e = c.createLinearGradient(0, -h, 0, -hid); // edge light: bright near the top, gone by the shelf line
+  e.addColorStop(0, `rgba(255,226,150,${.5 + .3 * pulse})`); e.addColorStop(1, 'rgba(255,226,150,0)');
+  c.fillStyle = e; c.fillRect(-w / 2, -h, 2, h - hid); c.fillRect(w / 2 - 2, -h, 2, h - hid);
+  c.restore();
+  c.save();
   const sy = -h - 7 - 3 * pulse, sr = 3.5 + 1.5 * pulse; // small four-point sparkle above the spine
   c.fillStyle = `rgba(255,240,180,${.7 + .3 * pulse})`;
   c.beginPath(); c.moveTo(0, sy - sr * 1.6); c.lineTo(sr * .4, sy - sr * .4); c.lineTo(sr * 1.6, sy); c.lineTo(sr * .4, sy + sr * .4);
@@ -58,7 +85,7 @@ export function hitLoreBook(d, r, rh, W, cam, a, px, py, covered = () => false) 
     }
   }
   for (const b of d.bs) {
-    if (!isLore(b) || px < b.x - 4 || px > b.x + b.w + 4 || covered(b, base)) continue;
+    if (!isLore(b, W) || px < b.x - 4 || px > b.x + b.w + 4 || covered(b, base)) continue;
     let lx = px - (b.x + b.w / 2), ly = py - base;
     if (b.tilt) { // books lean about the middle of their foot
       const ox = b.w / 2, dx = lx - ox, s = Math.sin(-b.tilt), k = Math.cos(-b.tilt);
