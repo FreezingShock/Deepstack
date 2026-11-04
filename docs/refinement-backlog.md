@@ -144,7 +144,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: pure CSS/canvas treatments driven by the book object library (7). Files: new `tierFrames.js` + css. Done when: seven-tier strip screenshot, tokens only, reduced motion static.
 **Touches:** card. **Conflicts:** 7, 16, tier reveals thread.
 
-### 18. Feedback that teaches (spoiler-safe)
+### 18. [x] Feedback that teaches (spoiler-safe) (PR pending)
 **Serves:** honest answers, hierarchy.
 **Pitch:** After an answer, tap the book to see "what you caught / what was missing" and the dictionary line, collapsed by default.
 **Brief:** Goal: details view using lexical hits and the reference gloss, never spelling the word if hints were used. Files: new `src/core/feedback.js`, small hook. Done when: fixture tests, no new on-screen clutter by default.
@@ -436,3 +436,15 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** Primary buttons on book pages (Descend, Close, Continue) become the same swallow-tailed ribbon instead of boxes.
 **Brief:** Goal: shared `.ribbon` class. Files: new `src/ui/ribbon.css`. Done when: focus is visible, buttons tests pass.
 **Touches:** buttons. **Conflicts:** 7.
+
+### 66. Caught and missed on old books
+**Serves:** honest answers.
+**Pitch:** Books answered before "What it caught" existed still teach: tap one on the shelf and it shows what it caught.
+**Brief:** Goal: recompute `fb` from the saved answer with the lexical judge when a book has none. Files: `src/core/feedback.js`, `openCard` hook. Done when: fixture test on a pre-feedback save.
+**Touches:** card. **Conflicts:** judge thread.
+
+### 67. Judge relations in the caught list
+**Serves:** honest answers.
+**Pitch:** When Judge v2 lands, show near-miss ideas ("you said 'leave', it wanted 'abandon completely'") instead of only caught and missing.
+**Brief:** Goal: extend `feedbackData` with relation hits from Judge v2. Files: `src/core/feedback.js`. Done when: tests per relation kind, still no spelling.
+**Touches:** card, JUDGE. **Conflicts:** judge thread.
