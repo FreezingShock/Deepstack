@@ -82,6 +82,8 @@ import './ui/particleMask.js';
 import './ui/polish.css';
 import {initCursorLight} from './ui/cursorLight.js';
 import './ui/cursorLight.css';
+import './ui/riddleBook.js';
+import './ui/riddle.css';
 import './ui/runScreen.css';
 import './ui/candle.css';
 import './ui/runScreen.js';
