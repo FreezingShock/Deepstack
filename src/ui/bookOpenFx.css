@@ -1,0 +1,32 @@
+/* Book opening and closing v3: timings come from --o-* set in bookOpenFx.js. Loaded after home.css, overrides only. */
+.bk-spread{transition:transform var(--o-fly,230ms) var(--e-settle),opacity .3s}
+.bk-spread.open{transition:transform var(--o-swing,320ms) var(--e-cruise),opacity .3s}
+.bk-spread.go:not(.open) .bs-board.r{animation-duration:var(--o-fly,230ms)}
+.bs-cover{transition:transform var(--o-swing,320ms) var(--e-cruise),visibility 0s}
+.bk-spread.open .bs-cover{transition:transform var(--o-swing,320ms) var(--e-cruise),visibility 0s var(--o-swing,320ms)}
+.bs-leaf{transition:transform calc(var(--o-swing,320ms)*.8) calc(var(--o-swing,320ms)*.1) var(--e-cruise),visibility 0s}
+.bk-spread.open .bs-leaf{transition:transform calc(var(--o-swing,320ms)*.8) calc(var(--o-swing,320ms)*.1) var(--e-cruise),visibility 0s var(--o-swing,320ms)}
+.bk-spread.closing:not(.flyback){transition:transform var(--o-swing,320ms) var(--e-cruise)}
+.bk-spread.flyback{transition:transform var(--o-flyback,230ms) var(--e-accelerate),opacity .2s .1s}
+/* the cover's inside is a marbled endpaper in the book's own colours */
+.cv-in{background:radial-gradient(ellipse 60% 35% at 30% 30%,color-mix(in srgb,var(--bk-gild) 22%,transparent),transparent 70%),radial-gradient(ellipse 50% 40% at 70% 72%,color-mix(in srgb,var(--bk) 55%,transparent),transparent 70%),repeating-linear-gradient(115deg,color-mix(in srgb,var(--bk) 22%,var(--c-parchment-80)) 0 7px,color-mix(in srgb,var(--bk) 32%,var(--c-parchment-80)) 7px 11px,color-mix(in srgb,var(--bk2) 26%,var(--c-parchment-80)) 11px 13px);box-shadow:inset -22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 0 7px color-mix(in srgb,var(--bk) 85%,transparent)}
+/* page-block thickness: stacked leaf edges peeking out beside each page */
+.bs-blk{position:absolute;top:-4px;bottom:-4px;width:9px;opacity:0;transition:opacity .2s;pointer-events:none;background:repeating-linear-gradient(90deg,var(--c-parchment-85) 0 1px,var(--c-bronze-33-alpha-1a) 1px 2px);box-shadow:0 1px 0 var(--c-black-alpha-77),0 -1px 0 var(--c-black-alpha-77)}
+.bs-blk.l{left:-7px;border-radius:3px 0 0 3px}
+.bs-blk.r{right:-7px;border-radius:0 3px 3px 0;opacity:1}
+.bk-spread.open .bs-blk.l{opacity:1;transition-delay:calc(var(--o-swing,320ms)*.5)}
+/* the ribbon drops out of the spine once the book is open */
+.bs-ribbon{position:absolute;left:calc(50% + 14px);top:-9px;width:13px;height:0;pointer-events:none;z-index:3;transform-origin:top;transform:scaleY(.1);opacity:0;
+ background:linear-gradient(90deg,var(--c-black-alpha-33),transparent 30%,var(--c-white-alpha-1a) 55%,var(--c-black-alpha-33)),var(--bk-gild);
+ clip-path:polygon(0 0,100% 0,100% 100%,50% calc(100% - 7px),0 100%);transition:transform .12s,opacity .1s,height 0s .12s}
+.bk-spread.open .bs-ribbon{height:clamp(70px,22%,130px);opacity:.95;transform:scaleY(1);transition:transform .34s calc(var(--o-swing,320ms)*.7) var(--e-spring),opacity .1s calc(var(--o-swing,320ms)*.7)}
+.bk-spread.one .bs-ribbon{left:auto;right:18px}
+/* thud as the cover lands (individual `translate` so it never fights the transform transitions) */
+.bk-spread.shut{animation:bk-thud .22s var(--e-settle)}
+@keyframes bk-thud{0%{translate:0 0}35%{translate:0 4px}100%{translate:0 0}}
+/* reduced motion: no flight, no swing, just a fade between closed and open */
+.bk-spread.rm{transform:translate(-50%,-50%);opacity:0;transition:opacity var(--o-fade,160ms)}
+.bk-spread.rm.go{opacity:1}.bk-spread.rm.out{opacity:0}
+.bk-spread.rm .bs-cover,.bk-spread.rm .bs-leaf,.bk-spread.rm .bs-ribbon{display:none}
+.bk-spread.rm .bs-board.l,.bk-spread.rm .bs-page.l,.bk-spread.rm .bs-blk.l{opacity:1;transition:none}
+@media(prefers-reduced-motion:reduce){.bk-spread.shut{animation:none}.bk-spread .bs-ribbon{transition:none}}

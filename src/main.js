@@ -23,6 +23,8 @@ import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
 import {homeHTML,bookify,BOOK_PAGES} from './ui/home.js';
 import './ui/home.css';
+import {setBookSfx} from './ui/bookOpenFx.js';
+import './ui/bookOpenFx.css';
 import {watchHomeLayout,applyHomeTier} from './ui/homeLayout.js';
 import {descendInto} from './ui/descend.js';
 import {travelEase,travelMs} from './ui/camMotion.js';
@@ -487,6 +489,7 @@ function showHome(){
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
  
  bookify(ui.home);applyHomeTier(ui.home);
+ setBookSfx(n=>n==="whoosh"?Sfx.whoosh(.22):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
 }

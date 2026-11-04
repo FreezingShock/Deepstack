@@ -1,4 +1,5 @@
 import {PALETTE} from '../theme/colors.js';
+import {BOOK_TIMING,bookTimings,dressBook,thud,bookSound} from './bookOpenFx.js';
 import {decorate as inkPage} from './ink.js';
 /* Home screen markup. Kept separate from main.js so other features can add
    entries (modes, links) by pushing onto HOME_LINKS / HOME_STEPS without
@@ -80,7 +81,7 @@ export function introSpreads(intro){
    beat the cover swings open onto the spread. Resolves nothing; callbacks drive it.
    opts: {from:rect, colors:{bk,bk2,gild,tex}, title, spreads, label, onReady(spreadEl, api)}.
    Returns {el, close}. */
-export const BOOK_FLY_MS=380, BOOK_HOLD_MS=100, BOOK_SWING_MS=620;
+export const BOOK_FLY_MS=BOOK_TIMING.fly, BOOK_HOLD_MS=BOOK_TIMING.hold, BOOK_SWING_MS=BOOK_TIMING.swing;
 export const BOOK_OPEN_MS=BOOK_FLY_MS+BOOK_HOLD_MS+BOOK_SWING_MS;
 export function openBook({from,colors={},title='',spreads=null,label='',cls='',keepOnEsc=null,onClose=()=>{}}){
  const sp=document.createElement('div');sp.className='bk-spread'+(cls?' '+cls:'');sp.setAttribute('aria-hidden','true');
@@ -90,18 +91,21 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   '<button class="bs-corner prev" aria-label="Previous page" hidden><i></i></button><button class="bs-corner next" aria-label="Next page" hidden><i></i></button>'+
   '<div class="bs-cover"><div class="cv-front"><i class="cv-hinge"></i><div class="cv-frame"><span class="cv-orn" aria-hidden="true"></span><span class="cv-t"></span><span class="cv-orn" aria-hidden="true"></span></div></div><div class="cv-in"></div></div>';
  sp.querySelector('.cv-t').textContent=title;
- document.body.appendChild(sp);
+ const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches,T=bookTimings(reduce);
+ dressBook(sp,T);
+ document.body.appendChild(sp);bookSound('whoosh');
  requestAnimationFrame(()=>requestAnimationFrame(()=>sp.classList.add('go')));
  const timers=[];let idx=0,closed=false;
  const t=(fn,ms)=>timers.push(setTimeout(fn,ms));
- const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
  /* Close: with pages the cover swings shut over them, the book slides back to its closed
     position, then flies back to where it came from. Without pages it just fades. */
  const close=()=>{if(closed)return;closed=true;timers.forEach(clearTimeout);document.removeEventListener('keydown',key,true);document.removeEventListener('pointerdown',away,true);
   if(!(spreads&&spreads.length)){sp.classList.add('out');setTimeout(()=>{sp.remove();onClose();},400);return;}
-  const swing=sp.classList.contains('open')&&!reduce?BOOK_SWING_MS:0,fly=reduce?0:BOOK_FLY_MS;
+  bookSound('flip');
+  const swing=sp.classList.contains('open')?T.swing:0,fly=T.flyBack;
   sp.removeAttribute('role');sp.setAttribute('aria-hidden','true');sp.classList.remove('intro','open');sp.classList.add('closing');
-  setTimeout(()=>{sp.classList.remove('go');sp.classList.add('flyback','out');setTimeout(()=>{sp.remove();onClose();},fly+30);},swing+90);
+  if(swing)setTimeout(()=>thud(sp),swing);
+  setTimeout(()=>{sp.classList.remove('go');sp.classList.add('flyback','out');setTimeout(()=>{sp.remove();onClose();},(reduce?T.fade:fly)+30);},swing+T.shutHold);
  };
  /* a press anywhere outside the book closes it (ignoring other popups stacked on top) */
  const away=ev=>{if(sp.contains(ev.target)||(ev.target.closest&&ev.target.closest('#cardlayer,#topPanel,.tip')))return;close();};
@@ -167,13 +171,13 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const key=ev=>{if(ev.key==='Escape'){if(!(keepOnEsc&&keepOnEsc()))close();return;}if(ev.target.closest&&ev.target.closest('input,textarea,select'))return;if(ev.key==='ArrowRight')turn(1);else if(ev.key==='ArrowLeft')turn(-1);};
  /* swap the pages in place (filters, search); stays on spread i. only 'r' or 'l' repaints just that page, so an input on the other page keeps focus */
  const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0,only){settle();queued=0;spreads=s;idx=Math.max(0,Math.min(i,s.length-1));if(!only)side='l';paint(only);}};
- t(()=>sp.classList.add('open'),BOOK_FLY_MS+BOOK_HOLD_MS);
+ t(()=>{sp.classList.add('open');bookSound('flip');},T.fly+T.hold);
  if(spreads&&spreads.length){
   t(()=>{
    paint();sp.classList.add('intro');sp.setAttribute('role','dialog');sp.setAttribute('aria-label',label||title);sp.removeAttribute('aria-hidden');
    document.addEventListener('keydown',key,true);document.addEventListener('pointerdown',away,true);
    const f=sp.querySelector('.bs-start')||sp.querySelector('.pg-in button,.pg-in input');if(f)f.focus({preventScroll:true});
-  },BOOK_OPEN_MS-120);
+  },Math.max(0,T.open-120));
  }
  return api;
 }
