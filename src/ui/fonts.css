@@ -1,0 +1,34 @@
+/* Anthropic Serif. Font files live in public/fonts/anthropic-serif/ (gitignored, see README there).
+   If they are absent the stack falls back to Newsreader. */
+
+@font-face{font-family:'Anthropic Serif';font-style:normal;font-weight:300;font-display:swap;src:url('/fonts/anthropic-serif/Text-Light.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:italic;font-weight:300;font-display:swap;src:url('/fonts/anthropic-serif/Text-LightItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/anthropic-serif/Text-Regular.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:italic;font-weight:400;font-display:swap;src:url('/fonts/anthropic-serif/Text-RegularItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/anthropic-serif/Text-Medium.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:italic;font-weight:500;font-display:swap;src:url('/fonts/anthropic-serif/Text-MediumItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/anthropic-serif/Text-Semibold.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:italic;font-weight:600;font-display:swap;src:url('/fonts/anthropic-serif/Text-SemiboldItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/anthropic-serif/Text-Bold.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:italic;font-weight:700;font-display:swap;src:url('/fonts/anthropic-serif/Text-BoldItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:normal;font-weight:800;font-display:swap;src:url('/fonts/anthropic-serif/Text-Extrabold.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif';font-style:italic;font-weight:800;font-display:swap;src:url('/fonts/anthropic-serif/Text-ExtraboldItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:normal;font-weight:300;font-display:swap;src:url('/fonts/anthropic-serif/Display-Light.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:italic;font-weight:300;font-display:swap;src:url('/fonts/anthropic-serif/Display-LightItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/anthropic-serif/Display-Regular.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:italic;font-weight:400;font-display:swap;src:url('/fonts/anthropic-serif/Display-RegularItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/anthropic-serif/Display-Medium.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:italic;font-weight:500;font-display:swap;src:url('/fonts/anthropic-serif/Display-MediumItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/anthropic-serif/Display-Semibold.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:italic;font-weight:600;font-display:swap;src:url('/fonts/anthropic-serif/Display-SemiboldItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/anthropic-serif/Display-Bold.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:italic;font-weight:700;font-display:swap;src:url('/fonts/anthropic-serif/Display-BoldItalic.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:normal;font-weight:800;font-display:swap;src:url('/fonts/anthropic-serif/Display-Extrabold.woff2') format('woff2')}
+@font-face{font-family:'Anthropic Serif Display';font-style:italic;font-weight:800;font-display:swap;src:url('/fonts/anthropic-serif/Display-ExtraboldItalic.woff2') format('woff2')}
+
+:root{
+  --serif:'Anthropic Serif','Newsreader','Linux Libertine',Georgia,'Times New Roman',serif;
+  --serif-display:'Anthropic Serif Display','Anthropic Serif','Newsreader','Linux Libertine',Georgia,serif;
+}
+/* Titles and headings use the Display cut */
+#mark,h1.title,.d-t,.cv-t,.pg-title,.bk-spread.menu h1,.book .page h2{font-family:var(--serif-display)}
