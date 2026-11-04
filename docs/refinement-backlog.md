@@ -499,19 +499,19 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** The scratch speeds up when typing fast, softens on pauses, and gives a small flourish when the answer is sent.
 **Brief:** Goal: scale quill level and length by keystroke rate. Files: `src/sound/scribe.js`. Done when: rate-limit test still passes, no more nodes than the voice cap.
 **Touches:** FEEL hook. **Conflicts:** 23 follow-ups.
-### 68. Attic: ladder, rafters and a real climb
+### 74. Attic: ladder, rafters and a real climb
 **Serves:** immersion through interaction, physical motion.
 **Pitch:** The attic lowers like a hatch today. Make the climb physical: the book tilts up, a ladder slides in, the skylight light grows as you rise.
 **Brief:** Goal: a short climb transition into the attic and back. Files: `src/ui/attic.css`, `attic.js`. Done when: reduced motion cuts, wheel and swipe still work.
 **Touches:** BOOK. **Conflicts:** 11.
 
-### 69. Attic finds you can restore
+### 75. Attic finds you can restore
 **Serves:** everything is a book; rarity is the hero.
 **Pitch:** Tap a dusty book in the attic and "Dust it off" writes its floor with a pen stroke and carries it down to its bay.
 **Brief:** Goal: let nate choose a floor for floorless books. Files: `src/ui/attic.js`, `src/core/attic.js`. Done when: `fl` saved additively, book leaves the attic, tested.
 **Touches:** BOOK, CORE. **Conflicts:** 11.
 
-### 70. Cobwebs and dust on attic books
+### 76. Cobwebs and dust on attic books
 **Serves:** dark and mysterious; deeper is darker.
 **Pitch:** The older the book, the more dust, webs and faded gilding on its spine.
 **Brief:** Goal: age-based spine dressing in the attic. Files: `src/ui/attic.css`. Done when: tokens only, 14-letter word still readable.
