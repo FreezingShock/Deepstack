@@ -1,38 +1,119 @@
-/* Welcome screen as a reading room: the rules are a catalogue card and the records a borrower's
-   slip, both pinned to the niche beside the Descend plaque. Loaded after home.css. */
+/* Welcome screen as a reading room. The rules and the records are built into the niche's side walls:
+   a card-catalogue cabinet on the left, the borrower's ledger on the right, the same size and height either
+   side of the Descend plaque, each topped by a slab holding one brass prop (bell, stamp). The rules card lifts
+   out of the top drawer, glides to the middle of the room under a soft veil, and flips for combo and tiers.
+   Wide rooms (1000 px and up) show both; tablets get just the top drawer inline; phones neither.
+   Loaded after home.css. All motion uses the shared --m-* / --e-* presets, which collapse when motion is reduced. */
 .home .hz-plaque{position:relative}
-.home .cc-face,.home .stats.slip{--ink:var(--c-oak-1a1208);position:relative;box-sizing:border-box;min-height:168px;padding:28px 16px 14px;text-align:left;text-shadow:none;color:var(--c-oak-1a1208);
- background:repeating-linear-gradient(180deg,transparent 0 19px,color-mix(in srgb,var(--c-oak-4a3a22) 28%,transparent) 19px 20px),radial-gradient(120% 90% at 30% 10%,var(--c-parchment-85),var(--c-parchment-dim));
- border:0;border-radius:2px;box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 10px 18px -6px var(--c-black),0 0 0 1px var(--c-black-alpha-66);
- transition:transform var(--m-base) var(--e-settle),box-shadow var(--m-base);display:none}
-.home .cc-face{display:block}
-.home .stats.slip{position:absolute;top:50%;width:218px;right:-60px;--rot:1.6deg;transform:translateY(-50%) rotate(var(--rot)) scale(var(--s,1));flex-direction:column;flex-wrap:nowrap;gap:0;align-items:stretch;justify-content:flex-start;margin:0;padding-top:22px;border-top:0;border-bottom:0;font:400 14px/30px var(--mono);letter-spacing:.02em;text-transform:none}
-.home .stats.slip:hover{transform:translateY(calc(-50% - 3px)) rotate(0) scale(var(--s,1));box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 16px 24px -8px var(--c-black),0 0 0 1px var(--c-black-alpha-66)}
-.home .cc-face::after,.home .stats.slip::after{content:"";position:absolute;left:0;right:0;top:19px;height:1px;background:var(--c-bronze-51)}
-.home .wc-pin{position:absolute;top:-5px;left:14px;width:11px;height:11px;margin-left:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c-amber-fff6d0),var(--c-brass-62) 45%,var(--c-oak-24));box-shadow:0 3px 3px var(--c-black-alpha-88)}
-.home .wc-head{position:absolute;left:0;right:0;top:0;padding:4px 0 0;text-align:center;font:600 11px/14px var(--label);letter-spacing:.16em;text-transform:uppercase;color:var(--c-book-red)}
+.home .cat-card{display:none;--fw:184px;--fh:172px;--wall:-46px}
+.home .ledger{display:none;--fw:184px;--fh:172px;--wall:-46px}
+[data-room=snug] .home .cat-card,[data-room=snug] .home .ledger{--fh:150px}
+[data-room=tight] .home .cat-card,[data-room=tight] .home .ledger{--fh:140px}
+
+/* ---- shared wall unit: absolute against the plaque's middle, flush to its wall ---- */
+.home .cc-cab,.home .ledger{position:absolute;top:50%;width:var(--fw);transform:translateY(-50%);box-sizing:border-box}
+.home .cc-cab{left:var(--wall)}
+.home .ledger{right:var(--wall)}
+.home .cc-run,.home .lg-frame{position:relative;box-sizing:border-box;height:var(--fh);
+ background:repeating-linear-gradient(90deg,transparent 0 9px,var(--c-black-alpha-33) 9px 10px),linear-gradient(180deg,var(--c-oak-5a3d22),var(--c-oak-3d2916));
+ box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 0 0 1px var(--c-black),0 16px 22px -12px var(--c-black)}
+/* a slab on top for the prop; it overhangs a little, like the cornice of a built-in */
+.home .cc-top{position:relative;height:8px;margin:0 -5px;border-radius:2px 2px 0 0;
+ background:linear-gradient(180deg,var(--c-oak-24),var(--c-oak-21));box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 0 0 1px var(--c-black)}
+/* four brass screws at the corners of each frame */
+.home .cc-run::after,.home .lg-frame::after{content:"";position:absolute;inset:5px;pointer-events:none;
+ background:radial-gradient(circle,var(--c-brass-62) 0 1.6px,var(--c-oak-24) 2px 2.6px,transparent 3px) 0 0/9px 9px no-repeat,
+ radial-gradient(circle,var(--c-brass-62) 0 1.6px,var(--c-oak-24) 2px 2.6px,transparent 3px) 100% 0/9px 9px no-repeat,
+ radial-gradient(circle,var(--c-brass-62) 0 1.6px,var(--c-oak-24) 2px 2.6px,transparent 3px) 0 100%/9px 9px no-repeat,
+ radial-gradient(circle,var(--c-brass-62) 0 1.6px,var(--c-oak-24) 2px 2.6px,transparent 3px) 100% 100%/9px 9px no-repeat}
+
+/* ---- the cabinet: three drawers, the top one is the rules ---- */
+.home .cc-run{display:grid;grid-template-rows:repeat(3,1fr);gap:5px;padding:9px 10px}
+.home .cc-drawer,.home .cc-fake{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin:0;padding:0;border:0;border-radius:2px;color:var(--c-oak-1a1208);
+ background:repeating-linear-gradient(90deg,transparent 0 9px,var(--c-black-alpha-33) 9px 10px),linear-gradient(180deg,var(--c-oak-24),var(--c-oak-21));
+ box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 0 0 1px var(--c-black),0 2px 0 var(--c-black-alpha-66)}
+.home .cc-drawer{cursor:pointer;transition:transform var(--m-base) var(--e-settle),box-shadow var(--m-base) var(--e-settle),filter var(--m-base)}
+.home .cc-drawer:hover{transform:translateY(-1px);filter:brightness(1.12)}
+.home .cc-drawer:active{transform:translateY(1px);transition-duration:var(--m-press)}
+.home .cat-card[data-open="1"] .cc-drawer{transform:translateY(3px) scale(1.04);filter:brightness(1.08);box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 0 0 1px var(--c-black),0 9px 12px -3px var(--c-black);z-index:1}
+.home .cc-drawer:focus-visible,.home .cc-turn:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:2px}
+.home .cc-plate{padding:2px 7px;font:600 9.5px/12px var(--label);letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;border:1px solid var(--c-bronze-51);border-radius:2px;background:linear-gradient(180deg,var(--c-parchment-85),var(--c-parchment-dim));box-shadow:0 1px 1px var(--c-black-alpha-66)}
+.home .cc-knob{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c-amber-fff6d0),var(--c-brass-62) 45%,var(--c-oak-24));box-shadow:0 2px 3px var(--c-black-alpha-88);transition:transform var(--m-base) var(--e-spring)}
+.home .cat-card[data-open="1"] .cc-drawer .cc-knob{transform:translateY(2px)}
+@media(forced-colors:active){.home .cc-drawer{border:1px solid CanvasText}}
+
+/* ---- the card: lifts out of the top drawer, settles at the room's middle ---- */
+.home .cc-scrim{position:fixed;inset:0;z-index:5;pointer-events:none;opacity:0;visibility:hidden;
+ background:radial-gradient(60% 55% at 50% 50%,var(--c-black-alpha-33),var(--c-black-alpha-88));
+ transition:opacity var(--m-smooth) var(--e-settle),visibility 0s linear var(--m-smooth)}
+.home .cat-card[data-open="1"] .cc-scrim{opacity:.72;visibility:visible;pointer-events:auto;transition:opacity var(--m-smooth) var(--e-settle),visibility 0s}
+.home .cc-slot{--from-x:-274px;--from-y:-56px;position:absolute;left:50%;top:50%;z-index:6;width:264px;perspective:900px;pointer-events:none;
+ transform:translate(calc(-50% + var(--from-x)),calc(-50% + var(--from-y))) scale(.5) rotate(-5deg);opacity:0;visibility:hidden;
+ transition:transform var(--m-page) var(--e-settle),opacity var(--m-base) var(--e-cruise),visibility 0s linear var(--m-page)}
+.home .cat-card[data-open="1"] .cc-slot{transform:translate(-50%,-50%);opacity:1;visibility:visible;pointer-events:auto;transition:transform var(--m-page) var(--e-settle),opacity var(--m-base) var(--e-cruise),visibility 0s}
+.home .cc-flip{display:grid;transform-style:preserve-3d;transition:transform var(--m-smooth) var(--e-settle)}
+.home .cat-card[data-open="1"][data-face="1"] .cc-flip{transform:rotateY(180deg)}
+.home .cc-face{--ink:var(--c-oak-1a1208);grid-area:1/1;position:relative;box-sizing:border-box;min-height:176px;padding:30px 18px 26px;text-align:left;text-shadow:none;color:var(--c-oak-1a1208);cursor:pointer;
+ backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:visibility 0s linear calc(var(--m-smooth)/2);
+ background:repeating-linear-gradient(180deg,transparent 0 21px,color-mix(in srgb,var(--c-oak-4a3a22) 28%,transparent) 21px 22px),radial-gradient(120% 90% at 30% 10%,var(--c-parchment-85),var(--c-parchment-dim));
+ border-radius:2px;box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 24px 36px -10px var(--c-black),0 0 0 1px var(--c-black-alpha-66)}
+.home .cc-face::after{content:"";position:absolute;left:0;right:0;top:21px;height:1px;background:var(--c-bronze-51)}
+.home .cc-back{transform:rotateY(180deg)}
+.home .cat-card[data-face="1"] .cc-front,.home .cat-card[data-face="0"] .cc-back{visibility:hidden}
+.home .wc-pin{position:absolute;top:-5px;left:14px;width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c-amber-fff6d0),var(--c-brass-62) 45%,var(--c-oak-24));box-shadow:0 3px 3px var(--c-black-alpha-88)}
+.home .wc-head{position:absolute;left:0;right:0;top:0;padding:5px 0 0;text-align:center;font:600 11px/14px var(--label);letter-spacing:.16em;text-transform:uppercase;color:var(--c-book-red)}
+.home .cc-turn{position:absolute;right:10px;bottom:7px;padding:2px 4px;border:0;background:none;font:600 11px/14px var(--label);letter-spacing:.12em;text-transform:uppercase;color:var(--c-book-blue);cursor:pointer;border-radius:2px}
+.home .cc-turn:hover{color:var(--c-book-red)}
 /* rules: typed lines with a handwritten numeral, like entries on an index card */
 .home .cat-card .how{display:block;margin:0;padding:0;width:auto;list-style:none}
-.home .cat-card .how .step{display:block;position:relative;padding:0 0 0 22px;margin:0 0 4px;border:0;background:none;box-shadow:none;border-radius:0;font:400 13px/22px var(--mono);color:var(--c-oak-1a1208)}
+.home .cat-card .how .step{display:block;position:relative;padding:0 0 0 24px;margin:0 0 6px;border:0;background:none;box-shadow:none;border-radius:0;font:400 13px/22px var(--mono);color:var(--c-oak-1a1208)}
 .home .cat-card .how .step b{font:600 14px/22px var(--mono);color:var(--c-oak-1a1208);display:inline;margin-right:5px}
 .home .cat-card .how .hn{position:absolute;left:0;top:0;width:auto;height:auto;border:0;display:inline;font:700 18px/22px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-blue)}
 .home .cat-card .how .step span:last-child{display:inline;grid-column:auto}
-/* slip: dotted leaders between a label and its stamped value */
-.home .stats.slip span{display:flex;justify-content:space-between;gap:6px;color:var(--c-oak-1a1208);white-space:nowrap}
-.home .stats.slip span::after{content:none}
-.home .stats.slip b{font:700 17px/30px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-red);min-width:0;overflow:hidden;text-overflow:ellipsis}
-/* shown only where there is wall for them: wide rooms; the rules also fit inline on tablets */
+.home .cc-combo{margin:0 0 8px;font:400 12.5px/17px var(--mono);color:var(--c-oak-1a1208)}
+.home .cc-combo b{font-weight:600}
+.home .cc-tiers{list-style:none;margin:0;padding:0 0 4px;display:grid;grid-template-columns:1fr 1fr;gap:0 12px;font:400 12px/20px var(--mono)}
+.home .cc-tiers li{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.home .cc-tiers span{flex:1;overflow:hidden;text-overflow:ellipsis}
+.home .cc-tiers b{font:700 13px/20px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-red)}
+.home .cc-dot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 0 1px var(--c-black-alpha-66)}
+
+/* ---- the ledger: a framed board bolted to the right wall, a brass plate, a ruled page ---- */
+.home .lg-frame{padding:28px 11px 12px}
+.home .lg-plate{position:absolute;left:50%;top:6px;transform:translateX(-50%);padding:2px 9px;font:600 9.5px/12px var(--label);letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;color:var(--c-oak-1a1208);
+ border:1px solid var(--c-bronze-51);border-radius:2px;background:linear-gradient(180deg,var(--c-brass-65),var(--c-brass-62) 55%,var(--c-bronze-44));box-shadow:0 1px 1px var(--c-black-alpha-88),0 1px 0 var(--c-white-alpha-40) inset}
+.home .lg-page{margin:0;height:100%;box-sizing:border-box;padding:6px 10px 4px;display:flex;flex-direction:column;justify-content:space-around;
+ background:repeating-linear-gradient(180deg,transparent 0 25px,color-mix(in srgb,var(--c-oak-4a3a22) 30%,transparent) 25px 26px),radial-gradient(120% 90% at 30% 10%,var(--c-parchment-85),var(--c-parchment-dim));
+ box-shadow:0 0 0 1px var(--c-black-alpha-66),inset 0 2px 5px var(--c-black-alpha-33);border-radius:1px}
+.home .lg-row{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin:0;font:400 13px/26px var(--mono);color:var(--c-oak-1a1208);white-space:nowrap}
+.home .lg-row dt{margin:0}
+.home .lg-row dd{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;font:700 17px/26px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-red)}
+/* values are written in one after another when the room appears */
+.home .lg-row dd{animation:lg-write var(--m-smooth) var(--e-ink) both;animation-delay:calc(260ms + var(--n,0)*140ms)}
+.home .lg-row:nth-child(2) dd{--n:1}.home .lg-row:nth-child(3) dd{--n:2}.home .lg-row:nth-child(4) dd{--n:3}
+@keyframes lg-write{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
+.home .ledger.jolt .lg-frame{animation:lg-jolt var(--m-quick) var(--e-settle) 1}
+@keyframes lg-jolt{35%{transform:translateY(3px)}}
+.home .cc-fake{animation:cc-settle var(--m-smooth) var(--e-settle) both;animation-delay:calc(120ms + var(--n,0)*90ms)}
+.home .cc-fake+.cc-fake{--n:1}
+@keyframes cc-settle{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+
+/* ---- where each shows ---- */
 @media(min-width:1000px){
- [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card,[data-room=snug] .home .cat-card{display:grid}
- [data-room=roomy] .home .stats.slip,[data-room=cozy] .home .stats.slip,[data-room=snug] .home .stats.slip{display:block}
- .home .stats.slip{display:flex}
- [data-room=snug] .home .stats.slip{display:flex}
+ [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card,[data-room=snug] .home .cat-card{display:block}
+ [data-room=roomy] .home .ledger,[data-room=cozy] .home .ledger,[data-room=snug] .home .ledger{display:block}
 }
+/* tablets: just the top drawer, inline above Descend; the card still lifts out to the middle */
 @media(min-width:561px) and (max-width:999px){
- [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card{display:grid;position:relative;left:auto;top:auto;width:min(100%,360px);margin:0 auto var(--hz-g,12px);transform:none}
+ [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card{display:block}
+ .home .cat-card .cc-cab{position:relative;left:auto;top:auto;transform:none;width:224px;margin:0 auto var(--hz-g,12px)}
+ .home .cat-card .cc-run{height:auto;display:block;padding:7px 9px}
+ .home .cat-card .cc-drawer{height:46px;flex-direction:row;justify-content:center;gap:10px;width:100%}
+ .home .cat-card .cc-fake,.home .cat-card .cc-top{display:none}
+ .home .cc-slot{--from-x:0px;--from-y:-70px}
 }
-@media(prefers-reduced-motion:reduce){.home .stats.slip{transition:none}}
-html[data-motion="reduce"] .home .stats.slip{transition:none}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .cc-fake,html:not([data-motion="full"]) .home .lg-row dd{animation:none}}
+html[data-motion="reduce"] .home .cc-fake,html[data-motion="reduce"] .home .lg-row dd,html[data-motion="reduce"] .home .ledger.jolt .lg-frame{animation:none}
 
 /* Today's result and the next-descent line sit as the centrepiece of the room */
 .home #bRes{font:500 20px/1 var(--label);letter-spacing:.22em;padding:16px 34px;min-width:280px}
@@ -43,46 +124,10 @@ html[data-motion="reduce"] .home .stats.slip{transition:none}
  -webkit-background-clip:text;background-clip:text;
  filter:drop-shadow(0 1px 0 var(--c-black)) drop-shadow(0 3px 2px var(--c-black-alpha-88)) drop-shadow(0 0 26px var(--c-amber-ffb84d-alpha-44))}
 @media(forced-colors:active){.home .title.wordmark{color:CanvasText;background:none;filter:none}}
-/* short rooms (laptop heights): the cards shrink so they stay clear of the title and the book stacks */
-[data-room=snug] .home .cat-card,[data-room=snug] .home .stats.slip{--s:.86}
-[data-room=cozy] .home .cat-card,[data-room=cozy] .home .stats.slip{--s:.92}
-
-/* ---- the rules card is a card-catalogue drawer (welcome.js): pull it, the card slides out, turn it over ---- */
-.home .cat-card{display:none;position:absolute;top:50%;left:-60px;width:218px;transform:translateY(-50%) scale(var(--s,1));grid-template-rows:auto auto;justify-items:stretch}
-.home .cc-slot{grid-row:1;position:relative;display:grid;perspective:900px;clip-path:inset(-60px -40px 0 -40px);padding-bottom:26px;margin-bottom:-26px;pointer-events:none}
-.home .cc-flip{grid-area:1/1;display:grid;transform-style:preserve-3d;transform:translateY(100%);visibility:hidden;
- transition:transform var(--m-smooth) var(--e-settle),visibility 0s linear var(--m-smooth)}
-.home .cat-card[data-open="1"] .cc-flip{transform:translateY(0);visibility:visible;pointer-events:auto;transition:transform var(--m-smooth) var(--e-settle),visibility 0s}
-.home .cat-card[data-open="1"][data-face="1"] .cc-flip{transform:rotateY(180deg)}
-.home .cc-face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:visibility 0s linear calc(var(--m-smooth)/2);--rot:0deg}
-.home .cc-back{transform:rotateY(180deg)}
-.home .cat-card[data-face="1"] .cc-front,.home .cat-card[data-face="0"] .cc-back{visibility:hidden}
-.home .cc-front,.home .cc-back{cursor:pointer}
-.home .cc-turn{position:absolute;right:10px;bottom:7px;padding:2px 4px;border:0;background:none;font:600 11px/14px var(--label);letter-spacing:.12em;text-transform:uppercase;color:var(--c-book-blue);cursor:pointer;border-radius:2px}
-.home .cc-turn:hover{color:var(--c-book-red)}
-.home .cc-turn:focus-visible,.home .cc-drawer:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:2px}
-.home .cc-combo{margin:0 0 6px;font:400 12px/16px var(--mono);color:var(--c-oak-1a1208)}
-.home .cc-combo b{font-weight:600}
-.home .cc-tiers{list-style:none;margin:0;padding:0 0 18px;display:grid;grid-template-columns:1fr 1fr;gap:0 10px;font:400 11.5px/17px var(--mono)}
-.home .cc-tiers li{display:flex;align-items:center;gap:5px;white-space:nowrap}
-.home .cc-tiers span{flex:1;overflow:hidden;text-overflow:ellipsis}
-.home .cc-tiers b{font:700 13px/17px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-red)}
-.home .cc-dot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 0 1px var(--c-black-alpha-66)}
-/* the drawer front: oak face, brass label plate, brass pull */
-.home .cc-drawer{grid-row:2;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:10px;height:58px;padding:0 14px;border:0;border-radius:3px;cursor:pointer;color:var(--c-oak-1a1208);
- background:repeating-linear-gradient(90deg,transparent 0 9px,var(--c-black-alpha-33) 9px 10px),linear-gradient(180deg,var(--c-oak-24),var(--c-oak-4a3a22));
- box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 0 0 1px var(--c-black),0 12px 18px -8px var(--c-black);
- transition:transform var(--m-quick) var(--e-settle)}
-.home .cc-drawer:hover{transform:translateY(-2px)}
-.home .cc-drawer:active{transform:translateY(0);transition-duration:var(--m-press)}
-.home .cat-card[data-open="1"] .cc-drawer{transform:translateY(2px)}
-.home .cc-plate{padding:3px 8px;font:600 10px/13px var(--label);letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--c-bronze-51);border-radius:2px;background:linear-gradient(180deg,var(--c-parchment-85),var(--c-parchment-dim));box-shadow:0 1px 1px var(--c-black-alpha-66)}
-.home .cc-knob{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c-amber-fff6d0),var(--c-brass-62) 45%,var(--c-oak-24));box-shadow:0 2px 3px var(--c-black-alpha-88)}
-@media(min-width:561px) and (max-width:999px){.home .cat-card{margin-top:30px}}
-/* reduced motion: no slide, no flip. The card is simply shown or hidden, the face simply swapped. */
-@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .cc-flip,html:not([data-motion="full"]) .home .cc-face,html:not([data-motion="full"]) .home .cc-drawer{transition:none;transform:none!important}}
-html[data-motion="reduce"] .home .cc-flip,html[data-motion="reduce"] .home .cc-face,html[data-motion="reduce"] .home .cc-drawer{transition:none;transform:none!important}
-html[data-motion="reduce"] .home .cc-flip,html:not([data-motion="full"]) .home .cc-flip{transform:none}
-@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .cat-card[data-open="0"] .cc-flip{display:none}}
-html[data-motion="reduce"] .home .cat-card[data-open="0"] .cc-flip{display:none}
-@media(forced-colors:active){.home .cc-drawer{border:1px solid CanvasText}}
+/* reduced motion: the card is simply shown or hidden, the face simply swapped; nothing flies or flips */
+@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .cc-flip,html:not([data-motion="full"]) .home .cc-face,html:not([data-motion="full"]) .home .cc-drawer,html:not([data-motion="full"]) .home .cc-slot,html:not([data-motion="full"]) .home .cc-scrim{transition:none;transform:none!important}
+ html:not([data-motion="full"]) .home .cc-slot{transform:translate(-50%,-50%)!important}
+ html:not([data-motion="full"]) .home .cat-card[data-open="0"] .cc-slot{display:none}}
+html[data-motion="reduce"] .home .cc-flip,html[data-motion="reduce"] .home .cc-face,html[data-motion="reduce"] .home .cc-drawer,html[data-motion="reduce"] .home .cc-slot,html[data-motion="reduce"] .home .cc-scrim{transition:none;transform:none!important}
+html[data-motion="reduce"] .home .cc-slot{transform:translate(-50%,-50%)!important}
+html[data-motion="reduce"] .home .cat-card[data-open="0"] .cc-slot{display:none}

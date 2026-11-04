@@ -1,47 +1,30 @@
-/* Librarian's desk props on the niche ledge (deskProps.js). They stand on the ledge line, never float,
-   and disappear below 560 px, where the stacks fill the niche. The stamp only shows where the slip does. */
-.desk-props{position:absolute;left:0;right:0;bottom:3px;height:0;pointer-events:none;display:none}
-.dp{position:absolute;bottom:0;padding:0;border:0;background:none;cursor:pointer;pointer-events:auto;transform-origin:50% 100%;-webkit-tap-highlight-color:transparent;
- filter:drop-shadow(0 1px 0 var(--c-black-alpha-66))}
+/* Brass props on the wall furniture (deskProps.js): a bell on the cabinet's top slab and a date stamp on the
+   ledger's, each on the side nearest the room so it clears the lantern. They stand on the slab line, never float,
+   and exist only where the furniture does (the slabs are hidden on phones and tablets). */
+.dp{position:absolute;bottom:calc(100% - 2px);padding:0;border:0;background:none;cursor:pointer;transform-origin:50% 100%;-webkit-tap-highlight-color:transparent;
+ filter:drop-shadow(0 1px 0 var(--c-black-alpha-66));transition:filter var(--m-base) var(--e-settle)}
 .dp svg{display:block;width:100%;height:auto;overflow:visible}
 .dp:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:3px;border-radius:4px}
-.dp-bell{left:16px;width:38px}
-.dp-ink{right:18px;width:24px}
-.dp-stamp{right:50px;width:30px}
-.dp-stamp{display:none}
+.dp-bell{right:12px;width:36px}
+.dp-stamp{left:12px;width:30px}
 .dp-sh{fill:var(--c-black-alpha-88)}
 .dp-brass{fill:var(--c-brass-62);stroke:var(--c-bronze-51);stroke-width:.8}
 .dp-brass2{fill:var(--c-bronze-51);stroke:var(--c-oak-24);stroke-width:.6}
 .dp-hi{fill:none;stroke:var(--c-amber-fff6d0);stroke-width:1.2;stroke-linecap:round;opacity:.6}
 .dp-pad{fill:var(--c-oak-24);stroke:var(--c-black);stroke-width:.5}
-.dp-glass{fill:var(--c-oak-11);stroke:var(--c-brass-62);stroke-width:.8}
-.dp-liquid{fill:var(--c-black)}
-.dp-ripple{fill:none;stroke:var(--c-steel-28);stroke-width:.7;opacity:0}
-.dp-quill{fill:var(--c-parchment-85);stroke:var(--c-parchment-dim);stroke-width:.6;transform-origin:22px 14px}
-.dp-wood{fill:var(--c-oak-4a3a22);stroke:var(--c-oak-24);stroke-width:.6}
 .dp-redpad{fill:var(--c-book-red)}
+.dp-wood{fill:var(--c-oak-4a3a22);stroke:var(--c-oak-24);stroke-width:.6}
 .dp:hover,.dp:focus-visible{filter:drop-shadow(0 1px 0 var(--c-black-alpha-66)) brightness(1.18)}
 .dp.ring{animation:dp-ring var(--m-smooth) var(--e-settle) 2}
-.dp.dip .dp-quill{animation:dp-dip var(--m-base) var(--e-settle) 1}
-.dp.dip .dp-ripple{animation:dp-ripple var(--m-smooth) var(--e-settle) 1}
 .dp.press .dp-head{animation:dp-press var(--m-quick) var(--e-accelerate) 1}
 @keyframes dp-ring{0%{transform:rotate(0)}20%{transform:rotate(-14deg)}50%{transform:rotate(10deg)}80%{transform:rotate(-4deg)}100%{transform:rotate(0)}}
-@keyframes dp-dip{0%,100%{transform:rotate(0)}40%{transform:rotate(-22deg) translateY(4px)}}
-@keyframes dp-ripple{0%{opacity:.8;transform:scale(.4)}100%{opacity:0;transform:scale(2.2)}}
 @keyframes dp-press{0%,100%{transform:translateY(0)}55%{transform:translateY(5px)}}
-.dp-ripple{transform-box:fill-box;transform-origin:center}
 
-/* the due-date stamp on the Borrower's slip */
-.home .stats.slip .dp-mark{position:absolute;right:12px;bottom:10px;display:none;padding:2px 8px;border:2px solid var(--c-book-red);border-radius:3px;
- font:700 15px/1.1 var(--mono);letter-spacing:.1em;color:var(--c-book-red);opacity:.82;transform:rotate(-7deg);mix-blend-mode:multiply;pointer-events:none}
-.home .stats.slip .dp-mark.on{display:block}
-.home .stats.slip .dp-mark.thump{animation:dp-thump var(--m-quick) var(--e-settle) 1}
+/* the due-date stamp on the ledger page */
+.home .ledger .dp-mark{position:absolute;right:20px;bottom:18px;display:none;padding:2px 8px;border:2px solid var(--c-book-red);border-radius:3px;
+ font:700 14px/1.1 var(--mono);letter-spacing:.1em;color:var(--c-book-red);opacity:.82;transform:rotate(-7deg);mix-blend-mode:multiply;pointer-events:none}
+.home .ledger .dp-mark.on{display:block}
+.home .ledger .dp-mark.thump{animation:dp-thump var(--m-quick) var(--e-settle) 1}
 @keyframes dp-thump{0%{transform:rotate(-7deg) scale(1.7);opacity:0}60%{transform:rotate(-7deg) scale(.94);opacity:.95}100%{transform:rotate(-7deg) scale(1);opacity:.82}}
-.home .stats.slip.jolt{animation:dp-jolt var(--m-quick) var(--e-settle) 1}
-@keyframes dp-jolt{0%,100%{transform:translateY(-50%) rotate(var(--rot)) scale(var(--s,1))}35%{transform:translateY(calc(-50% + 3px)) rotate(var(--rot)) scale(var(--s,1))}}
-
-@media(min-width:561px){.desk-props{display:block}}
-/* the slip is wide-room furniture (welcome.css): the stamp comes and goes with it */
-@media(min-width:1000px){[data-room=roomy] .dp-stamp,[data-room=cozy] .dp-stamp,[data-room=snug] .dp-stamp{display:block}}
-@media(prefers-reduced-motion:reduce){.dp.ring,.dp.dip .dp-quill,.dp.dip .dp-ripple,.dp.press .dp-head,.home .stats.slip .dp-mark.thump,.home .stats.slip.jolt{animation:none}}
-html[data-motion="reduce"] .dp.ring,html[data-motion="reduce"] .dp.dip .dp-quill,html[data-motion="reduce"] .dp.dip .dp-ripple,html[data-motion="reduce"] .dp.press .dp-head,html[data-motion="reduce"] .home .stats.slip .dp-mark.thump,html[data-motion="reduce"] .home .stats.slip.jolt{animation:none}
+@media(prefers-reduced-motion:reduce){.dp.ring,.dp.press .dp-head,.home .ledger .dp-mark.thump{animation:none}}
+html[data-motion="reduce"] .dp.ring,html[data-motion="reduce"] .dp.press .dp-head,html[data-motion="reduce"] .home .ledger .dp-mark.thump{animation:none}

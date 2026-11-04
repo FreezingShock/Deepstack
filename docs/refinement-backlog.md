@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Borrower's ledger on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
 - Scroll up into the attic and back a few times (also Escape, swipe, with reduced motion): a ladder now slides in from the left and its rungs pass you as you rise, and the room brightens as the skylight comes overhead. Say if it is too long or too dark at the start. (attic climb thread)
 - Play down to 252 ft (Catacombs), 454 ft (Sunken Vault), 706 ft (Hollow) and 1008 ft (Abyss) and say which door still feels like "just a tint": each floor's first row now has a sign, a doorway scene and its own wall (item 1).
 
@@ -794,7 +795,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: make the welcome rules card interactive. Files: `src/ui/welcome.css`, new `src/ui/welcome.js`. Done when: keyboard operable, reduced motion static, 375 and 1280 screenshots.
 **Touches:** HOME. **Conflicts:** 27.
 
-### W2. [x] A librarian's desk on the ledge (this PR)
+### W2. [x] A librarian's desk on the ledge (#157; props moved onto the wall furniture by H1)
 **Serves:** "things that live down there", hidden curios, physical sanity.
 **Pitch:** A small brass bell, an inkwell and a stamp sit on the niche ledge; the bell chimes, the stamp thumps a due date onto the borrower's slip.
 **Brief:** Goal: ledge props with one sound each. Files: new `src/ui/deskProps.js`. Done when: nothing floats, props hidden under 560 px.
@@ -874,3 +875,21 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** Drag the ladder (or the whole room) up and down so you climb at your own pace instead of a fixed climb, and the light follows your finger.
 **Brief:** Goal: map pointer drag to the attic climb progress with a snap to open or closed on release. Files: `src/ui/atticHome.js`, `src/world/world.js`. Done when: wheel, swipe and Escape still work, reduced motion stays instant.
 **Touches:** WORLD. **Conflicts:** 75, 76.
+
+### H1. [x] Home drawer and record overhaul: built-in cabinet and ledger (this PR)
+**Serves:** integrated not bolted on, less cluttered, physical and smooth motion.
+**Pitch:** The rules drawer and Borrower's record stop floating: a card-catalogue cabinet is built into the left wall and a framed ledger into the right, balanced either side of Descend, with the ledge left for the books.
+**Brief:** Done. Reverses parts of #149 (floating record), #155 (flat drawer) and #157 (ledge props: inkwell dropped, bell and stamp moved onto the furniture).
+**Touches:** HOME. **Conflicts:** W1, W2.
+
+### H2. Cabinet drawers that hold more
+**Serves:** everything is a book, hidden curios.
+**Pitch:** The two spare drawers of the cabinet open too: one holds the tier chart as index cards, one a "lost property" card with a line of lore that changes by floor.
+**Brief:** Goal: make `.cc-fake` drawers real (Enter/Space, aria-expanded), reusing the card glide. Files: `src/ui/welcome.js`, `welcome.css`. Done when: one card open at a time, reduced motion static, 1280 and 375 shots.
+**Touches:** HOME. **Conflicts:** H1 follow-ups.
+
+### H3. Ledger that remembers the last descent
+**Serves:** handwritten, themed, sectioned.
+**Pitch:** The ledger gets a second page you turn to: last descent's seven words struck through in pen with the tier ink beside each.
+**Brief:** Goal: a page-turn on the ledger frame showing the latest run from saves (read-only). Files: new `src/ui/ledgerPages.js`, `welcome.css`. Done when: tolerates empty saves, keyboard turn, reduced motion static.
+**Touches:** HOME, saves (read). **Conflicts:** H1.
