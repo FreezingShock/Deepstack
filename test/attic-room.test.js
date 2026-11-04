@@ -24,3 +24,13 @@ test('books past the room capacity are counted, not drawn',()=>{
  assert.ok(L.hidden>0);
  assert.equal(layoutPiles([],1280).piles.length,0);
 });
+
+import {bookAge} from '../src/world/atticRoom.js';
+test('older books age more: by time, and by rank so the oldest are always the dustiest',()=>{
+ const now=Date.now();
+ assert.equal(bookAge({t:now},0,10,now),0);
+ assert.equal(bookAge({t:now-30*864e5},0,10,now),1);
+ assert.ok(bookAge({},9,10,now)>bookAge({},2,10,now));
+ assert.ok(bookAge({},9,10,now)<=1);
+ assert.equal(bookAge(null,0,1,now),0);
+});

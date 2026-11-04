@@ -4,6 +4,8 @@
    first, then earlier finds). The static room is painted once into an offscreen canvas and re-used; only the
    books, the lamp glow and the dust move. Pure layout (layoutPiles) is exported for tests. */
 
+import {PALETTE} from '../theme/colors.js';
+
 const rgb=(r,g,b,a=1)=>`rgba(${r|0},${g|0},${b|0},${a})`;
 const hexRgb=h=>{const n=parseInt(String(h).slice(1,7),16);return[n>>16&255,n>>8&255,n&255];};
 const shade=(h,f,a=1)=>{const [r,g,b]=hexRgb(h);return rgb(r*f,g*f,b*f,a);};
@@ -121,16 +123,43 @@ export function buildRoom(W,A,DPR=1,seed=7){
  return{cv,win:{x:wc.x,y:wc.y,r:wr},geo:geometry(W,A)};
 }
 
+/* ---- ageing ---- */
+/* 0 (fresh) .. 1 (ancient). Real age counts (a fortnight to full age) but so does rank in the heap, so even a
+   brand-new save shows a spread: the oldest finds are the dustiest. */
+export function bookAge(b,rank,n,now=Date.now()){
+ const byTime=b&&b.t?Math.min(1,Math.max(0,(now-b.t)/(14*864e5))):0,byRank=n>1?.85*rank/(n-1):0;
+ return Math.max(byTime,byRank);
+}
+const DUST=hexRgb(PALETTE.parchmentDim),WEB=hexRgb(PALETTE.parchment);
+/* Dust, webs and faded gilding over a lying book (called inside its translate/rotate). The title is painted after,
+   so a long word stays readable whatever the age. */
+function ageBook(c,w,h,age,seed){
+ if(age<.02)return;const R=rng(seed^0x9e3779b9);
+ c.save();c.beginPath();c.rect(-w/2,-h,w,h);c.clip();
+ c.fillStyle=rgb(...DUST,.05+.2*age);c.fillRect(-w/2,-h,w,h); // dull the cloth
+ const tg=c.createLinearGradient(0,-h,0,-h*.35);tg.addColorStop(0,rgb(...DUST,.5*age));tg.addColorStop(1,rgb(...DUST,0));
+ c.fillStyle=tg;c.fillRect(-w/2,-h,w,h*.65); // dust settles on top
+ for(let k=0,n=Math.round(w*age*.5);k<n;k++){c.fillStyle=rgb(...DUST,.18+.3*R());c.fillRect(-w/2+R()*w,-h+R()*h*.8,1+R()*1.5,1);}
+ if(age>.45){ // cobweb draped from the left end, strands hanging from the top
+  const a=Math.min(1,(age-.45)/.4)*.4,len=Math.min(w*.3,h*2.2);c.strokeStyle=rgb(...WEB,a);c.lineWidth=.7;
+  for(let k=0;k<4;k++){const ang=k*.4+.1;c.beginPath();c.moveTo(-w/2,-h);c.lineTo(-w/2+Math.cos(ang)*len,-h+Math.sin(ang)*len*.9);c.stroke();}
+  for(let k=1;k<=3;k++){const r=len*k/3;c.beginPath();c.moveTo(-w/2+r,-h);c.quadraticCurveTo(-w/2+r*.62,-h+r*.5,-w/2,-h+r*.9);c.stroke();}
+  if(age>.7){c.beginPath();c.moveTo(w*.12,-h);c.quadraticCurveTo(w*.14+3,-h*.4,w*.1,-h*.12);c.moveTo(w*.3,-h);c.quadraticCurveTo(w*.28-3,-h*.5,w*.31,-h*.2);c.stroke();}
+ }
+ c.restore();
+}
+
 /* ---- books ---- */
-function lyingBook(c,x,y,w,h,spine,word,rot,fav){
+function lyingBook(c,x,y,w,h,spine,word,rot,fav,age=0,seed=1){
  c.save();c.translate(x,y);c.rotate(rot);
  c.fillStyle=rgb(0,0,0,.4);c.beginPath();c.ellipse(0,1,w*.54,h*.28,0,0,6.3);c.fill();
  const g=c.createLinearGradient(0,-h,0,0);g.addColorStop(0,shade(spine,1.18));g.addColorStop(.35,shade(spine,.95));g.addColorStop(1,shade(spine,.5));
  c.fillStyle=g;c.fillRect(-w/2,-h,w,h);
  c.fillStyle=rgb(236,224,190);c.fillRect(w/2,-h+2,Math.max(5,h*.28),h-4); // page block
  c.strokeStyle=rgb(150,134,100,.8);c.lineWidth=.7;for(let k=1;k<4;k++){const yy=-h+2+(h-4)*k/4;c.beginPath();c.moveTo(w/2,yy);c.lineTo(w/2+Math.max(5,h*.28),yy);c.stroke();}
- c.fillStyle=rgb(216,184,110,.9);for(const bx of[-w/2+h*.55,w/2-h*.55])c.fillRect(bx-1.5,-h,3,h);
+ c.fillStyle=rgb(216,184,110,.9*(1-.75*age));for(const bx of[-w/2+h*.55,w/2-h*.55])c.fillRect(bx-1.5,-h,3,h);
  c.fillStyle=rgb(0,0,0,.25);c.fillRect(-w/2,-h,w,1.5);
+ ageBook(c,w,h,age,seed);
  c.fillStyle=rgb(246,236,210,.95);c.textAlign='center';c.textBaseline='middle';
  let fs=Math.max(9,Math.min(15,h*.52));c.font=`600 ${fs}px Cinzel,Georgia,serif`;const maxW=w-h*1.5;
  while(c.measureText(word).width>maxW&&fs>7){fs-=.5;c.font=`600 ${fs}px Cinzel,Georgia,serif`;}
@@ -156,13 +185,14 @@ export function drawAttic(ctx,room,o){
  ctx.fillStyle=rgb(255,214,130);ctx.fillRect(lx-5,ly-10,10,16);ctx.strokeStyle=rgb(120,84,40);ctx.lineWidth=1.4;ctx.strokeRect(lx-5,ly-10,10,16);
  /* piles, back rows first */
  const {piles,hidden}=layoutPiles(items,W),hits=[],phone=W<600;
+ const now=Date.now(),rank=new Map(items.map((x,k)=>[x,k]));
  const base=r=>ry+A*(1-.03-.075*r),sc=r=>1-.12*r;
  for(const p of piles.slice().sort((a,b)=>b.row-a.row)){
   const s=sc(p.row),bw=p.w*(phone?.84:.8)*s,bh=(phone?19:29)*s;let y=base(p.row);
   const order=p.items.slice().reverse(); // oldest at the bottom, newest on top
   order.forEach((x,k)=>{
    const seed=((x.i+1)*2654435761)>>>0,R=rng(seed),w=bw*(.82+R()*.18),rot=(R()-.5)*.05,jx=(R()-.5)*bw*.1,spine=TIERS[x.b.tier].spine;
-   lyingBook(ctx,p.x+jx,y,w,bh,spine,x.b.w,rot,x.b.fav);
+   lyingBook(ctx,p.x+jx,y,w,bh,spine,x.b.w,rot,x.b.fav,bookAge(x.b,rank.get(x),items.length,now),seed);
    hits.unshift({x:p.x+jx-w/2,y:y-bh,w:w+bh*.3,h:bh,b:x.b});
    y-=bh-1;
   });

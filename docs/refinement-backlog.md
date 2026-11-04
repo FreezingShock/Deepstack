@@ -631,7 +631,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: let nate choose a floor for floorless books. Files: `src/ui/attic.js`, `src/core/attic.js`. Done when: `fl` saved additively, book leaves the attic, tested.
 **Touches:** BOOK, CORE. **Conflicts:** 11.
 
-### 76. Cobwebs and dust on attic books
+### 76. [x] Cobwebs and dust on attic books (PR #152)
 **Serves:** dark and mysterious; deeper is darker.
 **Pitch:** The older the book, the more dust, webs and faded gilding on its spine.
 **Brief:** Goal: age-based spine dressing in the attic. Files: `src/ui/attic.css`. Done when: tokens only, 14-letter word still readable.
@@ -838,3 +838,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** The catalogue drawer rumbles out on wooden runners, the card flips with a paper flick, and the drawer shuts with a soft thud.
 **Brief:** Goal: three small sounds hooked to open, turn and close. Files: `src/ui/welcome.js`, `src/sound/`. Done when: respects volume and reduced motion, tested.
 **Touches:** HOME, sound. **Conflicts:** 4.
+
+### 76a. Attic books that creak open dusty
+**Serves:** tactile; the attic feels lived in.
+**Pitch:** Opening a very old attic book puffs a little dust off it and wipes its cover clean as it goes.
+**Brief:** Goal: tie the card-open particles to `bookAge`. Files: `src/world/atticRoom.js`, card open hook. Done when: puff only for age over .5, reduced motion cuts it.
+**Touches:** BOOK. **Conflicts:** 75.
+
+### 76b. Dust sheet over the whole attic pile
+**Serves:** dark and mysterious.
+**Pitch:** A faint dust sheet drapes the oldest pile in the back row and lifts when you hover it.
+**Brief:** Goal: pile-level dust layer. Files: `src/world/atticRoom.js`. Done when: tokens only, titles readable.
+**Touches:** WORLD. **Conflicts:** 74.
