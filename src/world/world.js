@@ -18,6 +18,7 @@ import {placeFallen,drawFallen} from '../ui/fallenBooks.js';
 import {lyingFootprint,settleBooks,placeProp,propHalf,tiltAboutFoot} from '../ui/physics.js';
 import {drawAlcoveLanterns} from '../ui/lanterns.js';
 import {lowQuality,updateAmbient,drawAmbient,resetAmbient} from '../ui/ambient.js';
+import {createPass,passCam} from '../ui/thresholdPass.js';
 import {doorSpan,drawWallMaterial,drawThreshold,drawThresholdLive,drawThresholdSign} from '../ui/thresholds.js';
 import {drawFloorAtmosphere} from '../ui/floorAtmosphere.js';
 import {drawLighting,addLight} from '../ui/lighting.js';
@@ -138,7 +139,6 @@ export const World=(()=>{
   }else if(layer===0){ctx.save();ctx.beginPath();ctx.rect(0,y-1,W,rh+2);ctx.clip();body(0,W);ctx.restore();} // clip so the next row's wall can't swallow this row's plank and book bottoms
   else body(0,W);
   ctx.globalAlpha=dim;ctx.fillStyle=fl.pillar;for(let i=0;i<=3;i++){const ux=i*(W/3);ctx.fillRect(ux-(i?7*sc:0),y,14*sc,rh);ctx.fillStyle=PALETTE.whiteAlpha10;ctx.fillRect(ux-(i?7*sc:0)+2,y,1.5,rh);if(fl.motif==='flood'&&layer===0){ctx.fillStyle=PALETTE.teal60Alpha22;for(let k=0;k<rh;k+=22)ctx.fillRect(ux-(i?7*sc:0)+4,y+k+8,6,2);}ctx.fillStyle=fl.pillar;}ctx.globalAlpha=1;
-  if(layer===0&&r===fl.row&&r>0)drawThresholdSign(ctx,fl,W,y,rh);
   return {base,d};}
  // Static row art is drawn once into an offscreen bitmap; only water and loose strands animate per frame.
  function drawRow(r,layer,cam_,sc,dim){
@@ -154,6 +154,7 @@ export const World=(()=>{
   for(const wb of d.webs)if(wb.k==='strand')drawWeb(wb,y,a,fl.web);
   if(fl.motif==='flood')floodOverlay(fl,0,W,y,rh,r);
   if(r===fl.row)drawThresholdLive(ctx,fl,W,y,rh,vt,RM);
+  if(r===fl.row&&r>0)drawThresholdSign(ctx,fl,W,y,rh,RM?0:pass.angle(r,performance.now())); // live so it can swing when you pass
   return {base,d};}
  function pruneRows(top,bot){for(const [k,v] of rows){const r=k>>1;if(r<top-6||r>bot+6){if(v.bmp){bmpPool.push(v.bmp);v.bmp=null;}rows.delete(k);}}}
  // A finished alcove keeps its word, your answer on the slip, and the result, so scrolling back reads like a log.
@@ -224,6 +225,7 @@ export const World=(()=>{
  // creatures keep off the alcove (and everything it could be), the top bar and any covering page
  function ambEnv(camNow,top,bot){const n=nicheBox(),ex=[{x:0,y:0,w:W,h:barPx()+10}];for(const [row] of niches){ex.push({x:n.x-44,y:n.t+(row*RH-(H-RH-BM))-camNow-60,w:n.w+88,h:n.h+130});}if(btgt>=-4)ex.push({x:n.x-44,y:n.t-60,w:n.w+88,h:n.h+130});return{W,H,RH,camNow,top,bot,excl:ex,rm:RM,low:lowQuality(),quiet:covNow,busy:!!st||!!rest};}
  let lastDraw=0,coverChk=0,covNow=false;
+ const pass=createPass();function doorsPassed(c,now){for(const k of pass.track(c,now,RH,H,RM))if(!(st&&st.skip))Sfx.threshold(k);} // the camera crossed a floor door: sign swings, floor answers
  function frame(now){
   if(now-coverChk>100){coverChk=now;covNow=worldCovered();} // DOM probe at 10 Hz, not per frame
   Quality.sample(now);
@@ -233,12 +235,12 @@ export const World=(()=>{
   const rdt=Math.min(gap?.12:.05,(now-last)/1000);last=now;Feel.tick(rdt);const dt=rdt*Feel.ts;vt+=dt*(st&&st.skip?6:1);cv.style.transform=Feel.ox||Feel.oy?`translate(${Feel.ox}px,${Feel.oy}px)`:'';{const cl=document.getElementById('cardlayer');if(cl)cl.style.transform=cv.style.transform;}
   let camNow=cam,settle=0,pull=0;
   if(st){
-   if(st.phase==='down'){const u=Math.min(1,st.t/st.dur);st.t+=dt*(st.skip?6:1);camNow=st.cam0+(st.cam1-st.cam0)*travelEase(u);st.prog=u;if(u>=1){st.phase='settle';st.pt=0;Sfx.land();}}
+   if(st.phase==='down'){const u=Math.min(1,st.t/st.dur);st.t+=dt*(st.skip?6:1);camNow=passCam(st.cam0+(st.cam1-st.cam0)*travelEase(u),u,RH,H,RM);st.prog=u;doorsPassed(camNow,now);if(u>=1){st.phase='settle';st.pt=0;Sfx.land();}}
    if(st.phase==='settle'){st.pt+=dt*(st.skip?6:1);camNow=st.cam1;st.prog=1;settle=Math.min(1,st.pt/.3);if(settle>=1){st.phase='pull';st.pt=0;Sfx.paper();}}
    if(st.phase==='pull'||st.phase==='hold'){camNow=st.cam1;settle=1;if(st.phase==='pull')st.pt+=dt*(st.skip?6:1);pull=Math.min(1,st.pt/.45);if(st.phase==='pull'&&pull>=1){st.phase='hold';const r=st.res;st.res=null;r&&r();}}
    cam=camNow;boff=btgt=0;
-  }else if(rest){const u=Math.min(1,(now-rest.t0)/rest.ms),e=travelEase(u);cam=rest.c0+(rest.c1-rest.c0)*e;if(u>=1){const f=rest.done;rest=null;f&&f();}camNow=cam;boff=btgt=0;}
-  else{boff=RM||Math.abs(btgt-boff)<.5?btgt:boff+(btgt-boff)*Math.min(1,rdt*14);camNow=cam+boff+(RM||boff?0:Math.sin(vt*.5)*1.5);}
+  }else if(rest){const u=Math.min(1,(now-rest.t0)/rest.ms),e=travelEase(u);cam=passCam(rest.c0+(rest.c1-rest.c0)*e,u,RH,H,RM);doorsPassed(cam,now);if(u>=1){const f=rest.done;rest=null;f&&f();}camNow=cam;boff=btgt=0;}
+  else{pass.idle();boff=RM||Math.abs(btgt-boff)<.5?btgt:boff+(btgt-boff)*Math.min(1,rdt*14);camNow=cam+boff+(RM||boff?0:Math.sin(vt*.5)*1.5);}
   {const b=btgt<-4;if(b!==wasB){wasB=b;browseCb&&browseCb(b);}}
   if(st||rest){atticGoal=0;if(atticT){atticT=0;atticCb&&atticCb(false);}}
   const aFloor=-5*RH,aMax=restCam(0)-(aFloor-(H-40)); // camera climb that puts the attic floor just above the bottom edge

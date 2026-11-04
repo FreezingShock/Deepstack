@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Descend past a floor door (Archive 101 ft, Catacombs 252 ft and deeper) and say if the half-speed hold at the door, the one-time swing of the sign and the quiet floor sound feel right or too subtle; also check Settings reduced motion removes the hold and swing. (door walk-through thread)
 - Open `?perf` on your own machine at home, mid-run and during a descent and tell me the p95 and whether it feels smoother or the same: the headless box can only see JS cost, and your GPU is the real test for the glow-cache change (item 38).
 - Scroll up into the attic and tap an earlier find that has no floor: a slip asks which floor it was found on, the pen underlines your pick and the book leaves the attic for that floor's bay on the Shelf. Check the slip reads at your screen size. (dust-off thread, PR #156)
 - Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Borrower's ledger on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
@@ -806,11 +807,21 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: run `scripts/perf.mjs` with Apocrypha reveals on a real GPU (or nate's machine) and record the frame time per tier in `docs/perf-baseline.md`. Done when: numbers per tier at high, medium and low are in the doc.
 **Touches:** TOOLING. **Conflicts:** none.
 
-### D1. Walk through the door
+### D1. [x] Walk through the door (PR pending)
 **Serves:** immersion, motion.
 **Pitch:** Descending past a floor door should feel like passing through it: a short slow-down at the threshold, the sign swinging a little, a one-line floor sound.
 **Brief:** Goal: a threshold moment while the camera crosses a floor start (sign sway, brief ease, optional room-tone sting). Files: new `src/ui/thresholdPass.js`, hook in `World` camera. Done when: uses the shared motion presets, off in reduced motion.
 **Touches:** WORLD, FEEL. **Conflicts:** 2, 38.
+
+### D1a. Doors you can feel on the way back up
+**Serves:** immersion, motion.
+**Pitch:** The threshold slow-down and sign swing now work in both directions; add a faint draught of the floor above on the way up (dust motes or a cold puff drifting through the doorway) so leaving a floor reads as clearly as entering one.
+**Brief:** Goal: a short particle drift at the doorway when the camera crosses a floor start going up, using the pooled sprite engine. Files: `src/ui/thresholdPass.js`, hook in `src/world/world.js`. Done when: 1280 and 375 screenshots, off in reduced motion. **Touches:** WORLD, FEEL. **Conflicts:** 2, 38.
+
+### D1b. Each floor's door sting you can set apart by ear
+**Serves:** immersion, sound.
+**Pitch:** The one-line door sound is quiet on purpose; give each floor a second, slightly different voice (card flutter, stone knock, drips, root creak, abyss swell) tuned by a listening pass.
+**Brief:** Goal: audition and tune `STINGS` in `src/sound/thresholdSting.js` with nate listening. Done when: nate picks levels he likes. **Touches:** SOUND. **Conflicts:** 24.
 
 ### D2. Floor doors in the almanac and on the tracker
 **Serves:** integrated, sections for each floor.

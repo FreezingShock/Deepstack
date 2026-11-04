@@ -4,6 +4,7 @@
 import { reducedMotion } from './ui/settings.js';
 import { createScribe } from './sound/scribe.js';
 import { createAmbience } from './sound/ambience.js';
+import { createSting } from './sound/thresholdSting.js';
 const RM = reducedMotion();
 const rnd = (a, b) => a + Math.random() * (b - a);
 
@@ -125,7 +126,10 @@ export const Sfx = (() => {
 
   const floorTone = createAmbience({ ctx: () => ctx, on: () => on, dest: () => master, send: () => wet, noiseBuf });
   const scribe = createScribe({ ctx: () => ctx, on: () => on, out, noiseBuf });
+  const sting = createSting({ ctx: () => ctx, on: () => on, out, noiseBuf });
   return {
+    /** a floor door going by (key = floor key) */
+    threshold: key => sting.play(key),
     quill: () => scribe.quill(), paper: () => scribe.paper(), seal: () => scribe.seal(), land: () => scribe.land(),
     /** master volume 0..1 (settings panel) */
     volume(v) { vol = Math.max(0, Math.min(1, v)); if (master) master.gain.setTargetAtTime(.9 * vol, ctx.currentTime, .05); },
