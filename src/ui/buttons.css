@@ -7,7 +7,7 @@
   --b-leather-hi:var(--c-oak-15); --b-leather-lo:var(--c-oak-9); --b-brass:var(--c-oak); --b-brass-hi:var(--c-brass-d3b077);
   --b-cream:var(--c-parchment-89); --b-glow:255,184,77; --b-radius:4px;
 }
-.btn,.bbtn{border-radius:var(--b-radius);transition:background .2s,border-color .2s,box-shadow .2s,color .2s,transform .1s}
+.btn,.bbtn{border-radius:var(--b-radius);transition:background var(--m-base),border-color var(--m-base),box-shadow var(--m-base),color var(--m-base),transform var(--m-quick)}
 .btn:active,.bbtn:active{transform:translateY(1px)}
 .btn:focus-visible,.bbtn:focus-visible{outline:2px solid var(--b-brass-hi);outline-offset:2px}
 .btn.pri,.sheet .btn.pri,.bbtn{

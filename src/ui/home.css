@@ -14,14 +14,14 @@
 .descend{position:relative;display:inline-flex;align-items:center;gap:16px;padding:14px 44px 14px 34px;min-width:280px;justify-content:center;border-radius:6px;cursor:pointer;color:var(--c-amber-87);text-shadow:0 0 14px var(--c-amber-62-alpha-99),0 2px 3px var(--c-black);
  border:1px solid var(--c-bronze-c98a4a);background:radial-gradient(120% 160% at 50% 0%,var(--c-oak-24) 0%,var(--c-oak-11) 55%,var(--c-oak-7) 100%);
  box-shadow:inset 0 1px 0 var(--c-glow-alpha-44),inset 0 -3px 8px var(--c-black-alpha-99),inset 0 0 0 3px var(--c-oak-7),inset 0 0 0 4px var(--c-bronze-7a5330),0 0 0 1px var(--c-black),0 10px 28px -6px var(--c-black),0 0 38px -4px var(--c-amber-58-alpha-66);
- transition:transform .18s,box-shadow .25s,filter .25s;animation:dglow 3.4s ease-in-out infinite}
+ transition:transform var(--m-quick),box-shadow var(--m-base),filter var(--m-base);animation:dglow 3.4s ease-in-out infinite}
 .descend:hover{transform:translateY(-2px);filter:brightness(1.12);box-shadow:inset 0 1px 0 var(--c-glow-alpha-66),inset 0 -3px 8px var(--c-black-alpha-99),inset 0 0 0 3px var(--c-oak-7),inset 0 0 0 4px var(--c-bronze-a8743f),0 0 0 1px var(--c-black),0 14px 32px -6px var(--c-black),0 0 56px -2px var(--c-amber-58-alpha-aa)}
-.descend:active,.descend.pressed{transform:translateY(2px) scale(.98);filter:brightness(1.3);transition-duration:.08s}
+.descend:active,.descend.pressed{transform:translateY(2px) scale(.98);filter:brightness(1.3);transition-duration:var(--m-press)}
 .d-t{font:500 26px/1 var(--serif);letter-spacing:.32em;text-transform:uppercase;padding-left:.32em}
 .d-flame{width:12px;height:22px;border-radius:50% 50% 50% 50%/62% 62% 38% 38%;background:radial-gradient(ellipse at 50% 70%,var(--c-amber-fff6d0) 0 25%,var(--c-amber-ffc04d) 55%,var(--c-amber-55) 100%);box-shadow:0 0 14px 3px var(--c-amber-62-alpha-aa);transform-origin:50% 100%;animation:dflick 1.9s ease-in-out infinite}
 .d-chev{width:12px;height:12px;border-right:2px solid var(--c-glow);border-bottom:2px solid var(--c-glow);transform:rotate(45deg) translateY(-3px);animation:dchev 1.8s ease-in-out infinite}
-.descend.pressed .d-flame{animation:none;transform:scale(1.6);box-shadow:0 0 30px 10px var(--c-amber-ffb04c-alpha-cc);transition:transform .5s,box-shadow .5s}
-.descend.pressed .d-chev{animation:none;transform:rotate(45deg) translate(6px,6px);opacity:0;transition:transform .5s,opacity .5s}
+.descend.pressed .d-flame{animation:none;transform:scale(1.6);box-shadow:0 0 30px 10px var(--c-amber-ffb04c-alpha-cc);transition:transform var(--m-page),box-shadow var(--m-page)}
+.descend.pressed .d-chev{animation:none;transform:rotate(45deg) translate(6px,6px);opacity:0;transition:transform var(--m-page),opacity var(--m-page)}
 @keyframes dglow{50%{box-shadow:inset 0 1px 0 var(--c-glow-alpha-44),inset 0 -3px 8px var(--c-black-alpha-99),inset 0 0 0 3px var(--c-oak-7),inset 0 0 0 4px var(--c-bronze-7a5330),0 0 0 1px var(--c-black),0 10px 28px -6px var(--c-black),0 0 54px -2px var(--c-amber-58-alpha-99)}}
 @keyframes dflick{0%,100%{transform:scale(1,1) rotate(-1deg)}30%{transform:scale(.92,1.08) rotate(2deg)}60%{transform:scale(1.05,.95) rotate(-2deg)}}
 @keyframes dchev{50%{transform:rotate(45deg) translate(3px,3px)}}
@@ -40,9 +40,9 @@
 .hbook[data-tex=worn]{--tex:radial-gradient(ellipse at 20% 30%,var(--c-white-alpha-1f),transparent 40%),radial-gradient(ellipse at 80% 70%,var(--c-black-alpha-4d),transparent 45%),radial-gradient(var(--c-black-alpha-2a) 1px,transparent 1.5px) 0 0/3px 3px}
 .hbook[data-tex=vellum]{--tex:repeating-linear-gradient(100deg,var(--c-white-alpha-0d) 0 2px,transparent 2px 7px),radial-gradient(var(--c-black-alpha-26) 1px,transparent 1.4px) 0 0/6px 6px}
 .hbook[data-tex=grain]{--tex:repeating-linear-gradient(90deg,var(--c-black-alpha-24) 0 1px,transparent 1px 5px),repeating-linear-gradient(88deg,var(--c-white-alpha-0c) 0 2px,transparent 2px 9px)}
-.hbook{--bk:var(--c-oak-24);--bk2:var(--c-oak-11);--bk-gild:var(--c-brass-65);--tex:none;position:relative;display:block;width:100%;height:38px;padding:0;cursor:pointer;text-align:left;transform-style:preserve-3d;transition:transform .3s cubic-bezier(.2,.8,.3,1);color:var(--c-parchment)}
-.hb-pages{position:absolute;inset:3px 0 3px 10px;border-radius:2px 5px 5px 2px;background:repeating-linear-gradient(0deg,var(--c-parchment-85) 0 2px,var(--c-brass-bfb08a) 2px 3px);box-shadow:inset 0 0 8px var(--c-black-alpha-88);transition:transform .3s cubic-bezier(.2,.8,.3,1)}
-.hb-spine{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 10px 0 6px;border-radius:3px 6px 6px 3px;transform-origin:50% 100%;transition:transform .3s cubic-bezier(.2,.8,.3,1),filter .25s;
+.hbook{--bk:var(--c-oak-24);--bk2:var(--c-oak-11);--bk-gild:var(--c-brass-65);--tex:none;position:relative;display:block;width:100%;height:38px;padding:0;cursor:pointer;text-align:left;transform-style:preserve-3d;transition:transform var(--m-base) var(--e-settle);color:var(--c-parchment)}
+.hb-pages{position:absolute;inset:3px 0 3px 10px;border-radius:2px 5px 5px 2px;background:repeating-linear-gradient(0deg,var(--c-parchment-85) 0 2px,var(--c-brass-bfb08a) 2px 3px);box-shadow:inset 0 0 8px var(--c-black-alpha-88);transition:transform var(--m-base) var(--e-settle)}
+.hb-spine{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 10px 0 6px;border-radius:3px 6px 6px 3px;transform-origin:50% 100%;transition:transform var(--m-base) var(--e-settle),filter var(--m-base);
  background:var(--tex),linear-gradient(180deg,var(--c-white-alpha-2a) 0,transparent 18%,var(--c-black-alpha-5c) 100%),linear-gradient(90deg,var(--bk2),var(--bk) 10%,var(--bk) 90%,var(--bk2));
  box-shadow:inset 0 1px 0 var(--c-white-alpha-40),inset 0 -2px 4px var(--c-black-alpha-aa),inset 3px 0 5px var(--c-black-alpha-77),inset -3px 0 5px var(--c-black-alpha-66),0 4px 10px -3px var(--c-black)}
 /* raised bands (ridges) and gilt rules, like a real spine */
@@ -56,16 +56,16 @@
    with a gilt glow while its neighbours dim. The spine itself never deforms. */
 .hshelf li{position:relative}
 .hshelf li:hover,.hshelf li:focus-within{z-index:3}
-.hbook{transition:transform .28s cubic-bezier(.2,.9,.3,1.2),filter .25s}
+.hbook{transition:transform var(--m-base) var(--e-spring),filter var(--m-base)}
 .hbook:hover,.hbook:focus-visible{transform:translateX(12px) scale(1.1)}
 .hb-pages{display:none}
-.hb-spine{transition:filter .25s,box-shadow .25s}
+.hb-spine{transition:filter var(--m-base),box-shadow var(--m-base)}
 .hbook:hover .hb-spine,.hbook:focus-visible .hb-spine{filter:brightness(1.3) saturate(1.1);box-shadow:inset 0 1px 0 var(--c-white-alpha-55),inset 0 -2px 4px var(--c-black-alpha-aa),inset 3px 0 5px var(--c-black-alpha-77),inset -3px 0 5px var(--c-black-alpha-66),0 8px 18px -4px var(--c-black),0 0 22px -2px color-mix(in srgb,var(--bk-gild) 70%,transparent)}
 .hbook:hover .hb-t,.hbook:focus-visible .hb-t{color:var(--c-amber-fff3c9);text-shadow:0 1px 0 var(--c-black-alpha-99),0 0 12px var(--bk-gild)}
 .hshelf:has(.hbook:hover) .hbook:not(:hover),.hshelf:has(.hbook:focus-visible) .hbook:not(:focus-visible){filter:brightness(.7)}
 .hbook:focus-visible{outline:2px solid var(--c-glow);outline-offset:4px}
 .hbook.opening{visibility:hidden}
-.book-opening .hbook:not(.opening){opacity:.3;transition:opacity .3s}
+.book-opening .hbook:not(.opening){opacity:.3;transition:opacity var(--m-base)}
 .book-opening{pointer-events:none}
 @media(max-width:700px){
  .hshelf li{margin-left:0!important;margin-right:0!important}
@@ -88,11 +88,11 @@
 @media(max-height:800px){.home .title{font-size:clamp(36px,6vw,56px)}}
 @media(max-width:700px){.home .stats{display:none}.home .how .step{white-space:nowrap}.home .next{margin-top:6px}}
 /* transition into the game */
-.home.descending{pointer-events:none;animation:hsink .65s cubic-bezier(.5,0,.8,.4) forwards}
+.home.descending{pointer-events:none;animation:hsink var(--m-page) var(--e-accelerate) forwards}
 @keyframes hsink{to{transform:translateY(60px) scale(.94);opacity:0;filter:blur(3px)}}
-.descend-veil{position:fixed;inset:0;z-index:90;pointer-events:auto;background:radial-gradient(ellipse at var(--vx) var(--vy),var(--c-oak-1a0f06),var(--c-black) 60%);clip-path:circle(0 at var(--vx) var(--vy));animation:vclose .65s cubic-bezier(.5,0,.8,.4) forwards}
+.descend-veil{position:fixed;inset:0;z-index:90;pointer-events:auto;background:radial-gradient(ellipse at var(--vx) var(--vy),var(--c-oak-1a0f06),var(--c-black) 60%);clip-path:circle(0 at var(--vx) var(--vy));animation:vclose var(--m-page) var(--e-accelerate) forwards}
 @keyframes vclose{to{clip-path:circle(150vmax at var(--vx) var(--vy))}}
-.descend-veil.lift{clip-path:none;animation:vlift .65s ease forwards}
+.descend-veil.lift{clip-path:none;animation:vlift var(--m-page) var(--e-cruise) forwards}
 @keyframes vlift{to{opacity:0}}
 @media(prefers-reduced-motion:reduce){.descend,.d-flame,.d-chev{animation:none}.hbook,.hb-spine{transition:none}.hbook:hover,.hbook:focus-visible{transform:none}.hbook.opening{transform:none}.bk-spread{transition:none}.descend-veil{display:none}}
 @media(max-height:900px){.home .stats{display:none}}
@@ -102,30 +102,30 @@
    over onto the left and widens the book to a full spread. Pages hold .pg-* content. */
 .bk-spread{--W:min(900px,94vw);--H:min(560px,74vh);position:fixed;left:50%;top:50%;z-index:95;width:var(--W);height:var(--H);perspective:2200px;pointer-events:none;
  transform:translate(calc(-75% + var(--fx)),calc(-50% + var(--fy))) scale(.25);opacity:1;
- transition:transform .38s cubic-bezier(.2,.9,.25,1.15),opacity .3s}
+ transition:transform var(--m-smooth) var(--e-spring),opacity var(--m-base)}
 .bk-spread.go{transform:translate(-75%,-50%) scale(1)}
-.bk-spread.open{transform:translate(-50%,-50%) scale(1);transition:transform .62s cubic-bezier(.4,0,.15,1),opacity .3s}
-.bk-spread.go:not(.open) .bs-board.r{animation:bk-land .38s ease-out}
+.bk-spread.open{transform:translate(-50%,-50%) scale(1);transition:transform var(--m-page) var(--e-cruise),opacity var(--m-base)}
+.bk-spread.go:not(.open) .bs-board.r{animation:bk-land var(--m-smooth) var(--e-settle)}
 @keyframes bk-land{60%{box-shadow:0 0 0 1px var(--c-black),0 30px 70px -12px var(--c-black),0 0 50px 4px color-mix(in srgb,var(--bk-gild) 60%,transparent)}}
 .bk-spread.out{opacity:0}
 .bs-board,.bs-page,.bs-cover{position:absolute;top:0;bottom:0;width:50%}
 .bs-board{top:-9px;bottom:-9px;background:var(--tex,none),linear-gradient(135deg,var(--bk),var(--bk2));box-shadow:0 0 0 1px var(--c-black),0 30px 70px -12px var(--c-black)}
-.bs-board.l{left:-10px;width:calc(50% + 10px);border-radius:7px 0 0 7px;opacity:0;transition:opacity .2s}
+.bs-board.l{left:-10px;width:calc(50% + 10px);border-radius:7px 0 0 7px;opacity:0;transition:opacity var(--m-base)}
 .bs-board.r{right:-10px;width:calc(50% + 10px);border-radius:0 7px 7px 0}
-.bk-spread.open .bs-board.l{opacity:1;transition:opacity .25s .15s}
+.bk-spread.open .bs-board.l{opacity:1;transition:opacity var(--m-base) var(--m-quick)}
 .bs-page{background:var(--bs-page);color:var(--c-ink);display:flex;flex-direction:column}
-.bs-page.l{left:0;border-radius:3px 0 0 3px;box-shadow:inset -22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 34px var(--c-oak-24-alpha-55);opacity:0;transition:opacity .15s}
+.bs-page.l{left:0;border-radius:3px 0 0 3px;box-shadow:inset -22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 34px var(--c-oak-24-alpha-55);opacity:0;transition:opacity var(--m-quick)}
 .bs-page.r{right:0;border-radius:0 3px 3px 0;box-shadow:inset 22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 34px var(--c-oak-24-alpha-55)}
-.bk-spread.open .bs-page.l{opacity:1;transition:opacity .2s .3s}
+.bk-spread.open .bs-page.l{opacity:1;transition:opacity var(--m-base) var(--m-base)}
 .bk-spread.turning .pg-in{opacity:0;transform:translateY(4px)}
 /* the cover: closed it fills the right half; opened it swings about the centre spine */
-.bs-cover{right:0;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .62s cubic-bezier(.5,0,.2,1),visibility 0s}
-.bk-spread.open .bs-cover{transform:rotateY(-180deg);visibility:hidden;transition:transform .62s cubic-bezier(.5,0,.2,1),visibility 0s .62s}
+.bs-cover{right:0;transform-origin:0 50%;transform-style:preserve-3d;transition:transform var(--m-page) var(--e-cruise),visibility 0s}
+.bk-spread.open .bs-cover{transform:rotateY(-180deg);visibility:hidden;transition:transform var(--m-page) var(--e-cruise),visibility 0s .62s}
 /* a loose leaf follows the cover over, for a flourish of paper */
-.bs-leaf{position:absolute;right:0;top:3px;bottom:3px;width:49%;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .5s .05s cubic-bezier(.5,0,.2,1),visibility 0s}
+.bs-leaf{position:absolute;right:0;top:3px;bottom:3px;width:49%;transform-origin:0 50%;transform-style:preserve-3d;transition:transform var(--m-page) var(--m-press) var(--e-cruise),visibility 0s}
 .bs-leaf i{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(90deg,var(--c-brass-75),var(--c-parchment-85) 45%,var(--c-parchment-80));border-radius:0 3px 3px 0}
 .bs-leaf i+i{transform:rotateY(180deg);background:linear-gradient(270deg,var(--c-brass-75),var(--c-parchment-85) 45%,var(--c-parchment-80));border-radius:3px 0 0 3px}
-.bk-spread.open .bs-leaf{transform:rotateY(-179deg);visibility:hidden;transition:transform .5s .1s cubic-bezier(.5,0,.2,1),visibility 0s .6s}
+.bk-spread.open .bs-leaf{transform:rotateY(-179deg);visibility:hidden;transition:transform var(--m-page) var(--m-quick) var(--e-cruise),visibility 0s .6s}
 .cv-front,.cv-in{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .cv-front{border-radius:0 7px 7px 0;display:flex;align-items:center;justify-content:center;
  background:var(--tex,none),linear-gradient(105deg,var(--bk2),var(--bk) 9%,var(--bk) 88%,var(--bk2));
@@ -137,8 +137,8 @@
 .cv-orn::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:9px;transform:translate(-50%,-50%) rotate(45deg);background:var(--bk-gild);box-shadow:0 0 0 3px var(--bk2)}
 .cv-in{transform:rotateY(180deg);border-radius:7px 0 0 7px;background:repeating-linear-gradient(0deg,transparent 0 27px,var(--c-bronze-33-alpha-1a) 27px 28px),linear-gradient(90deg,var(--c-brass-75),var(--c-parchment-85) 45%,var(--c-parchment-80));box-shadow:inset -22px 0 26px -12px var(--c-black-alpha-88)}
 /* page furniture */
-.pg-in{flex:1;min-height:0;padding:clamp(18px,6%,44px) clamp(18px,8%,52px) 0;display:flex;flex-direction:column;gap:12px;overflow:hidden;transition:opacity .16s,transform .16s}
-.bk-spread.intro .pg-in>*{animation:pg-rise .4s both}.bk-spread.intro .pg-in>*:nth-child(2){animation-delay:.05s}.bk-spread.intro .pg-in>*:nth-child(3){animation-delay:.1s}.bk-spread.intro .pg-in>*:nth-child(4){animation-delay:.15s}
+.pg-in{flex:1;min-height:0;padding:clamp(18px,6%,44px) clamp(18px,8%,52px) 0;display:flex;flex-direction:column;gap:12px;overflow:hidden;transition:opacity var(--m-quick),transform var(--m-quick)}
+.bk-spread.intro .pg-in>*{animation:pg-rise var(--m-smooth) both}.bk-spread.intro .pg-in>*:nth-child(2){animation-delay:.05s}.bk-spread.intro .pg-in>*:nth-child(3){animation-delay:.1s}.bk-spread.intro .pg-in>*:nth-child(4){animation-delay:.15s}
 @keyframes pg-rise{from{opacity:0;transform:translateY(8px)}}
 .pg-kicker{font:600 11px var(--label);letter-spacing:.3em;text-transform:uppercase;color:var(--c-bronze-33)}
 .pg-title{margin:0;font:500 clamp(24px,4.6vw,44px)/1.05 var(--serif);letter-spacing:.04em;text-transform:uppercase;color:var(--bk)}
@@ -158,7 +158,7 @@
 .bs-corner::after{content:"";position:absolute;bottom:100%;width:40px;height:260%}
 .bs-corner.prev::after{left:0}.bs-corner.next::after{right:0}
 .bs-corner:disabled,.bs-corner[hidden]{display:none}
-.bs-corner i{position:absolute;bottom:0;width:64px;height:64px;pointer-events:none;transform:scale(.2);opacity:.55;transition:transform .25s cubic-bezier(.2,.8,.3,1),opacity .2s;filter:drop-shadow(0 0 3px var(--c-black-alpha-66))}
+.bs-corner i{position:absolute;bottom:0;width:64px;height:64px;pointer-events:none;transform:scale(.2);opacity:.55;transition:transform var(--m-base) var(--e-settle),opacity var(--m-base);filter:drop-shadow(0 0 3px var(--c-black-alpha-66))}
 .bs-corner.next i{right:0;transform-origin:100% 100%;background:linear-gradient(135deg,var(--c-parchment-80) 0,var(--c-brass-75) 46%,var(--c-black-alpha-66) 50%,var(--c-parchment-85) 51% 100%)}
 .bs-corner.prev i{left:0;transform-origin:0 100%;background:linear-gradient(225deg,var(--c-parchment-80) 0,var(--c-brass-75) 46%,var(--c-black-alpha-66) 50%,var(--c-parchment-85) 51% 100%)}
 .bs-corner:hover i,.bs-corner:focus-visible i{transform:scale(1);opacity:1}
@@ -166,10 +166,10 @@
 .bs-corner:focus-visible{outline-offset:-3px}
 /* the turning leaf: front = page being lifted, back = the page it lands as */
 .bs-flip{position:absolute;top:0;bottom:0;width:50%;z-index:5;pointer-events:none;transform-style:preserve-3d;will-change:transform}
-.bs-flip.next{right:0;transform-origin:0 50%;animation:fl-next .56s cubic-bezier(.45,.05,.25,1) forwards}
-.bs-flip.prev{left:0;transform-origin:100% 50%;animation:fl-prev .56s cubic-bezier(.45,.05,.25,1) forwards}
+.bs-flip.next{right:0;transform-origin:0 50%;animation:fl-next var(--m-page) var(--e-cruise) forwards}
+.bs-flip.prev{left:0;transform-origin:100% 50%;animation:fl-prev var(--m-page) var(--e-cruise) forwards}
 .bs-flip .bs-face{position:absolute;inset:0;width:auto;opacity:1;backface-visibility:hidden;-webkit-backface-visibility:hidden}
-.bs-flip .bs-face::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--c-black-alpha-66),transparent 70%);opacity:0;animation:fl-shade .56s ease-in-out forwards}
+.bs-flip .bs-face::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--c-black-alpha-66),transparent 70%);opacity:0;animation:fl-shade var(--m-page) var(--e-cruise) forwards}
 .bs-flip.next .front,.bs-flip.prev .back{right:0;left:0;border-radius:0 3px 3px 0;box-shadow:inset 22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 34px var(--c-oak-24-alpha-55)}
 .bs-flip.prev .front,.bs-flip.next .back{border-radius:3px 0 0 3px;box-shadow:inset -22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 34px var(--c-oak-24-alpha-55)}
 .bs-flip.next .back,.bs-flip.prev .back{transform:rotateY(180deg)}
@@ -179,8 +179,8 @@
 @keyframes fl-shade{50%{opacity:.7}to{opacity:.15}}
 /* phones: one page at a time, so the page peels away (or settles back in) instead of crossing a spread */
 .bs-flip.one{left:0;right:auto;width:100%;transform-origin:0 50%}
-.bs-flip.one.next{animation:fl-peel .42s cubic-bezier(.4,0,.3,1) forwards}
-.bs-flip.one.prev{animation:fl-peel .42s cubic-bezier(.4,0,.3,1) reverse forwards}
+.bs-flip.one.next{animation:fl-peel var(--m-smooth) var(--e-cruise) forwards}
+.bs-flip.one.prev{animation:fl-peel var(--m-smooth) var(--e-cruise) reverse forwards}
 .bs-flip.one .front{border-radius:3px;box-shadow:inset 0 0 34px var(--c-oak-24-alpha-55)}
 .bs-flip.one .front::after{display:none}
 @keyframes fl-peel{to{transform:translateX(-6%) rotateY(-85deg);opacity:0}}
@@ -212,10 +212,10 @@
 @media(max-width:700px){#all .panel,#stats .panel,#sets .panel{box-shadow:inset 0 0 40px var(--c-black-alpha-aa);background:linear-gradient(180deg,var(--c-oak-1d150d),var(--c-oak-130d08))}}
 
 /* closing: text clears, cover swings shut, then the book flies back to its stack */
-.bk-spread.closing .pg-in,.bk-spread.closing .pg-foot{opacity:0;transition:opacity .15s}
+.bk-spread.closing .pg-in,.bk-spread.closing .pg-foot{opacity:0;transition:opacity var(--m-quick)}
 .bk-spread.closing{pointer-events:none}
-.bk-spread.closing:not(.flyback){transition:transform .62s cubic-bezier(.45,0,.2,1)}
-.bk-spread.flyback{transition:transform .38s cubic-bezier(.55,0,.75,.35),opacity .2s .18s}
+.bk-spread.closing:not(.flyback){transition:transform var(--m-page) var(--e-cruise)}
+.bk-spread.flyback{transition:transform var(--m-smooth) var(--e-accelerate),opacity var(--m-base) var(--m-quick)}
 /* seat the book stacks right on the panel's bottom ledge */
 #home.center{padding-bottom:2px}
 .home .hsecs{padding-top:10px}
@@ -223,7 +223,7 @@
 /* ---- phones: the open book shows one page at a time (.one, see openBook) ---- */
 @media(max-width:560px){
  .bk-spread{--W:min(94vw,520px);--H:min(640px,calc(100dvh - 96px))}
- .bk-spread.one .bs-page.l,.bk-spread.one[data-side=r] .bs-page.r{width:100%;border-radius:3px;box-shadow:inset 0 0 34px var(--c-oak-24-alpha-55);transition:opacity .15s,width .25s}
+ .bk-spread.one .bs-page.l,.bk-spread.one[data-side=r] .bs-page.r{width:100%;border-radius:3px;box-shadow:inset 0 0 34px var(--c-oak-24-alpha-55);transition:opacity var(--m-quick),width var(--m-base)}
  .bk-spread.one[data-side=l] .bs-page.r,.bk-spread.one[data-side=r] .bs-page.l{display:none}
  .bk-spread.one[data-side=r] .bs-page.r{opacity:1}
  .bk-spread.one .pg-in{padding:22px 20px 0;gap:10px}

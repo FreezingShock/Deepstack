@@ -2,8 +2,8 @@
    Hover lifts and warms, press sinks and dims, release springs back, focus-visible gets a lamp-lit ring.
    Uses only existing tokens; transform/filter/box-shadow only so nothing reflows. */
 :root{
-  --t-spring:cubic-bezier(.34,1.56,.64,1);
-  --t-press:cubic-bezier(.3,.7,.4,1);
+  --t-spring:var(--e-spring);
+  --t-press:var(--e-press);
   --t-ring:var(--c-brass-d3b077);
   --t-ring-glow:rgba(255,184,77,.28);
 }
@@ -12,30 +12,30 @@
 textarea:focus-visible,#fq:focus-visible{box-shadow:none}
 
 /* buttons: lift on hover, sink on press, spring back on release */
-.btn,.bbtn,.fchip,.snd,.tpx,.panel .x,.bs-start{transition:transform .22s var(--t-spring),background .2s,border-color .2s,box-shadow .2s,color .2s,filter .2s}
+.btn,.bbtn,.fchip,.snd,.tpx,.panel .x,.bs-start{transition:transform var(--m-base) var(--t-spring),background var(--m-base),border-color var(--m-base),box-shadow var(--m-base),color var(--m-base),filter var(--m-base)}
 .btn:hover,.bbtn:hover,.fchip:hover:not([disabled]),.tpx:hover{transform:translateY(-1px)}
 .btn:active,.bbtn:active,.fchip:active:not([disabled]),.tpx:active,.panel .x:active,.bs-start:active{
-  transform:translateY(1px) scale(.97);filter:brightness(.88);transition-duration:.06s,.06s,.06s,.06s,.06s,.06s;transition-timing-function:var(--t-press)}
+  transform:translateY(1px) scale(.97);filter:brightness(.88);transition-duration:var(--m-press),var(--m-press),var(--m-press),var(--m-press),var(--m-press),var(--m-press);transition-timing-function:var(--t-press)}
 .btn.pri:active,.bbtn:active,.sheet .btn.pri:active{box-shadow:inset 0 2px 5px var(--c-black-alpha-99),0 0 8px -2px rgba(var(--b-glow),.25)}
 .btn[disabled]:active{transform:none;filter:none}
 
 /* plaques */
-.plq{transition:transform .22s var(--t-spring),filter .2s}
+.plq{transition:transform var(--m-base) var(--t-spring),filter var(--m-base)}
 #mark:hover .plq{transform:translateY(-1px)}
-#mark:active .plq{transform:translateY(1px) scale(.97);filter:brightness(.85);transition-duration:.06s}
+#mark:active .plq{transform:translateY(1px) scale(.97);filter:brightness(.85);transition-duration:var(--m-press)}
 .descend{transition-timing-function:var(--t-spring)}
 
 /* books: spring up on hover, press back in when clicked */
 .hbook,.shelfgrid img,.spineimgs img,.bk-spread.menu .sbook,.rbook{transition-timing-function:var(--t-spring)}
-.hbook:active{transform:translateX(3px) scale(1.03);filter:brightness(.9);transition-duration:.08s;transition-timing-function:var(--t-press)}
+.hbook:active{transform:translateX(3px) scale(1.03);filter:brightness(.9);transition-duration:var(--m-press);transition-timing-function:var(--t-press)}
 .shelfgrid img:hover,.spineimgs img:hover{filter:brightness(1.15) drop-shadow(0 6px 6px var(--c-black-alpha-99))}
-.shelfgrid img:active,.spineimgs img:active{transform:translateY(-4px);filter:brightness(.9);transition-duration:.08s;transition-timing-function:var(--t-press)}
-.bk-spread.menu .sbook:active{transform:translateX(calc(var(--o,0px) + 3px));filter:brightness(.92);transition-duration:.08s}
-.rbook{transition:background .2s,transform .22s var(--t-spring)}
+.shelfgrid img:active,.spineimgs img:active{transform:translateY(-4px);filter:brightness(.9);transition-duration:var(--m-press);transition-timing-function:var(--t-press)}
+.bk-spread.menu .sbook:active{transform:translateX(calc(var(--o,0px) + 3px));filter:brightness(.92);transition-duration:var(--m-press)}
+.rbook{transition:background var(--m-base),transform var(--m-base) var(--t-spring)}
 .rbook:active{transform:scale(.985)}
 
 /* page corners: curl up on hover, press flattens it */
-.bs-corner{transition:transform .22s var(--t-spring)}
+.bs-corner{transition:transform var(--m-base) var(--t-spring)}
 .bs-corner:hover{transform:scale(1.04)}
 .bs-corner:active{transform:scale(.97)}
 

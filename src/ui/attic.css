@@ -7,7 +7,7 @@
 .bk-spread.one .attic-cue:hover,.bk-spread.one .attic-cue:focus-visible{transform:translateY(2px)}
 .bk-spread .attic-cue[hidden]{display:none}
 .attic{position:absolute;inset:-6px;z-index:30;overflow:hidden;border-radius:6px;pointer-events:auto;background:radial-gradient(120% 70% at 50% 0,var(--c-oak-2a1c10),var(--c-oak-120c06) 60%,var(--c-oak-0a0706));
- box-shadow:0 0 0 2px var(--c-oak-5a3d22),0 18px 40px var(--c-black-alpha-dd);transform:translateY(-104%);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+ box-shadow:0 0 0 2px var(--c-oak-5a3d22),0 18px 40px var(--c-black-alpha-dd);transform:translateY(-104%);transition:transform var(--m-smooth) var(--e-settle)}
 .attic.up{transform:none}
 .attic[hidden]{display:none}
 /* rafters across the top */

@@ -8,7 +8,7 @@
 .center .pos{font-size:19px;letter-spacing:.04em}
 .center .wlabel{letter-spacing:.3em}
 /* the clock: small typewritten numerals under the part of speech */
-.clock{font:400 15px var(--mono);letter-spacing:.2em;color:var(--mute);margin:-2px 0 10px;font-variant-numeric:tabular-nums;transition:color .3s,text-shadow .3s}
+.clock{font:400 15px var(--mono);letter-spacing:.2em;color:var(--mute);margin:-2px 0 10px;font-variant-numeric:tabular-nums;transition:color var(--m-base),text-shadow var(--m-base)}
 .clock.low{color:var(--c-amber-ffd98a);text-shadow:0 0 12px var(--c-blood-ff4a2a-alpha-66);animation:tick 1s steps(2) infinite}
 @keyframes tick{50%{opacity:.6}}
 /* the candle stands beside the page and its light pool grows as the wax shrinks */
@@ -26,11 +26,11 @@
 .candle .flame{width:12px;height:22px;margin-left:-6px;top:-23px}
 @media(max-width:1000px){.candle{left:6px;transform:scale(1)}.candle::before{width:300px;height:300px;margin-left:-150px}}
 /* a lit slip rises a little when you write; ink presses in */
-.slipwrap{transition:transform .25s cubic-bezier(.2,.8,.2,1),filter .25s}
+.slipwrap{transition:transform var(--m-base) var(--e-settle),filter var(--m-base)}
 .slipwrap:focus-within{transform:translateY(-3px);filter:drop-shadow(0 16px 18px var(--c-black-alpha-aa)) drop-shadow(0 0 22px color-mix(in srgb,var(--c-amber-ffb84d-alpha-44) 70%,transparent))}
 .slip textarea{caret-color:var(--c-blood-43);text-shadow:0 0 .5px var(--c-steel-23)}
-.slip textarea:focus::placeholder{opacity:.25;transition:opacity .3s}
-.slipwrap.sending{transform:translateY(-10px) rotate(1.2deg) scale(.97);opacity:0;transition:transform .26s ease-in,opacity .26s}
+.slip textarea:focus::placeholder{opacity:.25;transition:opacity var(--m-base)}
+.slipwrap.sending{transform:translateY(-10px) rotate(1.2deg) scale(.97);opacity:0;transition:transform var(--m-base) var(--e-accelerate),opacity var(--m-base)}
 /* hints read as a penciled note on the wall, buttons as small brass tabs */
 .hintline{font-size:17px;max-width:46ch;margin-left:auto;margin-right:auto}
 .center .row .btn{font-family:var(--label);font-size:12px;letter-spacing:.14em;text-transform:uppercase;padding:8px 16px}
