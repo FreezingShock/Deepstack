@@ -1,3 +1,4 @@
+import {PALETTE} from '../theme/colors.js';
 /* Alcove lanterns: each hangs from an iron chain bolted to the arch and swings like a real pendulum.
    One damped-pendulum state per lantern, stepped inside the existing canvas frame (no extra rAF, no DOM,
    no layout reads). The cursor pushes a lantern as it nears or sweeps past, and the glow warms with
@@ -63,24 +64,24 @@ export function drawLantern(ctx, o) {
   ctx.save();
   ctx.translate(ax, ay);
   // ceiling bolt + iron plate (fixed, does not swing)
-  ctx.fillStyle = '#2b1d12'; ctx.fillRect(-7, -3, 14, 6); ctx.fillStyle = '#6a4d30'; ctx.fillRect(-7, -3, 14, 1.5);
-  ctx.fillStyle = '#8a6a46'; ctx.beginPath(); ctx.arc(0, 1, 2.2, 0, 6.3); ctx.fill();
+  ctx.fillStyle = PALETTE.oak2b1d12; ctx.fillRect(-7, -3, 14, 6); ctx.fillStyle = PALETTE.bronze6a4d30; ctx.fillRect(-7, -3, 14, 1.5);
+  ctx.fillStyle = PALETTE.bronze41; ctx.beginPath(); ctx.arc(0, 1, 2.2, 0, 6.3); ctx.fill();
   ctx.rotate(th);
   // chain: bows against the swing so it reads as flexible, links alternate face-on / edge-on
   const bow = RM ? 0 : clamp(s.w * 4, -7, 7), n = Math.max(4, Math.round(len / 6));
   const px = t => 2 * (1 - t) * t * bow, py = t => 3 + (len - 3) * t;
   ctx.lineCap = 'round';
-  ctx.strokeStyle = '#3b2a1a'; ctx.lineWidth = 2.6; ctx.beginPath();
+  ctx.strokeStyle = PALETTE.oak17; ctx.lineWidth = 2.6; ctx.beginPath();
   for (let i = 0; i < n; i++) { const t = (i + .5) / n; if (i & 1) { ctx.moveTo(px(t), py(t) - 2.2); ctx.lineTo(px(t), py(t) + 2.2); } }
   ctx.stroke();
-  ctx.strokeStyle = '#8a6a46'; ctx.lineWidth = 1.2; ctx.beginPath();
+  ctx.strokeStyle = PALETTE.bronze41; ctx.lineWidth = 1.2; ctx.beginPath();
   for (let i = 0; i < n; i++) { const t = (i + .5) / n; if (i & 1) { ctx.moveTo(px(t) - .5, py(t) - 2); ctx.lineTo(px(t) - .5, py(t) + 2); } else { ctx.moveTo(px(t) + 2.2, py(t)); ctx.ellipse(px(t), py(t), 2.2, 3.4, 0, 0, 6.3); } }
   ctx.stroke();
   // top ring and domed cap
-  ctx.strokeStyle = '#9a7a52'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(0, len - 1, 3.2, 0, 6.3); ctx.stroke();
+  ctx.strokeStyle = PALETTE.bronze46; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(0, len - 1, 3.2, 0, 6.3); ctx.stroke();
   const gy = len + 3;
-  ctx.fillStyle = '#4a3524'; ctx.beginPath(); ctx.moveTo(-10, gy + 6); ctx.quadraticCurveTo(-8, gy - 1, 0, gy - 2); ctx.quadraticCurveTo(8, gy - 1, 10, gy + 6); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#8a6a46'; ctx.fillRect(-10, gy + 5, 20, 1.6);
+  ctx.fillStyle = PALETTE.oak22; ctx.beginPath(); ctx.moveTo(-10, gy + 6); ctx.quadraticCurveTo(-8, gy - 1, 0, gy - 2); ctx.quadraticCurveTo(8, gy - 1, 10, gy + 6); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = PALETTE.bronze41; ctx.fillRect(-10, gy + 5, 20, 1.6);
   // glass, lit from inside
   const fl = .55 + .35 * fk, gh = 24, gt = gy + 6.6;
   const gg = ctx.createLinearGradient(0, gt, 0, gt + gh);
@@ -92,9 +93,9 @@ export function drawLantern(ctx, o) {
   ctx.fillStyle = `rgba(255,${230 + 20 * fk | 0},170,${.9})`;
   ctx.beginPath(); ctx.moveTo(lean * .4, gt + gh - 2); ctx.quadraticCurveTo(-fw, gt + gh - 6, lean, gt + gh - fh - 2); ctx.quadraticCurveTo(fw, gt + gh - 6, lean * .4, gt + gh - 2); ctx.fill();
   // posts + base
-  ctx.fillStyle = '#2a1c10'; ctx.fillRect(-8.2, gt, 2, gh); ctx.fillRect(6.2, gt, 2, gh); ctx.fillRect(-1, gt, 2, gh);
-  ctx.fillStyle = '#4a3524'; ctx.fillRect(-9.5, gt + gh, 19, 4); ctx.fillStyle = '#8a6a46'; ctx.fillRect(-9.5, gt + gh, 19, 1.2);
-  ctx.fillStyle = '#4a3524'; ctx.beginPath(); ctx.arc(0, gt + gh + 6, 2, 0, 6.3); ctx.fill();
+  ctx.fillStyle = PALETTE.oak2a1c10; ctx.fillRect(-8.2, gt, 2, gh); ctx.fillRect(6.2, gt, 2, gh); ctx.fillRect(-1, gt, 2, gh);
+  ctx.fillStyle = PALETTE.oak22; ctx.fillRect(-9.5, gt + gh, 19, 4); ctx.fillStyle = PALETTE.bronze41; ctx.fillRect(-9.5, gt + gh, 19, 1.2);
+  ctx.fillStyle = PALETTE.oak22; ctx.beginPath(); ctx.arc(0, gt + gh + 6, 2, 0, 6.3); ctx.fill();
   ctx.restore();
   // glow: centred on the swinging glass, warms when the cursor is near or it is swinging hard
   const gx = ax - Math.sin(th) * d, gyy = ay + Math.cos(th) * d, R = 150 + 30 * hot;

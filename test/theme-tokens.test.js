@@ -32,3 +32,7 @@ const count=f=>(readFileSync(f,'utf8').match(/#[0-9a-fA-F]{8}\b|#[0-9a-fA-F]{6}\
 for(const[f,max]of Object.entries(budget))test(`${f} stays within ${max} raw hex colors`,()=>{
  assert.ok(count(f)<=max,`${f} has ${count(f)} raw hex colors (budget ${max}); use a token from src/theme/colors.js`);
 });
+test('camelCase K view has one key per named color',async()=>{
+ const {PALETTE:K}=await import('../src/theme/colors.js');
+ assert.equal(Object.keys(K).length,Object.keys(COLORS).length+Object.keys(ALPHA).length);
+});
