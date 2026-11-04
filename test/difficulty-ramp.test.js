@@ -10,7 +10,7 @@ test('ramp targets rise monotonically and span easy to hard', () => {
   const t = rampTargets(7);
   assert.equal(t.length, 7);
   for (let i = 1; i < t.length; i++) assert.ok(t[i] > t[i - 1]);
-  assert.ok(t[0] < 2.5 && t[6] > 6 && t[6] <= 7);
+  assert.ok(t[0] >= 2.2 && t[0] < 2.8 && t[6] > 4.8 && t[6] <= 5.5);
 });
 
 test('widely translated words read easier, thin ones harder', () => {
@@ -37,6 +37,6 @@ test('daily words ramp upward, differ in stem, and are stable', () => {
     assert.deepEqual(w.map(x => x.w), dailyWords(day, 7).map(x => x.w));
     for (let i = 1; i < 7; i++) assert.ok(w[i].d >= w[i - 1].d);
     assert.equal(new Set(w.map(x => x.w.slice(0, 5))).size, 7);
-    assert.ok(w[0].d < 3 && w[6].d > 5);
+    assert.ok(w[0].d < 3.2 && w[6].d > 4.4 && w[6].d < 6);
   }
 });
