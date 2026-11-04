@@ -52,3 +52,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-04 initial version from project chat history.
 
 - Colors (2026-11-04): nate likes Minecraft color codes as the color reference (use the actual hues: dark blue, dark red, dark green, dark aqua, dark purple, gold/orange). Variety comes from values within each item (darker edges, stripes), not muted/aged versions of the hue. Home menu books: Daily blue, Unlimited red, Practice green, Shelf aqua, Sets purple, Stats orange-brown.
+- 2026-11-04 stats: wants "stats as an almanac" -> hand-drawn charts (tally marks, spines, cross-section) not UI bars (thread: almanac)

@@ -1,6 +1,8 @@
 /* Shelf and Stats as pages of an open book. Pure leaf builders are exported for tests; the open* functions wire
    them to the paged book view. Main passes in what it owns (spine renderer, card opener, tooltips). */
 import {chunk,esc,toSpreads} from './bookpages.js';
+import {statsLeaves} from './statsPages.js';
+export {statsLeaves};
 
 /* Shelf layout. Books lie flat in stacks (STACK_H high, STACKS_PER_SHELF side by side) on a wooden shelf; a labelled
    plaque heads each section. Pages fill by a height budget: a shelf costs 1, a plaque PLAQUE_COST. */
@@ -35,28 +37,6 @@ export function collapseDupes(list){
 export const stagger=w=>{let h=0;for(const c of String(w))h=(h*31+c.charCodeAt(0))>>>0;return (h%9)-4;};
 export const TEXTURES=['leather','cloth','worn','vellum','grain'];
 
-const fmtDay=k=>new Date(k+'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',timeZone:'UTC'});
-
-export function statsLeaves(st,S,{TIERS,FLOORS,floorStartFt}){
- if(!st.runs)return [`<h1>Stats</h1><p class="empty">Finish your first Daily and your numbers show up here: streak, deepest dive and every tier you have shelved.</p>`];
- const maxT=Math.max(1,...st.tiers),maxD=Math.max(1,...st.recent.map(r=>r.depth));
- const big=(n,l,sub)=>`<div class="big"><b>${n}</b><span>${l}</span>${sub?`<em>${sub}</em>`:''}</div>`;
- const reached=S.bestFloor||0;
- return [
-  `<h1>Stats</h1><div class="kicker">Your records</div>
-   <div class="bigs">${big(st.streak,'Day streak','best '+st.bestStreak)}${big(st.deepest+'<small> ft</small>','Deepest dive',st.deepestDay?fmtDay(st.deepestDay):'')}
-   ${big(st.runs,st.runs===1?'Daily played':'Dailies played',st.totalFt.toLocaleString()+' ft in total')}${big(st.avg,'Avg closeness',st.answered+' answered')}</div>
-   ${st.best?`<p class="bestbook">Closest answer: <b>${esc(st.best.w)}</b>, ${st.best.score}/100 · <span style="color:${TIERS[st.best.tier].spine}">${TIERS[st.best.tier].name}</span></p>`:''}`,
-  `<h2 style="margin-top:0">Books by tier <small>${st.answered}</small></h2>
-   <div class="tierbars">${TIERS.map(t=>`<div class="tb"><span>${t.name}</span><span class="track"><i style="width:${st.tiers[t.id]/maxT*100}%;background:${t.spine}"></i></span><b>${st.tiers[t.id]}</b></div>`).join('')}</div>
-   <p class="note">${st.rarest>=0?`Rarest book so far: ${TIERS[st.rarest].name}.`:''} ${st.books-st.answered?`${st.books-st.answered} skipped.`:''}</p>`,
-  `<h1>Recent descents</h1><div class="kicker">Last ${st.recent.length} ${st.recent.length===1?'daily':'dailies'}</div>
-   <div class="recent" role="img" aria-label="Depth of your last ${st.recent.length} dailies">${st.recent.map(r=>`<div class="rc" title="${fmtDay(r.day)}: ${r.depth} ft"><i style="height:${Math.max(6,r.depth/maxD*100)}%;background:${TIERS[r.best].spine}"></i><span>${r.day.slice(8)}</span></div>`).join('')}</div>
-   <p class="note">Bars are depth in feet, coloured by your rarest book that day.</p>`,
-  `<h2 style="margin-top:0">Floors of the library</h2>
-   <ul class="floors">${FLOORS.map(f=>`<li class="${f.id>reached?'locked':''}"><span class="ft">${floorStartFt(f)} ft</span><b>${f.id>reached?'Undiscovered':esc(f.name)}</b>${f.id>reached?'':`<small>${esc(f.sub)}</small>`}</li>`).join('')}</ul>`
- ];
-}
 
 /* Book page registries for home.js BOOK_PAGES. */
 export function statsBook({S,st,TIERS,FLOORS,floorStartFt}){

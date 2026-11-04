@@ -1,0 +1,55 @@
+/* The Almanac: hand-kept stats pages inside the menu book. Scoped to .alm. Colours via tokens or the book's own vars. */
+.bk-spread.menu .alm{--hand:'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive;min-width:0}
+.bk-spread.menu .alm h2{font:600 24px/1.2 var(--hand);letter-spacing:.02em;text-transform:none;color:var(--bk);margin:18px 0 6px;border-bottom:1.5px solid var(--rule)}
+.bk-spread.menu .alm .hand{font:500 23px/1.3 var(--hand);color:var(--c-oak-4a3a22);margin:6px 0}
+.bk-spread.menu .alm .dim{color:var(--mute);font-size:19px}
+.bk-spread.menu .alm .empty{margin:16px 0 4px}
+.bk-spread.menu .alm .note{font:italic 400 15px/1.4 var(--serif);color:var(--mute);margin:6px 0 0}
+/* streak tally */
+.bk-spread.menu .alm .tally{display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px 8px;min-height:44px}
+.bk-spread.menu .alm .tl{stroke:var(--c-oak-4a3a22);stroke-width:2.4;stroke-linecap:round;fill:none}
+.bk-spread.menu .alm .tally-g .tl{stroke-dasharray:1;stroke-dashoffset:0}
+.bk-spread.menu .alm .tally-g{animation:almInk .5s ease both}
+/* ledger of records */
+.bk-spread.menu .alm .ledger{list-style:none;margin:12px 0 0;padding:0}
+.bk-spread.menu .alm .ledger li{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 10px;padding:6px 0;border-bottom:1px dashed var(--rule)}
+.bk-spread.menu .alm .ledger span{font:600 11px var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.bk-spread.menu .alm .ledger b{margin-left:auto;font:600 28px/1 var(--hand);color:var(--bk);font-variant-numeric:tabular-nums}
+.bk-spread.menu .alm .ledger em{flex-basis:100%;text-align:right;font:italic 400 13px var(--serif);color:var(--mute)}
+.bk-spread.menu .alm .bestbook{font:400 17px/1.4 var(--serif);margin:12px 0 0}
+/* Lexicon line */
+.bk-spread.menu .alm .lexchart{display:block;width:100%;height:auto;max-height:210px;margin-top:10px;overflow:visible}
+.bk-spread.menu .alm .lexchart .gr{stroke:var(--rule);stroke-width:1;stroke-dasharray:3 4}
+.bk-spread.menu .alm .lexchart .ax{font:400 9px var(--mono);fill:var(--mute)}
+.bk-spread.menu .alm .lexchart .ln{fill:none;stroke:var(--bk);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0;animation:almDraw 1s ease-out both}
+.bk-spread.menu .alm .lexchart .dt{fill:var(--bk)}
+/* tier spines */
+.bk-spread.menu .alm .spines{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:200px;margin-top:12px;padding-bottom:6px;border-bottom:2px solid var(--c-oak-4a3a22)}
+.bk-spread.menu .alm .sp-col{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;min-width:0;height:100%}
+.bk-spread.menu .alm .sp-col b{font:600 18px var(--hand);color:var(--c-oak-4a3a22)}
+.bk-spread.menu .alm .sp-pile{display:flex;flex-direction:column-reverse;gap:1px;width:100%;max-width:34px}
+.bk-spread.menu .alm .sp-pile i{display:block;height:9px;border-radius:1px;transform:translateX(var(--o));box-shadow:inset 0 -2px 0 var(--c-black-alpha-33),0 0 0 1px var(--c-black-alpha-33)}
+.bk-spread.menu .alm .legend{list-style:none;margin:14px 0 0;padding:0}
+.bk-spread.menu .alm .legend li{display:flex;align-items:center;gap:10px;padding:3px 0;font:500 20px var(--hand);color:var(--c-oak-4a3a22)}
+.bk-spread.menu .alm .legend .dot{width:10px;height:10px;border-radius:2px;flex:none}
+.bk-spread.menu .alm .legend b{margin-left:auto;font-variant-numeric:tabular-nums}
+/* recent descents (kept from the old page) */
+.bk-spread.menu .alm .recent{display:flex;align-items:flex-end;gap:5px;height:130px;padding:0 2px;border-bottom:1px solid var(--mute);margin-bottom:26px}
+.bk-spread.menu .alm .rc{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative}
+.bk-spread.menu .alm .rc i{display:block;width:100%;max-width:26px;border-radius:2px 2px 0 0;box-shadow:0 0 0 1px var(--c-black-alpha-33)}
+.bk-spread.menu .alm .rc span{position:absolute;bottom:-20px;font:400 10px var(--mono);color:var(--mute)}
+/* cross-section: six equal strata, a pen marker where the deepest dive reached */
+.bk-spread.menu .alm .xs{position:relative;margin-top:12px;padding-left:14px;border-left:3px solid var(--c-oak-4a3a22)}
+.bk-spread.menu .alm .floors{list-style:none;margin:0;padding:0;counter-reset:f}
+.bk-spread.menu .alm .floors li{position:relative;min-height:54px;padding:8px 6px 8px 10px;border-bottom:1.5px solid var(--rule);background:repeating-linear-gradient(135deg,transparent 0 7px,var(--c-ink-alpha-22) 7px 8px);background-size:auto;opacity:calc(1 - var(--k) * .06)}
+.bk-spread.menu .alm .floors li.locked{opacity:.4;background:none}
+.bk-spread.menu .alm .floors b{display:block;font:500 19px/1.2 var(--serif)}
+.bk-spread.menu .alm .floors small{display:block;font:italic 400 14px var(--serif);color:var(--mute)}
+.bk-spread.menu .alm .floors .ft{float:right;font:600 11px var(--sans);letter-spacing:.1em;color:var(--mute)}
+.bk-spread.menu .alm .xs-mark{position:absolute;left:-14px;right:0;height:0;border-top:2.5px solid var(--bk);pointer-events:none;animation:almMark .8s ease-out both}
+.bk-spread.menu .alm .xs-mark span{position:absolute;right:0;bottom:2px;padding:0 6px;font:600 19px/1 var(--hand);color:var(--bk);background:var(--c-parchment-88)}
+@keyframes almDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes almInk{from{opacity:0}to{opacity:1}}
+@keyframes almMark{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@media(max-width:700px){.bk-spread.menu .alm .spines{height:170px;gap:4px}.bk-spread.menu .alm .sp-pile i{height:8px}}
+@media(prefers-reduced-motion:reduce){.bk-spread.menu .alm .lexchart .ln,.bk-spread.menu .alm .tally-g,.bk-spread.menu .alm .xs-mark{animation:none}}

@@ -106,7 +106,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: add bays and sort modes beyond tier; stack height reflects count; selecting a stack lifts the top book to a detail card above the book (never behind). Files: new `src/ui/shelfBays.js`, `browse.js` hooks. Done when: 200-book shelf stays under 16 ms to render a page, duplicates collapse with a handwritten x N, 14-letter titles fit.
 **Touches:** BOOK. **Conflicts:** 7, 10.
 
-### 12. Stats as an almanac
+### 12. [x] Stats as an almanac (PR pending)
 **Serves:** handwritten, sectioned, multiple pages.
 **Pitch:** Stats become hand-drawn charts: Lexicon rising over runs, a tier histogram drawn as stacked book spines, depth per floor as a cross-section, streak ink-tally marks.
 **Brief:** Goal: three to four stats pages from existing saves (`S.rating.hist`, dailies, shelf). Files: new `src/ui/statsPages.js`. Done when: empty states are written ("Nothing shelved yet."), 60-point history tested, tally marks match streak, phone layout verified.
@@ -368,6 +368,21 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Touches:** BOOK, new files. **Conflicts:** none.
 
 ---
+
+### 54. Almanac pages for Unlimited and Sets
+**Serves:** everything is a book, sectioned.
+**Pitch:** The almanac only charts Daily depth and the shelf; give Unlimited its own spread (runs, placement, best Lexicon) and a sets-progress page with the completed cases.
+**Brief:** Goal: two more leaves in `statsPages.js` from `S.rating` and `S.sets`. Done when: empty states written, 375 px verified. **Touches:** BOOK. **Conflicts:** 10, 14.
+
+### 55. Almanac tap-through
+**Serves:** immersion through interaction.
+**Pitch:** Tap a spine column, a day bar or a floor stratum in the almanac to open the shelf filtered to it, or the Daily book page for that day.
+**Brief:** Goal: hooks from `statsPages.js` into shelf filters and the Daily book. Done when: keyboard reachable, reduced motion safe. **Touches:** BOOK. **Conflicts:** 10, 11, 13.
+
+### 56. Almanac notes in the margin
+**Serves:** pages that feel written.
+**Pitch:** Margin notes that read the numbers back in a hand ("Deepest yet. The Vault is close.") with a pen-drawn arrow to the marker.
+**Brief:** Goal: a small pure `almanacNotes(st)` picking one line per page. Done when: a test per note rule. **Touches:** new file. **Conflicts:** 9.
 
 ## Suggested batches
 - **Overhaul wave 1 (his favourite kind):** 7, 8, 11, 12, 16 (book objects, opening, shelf bays, almanac, reveal card). Run 7 first; 8 and 11 after.
