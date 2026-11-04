@@ -51,7 +51,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: a lighting pass where lit radius shrinks with depth and unlit shelves fade to silhouette; lantern/alcove light cast on nearby books. Files: new `src/ui/lighting.js`; hook in `World`. Done when: Abyss is legible only near lights but the word and alcove stay readable (contrast test on the alcove), cached offscreen light map, reduced motion removes flicker.
 **Touches:** WORLD. **Conflicts:** 1, 3, 33, floors thread.
 
-### 3. Things that live down here
+### 3. [x] Things that live down here (this PR)
 **Serves:** immersion, physical realism.
 **Pitch:** Small ambient life per floor: moths round the lantern, a rat on the Catacombs shelf, a book that slides itself shut, drips, bubbles in the Vault, drifting ash in the Hollow.
 **Brief:** Goal: 2 or 3 ambient creatures/events per floor, each rare and quiet, never over text or panels (respect the particles rules). Files: new `src/ui/ambient.js`. Done when: spawn rates capped, none covers the alcove or HUD (test via exclusion rects), off in reduced motion and low quality mode (35).
@@ -598,3 +598,13 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** A faint scratch of nib on paper while rings, underlines and tab strokes draw, quiet and optional.
 **Brief:** Goal: tiny shared `penScratch()` hooked to the draw-in animations, off when sound is off. Files: new `src/sound/pen.js`. Done when: respects settings, no audio before first gesture.
 **Touches:** new files. **Conflicts:** none.
+
+### 94. Creatures react to the lamp and to you
+**Serves:** immersion, physical realism. **Pitch:** The silverfish scatters when a lantern swings past, the rat freezes if you scroll fast, eyes in the Hollow close when the cursor nears.
+**Brief:** Goal: pointer and camera speed feed `updateAmbient` as a `scare` input, one reaction per creature. Files: `src/ui/ambient.js` only. Done when: a test pins a reaction per kind, still off in reduced motion.
+**Touches:** WORLD. **Conflicts:** 2, 4.
+
+### 95. Sounds of the things down here
+**Serves:** immersion. **Pitch:** A far scuttle, a drip with the right reverb per floor, a low bubble, matched to what is on screen.
+**Brief:** Goal: each ambient item can emit a quiet cue through `Sfx`. Files: new `src/ui/ambientSfx.js`. Done when: volume setting respected, rate-capped, silent in reduced motion.
+**Touches:** FEEL hook. **Conflicts:** 23.

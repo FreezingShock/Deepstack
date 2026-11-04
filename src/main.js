@@ -58,6 +58,7 @@ import './ui/googleFonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
 import {tiltAboutFoot,settleBooks,lyingFootprint,propHalf,placeProp} from './ui/physics.js';
 import {drawAlcoveLanterns} from './ui/lanterns.js';
+import {updateAmbient,drawAmbient,resetAmbient,lowQuality} from './ui/ambient.js';
 import {drawFloorAtmosphere} from './ui/floorAtmosphere.js';
 import {nookMetrics,drawNook,alcoveRects,paintAroundAlcoves} from './ui/alcoveArt.js';
 import './ui/ledge.css';
@@ -361,7 +362,9 @@ const World=(()=>{
   ctx.restore();}
  const ease=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
  const shade=(hx,f)=>{const n=parseInt(hx.slice(1),16);return `rgb(${(n>>16)*f|0},${(n>>8&255)*f|0},${(n&255)*f|0})`;};
- let shelfVisible=0,lastCam=0;
+ let shelfVisible=0,lastCam=0,ambItems=[];
+ // creatures keep off the alcove (and everything it could be), the top bar and any covering page
+ function ambEnv(camNow,top,bot){const n=nicheBox(),ex=[{x:0,y:0,w:W,h:barPx()+10}];for(const [row] of niches){ex.push({x:n.x-44,y:n.t+(row*RH-(H-RH-BM))-camNow-60,w:n.w+88,h:n.h+130});}if(btgt>=-4)ex.push({x:n.x-44,y:n.t-60,w:n.w+88,h:n.h+130});return{W,H,RH,camNow,top,bot,excl:ex,rm:RM,low:lowQuality(),quiet:covNow,busy:!!st||!!rest};}
  let lastDraw=0,coverChk=0,covNow=false;
  function frame(now){
   if(now-coverChk>100){coverChk=now;covNow=worldCovered();} // DOM probe at 10 Hz, not per frame
@@ -410,6 +413,7 @@ const World=(()=>{
     ctx.fillStyle=`rgba(${cr|0},${cg|0},${cb|0},${ca})`;ctx.fillRect(0,0,W,H);}}
   drawFloorAtmosphere(ctx,W,H,atm,vt,lx,ly,RM);
   });
+  ambItems=updateAmbient(dt,ambEnv(camNow,top,bot));drawAmbient(ctx,ambItems,vt,'body',atm.lamp);
   ctx.globalCompositeOperation='lighter';
   if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
   const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick*atm.flick;
@@ -420,6 +424,7 @@ const World=(()=>{
    for(const p of dust){p.y-=dt*(5+p.z*14);p.x+=Math.sin(vt*.6+p.ph)*dt*8;const yy=((p.y+camNow*(.25+p.z*.5))%H+H)%H,xx=(p.x%W+W)%W;const dist=Math.hypot(xx-lx,yy-ly)/dm;const al=Math.max(0,1-dist)*(.15+.5*Math.abs(Math.sin(vt*1.3+p.ph)))*(.7+a);const k=Math.min(7,al*9|0);if(al>.01)bk[k].push(xx,yy,p.r*(.6+p.z));}
    for(let k=0;k<8;k++){const b=bk[k];if(!b.length)continue;ctx.fillStyle=DUST_STYLE[k];ctx.beginPath();for(let i=0;i<b.length;i+=3){ctx.moveTo(b[i]+b[i+2],b[i+1]);ctx.arc(b[i],b[i+1],b[i+2],0,6.3);}ctx.fill();}}
   if(!RM)drawMoths(lx,ly,a,dt);
+  drawAmbient(ctx,ambItems,vt,'glow',atm.lamp);
   ctx.globalCompositeOperation='source-over';
   requestAnimationFrame(frame);}
  // moths: a few circle the lamp, erratic and drawn to the light; they thin out as the library decays
@@ -441,7 +446,7 @@ const World=(()=>{
   setShelf(b){shelf=b;},hits:()=>hits,
   // the lore book under a screen point, if any: {row, book}
   loreAt(x,y){const r=Math.floor((y+lastCam)/RH),b=hitLoreBook(rows.get(r*2),r,RH,W,lastCam,abn(r),x,y,(b,base)=>loreCovered(b,base,lastCam));return b?{row:r,book:b}:null;},curioAt(x,y){const r=Math.floor((y+lastCam)/RH),b=hitCurio(rows.get(r*2),r,RH,W,lastCam,abn(r),x,y,(b,base)=>loreCovered(b,base,lastCam));return b?{row:r,book:b}:null;},get shelfVisible(){return shelfVisible;},get restRow(){return restRow;},get busy(){return !!st||!!rest;},
-  reset(){rows.clear();taken.clear();niches.clear();restRow=0;st=null;rest=null;cam=restCam(0);},
+  reset(){resetAmbient();rows.clear();taken.clear();niches.clear();restRow=0;st=null;rest=null;cam=restCam(0);},
   clearNiches(){niches.clear();},
   // put a finished descent back (see core/replay.js): alcoves, emptied shelf slots, camera at the top
   restore(L){this.reset();const t0=performance.now()-1e3;for(const n of L.niches)niches.set(n.row,{t0,label:n.label,books:n.books,res:n.res||undefined});for(const r of L.taken)taken.add(r);},
