@@ -176,7 +176,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: a `motion.js` of named presets used by new code, with an audit of existing hard-coded durations. Files: new `src/ui/motion.js`, tests. Done when: preset table documented, no animation over 1.2 s except the long glides (clamped 1.2-2.5 s), reduced-motion branch in one place.
 **Touches:** new files. **Conflicts:** transitions thread.
 
-### 23. Typing, page and seal sounds
+### 23. Typing, page and seal sounds [x] (PR pending)
 **Serves:** tactile, immersive.
 **Pitch:** Quill scratch on typing, paper on page flips, a wax-seal press on submit, a heavy thud when a book lands on the ledge.
 **Brief:** Goal: new synthesised sounds with a fake-AudioContext test. Files: new `src/sound/*.js`, one hook in FEEL. Done when: mute and volume respected, rate limits, `test/sfx.test.js` covers routing.
@@ -448,3 +448,15 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** Primary buttons on book pages (Descend, Close, Continue) become the same swallow-tailed ribbon instead of boxes.
 **Brief:** Goal: shared `.ribbon` class. Files: new `src/ui/ribbon.css`. Done when: focus is visible, buttons tests pass.
 **Touches:** buttons. **Conflicts:** 7.
+
+### 66. Sound per tier on the seal
+**Serves:** rarity is the hero, tactile.
+**Pitch:** The wax-seal press changes with the tier it earns: a dull press for Pamphlet, a deeper, longer press with a faint ring for Codex and up.
+**Brief:** Goal: pass the judged tier to the seal sound after the judge returns. Files: `src/sound/scribe.js`, one line in `submit`. Done when: tier 0-6 variants tested with the fake context.
+**Touches:** FEEL hook. **Conflicts:** 24.
+
+### 67. Quill follows the hand
+**Serves:** immersive, physical.
+**Pitch:** The scratch speeds up when typing fast, softens on pauses, and gives a small flourish when the answer is sent.
+**Brief:** Goal: scale quill level and length by keystroke rate. Files: `src/sound/scribe.js`. Done when: rate-limit test still passes, no more nodes than the voice cap.
+**Touches:** FEEL hook. **Conflicts:** 23 follow-ups.

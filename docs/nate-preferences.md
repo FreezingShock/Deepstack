@@ -25,6 +25,7 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 - **Performance is a feature.** "Performant" appears with lanterns and scrolling. He wants costs measured before building ("determine the performance cost").
 - **Honest answers.** He asks "is this on purpose?", "why does it look like this?", "should duplicates show?". Give the real cause and the fix, not a defence.
 - **Say it once, expect it done.** When he sends a screenshot with "fix this", he expects the thread to find the cause. Repeat complaints (shelves at the top, hover on lore books) mean the first fix was not checked in the real screen. Verify with a screenshot of the exact screen he showed.
+- 2026-11-04 motion: "the motion language should be for all animations and changes, make sure it's smooth and performant and all uniform" (sounds should line up with it, thread: desk sounds)
 
 ## 3. How he works
 
