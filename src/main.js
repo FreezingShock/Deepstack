@@ -577,7 +577,7 @@ async function showFinal(d,fromHome){
  if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;World.setShelf([]);
   /* replay the whole descent: every alcove and floor again, ending at the results */
   const L=replayLayout(d.books,{gapRows:World.nextRows(),ftPerRow:FT});World.restore(L);ui.hud.hidden=false;
-  if(L.finalRow>0){await World.glide(L.finalRow,clamp(L.finalRow*45,1600,4200));if(!ui.home.hidden)return;}}
+  if(L.finalRow>0){await World.glide(L.finalRow);if(!ui.home.hidden)return;}}
  ui.hud.hidden=false;$('#dnum').textContent=d.depth;
  World.openNiche(World.restRow,{label:'FINIS',books:[]});
  const txt=shareText(d);const el=ui.final;el.hidden=false;el.className='center fadein';
