@@ -1,7 +1,7 @@
 /* Library-themed top bar: brass plaque, wooden lintel, and the buttons on it
    (Sound, Credits, Settings) plus the panels they open. */
 import './topbar.css';
-import {loadSettings,saveSettings,applySettings,TEXT_SIZES} from './settings.js';
+import {loadSettings,saveSettings,applySettings,TEXT_SIZES,reducedMotion} from './settings.js';
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -56,15 +56,16 @@ export function initTopbar({Sfx,doc=document}={}){
  function openPanel(k,from){
   opener=from||opener;current=k;
   layer.innerHTML=`<div class="tpbox" role="dialog" aria-modal="true" aria-labelledby="tpT"><button type="button" class="tpx" id="tpClose" aria-label="Close">×</button>${body[k]()}</div>`;
-  layer.hidden=false;
+  layer.classList.remove('leaving');layer.hidden=false;
   $('#tpClose').onclick=closePanel;
   if(k==='settings')wireSettings();
   $('#tpClose').focus({preventScroll:true});
  }
  function closePanel(){
-  if(layer.hidden)return;
-  layer.hidden=true;layer.innerHTML='';current=null;
-  const o=opener;opener=null;if(o&&o.isConnected)o.focus({preventScroll:true});
+  if(layer.hidden||layer.classList.contains('leaving'))return;
+  const o=opener;opener=null;current=null;if(o&&o.isConnected)o.focus({preventScroll:true});
+  layer.classList.add('leaving');
+  setTimeout(()=>{if(current)return;layer.classList.remove('leaving');layer.hidden=true;layer.innerHTML='';},reducedMotion()?0:160);
  }
  function wireSettings(){
   const sw=(el,fn)=>el.onclick=()=>{const v=el.getAttribute('aria-checked')!=='true';el.setAttribute('aria-checked',v);fn(v);};
