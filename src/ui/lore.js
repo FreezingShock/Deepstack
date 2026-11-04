@@ -1,3 +1,4 @@
+import {PALETTE} from '../theme/colors.js';
 // Lore books: a few thick books on the background shelves of the descent can be clicked to
 // reveal a word and its definition. Nothing is stored per book: which books are marked, and
 // which word each holds, are pure functions of the row seed, so shelves stay identical when a
@@ -31,7 +32,7 @@ export function drawLoreMark(c, b) {
   c.save();
   c.fillStyle = 'rgba(0,0,0,.5)'; c.fillRect(-w / 2 - 1, y - 1, w + 2, 11);
   const g = c.createLinearGradient(0, y, 0, y + 9);
-  g.addColorStop(0, '#d9b85a'); g.addColorStop(1, '#8a6a22');
+  g.addColorStop(0, PALETTE.brass60); g.addColorStop(1, PALETTE.bronze8a6a22);
   c.fillStyle = g; c.fillRect(-w / 2, y, w, 9);
   c.fillStyle = 'rgba(30,18,4,.65)'; c.fillRect(-1, y + 2, 2, 5);
   c.restore();

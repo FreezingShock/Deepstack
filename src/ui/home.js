@@ -1,3 +1,4 @@
+import {PALETTE} from '../theme/colors.js';
 /* Home screen markup. Kept separate from main.js so other features can add
    entries (modes, links) by pushing onto HOME_LINKS / HOME_STEPS without
    touching the layout. */
@@ -12,11 +13,11 @@ export const HOME_STEPS=[
    button id; color picks the leather (HOME_BOOK_COLORS). Other features can push
    onto HOME_LINKS. Layout, hover and open animation live in home.css (--bk-* vars). */
 export const HOME_BOOK_COLORS={
- red:['#6b1f1c','#3a0f0e','#c9803a'],
- green:['#27502f','#122a18','#d0b36a'],
- blue:['#23406b','#10203a','#d0b36a'],
- purple:['#4a2a63','#26143a','#d8b676'],
- brown:['#5b3a1d','#2d1c0d','#d8b676'],
+ red:[PALETTE.blood26,PALETTE.blood14,PALETTE.bronze51],
+ green:[PALETTE.oak23,PALETTE.oak122a18,PALETTE.brass62],
+ blue:[PALETTE.steel28,PALETTE.steel15,PALETTE.brass62],
+ purple:[PALETTE.violet28,PALETTE.violet15,PALETTE.brass65],
+ brown:[PALETTE.oak24,PALETTE.oak11,PALETTE.brass65],
 };
 /* stack: which pile the book lies in (0 = play modes, 1 = collection). */
 export const HOME_LINKS=[
