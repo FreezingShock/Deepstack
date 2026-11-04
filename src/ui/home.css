@@ -207,9 +207,7 @@
 #all .panel,#stats .panel,#sets .panel{--bk:var(--c-steel-28);--bk2:var(--c-steel-15);--bk-gild:var(--c-brass-62);width:min(100%,860px);border:0;border-radius:6px;
  background:linear-gradient(90deg,transparent calc(50% - 22px),var(--c-black-alpha-99) 50%,transparent calc(50% + 22px)),linear-gradient(180deg,var(--c-oak-1d150d),var(--c-oak-130d08));
  box-shadow:0 0 0 9px var(--bk),0 0 0 10px var(--bk-gild),0 0 0 14px var(--bk2),0 30px 70px -10px var(--c-black),inset 0 0 40px var(--c-black-alpha-aa)}
-#sets .panel{--bk:var(--c-violet-28);--bk2:var(--c-violet-15);--bk-gild:var(--c-brass-65)}
 #stats .panel{--bk:var(--c-oak-24);--bk2:var(--c-oak-11);--bk-gild:var(--c-brass-65)}
-#sets .setlist{column-gap:44px;grid-template-columns:repeat(2,1fr)}@media(max-width:700px){#sets .setlist{grid-template-columns:1fr}}
 #stats .bigs{column-gap:20px}
 @media(max-width:700px){#all .panel,#stats .panel,#sets .panel{box-shadow:inset 0 0 40px var(--c-black-alpha-aa);background:linear-gradient(180deg,var(--c-oak-1d150d),var(--c-oak-130d08))}}
 

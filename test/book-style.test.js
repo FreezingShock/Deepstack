@@ -16,3 +16,10 @@ test('Settings and Credits panels wear the book box, and the stylesheet is loade
 test('book box uses no raw hex colours', () => {
   assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/);
 });
+test('menu books and the Daily book take ink, rule and handwriting from the shared tokens', () => {
+  const bp = fs.readFileSync(new URL('../src/ui/bookpages.css', import.meta.url), 'utf8');
+  const db = fs.readFileSync(new URL('../src/ui/dailyBook.css', import.meta.url), 'utf8');
+  assert.match(bp, /--ink:var\(--bs-ink\)/);
+  assert.match(db, /--hand:var\(--bs-hand\)/);
+  assert.doesNotMatch(bp + db, /Fuzzy Bubbles/);
+});
