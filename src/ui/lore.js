@@ -72,7 +72,7 @@ export function drawLoreGlow(c, b, t) {
  * @param d row data from the world ({bs}); r row index; rh row height; W canvas width;
  * cam camera offset; a decay (rows lean and tilt with it, mirroring drawRowLive).
  */
-export function hitLoreBook(d, r, rh, W, cam, a, px, py, covered = () => false) {
+export function hitLoreBook(d, r, rh, W, cam, a, px, py, covered = () => false, isHit = isLore) {
   if (!d || r === 0) return null;
   const y = r * rh - cam, base = y + rh - 12;
   if (py < y - 40 || py > base + 4) return null;
@@ -86,7 +86,7 @@ export function hitLoreBook(d, r, rh, W, cam, a, px, py, covered = () => false) 
     }
   }
   for (const b of d.bs) {
-    if (!isLore(b, W) || px < b.x - 4 || px > b.x + b.w + 4 || covered(b, base)) continue;
+    if (!isHit(b, W) || px < b.x - 4 || px > b.x + b.w + 4 || covered(b, base)) continue;
     let lx = px - (b.x + b.w / 2), ly = py - base;
     if (b.tilt) { // books lean about the middle of their foot
       const ox = b.w / 2, dx = lx - ox, s = Math.sin(-b.tilt), k = Math.cos(-b.tilt);

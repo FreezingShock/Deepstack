@@ -24,6 +24,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 |---|---|---|---|
 | Library canvas world: shelves, pillars, dust, water, lanterns, alcove with lettered word, camera descent | `src/main.js` (`World`), `src/ui/lanterns.js`, `camMotion.js`, `canvasCover.js` | B | Static rows cached as bitmaps; throttled to 15 fps under covers (#51). DPR capped at 2. One canvas on the main thread. |
 | Lore books (click a thick spine to reveal word and definition) | `src/ui/lore.js`, `loreCover.js` | B | Pure function of the row seed. Revealing is hover based; no touch affordance beyond tap. |
+| Curios (rare thin spines: loose page, ribbon, sealed book, marginal note) | `src/ui/curios.js` | B | Hover or tap slip, seed-pure, no storage. Sealed books open below row 40. Only a few lines of copy so far. |
 | Home screen: sectioned menu books (Play/Collection/Records), carved Descend plaque, Daily book | `src/ui/home.js`, `home.css`, `bookMenus.js`, `dailyBook.js`, `ledge.js` | B | Menu books open as paged parchment spreads with corner flips (#77). Spacing and type thread in flight. |
 | Book spreads: Shelf, Sets, Stats, Daily | `src/ui/bookpages.js`, `browse.js`, `sets/ui.js` | B | Shelf collapses duplicates per tier (#70). Search and tier filters exist. |
 | Result card (alcove) and results screen (stats cards, word list, share note) | `src/ui/results.js`, `card.css`, `results.css`, `main.js` (`openCard`, `showFinal`) | B | Tier is the hero, closeness de-emphasised. Share text has no emojis. |

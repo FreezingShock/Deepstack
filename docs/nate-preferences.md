@@ -46,6 +46,8 @@ Every brief should state: which pattern(s) above it serves, the physical object 
 
 When your PR merges, if nate said anything new about taste in your thread (a correction, a "don't", a "love this"), append one dated line under the matching pattern here (or add a pattern), and add 2-3 fresh backlog items implied by what he asked, using his wording. Keep entries to one line. Example: `2026-11-05 hover glow: "outline clips" -> glow must be a halo fitted to the spine (thread: lore books)`.
 
+- Hidden things (2026-11-04): nate asked for "things that live down there" and "hidden curios on the shelves": discovery that rewards looking, tied to depth.
+
 ## Changelog
 - 2026-11-04 initial version from project chat history.
 
