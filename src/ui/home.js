@@ -34,11 +34,12 @@ export const HOME_LINKS=[
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+import {rulesCardHTML} from './welcome.js';
 export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
  const ctx={lexicon,dailyNo:no};
  const steps=HOME_STEPS.map(s=>`<li class="step"><span class="hn" aria-hidden="true">${s.n}</span><b>${esc(s.h)}</b><span>${esc(s.p)}</span></li>`).join('');
  /* library furniture: the rules are a catalogue card, the records a borrower's slip (welcome.css) */
- const rules=`<aside class="cat-card" aria-label="How it works"><i class="wc-pin" aria-hidden="true"></i><div class="wc-head">Rules of the house</div><ol class="how">${steps}</ol></aside>`;
+ const rules=rulesCardHTML(steps);
  const slip=`<div class="stats slip" aria-label="Your records"><i class="wc-pin" aria-hidden="true"></i><div class="wc-head">Borrower’s record</div><span>Streak <b>${st.streak}</b></span><span>Deepest <b>${st.deepest} ft</b></span><span>Books <b>${S.shelf.length}</b></span>${floorName?`<span>Floor <b>${esc(floorName)}</b></span>`:''}</div>`;
  const book=l=>{const b=l.badge?l.badge(S,ctx):'';const c=HOME_BOOK_COLORS[l.color]||HOME_BOOK_COLORS.brown;
   return `<li><button class="hbook" data-tex="${l.tex||'leather'}" id="${l.id}"${l.note?` title="${esc(l.note)}"`:''} style="--bk:${c[0]};--bk2:${c[1]};--bk-gild:${c[2]}"><span class="hb-pages" aria-hidden="true"></span><span class="hb-spine"><i class="hb-band" aria-hidden="true"></i><span class="hb-t">${esc(l.label)}${b?` <small>${esc(b)}</small>`:''}</span><i class="hb-band" aria-hidden="true"></i></span></button></li>`;};

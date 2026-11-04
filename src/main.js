@@ -24,6 +24,8 @@ import {onModelStatus,startModelLoad,judgeAnswer} from './scorer/index.js';
 import {BOOK_PAGES} from './ui/home.js';
 import './ui/home.css';
 import './ui/welcome.css';
+import {initRulesCard} from './ui/welcome.js';
+initRulesCard();
 import './ui/bookOpenFx.js';
 import './ui/bookOpenFx.css';
 import {watchHomeLayout} from './ui/homeLayout.js';

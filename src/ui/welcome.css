@@ -1,14 +1,14 @@
 /* Welcome screen as a reading room: the rules are a catalogue card and the records a borrower's
    slip, both pinned to the niche beside the Descend plaque. Loaded after home.css. */
 .home .hz-plaque{position:relative}
-.home .cat-card,.home .stats.slip{--ink:var(--c-oak-1a1208);position:absolute;top:50%;width:218px;box-sizing:border-box;min-height:168px;padding:28px 16px 14px;text-align:left;text-shadow:none;color:var(--c-oak-1a1208);
+.home .cc-face,.home .stats.slip{--ink:var(--c-oak-1a1208);position:relative;box-sizing:border-box;min-height:168px;padding:28px 16px 14px;text-align:left;text-shadow:none;color:var(--c-oak-1a1208);
  background:repeating-linear-gradient(180deg,transparent 0 19px,color-mix(in srgb,var(--c-oak-4a3a22) 28%,transparent) 19px 20px),radial-gradient(120% 90% at 30% 10%,var(--c-parchment-85),var(--c-parchment-dim));
  border:0;border-radius:2px;box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 10px 18px -6px var(--c-black),0 0 0 1px var(--c-black-alpha-66);
  transition:transform var(--m-base) var(--e-settle),box-shadow var(--m-base);display:none}
-.home .cat-card{left:-60px;--rot:-2deg;transform:translateY(-50%) rotate(var(--rot)) scale(var(--s,1))}
-.home .stats.slip{right:-60px;--rot:1.6deg;transform:translateY(-50%) rotate(var(--rot)) scale(var(--s,1));flex-direction:column;flex-wrap:nowrap;gap:0;align-items:stretch;justify-content:flex-start;margin:0;padding-top:22px;border-top:0;border-bottom:0;font:400 14px/30px var(--mono);letter-spacing:.02em;text-transform:none}
-.home .cat-card:hover,.home .stats.slip:hover{transform:translateY(calc(-50% - 3px)) rotate(0) scale(var(--s,1));box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 16px 24px -8px var(--c-black),0 0 0 1px var(--c-black-alpha-66)}
-.home .cat-card::after,.home .stats.slip::after{content:"";position:absolute;left:0;right:0;top:19px;height:1px;background:var(--c-bronze-51)}
+.home .cc-face{display:block}
+.home .stats.slip{position:absolute;top:50%;width:218px;right:-60px;--rot:1.6deg;transform:translateY(-50%) rotate(var(--rot)) scale(var(--s,1));flex-direction:column;flex-wrap:nowrap;gap:0;align-items:stretch;justify-content:flex-start;margin:0;padding-top:22px;border-top:0;border-bottom:0;font:400 14px/30px var(--mono);letter-spacing:.02em;text-transform:none}
+.home .stats.slip:hover{transform:translateY(calc(-50% - 3px)) rotate(0) scale(var(--s,1));box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 16px 24px -8px var(--c-black),0 0 0 1px var(--c-black-alpha-66)}
+.home .cc-face::after,.home .stats.slip::after{content:"";position:absolute;left:0;right:0;top:19px;height:1px;background:var(--c-bronze-51)}
 .home .wc-pin{position:absolute;top:-5px;left:14px;width:11px;height:11px;margin-left:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c-amber-fff6d0),var(--c-brass-62) 45%,var(--c-oak-24));box-shadow:0 3px 3px var(--c-black-alpha-88)}
 .home .wc-head{position:absolute;left:0;right:0;top:0;padding:4px 0 0;text-align:center;font:600 11px/14px var(--label);letter-spacing:.16em;text-transform:uppercase;color:var(--c-book-red)}
 /* rules: typed lines with a handwritten numeral, like entries on an index card */
@@ -23,16 +23,16 @@
 .home .stats.slip b{font:700 17px/30px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-red);min-width:0;overflow:hidden;text-overflow:ellipsis}
 /* shown only where there is wall for them: wide rooms; the rules also fit inline on tablets */
 @media(min-width:1000px){
- [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card,[data-room=snug] .home .cat-card,
+ [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card,[data-room=snug] .home .cat-card{display:grid}
  [data-room=roomy] .home .stats.slip,[data-room=cozy] .home .stats.slip,[data-room=snug] .home .stats.slip{display:block}
  .home .stats.slip{display:flex}
  [data-room=snug] .home .stats.slip{display:flex}
 }
 @media(min-width:561px) and (max-width:999px){
- [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card{display:block;position:static;width:min(100%,360px);margin:0 auto var(--hz-g,12px);transform:rotate(-1deg)}
+ [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card{display:grid;position:relative;left:auto;top:auto;width:min(100%,360px);margin:0 auto var(--hz-g,12px);transform:none}
 }
-@media(prefers-reduced-motion:reduce){.home .cat-card,.home .stats.slip{transition:none}}
-html[data-motion="reduce"] .home .cat-card,html[data-motion="reduce"] .home .stats.slip{transition:none}
+@media(prefers-reduced-motion:reduce){.home .stats.slip{transition:none}}
+html[data-motion="reduce"] .home .stats.slip{transition:none}
 
 /* Today's result and the next-descent line sit as the centrepiece of the room */
 .home #bRes{font:500 20px/1 var(--label);letter-spacing:.22em;padding:16px 34px;min-width:280px}
@@ -46,3 +46,43 @@ html[data-motion="reduce"] .home .cat-card,html[data-motion="reduce"] .home .sta
 /* short rooms (laptop heights): the cards shrink so they stay clear of the title and the book stacks */
 [data-room=snug] .home .cat-card,[data-room=snug] .home .stats.slip{--s:.86}
 [data-room=cozy] .home .cat-card,[data-room=cozy] .home .stats.slip{--s:.92}
+
+/* ---- the rules card is a card-catalogue drawer (welcome.js): pull it, the card slides out, turn it over ---- */
+.home .cat-card{display:none;position:absolute;top:50%;left:-60px;width:218px;transform:translateY(-50%) scale(var(--s,1));grid-template-rows:auto auto;justify-items:stretch}
+.home .cc-slot{grid-row:1;position:relative;display:grid;perspective:900px;clip-path:inset(-60px -40px 0 -40px);padding-bottom:26px;margin-bottom:-26px;pointer-events:none}
+.home .cc-flip{grid-area:1/1;display:grid;transform-style:preserve-3d;transform:translateY(100%);visibility:hidden;
+ transition:transform var(--m-smooth) var(--e-settle),visibility 0s linear var(--m-smooth)}
+.home .cat-card[data-open="1"] .cc-flip{transform:translateY(0);visibility:visible;pointer-events:auto;transition:transform var(--m-smooth) var(--e-settle),visibility 0s}
+.home .cat-card[data-open="1"][data-face="1"] .cc-flip{transform:rotateY(180deg)}
+.home .cc-face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:visibility 0s linear calc(var(--m-smooth)/2);--rot:0deg}
+.home .cc-back{transform:rotateY(180deg)}
+.home .cat-card[data-face="1"] .cc-front,.home .cat-card[data-face="0"] .cc-back{visibility:hidden}
+.home .cc-front,.home .cc-back{cursor:pointer}
+.home .cc-turn{position:absolute;right:10px;bottom:7px;padding:2px 4px;border:0;background:none;font:600 11px/14px var(--label);letter-spacing:.12em;text-transform:uppercase;color:var(--c-book-blue);cursor:pointer;border-radius:2px}
+.home .cc-turn:hover{color:var(--c-book-red)}
+.home .cc-turn:focus-visible,.home .cc-drawer:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:2px}
+.home .cc-combo{margin:0 0 6px;font:400 12px/16px var(--mono);color:var(--c-oak-1a1208)}
+.home .cc-combo b{font-weight:600}
+.home .cc-tiers{list-style:none;margin:0;padding:0 0 18px;display:grid;grid-template-columns:1fr 1fr;gap:0 10px;font:400 11.5px/17px var(--mono)}
+.home .cc-tiers li{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.home .cc-tiers span{flex:1;overflow:hidden;text-overflow:ellipsis}
+.home .cc-tiers b{font:700 13px/17px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-red)}
+.home .cc-dot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 0 1px var(--c-black-alpha-66)}
+/* the drawer front: oak face, brass label plate, brass pull */
+.home .cc-drawer{grid-row:2;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:10px;height:58px;padding:0 14px;border:0;border-radius:3px;cursor:pointer;color:var(--c-oak-1a1208);
+ background:repeating-linear-gradient(90deg,transparent 0 9px,var(--c-black-alpha-33) 9px 10px),linear-gradient(180deg,var(--c-oak-24),var(--c-oak-4a3a22));
+ box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 0 0 1px var(--c-black),0 12px 18px -8px var(--c-black);
+ transition:transform var(--m-quick) var(--e-settle)}
+.home .cc-drawer:hover{transform:translateY(-2px)}
+.home .cc-drawer:active{transform:translateY(0);transition-duration:var(--m-press)}
+.home .cat-card[data-open="1"] .cc-drawer{transform:translateY(2px)}
+.home .cc-plate{padding:3px 8px;font:600 10px/13px var(--label);letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--c-bronze-51);border-radius:2px;background:linear-gradient(180deg,var(--c-parchment-85),var(--c-parchment-dim));box-shadow:0 1px 1px var(--c-black-alpha-66)}
+.home .cc-knob{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c-amber-fff6d0),var(--c-brass-62) 45%,var(--c-oak-24));box-shadow:0 2px 3px var(--c-black-alpha-88)}
+@media(min-width:561px) and (max-width:999px){.home .cat-card{margin-top:30px}}
+/* reduced motion: no slide, no flip. The card is simply shown or hidden, the face simply swapped. */
+@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .cc-flip,html:not([data-motion="full"]) .home .cc-face,html:not([data-motion="full"]) .home .cc-drawer{transition:none;transform:none!important}}
+html[data-motion="reduce"] .home .cc-flip,html[data-motion="reduce"] .home .cc-face,html[data-motion="reduce"] .home .cc-drawer{transition:none;transform:none!important}
+html[data-motion="reduce"] .home .cc-flip,html:not([data-motion="full"]) .home .cc-flip{transform:none}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .cat-card[data-open="0"] .cc-flip{display:none}}
+html[data-motion="reduce"] .home .cat-card[data-open="0"] .cc-flip{display:none}
+@media(forced-colors:active){.home .cc-drawer{border:1px solid CanvasText}}

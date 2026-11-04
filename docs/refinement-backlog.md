@@ -818,3 +818,19 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** The smoke test only plays Daily and now one Unlimited word; Practice and a full seven-word run to the Finis screen are untested.
 **Brief:** Goal: extend `scripts/smoke.mjs` to finish a whole run in each mode and check the final screen. Done when: CI stays under its current time.
 **Touches:** `scripts/smoke.mjs`. **Conflicts:** none.
+
+### W1. Rules card you can pull out
+**Serves:** everything is a book/shelf/page, immersion through interaction.
+**Status:** [x] done (PR pending): the rules sit in a card-catalogue drawer on the niche ledge; pulling it slides the card out, a second face holds the combo and tier rules (`src/ui/welcome.js`, `welcome.css`).
+
+### W3. A card for every floor
+**Serves:** everything is a book/shelf/page, dark and mysterious with depth.
+**Pitch:** Each floor's drawer card tells you its own rule of the house once you reach it: the Hollow's lamps burn lower, the Abyss asks for silence.
+**Brief:** Goal: a third face on the rules card per unlocked floor, flipping through faces (`src/ui/welcome.js`, `nextState`). Done when: keyboard operable, reduced motion static, tested.
+**Touches:** HOME. **Conflicts:** none.
+
+### W4. Drawer you can hear
+**Serves:** physical and smooth motion.
+**Pitch:** The catalogue drawer rumbles out on wooden runners, the card flips with a paper flick, and the drawer shuts with a soft thud.
+**Brief:** Goal: three small sounds hooked to open, turn and close. Files: `src/ui/welcome.js`, `src/sound/`. Done when: respects volume and reduced motion, tested.
+**Touches:** HOME, sound. **Conflicts:** 4.
