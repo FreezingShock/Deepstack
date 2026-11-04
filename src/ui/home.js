@@ -27,7 +27,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 
 export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
  const ctx={lexicon};
- const steps=HOME_STEPS.map(s=>`<li><span class="hn">${s.n}</span><b>${esc(s.h)}</b><span>${esc(s.p)}</span></li>`).join('');
+ const steps=HOME_STEPS.map(s=>`<li class="step"><span class="hn" aria-hidden="true">${s.n}</span><b>${esc(s.h)}</b><span>${esc(s.p)}</span></li>`).join('');
  const item=l=>{const b=l.badge?l.badge(S,ctx):'';return `<li><button class="hl" id="${l.id}"><span class="hl-t">${esc(l.label)}${b?` <small>${esc(b)}</small>`:''}</span>${l.note?`<span class="hl-n">${esc(l.note)}</span>`:''}</button></li>`;};
  const known=new Set(HOME_GROUPS.map(g=>g.id));
  const secs=[...HOME_GROUPS,{id:'more',h:'More'}].map(g=>{
@@ -35,12 +35,11 @@ export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
   return ls.length?`<section class="hsec" aria-labelledby="hs-${g.id}"><h2 id="hs-${g.id}">${esc(g.h)}</h2><ul>${ls.map(item).join('')}</ul></section>`:'';
  }).join('');
  return `<div class="sheet home">
-  <p class="eyebrow">Daily No. ${no}</p>
   <h1 class="title">Deepstack</h1>
   <p class="tagline">Explain a hard word. The closer you get to its true meaning, the deeper into the library you descend.</p>
   <ol class="how" aria-label="How it works">${steps}</ol>
   ${d?`<div class="row"><button class="btn pri big" id="bRes">Today’s result</button></div><p class="next" id="nextd"></p>`
-     :`<div class="row"><button class="descend" id="bPlay"><i class="d-flame" aria-hidden="true"></i><span class="d-t">Descend</span><i class="d-chev" aria-hidden="true"></i></button></div><p class="next">Today’s daily · seven words · forty-five seconds each · one attempt</p>`}
+     :`<div class="row"><button class="descend" id="bPlay"><i class="d-flame" aria-hidden="true"></i><span class="d-t">Descend</span><i class="d-chev" aria-hidden="true"></i></button></div><p class="next daily-tag">Daily No. ${no}</p>`}
   <div class="stats" aria-label="Your records"><span>Streak <b>${st.streak}</b></span><span>Deepest <b>${st.deepest} ft</b></span><span>Books <b>${S.shelf.length}</b></span>${floorName?`<span>Floor <b>${esc(floorName)}</b></span>`:''}</div>
   <nav class="hsecs" aria-label="Game sections">${secs}</nav>
   <div class="judgestat" id="jstat" aria-live="polite"></div></div>`;
