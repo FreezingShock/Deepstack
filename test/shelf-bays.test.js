@@ -15,9 +15,9 @@ test('bays by rarity: rarest first, with the rarity line',()=>{
  const g=bayGroups(items([mk('a',1),mk('b',4),mk('c',1)]),'tier',ctx);
  assert.deepEqual(g.map(x=>[x.label,x.items.length]),[[TIERS[4].name,1],[TIERS[1].name,2]]);
 });
-test('bays by floor: descent order, older books go to Earlier finds',()=>{
+test('bays by floor: descent order, older books wait in the attic, not in a bay',()=>{
  const g=bayGroups(items([mk('a',1,{fl:3}),mk('b',1),mk('c',1,{fl:0})]),'floor',ctx);
- assert.deepEqual(g.map(x=>x.label),[FLOORS[0].name,FLOORS[3].name,'Earlier finds']);
+ assert.deepEqual(g.map(x=>x.label),[FLOORS[0].name,FLOORS[3].name]);
  assert.equal(floorIdOf({}),-1);
 });
 test('bays by set: set order, strangers are loose volumes',()=>{
