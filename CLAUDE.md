@@ -17,3 +17,6 @@ Many Claude threads work in parallel here, each on its own feature, and every PR
 
 ## Commands
 `npm run dev`, `npm test`, `npm run build`, `node scripts/smoke.mjs` (after build; set `CHROMIUM_PATH` to a Chromium binary if Playwright's own isn't installed).
+
+## Keep the maps current
+`docs/feature-inventory.md` (what exists, quality, gaps) and `docs/refinement-backlog.md` (numbered ideas and in-flight work) are how the coordinator offers the next round of work. In your PR, tick your item in the backlog (`[x]` + PR number) and update your row in the inventory. Run `node scripts/inventory.mjs` to refresh the generated file map. Keep edits to a line or two so these files don't conflict.
