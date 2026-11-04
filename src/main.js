@@ -9,6 +9,8 @@ import {setsBook,toastSetsDone} from './sets/ui.js';
 import {recapHTML,bindRecap,finalHTML} from './ui/results.js';
 import './ui/results.css';
 import './ui/card.css';
+import './ui/reveal.css';
+import {playReveal} from './ui/reveal.js';
 import * as core from './core/index.js';
 import {Sfx,Feel} from './feel.js';
 import {judgeAnswer,prepareWords,startModelLoad,onModelStatus,modelStatus,whenReady} from './scorer/index.js';
@@ -17,9 +19,12 @@ import './ui/home.css';
 import {descendInto} from './ui/descend.js';
 import {travelEase,travelMs} from './ui/camMotion.js';
 import {initA11y} from './ui/a11y.js';
+import {initKeys} from './ui/keys.js';
 import {initTopbar} from './ui/topbar.js';
 import {reducedMotion} from './ui/settings.js';
 import {initTransitions} from './ui/transitions.js';
+import {coverWorld,liftWorld} from './ui/screenFx.js';
+import './ui/screenFx.css';
 import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
 import {initBrowse} from './ui/browse.js';
 import {pullX as pullXAt} from './core/pull.js';
@@ -35,8 +40,11 @@ import './ui/bookpages.css';
 import './ui/fonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
 import {drawAlcoveLanterns} from './ui/lanterns.js';
+import {drawFloorAtmosphere} from './ui/floorAtmosphere.js';
 import './ui/ledge.css';
 import './ui/buttons.css';
+import { particleVisibility } from './ui/particleMask.js';
+import './ui/polish.css';
 const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 const wordsReady=loadWords();let wordsLoaded=false;wordsReady.then(()=>{wordsLoaded=true;},()=>{wordsLoaded=true;});
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -56,7 +64,7 @@ const dailyNo=()=>Math.max(1,core.dailyNumber(utc()));
 const HINT_LABEL={sentence:'used in a sentence',synonym:'a related word',opening:'how the definition begins'};
 function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);Sfx.set(S.sound);}
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
-initA11y();
+initA11y();initKeys();
 initTopbar({Sfx});
 
 /* ---------- book art (shared by the canvas world and DOM spine images) ---------- */
@@ -360,9 +368,10 @@ const World=(()=>{
   if(a>0){ctx.fillStyle=`rgba(14,34,30,${.1*a})`;ctx.fillRect(0,0,W,H);}
   if(atm.dark>.005){ctx.fillStyle=`rgba(1,0,3,${atm.dark})`;ctx.fillRect(0,0,W,H);}
   if(atm.tint[3]>.005){const t=atm.tint;ctx.fillStyle=`rgba(${t[0]|0},${t[1]|0},${t[2]|0},${t[3]})`;ctx.fillRect(0,0,W,H);}
+  drawFloorAtmosphere(ctx,W,H,atm,vt,lx,ly,RM);
   ctx.globalCompositeOperation='lighter';
   if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
-  const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick;
+  const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick*atm.flick;
   let g=ctx.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*.45);{const l=atm.lamp.map(v=>v|0);g.addColorStop(0,`rgba(${l[0]},${l[1]+6},${l[2]+10},${fl})`);g.addColorStop(1,`rgba(${l[0]},${l[1]+6},${l[2]+10},0)`);}ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   if(st){const zi=st.prog>=1?st.tier:Math.min(st.tier,tierOf(st.prog*st.score));const zc=TIERS[zi].spine;g=ctx.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*.6);g.addColorStop(0,zc+'26');g.addColorStop(1,zc+'00');ctx.fillStyle=g;ctx.globalAlpha=.5+.5*settle;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;gaugeCb&&gaugeCb(zi,st);}
   if(!RM)for(const p of dust){p.y-=dt*(5+p.z*14);p.x+=Math.sin(vt*.6+p.ph)*dt*8;const yy=((p.y+camNow*(.25+p.z*.5))%H+H)%H,xx=(p.x%W+W)%W;const dist=Math.hypot(xx-lx,yy-ly)/(Math.max(W,H)*.45);const al=Math.max(0,1-dist)*(.15+.5*Math.abs(Math.sin(vt*1.3+p.ph)))*(.7+a);ctx.fillStyle=`rgba(255,226,170,${al})`;ctx.beginPath();ctx.arc(xx,yy,p.r*(.6+p.z),0,6.3);ctx.fill();}
@@ -438,8 +447,8 @@ const FX=(()=>{const cv=$('#fx'),c=cv.getContext('2d');let W=0,H=0,DPR=1,ps=[],o
  const add=p=>{if(RM)return;ps.push(p);if(ps.length>1000)ps.shift();if(!on){on=true;last=performance.now();requestAnimationFrame(loop);}};
  function loop(now){const dt=Math.min(.05,(now-last)/1000)*Feel.ts;last=now;c.clearRect(0,0,W,H);
   for(let i=ps.length-1;i>=0;i--){const p=ps[i];p.t+=dt;if(p.t>=p.max){ps.splice(i,1);continue;}const u=p.t/p.max;
-   if(p.k==='ring'){c.globalCompositeOperation='lighter';c.strokeStyle=p.c;c.globalAlpha=(1-u)*.38;c.lineWidth=2.4*(1-u)+.8;c.beginPath();c.arc(p.x,p.y,30+u*p.r,0,6.3);c.stroke();continue;}
-   p.vy+=p.g*dt;p.vx*=1-.8*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;const al=Math.min(1,(1-u)*1.6);
+   if(p.k==='ring'){c.globalCompositeOperation='lighter';c.strokeStyle=p.c;c.globalAlpha=(1-u)*.2;c.lineWidth=2.4*(1-u)+.8;c.beginPath();c.arc(p.x,p.y,30+u*p.r,0,6.3);c.stroke();continue;}
+   p.vy+=p.g*dt;p.vx*=1-.8*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;const al=Math.min(1,(1-u)*1.6)*particleVisibility(p.x,p.y,now);
    if(p.k==='fleck'){c.globalCompositeOperation='source-over';c.globalAlpha=al*.9;c.save();c.translate(p.x,p.y);c.rotate(p.t*p.rot);c.fillStyle=p.c;c.fillRect(-p.s,-p.s*.6,p.s*2,p.s*1.2);c.restore();}
    else if(p.k==='star'){c.globalCompositeOperation='lighter';c.globalAlpha=al;c.fillStyle=p.c;const s=p.s*(1-u*.5);c.beginPath();c.moveTo(p.x,p.y-s*3);c.quadraticCurveTo(p.x,p.y,p.x+s*3,p.y);c.quadraticCurveTo(p.x,p.y,p.x,p.y+s*3);c.quadraticCurveTo(p.x,p.y,p.x-s*3,p.y);c.quadraticCurveTo(p.x,p.y,p.x,p.y-s*3);c.fill();}
    else{c.globalCompositeOperation='lighter';c.globalAlpha=al;c.fillStyle=p.c;c.beginPath();c.arc(p.x,p.y,Math.max(.3,p.s*(1-u*.4)),0,6.3);c.fill();}}
@@ -496,10 +505,10 @@ let run=null,timerId=0;
 async function startDaily(practice){
  await wordsReady;
  if(modelStatus().state==='loading')await whenReady(8000);
- const words=dailyWords(utc(),7);
+ const day=utc(),words=dailyWords(day,7);
  prepareWords(words).catch(()=>{});
  World.reset();World.setShelf([]);
- run={practice,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0};
+ run={practice,day,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0};
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
@@ -566,18 +575,18 @@ async function submit(skipped){
 function verdictFor(j,t,w){if(j.empty)return 'Nothing written.';if(j.opposite)return 'That points the other way. The word means close to the opposite.';const T=TIERS[t];return T.lines[(w.id+j.score)%T.lines.length];}
 function finishRun(){
  const r=run;const books=r.results;const avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length);const best=Math.max(...books.map(b=>b.tier));
- const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,depth=worldDepth+setBonus;
+ const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,isDaily=r.mode!=='unlimited',depth=isDaily?worldDepth:worldDepth+setBonus; // Daily depth is words only: set bonuses depend on each player's collection, so they stay out of the shared score
  const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});}
- else if(!r.practice){S.daily[utc()]=d;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak.n=S.streak.last===y?S.streak.n+1:(S.streak.last===utc()?S.streak.n:1);S.streak.last=utc();S.bestDepth=Math.max(S.bestDepth,depth);save();}
+ else if(!r.practice){if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);save();}
  showFinal(d,false);
 }
 const BLK='▁▂▃▄▅▆▇';
 function shareText(d){return `Deepstack ${d.mode==='unlimited'?'Unlimited \u00b7 Lexicon '+d.lex:'No. '+dailyNo()}\nDepth ${d.depth} ft${d.floor?' · '+FLOORS[d.floor].name:''} · average closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' · ')}`;}
 async function showFinal(d,fromHome){
- if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;World.setShelf([]);
+ if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;await coverWorld();World.setShelf([]);
   /* replay the whole descent: every alcove and floor again, ending at the results */
-  const L=replayLayout(d.books,{gapRows:World.nextRows(),ftPerRow:FT});World.restore(L);ui.hud.hidden=false;
+  const L=replayLayout(d.books,{gapRows:World.nextRows(),ftPerRow:FT});World.restore(L);ui.hud.hidden=false;liftWorld();
   if(L.finalRow>0){await World.glide(L.finalRow);if(!ui.home.hidden)return;}}
  ui.hud.hidden=false;$('#dnum').textContent=d.depth;
  World.openNiche(World.restRow,{label:'FINIS',books:[]});
@@ -617,7 +626,7 @@ function openCard(b,opts={}){
  </div>`;
  L.hidden=false;requestAnimationFrame(()=>L.classList.add('on'));
  const bk=$('#bk');
- if(opts.fresh){setTimeout(async()=>{Sfx.flip();if(b.tier>=5)Sfx.sting(b.tier);if(b.tier>=4){Feel.shake(2+b.tier*1.1,b.tier>=6?900:600);Feel.slowmo(b.tier>=6?.25:b.tier>=5?.4:.6,b.tier>=6?1700:1200);}if(b.tier>=6)flashTop();bk.classList.add('open');{const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier,30+b.tier*24);const hh=$('#halo');if(hh)hh.classList.add('go');}await sleep(380);if(cardOpts!==opts)return;Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);if(cardOpts!==opts)return;$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+80,b.tier,30+b.tier*14);}$('#go').focus();},220);}
+ if(opts.fresh){setTimeout(async()=>{Sfx.flip();if(b.tier>=5)Sfx.sting(b.tier);if(b.tier>=4){Feel.shake(2+b.tier*1.1,b.tier>=6?900:600);Feel.slowmo(b.tier>=6?.25:b.tier>=5?.4:.6,b.tier>=6?1700:1200);}if(b.tier>=6)flashTop();bk.classList.add('open');{const pl=playReveal(L,b.tier,T.spine,RM);if(pl.ink)bk.classList.add('rv-ink');if(pl.tier>=5)bk.classList.add('rv-pulse');}{const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier,30+b.tier*24);const hh=$('#halo');if(hh)hh.classList.add('go');}await sleep(380);if(cardOpts!==opts)return;Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);if(cardOpts!==opts)return;$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.burst(rc.left+rc.width/2,rc.top+80,b.tier,30+b.tier*14);}$('#go').focus();},220);}
  else{bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
  $('#go').onclick=closeCard;
  const fv=$('#cfav');if(fv)fv.onclick=()=>{b.fav=!b.fav;if(!b.fav)delete b.fav;save();fv.setAttribute('aria-pressed',!!b.fav);fv.textContent=b.fav?'★ Favourite':'☆ Mark as favourite';};

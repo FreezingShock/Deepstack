@@ -4,6 +4,7 @@
 import {BANK, WORDS} from './words.js';
 import {hashStr} from './daily.js';
 import {stem, match} from '../scorer/lexical.js';
+import {isSpecialist, effectiveDifficulty} from './difficulty.js';
 
 const POS_OK = new Set(['noun', 'verb', 'adjective', 'adverb']);
 // Glosses that only point at another word, or describe a form rather than a meaning.
@@ -44,6 +45,7 @@ export function rejectReason(e) {
   if (selfReferential(e.w, def)) return 'self';
   if (weakGloss(def)) return 'weak';
   if (JARGON.test(def)) return 'jargon';
+  if (isSpecialist(def)) return 'specialist';
   if (e.t != null && e.t < MIN_TRANSLATIONS) return 'obscure';
   return null;
 }
@@ -67,7 +69,7 @@ export function buildPool(data) {
       seen.add(e.w); continue;
     }
     if (rejectReason(e)) continue;
-    const w = {id: hashStr('w:' + e.w), w: e.w, pos: e.pos, d: e.d, def: clean(e.def), hint: e.hint || null, concepts: [], opp: '', curated: false};
+    const w = {id: hashStr('w:' + e.w), w: e.w, pos: e.pos, d: effectiveDifficulty(e.d, e.t), def: clean(e.def), hint: e.hint || null, concepts: [], opp: '', curated: false};
     if (!w.hint) w.hint = templateHint(w);
     out.push(w); seen.add(e.w);
   }
