@@ -87,19 +87,20 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const timers=[];let idx=0,closed=false;
  const t=(fn,ms)=>timers.push(setTimeout(fn,ms));
  const close=()=>{if(closed)return;closed=true;timers.forEach(clearTimeout);document.removeEventListener('keydown',key,true);sp.classList.add('out');setTimeout(()=>{sp.remove();onClose();},400);};
- const paint=()=>{
+ const paint=(only)=>{
   const sd=spreads[idx],L=sp.querySelector('.bs-page.l'),R=sp.querySelector('.bs-page.r'),n=spreads.length;
   const foot=(side)=>{const num=idx*2+(side==='l'?1:2);const nav=n>1?(side==='l'?`<button class="bs-turn prev" ${idx?'':'disabled'} aria-label="Previous pages">‹</button>`:`<button class="bs-turn next" ${idx<n-1?'':'disabled'} aria-label="Next pages">›</button>`):'';
    return `<div class="pg-foot ${side}">${side==='l'?nav+`<span>${num}</span>`:`<span>${num}</span>`+nav}</div>`;};
-  L.innerHTML=`<div class="pg-in">${sd.l}</div>`+foot('l');R.innerHTML=`<div class="pg-in">${sd.r}</div>`+foot('r');
+  if(only!=='r')L.innerHTML=`<div class="pg-in">${sd.l}</div>`+foot('l');
+  if(only!=='l')R.innerHTML=`<div class="pg-in">${sd.r}</div>`+foot('r');
   const pv=sp.querySelector('.bs-turn.prev'),nx=sp.querySelector('.bs-turn.next');
   if(pv)pv.onclick=()=>turn(-1);if(nx)nx.onclick=()=>turn(1);
   if(api.onPaint)api.onPaint(sp,idx);
  };
  const turn=d=>{const j=idx+d;if(j<0||j>=spreads.length)return;sp.classList.add('turning');setTimeout(()=>{idx=j;paint();sp.classList.remove('turning');},160);};
  const key=ev=>{if(ev.key==='Escape'){if(!(keepOnEsc&&keepOnEsc()))close();return;}if(ev.target.closest&&ev.target.closest('input,textarea,select'))return;if(ev.key==='ArrowRight')turn(1);else if(ev.key==='ArrowLeft')turn(-1);};
- /* swap the pages in place (filters, search); stays on spread i */
- const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0){spreads=s;idx=Math.max(0,Math.min(i,s.length-1));paint();}};
+ /* swap the pages in place (filters, search); stays on spread i. only 'r' or 'l' repaints just that page, so an input on the other page keeps focus */
+ const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0,only){spreads=s;idx=Math.max(0,Math.min(i,s.length-1));paint(only);}};
  t(()=>sp.classList.add('open'),BOOK_FLY_MS+BOOK_HOLD_MS);
  if(spreads&&spreads.length){
   t(()=>{

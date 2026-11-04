@@ -47,33 +47,35 @@ export function statsBook({S,st,TIERS,FLOORS,floorStartFt}){
  return {label:'Stats',spreads:()=>toSpreads(statsLeaves(st(),S,{TIERS,FLOORS,floorStartFt}))};
 }
 
-let fTier=-1,fSort='new',fQ='',fFav=false,fGroup='none';
+let pen='',fTier=-1,fSort='new',fQ='',fFav=false,fGroup='none';
 /* Shelf: page 1 holds the search and filters, the following pages hold the books. */
 export function shelfBook({S,core,TIERS,spineImg,openCard,showTip,hideTip,rh=76,keepOnEsc}){
  const SORTS=core.SORTS;
- let list=[];
+ let list=[],countText='';
  const build=()=>{
   list=core.filterShelf(S.shelf,{tier:fTier,q:fQ.trim().toLowerCase(),sort:fSort,fav:fFav});
   const groups=core.groupShelf(list,fGroup,TIERS.map(t=>t.name)),favN=S.shelf.filter(b=>b.fav).length;
   const counts=TIERS.map(t=>S.shelf.filter(b=>b.tier===t.id).length);
   const ctrl=`<h1>Your shelf</h1><div class="kicker">${S.shelf.length} ${S.shelf.length===1?'book':'books'}${list.length!==S.shelf.length?` · showing ${list.length}`:''}</div>
-   <input id="fq" type="search" placeholder="Find a word" value="${esc(fQ)}" aria-label="Find a word" autocomplete="off" spellcheck="false">
-   <div class="chipgroup"><div class="kicker">Sort</div><div class="chips" role="group" aria-label="Sort">${Object.entries(SORTS).map(([k,v])=>`<button class="fchip" data-s="${k}" aria-pressed="${fSort===k}">${v[0]}</button>`).join('')}</div></div>
-   <div class="chipgroup"><div class="kicker">Group</div><div class="chips" role="group" aria-label="Group by">${[['none','Flat'],['day','By day'],['tier','By tier']].map(([k,l])=>`<button class="fchip" data-g="${k}" aria-pressed="${fGroup===k}">${l}</button>`).join('')}</div></div>
-   <div class="chipgroup"><div class="kicker">Show</div><div class="chips"><button class="fchip" id="ffav" aria-pressed="${fFav}"${favN||fFav?'':' disabled'}>★ Favourites <small>${favN}</small></button></div></div>
-   <div class="chipgroup"><div class="kicker">Rarity</div><div class="chips"><button class="fchip" data-t="-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div></div>`;
+   <input id="fq" type="search" placeholder="Find a word\u2026" value="${esc(fQ)}" aria-label="Find a word" autocomplete="off" spellcheck="false">
+   <div class="chipgroup"><div class="kicker">Sort</div><div class="chips" role="group" aria-label="Sort">${Object.entries(SORTS).map(([k,v])=>`<button class="fchip" data-s="${k}" data-k="s${k}" aria-pressed="${fSort===k}">${v[0]}</button>`).join('')}</div></div>
+   <div class="chipgroup"><div class="kicker">Group</div><div class="chips" role="group" aria-label="Group by">${[['none','Flat'],['day','By day'],['tier','By tier']].map(([k,l])=>`<button class="fchip" data-g="${k}" data-k="g${k}" aria-pressed="${fGroup===k}">${l}</button>`).join('')}</div></div>
+   <div class="chipgroup"><div class="kicker">Show</div><div class="chips"><button class="fchip" id="ffav" data-k="fav" aria-pressed="${fFav}"${favN||fFav?'':' disabled'}>★ Favourites <small>${favN}</small></button></div></div>
+   <div class="chipgroup"><div class="kicker">Rarity</div><div class="chips"><button class="fchip" data-t="-1" data-k="t-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" data-k="t${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div></div>`;
   if(!list.length)return [ctrl,`<p class="empty">${S.shelf.length?'No book matches.':'Nothing here yet. Your first answer becomes your first book.'}</p>`];
   const pages=shelfPages(groups).map(secs=>secs.map(s=>`${s.label?`<h2>${esc(s.label)}${s.cont?' · cont.':''} <small>${s.items.length}</small></h2>`:''}<div class="shelfgrid" style="--rh:${rh+24}px">${s.items.map(x=>`<div class="slot">${spineImg(x.b,x.i,'shelf',rh)}</div>`).join('')}</div>`).join(''));
   return [ctrl,...pages];
  };
  const bind=(root,ctl)=>{
-  const redo=()=>ctl.setSpreads(toSpreads(build()),0);
-  root.querySelectorAll('.fchip[data-t]').forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;redo();});
-  root.querySelectorAll('.fchip[data-s]').forEach(c=>c.onclick=()=>{fSort=c.dataset.s;redo();});
-  root.querySelectorAll('.fchip[data-g]').forEach(c=>c.onclick=()=>{fGroup=c.dataset.g;redo();});
-  const fav=root.querySelector('#ffav');if(fav)fav.onclick=()=>{fFav=!fFav;redo();};
+  const redo=k=>{pen=k||'';ctl.setSpreads(toSpreads(build()),0);};
+  root.querySelectorAll('.fchip[data-t]').forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;redo(c.dataset.k);});
+  root.querySelectorAll('.fchip[data-s]').forEach(c=>c.onclick=()=>{fSort=c.dataset.s;redo(c.dataset.k);});
+  root.querySelectorAll('.fchip[data-g]').forEach(c=>c.onclick=()=>{fGroup=c.dataset.g;redo(c.dataset.k);});
+  const fav=root.querySelector('#ffav');if(fav)fav.onclick=()=>{fFav=!fFav;redo('fav');};
   const fq=root.querySelector('#fq');
-  if(fq)fq.oninput=()=>{fQ=fq.value;const pos=fq.selectionStart;redo();const n=root.querySelector('#fq');if(n){n.focus();n.setSelectionRange(pos,pos);}};
+  /* typing repaints only the results page; the search box and the rest of the left page stay untouched */
+  if(fq)fq.oninput=()=>{fQ=fq.value;ctl.setSpreads(toSpreads(build()),0,'r');const c=root.querySelector('[data-count]');if(c)c.textContent=countText;};
+  if(pen){const c=root.querySelector(`[data-k="${pen}"]`);if(c)c.classList.add('pen');pen='';}
   root.querySelectorAll('.shelfgrid img').forEach(im=>{
    const open=()=>{hideTip();const items=list.map(x=>x.b),b=S.shelf[+im.dataset.i];openCard(b,{fresh:false,nav:{items,i:items.indexOf(b)}});};
    im.tabIndex=0;im.setAttribute('role','button');im.onclick=open;
