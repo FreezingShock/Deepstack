@@ -50,3 +50,8 @@ test('contents links point at the right spread',()=>{
 test('real word pool: a given day always yields the same seven words',()=>{
  assert.deepEqual(dailyWords('2026-11-03',7).map(w=>w.w),dailyWords('2026-11-03',7).map(w=>w.w));
 });
+test('contents split across pages repeat the month heading',()=>{
+ const {leaves}=dailyLeaves({daily:{}},'2026-12-20',{wordsFor});
+ const toc=leaves.filter(l=>l.includes('dly-toc'));
+ assert.ok(toc.length>=3);assert.ok(toc.some(l=>l.includes('· cont.')));
+});

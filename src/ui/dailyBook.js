@@ -2,8 +2,7 @@
    registry entry for home.js BOOK_PAGES. Each day is a spread: the seven words and their definitions on the left,
    your results on the right (once played). Today's words stay sealed until you have played, so the book never
    spoils the puzzle. */
-import {esc,toSpreads} from './bookpages.js';
-import {shelfPages} from './bookMenus.js';
+import {esc,chunk,toSpreads} from './bookpages.js';
 import {dailyKeys,dailyNumber,dailyWords} from '../core/daily.js';
 import {TIERS} from '../core/tiers.js';
 
@@ -15,6 +14,15 @@ export const shortDate=k=>{const p=parts(k);return `${DOW[p.w].slice(0,3)} ${p.d
 export const monthLabel=k=>{const p=parts(k);return `${MONTHS[p.m]} ${p.y}`;};
 
 export const CONTENTS_PER_PAGE=12;
+
+/* Month groups -> pages of at most `per` days; a month that spills onto the next page repeats its heading ("cont."). */
+export function contentsPages(groups,per=CONTENTS_PER_PAGE){
+ const flat=[];for(const g of groups)g.items.forEach((x,i)=>flat.push({label:g.label,x,first:i===0}));
+ return chunk(flat,per).map(pg=>{const secs=[];
+  pg.forEach((e,k)=>{const last=secs[secs.length-1];
+   if(last&&last.label===e.label)last.items.push(e.x);else secs.push({label:e.label,cont:k===0&&!e.first,items:[e.x]});});
+  return secs;});
+}
 
 /* What one day shows. words is null for today until it has been played (sealed). */
 export function dayEntry(S,key,today,wordsFor=d=>dailyWords(d,7)){
@@ -44,7 +52,7 @@ export function contentsLeaves(entries,startSpread){
  const groups=[];
  for(const e of entries){const l=monthLabel(e.key),g=groups[groups.length-1];if(g&&g.label===l)g.items.push(e);else groups.push({label:l,items:[e]});}
  const idx=new Map(entries.map((e,i)=>[e.key,startSpread+i]));
- return shelfPages(groups,CONTENTS_PER_PAGE).map((secs,i)=>`<div class="dly">${i===0?'<h1>Contents</h1><div class="kicker">Newest first · tap a day to turn to it</div>':'<h1>Contents</h1><div class="kicker">continued</div>'}
+ return contentsPages(groups).map((secs,i)=>`<div class="dly">${i===0?'<h1>Contents</h1><div class="kicker">Newest first · tap a day to turn to it</div>':'<h1>Contents</h1><div class="kicker">continued</div>'}
   ${secs.map(s=>`<h2>${esc(s.label)}${s.cont?' · cont.':''}</h2><ul class="dly-toc">${s.items.map(e=>`<li><button class="dly-go" data-spread="${idx.get(e.key)}"><span class="no">No. ${e.no}</span><span class="dt">${esc(shortDate(e.key))}${e.isToday?' · today':''}</span><i></i><b class="st ${e.played?'ok':e.isToday?'open':''}">${e.played?e.rec.avg+'/100':e.isToday?'sealed':'missed'}</b></button></li>`).join('')}</ul>`).join('')}</div>`);
 }
 
