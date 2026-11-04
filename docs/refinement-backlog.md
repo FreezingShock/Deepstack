@@ -28,6 +28,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [~] Daily fairness and streaks
 - [~] Particles off panels and text (#83)
 - [~] Home button from Today's Result (bug)
+- [x] Shelf as a library section (item 11, #111)
 - [x] Results screen fits one view, no scroll (this PR)
 - [x] Done: Daily book (#72), fonts (#73), results screen (#74), tagline (#75), smooth glides (#76, #79), page-corner flips (#77), replay descent (#78), top shelves and planks (#68, #80), shelf duplicates (#70), readable recent spines (#71), lore books hover and halo (#45, #57, #67), chained lanterns (#41), top bar (#31), floors and tracker (#33), menu books (#35-#39, #46), tokens (#49-#62), judge worker (#61), phone layout (#60, #64), canvas throttling (#51).
 
@@ -140,7 +141,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: strip the card to one focal point per tier, details behind a tap. Files: `card.css`, new `cardDetails.js`. Done when: a test asserts at most 3 visible text elements by default, details reachable by keyboard, Folio and above visibly grander than Hardbound.
 **Touches:** card, MAIN hook. **Conflicts:** tier reveals thread; sequence after it.
 
-### 17. Tier-specific book dressing on the card
+### [x] 17. Tier-specific book dressing on the card (tierFrames.css, CSS-only, no shared book library yet)
 **Serves:** rarity hero, book objects.
 **Pitch:** The book on the card looks like its tier: foil sheen on Codex, rune glow on Grimoire, shimmer on Apocrypha.
 **Brief:** Goal: pure CSS/canvas treatments driven by the book object library (7). Files: new `tierFrames.js` + css. Done when: seven-tier strip screenshot, tokens only, reduced motion static.
@@ -197,7 +198,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Files: new `src/ui/haptics.js`, Settings toggle (additive). Done when: guarded by `navigator.vibrate`, pattern table per tier, stubbed test.
 **Touches:** settings. **Conflicts:** tier reveals thread.
 
-### 26. Cursor as a hand
+### 26. Cursor as a hand [x] (candle cursor, PR pending)
 **Serves:** tactile, interactive.
 **Pitch:** The cursor becomes a small candle or hand that lights nearby spines, swings lanterns (existing) and changes over hoverable books.
 **Brief:** Goal: custom cursor and a soft pointer light, only on fine pointers. Files: new `src/ui/cursorLight.js`. Done when: off on touch, off in reduced motion, under 0.5 ms/frame.
@@ -383,6 +384,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Touches:** BOOK, new files. **Conflicts:** none.
 
 ### 62. Calendar that fills in as you play
+**Status:** [~] circles and today's underline animate (#115); the "rarest this month" margin line is still open.
 **Serves:** Daily book, handwritten, rarity is the hero.
 **Pitch:** Played days get a pen-drawn circle that finishes itself (animated stroke) in the tier ink, and the month page shows a small tally of rarest books that month.
 **Brief:** Goal: animate the circles on open (reduced-motion: drawn instantly) and add a "rarest this month" margin line. Files: `dailyCalendar.js`, `dailyCalendar.css`. Done when: reduced-motion test, 375 px screenshot.
@@ -415,6 +417,16 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** The pen underline and stroke-draw reach the notebook slip and result card, so the answer you typed is underlined as you submit and the verdict is signed off in ink.
 **Brief:** Goal: reuse `ink.js` strokes on the run slip and results leaf. Files: `ink.js`, `runScreen.css`, `results.css`. Done when: reduced motion respected, no layout shift at 14 letters.
 **Touches:** run screen, results. **Conflicts:** run screen and results threads.
+
+### 82. Shelf: pulled book stays on the shelf
+**Pitch:** The pulled book leans out of its stack and its detail card is a slip tucked into the shelf, not a centred popup.
+**Brief:** Goal: anchor the shelf card to the pulled book. Files: `shelfBays.js`, `card.css`. Done when: slip never covers the book, 375 px verified, reduced motion static.
+**Touches:** BOOK, card. **Conflicts:** 7, 16.
+
+### 83. Backfill floor found for old books
+**Pitch:** Books shelved before floors were logged sit in "Earlier finds"; derive their floor so the floor bays are complete (skip if the attic thread covers it).
+**Brief:** Goal: derive `fl` additively from old Daily results. Files: new `src/core/shelfFloors.js`. Done when: tolerates missing data, tested.
+**Touches:** core. **Conflicts:** attic (#126).
 
 ---
 
@@ -529,6 +541,18 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** The older the book, the more dust, webs and faded gilding on its spine.
 **Brief:** Goal: age-based spine dressing in the attic. Files: `src/ui/attic.css`. Done when: tokens only, 14-letter word still readable.
 **Touches:** BOOK. **Conflicts:** none.
+### 92. Candle light that spines answer
+**Serves:** tactile, immersive, physical.
+**Pitch:** The candle cursor's pool of light is a real light source: spines and brass inside it brighten and show a little more grain, and shelf books under the flame tilt a hair toward it.
+**Brief:** Goal: feed the cursor position into the World draw as a small radial lift (cached, one gradient per frame) instead of a screen-blend overlay. Files: new `src/ui/candleLift.js`, one WORLD hook. Done when: under 0.5 ms/frame, off with the candle.
+**Touches:** WORLD. **Conflicts:** 2.
+
+### 93. Candle that goes with the game
+**Serves:** integrated, not bolted on.
+**Pitch:** The cursor flame flares on a good score, gutters when the 45 s candle is nearly out and turns the tier colour over a revealed book.
+**Brief:** Goal: tiny event hooks that set a data attribute on `#candleCursor`. Files: `cursorLight.css`, `cursorLight.js`. Done when: three states screenshotted, tokens only.
+**Touches:** new files. **Conflicts:** none.
+
 
 ### 90. Things that live in the nook
 **Serves:** immersive, integrated. **Pitch:** "things that live down there": a moth, a mouse or a spider that wander the desk, and a quill that scratches while you type, each floor with its own resident.
@@ -564,3 +588,16 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: one ink token per floor on the answer slip. Files: `inkInput.css`, `colors.js`. Done when: tokens only, contrast still readable.
 **Touches:** colors. **Conflicts:** 81.
 
+
+
+### 74. Ink the circles by hand on the day you play
+**Serves:** Daily book, handwritten, immersive.
+**Pitch:** After you finish a Daily and return to the calendar, today's circle is drawn live in your book's tier ink, so finishing feels like the pen signing your day.
+**Brief:** Goal: on first calendar open after a Daily result, play the ring draw only for the new day (others static). Files: `dailyCalendar.js`, `dailyBook.js`. Done when: no re-animation on later opens, reduced-motion static.
+**Touches:** BOOK. **Conflicts:** 62, 63.
+
+### 75. Pen sound for ink strokes
+**Serves:** integrated, motion should be physical.
+**Pitch:** A faint scratch of nib on paper while rings, underlines and tab strokes draw, quiet and optional.
+**Brief:** Goal: tiny shared `penScratch()` hooked to the draw-in animations, off when sound is off. Files: new `src/sound/pen.js`. Done when: respects settings, no audio before first gesture.
+**Touches:** new files. **Conflicts:** none.

@@ -14,6 +14,7 @@ import {recapHTML,bindRecap,finalHTML} from './ui/results.js';
 import './ui/results.css';
 import './ui/card.css';
 import './ui/bookCard.css';
+import './ui/tierFrames.css';
 import './ui/reveal.css';
 import {playReveal} from './ui/reveal.js';
 import * as core from './core/index.js';
@@ -53,6 +54,7 @@ import './ui/penInk.css';
 import './ui/ink.css';
 import './ui/inkInput.css';
 import {attachInk} from './ui/inkInput.js';
+import './ui/shelfBays.css';
 import './ui/fonts.css';
 import './ui/googleFonts.css';
 import {drawLedge,initLedge} from './ui/ledge.js';
@@ -64,6 +66,8 @@ import './ui/buttons.css';
 import './ui/tactile.css';
 import { particleVisibility } from './ui/particleMask.js';
 import './ui/polish.css';
+import {initCursorLight} from './ui/cursorLight.js';
+import './ui/cursorLight.css';
 import './ui/runScreen.css';
 import {paintRun} from './ui/runScreen.js';
 import {hintSlipHtml,hintButtonLabel,skipButtonLabel} from './ui/hintSlips.js';
@@ -74,6 +78,7 @@ import {deferAfterPaint} from './core/boot.js';
 const wordsReady=deferAfterPaint(()=>loadWords());let wordsLoaded=false;wordsReady.then(()=>{wordsLoaded=true;},()=>{wordsLoaded=true;});
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const RM=reducedMotion();
+initCursorLight({reduced:RM});
 const sleep=ms=>new Promise(r=>setTimeout(r,RM?Math.min(ms,30):ms));
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -604,7 +609,7 @@ async function submit(skipped){
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
  const base=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
  const cb=applyCombo(run.combo,t,base,skipped);run.combo=cb.chain;const rows=cb.rows;
- const book={wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,fb:feedbackData(j,w),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
+ const book={fl:floorAtRow(World.restRow+rows).id,wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,fb:feedbackData(j,w),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');Sfx.seal();const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
@@ -694,7 +699,7 @@ addEventListener('keydown',e=>{
 
 /* ---------- shelf, sets and stats: pages of the menu books (src/ui/bookMenus.js, home.js BOOK_PAGES) ---------- */
 const bookOpenCard=()=>!$('#cardlayer').hidden;
-BOOK_PAGES.bAll=shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc:bookOpenCard});
+BOOK_PAGES.bAll=shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,FLOORS,reduceMotion:()=>RM});
 BOOK_PAGES.bSets={...setsBook(S),keepOnEsc:bookOpenCard};
 BOOK_PAGES.bDaily={...dailyBook({S,today:utc,streak:()=>computeStats(S,utc()).streak,wordsReady,wordsLoaded:()=>wordsLoaded}),keepOnEsc:bookOpenCard};
 BOOK_PAGES.bStats={...statsBook({S,st:()=>computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt}),keepOnEsc:bookOpenCard};
