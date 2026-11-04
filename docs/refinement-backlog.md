@@ -88,7 +88,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: refine the open and close choreography (cover lift with perspective, page block thickness, ribbon drop, closing thud with sound). Files: `bookMenus.js`, new `bookOpenFx.js`. Done when: open under 600 ms, close on outside click swings the cover shut, timing test via the transitions helper, reduced motion uses a fade.
 **Touches:** HOME. **Conflicts:** transitions thread, 9.
 
-### 9. Page content that feels written
+### 9. Page content that feels written [x] (PR #105)
 **Serves:** handwritten, sectioned.
 **Pitch:** Every book page has margin notes, underlines, ink blots, a drawn divider, and small doodles keyed to the section.
 **Brief:** Goal: a decorations helper that adds hand-drawn dividers/underlines (SVG stroke-draw animation) to page headings across Shelf, Sets, Stats and Daily. Files: new `src/ui/ink.js` + `ink.css`; light edits in BOOK files. Done when: stroke-draw respects reduced motion, text contrast unchanged, one headings test.
@@ -389,6 +389,18 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** A weekly page of seven small tabs (Mon to Sun) with each day's words as ghost text and your best book circled, so the week reads like a diary.
 **Brief:** Goal: replace the "This week" strip with a full leaf reachable from the calendar. Files: `dailyCalendar.js`, `dailyBook.js`. Done when: week boundary (UTC Monday) test, tap a tab opens that day.
 **Touches:** BOOK. **Conflicts:** 10.
+
+### 70. Ink that reacts to the page
+**Serves:** handwritten, everything is a book.
+**Pitch:** The margin notes and doodles stop being generic: a note appears because of something true on the page ("one word short of the set", "your longest streak"), and a pressed pen mark circles the number you just beat.
+**Brief:** Goal: data-keyed margin notes in `ink.js` (pure function of the leaf data, no new save fields) plus a hand-drawn circle around a record. Files: `src/ui/ink.js`, `ink.css`. Done when: notes are tested against fixture saves, text stays readable at 375 px.
+**Touches:** new files, BOOK. **Conflicts:** 10, 12.
+
+### 71. Ink on the run screen and result card
+**Serves:** handwritten, integrated not bolted on.
+**Pitch:** The pen underline and stroke-draw reach the notebook slip and result card, so the answer you typed is underlined as you submit and the verdict is signed off in ink.
+**Brief:** Goal: reuse `ink.js` strokes on the run slip and results leaf. Files: `ink.js`, `runScreen.css`, `results.css`. Done when: reduced motion respected, no layout shift at 14 letters.
+**Touches:** run screen, results. **Conflicts:** run screen and results threads.
 
 ---
 
