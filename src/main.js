@@ -163,9 +163,9 @@ const World=(()=>{
    ctx.fillStyle=PALETTE.whiteAlpha08;for(let i=0;i<14;i++)ctx.fillRect(x0+rg()*(x1-x0),y+rg()*(base-y),10+rg()*30,2+rg()*5);
    ctx.restore();}
   else if(fl.motif==='stacks'){ // wood paneling and a rail behind the books, so the first floor isn't a bare wall
-   ctx.save();ctx.strokeStyle='#00000066';ctx.lineWidth=2;const pw=54;
-   for(let xx=x0+((r*29)%pw);xx<x1;xx+=pw){ctx.beginPath();ctx.moveTo(xx,y);ctx.lineTo(xx,base);ctx.stroke();ctx.fillStyle='#ffffff08';ctx.fillRect(xx+2,y,1,base-y);}
-   ctx.fillStyle='#00000055';ctx.fillRect(x0,y+rh*.16,x1-x0,3);ctx.fillStyle='#ffffff0c';ctx.fillRect(x0,y+rh*.16+3,x1-x0,1);
+   ctx.save();ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=2;const pw=54;
+   for(let xx=x0+((r*29)%pw);xx<x1;xx+=pw){ctx.beginPath();ctx.moveTo(xx,y);ctx.lineTo(xx,base);ctx.stroke();ctx.fillStyle='rgba(255,255,255,.03)';ctx.fillRect(xx+2,y,1,base-y);}
+   ctx.fillStyle='rgba(0,0,0,.33)';ctx.fillRect(x0,y+rh*.16,x1-x0,3);ctx.fillStyle='rgba(255,255,255,.05)';ctx.fillRect(x0,y+rh*.16+3,x1-x0,1);
    ctx.restore();}
   else if(fl.motif==='archive'){ // faint rows of pigeonhole drawers on the back wall
    ctx.save();ctx.globalAlpha=.5;const cw=46,ch=30;ctx.strokeStyle=PALETTE.bronze28Alpha88;ctx.lineWidth=1;
