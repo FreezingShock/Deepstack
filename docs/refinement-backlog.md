@@ -103,11 +103,23 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: derive spine width from answer length and height from score inside `shelfDims`, bounded so a 14-letter word still fits. Files: `bookArt.js`, `spineLabel.js`. Done when: 3-letter and 14-letter words fit at both extremes.
 **Touches:** BOOK, MAIN (`shelfDims`). **Conflicts:** 7b, 42.
 
-### 8. Book opening v3 (cover, endpapers, ribbon)
+### 8. [x] Book opening v3 (cover, endpapers, ribbon) (PR #103)
 **Serves:** overhaul, motion.
 **Pitch:** Opening a menu book shows the cover, boards swing, endpapers and a bookmark ribbon appear, then the pages settle, all in under 600 ms.
 **Brief:** Goal: refine the open and close choreography (cover lift with perspective, page block thickness, ribbon drop, closing thud with sound). Files: `bookMenus.js`, new `bookOpenFx.js`. Done when: open under 600 ms, close on outside click swings the cover shut, timing test via the transitions helper, reduced motion uses a fade.
 **Touches:** HOME. **Conflicts:** transitions thread, 9.
+
+### 103. Book open/close sounds (paper, leather, thud)
+**Serves:** physical, immersion.
+**Pitch:** Opening a book rustles paper and creaks leather; closing lands a heavy leather thud, deeper for thicker books.
+**Brief:** Goal: replace the borrowed `whoosh`/`flip`/`thud` in `bookSound` with dedicated Sfx voices, pitched by page count. Files: `feel.js` (additive), `bookOpenFx.js`. Done when: respects volume and mute.
+**Touches:** FEEL. **Conflicts:** audio threads.
+
+### 104. Every panel opens as a book
+**Serves:** overhaul, integrated.
+**Pitch:** Card, Settings and Credits panels also grow out of a book on the shelf instead of fading in.
+**Brief:** Goal: reuse `openBook`/`dressBook` for the remaining panels. Files: `bookOpenFx.js`, panel openers. Done when: no panel fades in bare, close swings shut, reduced motion fades.
+**Touches:** HOME, MAIN. **Conflicts:** 7, 9.
 
 ### 9. Page content that feels written [x] (PR #105)
 **Serves:** handwritten, sectioned.
