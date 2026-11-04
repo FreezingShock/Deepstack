@@ -819,13 +819,13 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: extend `scripts/smoke.mjs` to finish a whole run in each mode and check the final screen. Done when: CI stays under its current time.
 **Touches:** `scripts/smoke.mjs`. **Conflicts:** none.
 
-### W3. The bell calls the librarian
+### W5. The bell calls the librarian
 **Serves:** things that live down there, discovery.
 **Pitch:** Ring the brass bell enough times (or at 3 a.m. by the clock) and something answers from the dark: a note slid across the ledge, a book that was not there before.
 **Brief:** Goal: a hidden reaction to repeated bell rings. Files: `src/ui/deskProps.js`, `curioLog.js` hook. Done when: seeded and tested, no storage shape change, nothing covers the books at 375 px.
 **Touches:** HOME. **Conflicts:** W2 follow-ups, K3.
 
-### W4. The stamp remembers
+### W6. The stamp remembers
 **Serves:** physical sanity, library furniture you can touch.
 **Pitch:** The due date stamped on the Borrower's slip stays on it between visits, and a played Daily stamps the slip by itself with that day's date.
 **Brief:** Goal: persist the last stamp additively (`deepstack.v1` field `stamp`, tolerate missing). Files: `src/ui/deskProps.js`. Done when: tested, reload keeps the mark, old saves load.
