@@ -10,6 +10,7 @@ import './ui/canvasCover.js';
 import './ui/dprCap.js';
 import './sets/sets.js';
 import {backfillFloors} from './core/attic.js';
+import {tryDustOff} from './ui/atticDust.js';
 import {setsBook} from './sets/ui.js';
 import './ui/results.js';
 import './ui/results.css';
@@ -119,7 +120,7 @@ const cvEl=$('#world');
 cvEl.addEventListener('pointermove',e=>{if(ui.home.hidden&&ui.final.hidden||World.stActive||World.restRow!==0){hideTip();cvEl.style.cursor='';return;}
  const h=World.hits().find(h=>e.clientX>=h.x&&e.clientX<=h.x+h.w&&e.clientY>=h.y&&e.clientY<=h.y+h.h);
  if(h){showTip(`${h.b.w} · ${TIERS[h.b.tier].name} · ${h.b.score}`,e.clientX,e.clientY);cvEl.style.cursor='pointer';}else{hideTip();cvEl.style.cursor='';}});
-cvEl.addEventListener('click',e=>{if(World.stActive||World.restRow!==0||!(ui.stage.hidden))return;const h=World.hits().find(h=>e.clientX>=h.x&&e.clientX<=h.x+h.w&&e.clientY>=h.y&&e.clientY<=h.y+h.h);if(h){hideTip();openCard(h.b,{fresh:false});}});
+cvEl.addEventListener('click',e=>{if(World.stActive||World.restRow!==0||!(ui.stage.hidden))return;const h=World.hits().find(h=>e.clientX>=h.x&&e.clientX<=h.x+h.w&&e.clientY>=h.y&&e.clientY<=h.y+h.h);if(h){hideTip();if(World.atticOpen&&tryDustOff(h.b,{S,save,TIERS,FLOORS,floorStartFt,x:e.clientX,y:e.clientY}))return;openCard(h.b,{fresh:false});}});
 /* lore books: thick background books reveal a word; never one from the current run or today's daily */
 {let dk='',dw=[];initLore({world:World,canvas:cvEl,pool:WORDS,hash:hashStr,enabled:()=>!World.busy,
  exclude:()=>{if(dk!==utc()){dk=utc();dw=dailyWords(dk,7).map(w=>w.w);}return run?[...dw,...run.words.map(w=>w.w)]:dw;}});}

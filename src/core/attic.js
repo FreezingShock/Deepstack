@@ -57,3 +57,10 @@ export function atticCrates(items,{perCrate=8}={}){
  }
  return out;
 }
+
+/* Dust a floorless book off: the reader chooses its floor. Writes `fl` (and `fld`: 1 = chosen by hand) additively and
+   returns true; a book that already has a floor, or a floor id that does not exist, is left alone. */
+export function dustOff(book,floorId,floorCount=6){
+ if(!book||hasFloor(book)||!Number.isInteger(floorId)||floorId<0||floorId>=floorCount)return false;
+ book.fl=floorId;book.fld=1;return true;
+}

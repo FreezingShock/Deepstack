@@ -23,6 +23,11 @@ function rideHome(px,t){
  home.style.transform=`translate3d(0,${px.toFixed(1)}px,0)`;
  home.style.opacity=String(Math.max(0,1-t*1.7));
 }
+/* After a book is dusted off: re-list what the attic holds and refresh the ladder cue. */
+export function refreshAttic(shelf){
+ const items=atticAll(shelf);count=items.length;World.setAtticItems(items);
+ if(cue){cue.textContent=`↑ The attic · ${count}`;cue.setAttribute('aria-label',`Climb up to the attic: ${count} ${count===1?'book':'books'}`);}
+}
 export function bindAtticHome(homeEl,{shelf=[]}={}){
  home=homeEl;
  const items=atticAll(shelf);count=items.length;
@@ -32,7 +37,7 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
   down=document.createElement('button');down.type='button';down.className='attic-down';down.textContent='Down the ladder ↓';down.hidden=true;
   homeEl.after(cue,down); // siblings of #home, so CSS hides them whenever home is hidden
   cue.onclick=()=>open();down.onclick=()=>close();
- }
+}
  cue.textContent=`↑ The attic · ${count}`;
  cue.setAttribute('aria-label',`Climb up to the attic: ${count} ${count===1?'book':'books'}`);
  World.setAttic(false,{instant:true});World.onAttic(sync);sync(false);
@@ -46,7 +51,7 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
   addEventListener('pointerdown',e=>{y0=e.pointerType==='mouse'||e.target.closest('button,a,input,textarea,select')?null:e.clientY;});
   addEventListener('pointerup',e=>{if(y0==null)return;const dy=e.clientY-y0;y0=null;
    if(World.atticOpen){if(dy<-60)close();}else if(dy>60&&count&&ui().live)open();});
- }
+}
 }
 function open(){if(count&&ui().live)World.setAttic(true);}
 function close(){World.setAttic(false);}
