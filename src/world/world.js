@@ -28,6 +28,7 @@ import {FT,TIERS,atmosphereAt,floorAtRow,hashStr,mulberry,tierOf} from '../app/s
 import {bookDims,seedOf,shelfDims} from './bookArt.js';
 import {buildRoom,drawAttic} from './atticRoom.js';
 import {drawLadder,climbLight} from './atticClimb.js';
+import {drawBackStacks,resetBackStacks} from './backStacks.js';
 
 /* ---------- the stacks (continuous canvas world) ---------- */
 export const World=(()=>{
@@ -42,7 +43,7 @@ export const World=(()=>{
  function nicheBox(){const nw=Math.min(W-24,760),NT=barPx()+16,NB=H-RH-BM-10;return{x:(W-nw)/2,w:nw,t:NT,h:NB-NT,b:NB};}
  function setNicheVars(){const n=nicheBox(),r=document.documentElement.style;r.setProperty('--nx',n.x+'px');r.setProperty('--nw',n.w+'px');r.setProperty('--nt',n.t+'px');r.setProperty('--nb',(H-n.b)+'px');r.setProperty('--nook',nookMetrics(W).reserve+'px');}
  function resize(){W=innerWidth;H=innerHeight;DPR=worldDpr(W,H,Math.min(devicePixelRatio||1,Quality.params().dprMax)); // capped at ~6 MP so huge screens stay light
-  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);RH=clamp(H*.22,108,172);BM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);rows.clear();
+  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);RH=clamp(H*.22,108,172);BM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);rows.clear();resetBackStacks();
   document.documentElement.style.setProperty('--shelfH',(RH+BM+10)+'px');setNicheVars();document.documentElement.style.setProperty('--rh',Math.round(RH*.8)+'px');if(!st)cam=restCam(restRow);}
  // where the book for row r is pulled from: a random spot along that shelf, stable for the row
  function pullX(r){return pullXAt(r,W);}
@@ -100,10 +101,11 @@ export const World=(()=>{
   ctx.globalCompositeOperation='lighter';ctx.strokeStyle='rgba(120,220,220,.07)';for(let k=0;k<4;k++){ctx.beginPath();for(let x=bx0;x<=bx1;x+=10){const yy=top+14+k*18+Math.sin(x*.05+vt*.7+k*2+r*3)*5;if(x===bx0)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);}ctx.stroke();}
   ctx.restore();}
  function drawRowLive(r,layer,cam_,sc,dim){
-  const rh=RH*sc,y=r*rh-cam_,base=y+rh-12*sc,a=abn(r),d=genRow(r,layer),fl=d.fl;
+  const rh=RH*sc,y=r*rh-cam_,base=y+rh-12*sc,a=abn(r),d=genRow(r,layer),fl=d.fl,backWall=building&&r!==0&&Quality.params().backStacks;
   const body=(bx0,bx1)=>{
    const bw=bx1-bx0;
-   const bg=ctx.createLinearGradient(0,y,0,base);bg.addColorStop(0,fl.wallTop);bg.addColorStop(1,fl.wallBot);ctx.globalAlpha=dim;ctx.fillStyle=bg;ctx.fillRect(bx0-70,y-40,bw+140,rh+80);
+   if(!backWall){const bg=ctx.createLinearGradient(0,y,0,base);bg.addColorStop(0,fl.wallTop);bg.addColorStop(1,fl.wallBot);ctx.globalAlpha=dim;ctx.fillStyle=bg;ctx.fillRect(bx0-70,y-40,bw+140,rh+80);} // with back stacks on, the wall is the parallax layer drawn behind (backStacks.js)
+   ctx.globalAlpha=dim;
    ctx.fillStyle=fl.ledge;ctx.fillRect(bx0-70,base,bw+140,12*sc+40);ctx.fillStyle=fl.ledgeHi;ctx.fillRect(bx0-70,base,bw+140,2*sc);ctx.fillStyle=PALETTE.blackAlpha66;ctx.fillRect(bx0-70,base+12*sc-2,bw+140,2);
    if(d.crack){ctx.fillStyle=PALETTE.oak1;ctx.beginPath();ctx.moveTo(d.crack.x,base);ctx.lineTo(d.crack.x+d.crack.w*.5,base+5*sc);ctx.lineTo(d.crack.x+d.crack.w,base);ctx.lineTo(d.crack.x+d.crack.w,base+12*sc);ctx.lineTo(d.crack.x,base+12*sc);ctx.fill();}
    ctx.globalAlpha=1;
@@ -133,7 +135,7 @@ export const World=(()=>{
     if(fl.motif==='flood'&&!building)floodOverlay(fl,bx0,bx1,y,rh,r);}
   };
   if(layer===0&&r!==0&&a>.03){
-   for(let i=0;i<3;i++){const bx0=i*W/3,bx1=bx0+W/3;ctx.save();ctx.beginPath();ctx.rect(bx0,y-1,W/3,rh+2);ctx.clip();ctx.fillStyle=PALETTE.oak2;ctx.fillRect(bx0,y-1,W/3,rh+2);
+   for(let i=0;i<3;i++){const bx0=i*W/3,bx1=bx0+W/3;ctx.save();ctx.beginPath();ctx.rect(bx0,y-1,W/3,rh+2);ctx.clip();if(!backWall){ctx.fillStyle=PALETTE.oak2;ctx.fillRect(bx0,y-1,W/3,rh+2);}
     const th=(i===0?1:i===2?-1:0)*.085*a;if(th){const cx=(bx0+bx1)/2,cy=y+rh/2;ctx.translate(cx,cy);ctx.rotate(th);ctx.translate(-cx,-cy);}
     body(bx0,bx1);ctx.restore();}
   }else if(layer===0){ctx.save();ctx.beginPath();ctx.rect(0,y-1,W,rh+2);ctx.clip();body(0,W);ctx.restore();} // clip so the next row's wall can't swallow this row's plank and book bottoms
@@ -257,6 +259,7 @@ export const World=(()=>{
   // far silhouette layer
   pruneRows(top,bot);
   let tgt=null;
+  if(Quality.params().backStacks){for(let r=top;r<=bot;r++){if(r===0)continue;const f=floorAtRow(r);let r2=r;while(r2+1<=bot&&r2+1!==0&&floorAtRow(r2+1)===f)r2++;drawBackStacks(ctx,f,{W,RH,DPR,cam:camNow,y0:r*RH-camNow-1,y1:(r2+1)*RH-camNow+1});r=r2;}} // dim far row of shelves behind the walls, slower than the camera
   for(let r=top;r<=bot;r++){const o=drawRow(r,0,camNow,1,1);if(st&&r===st.row)tgt=o;}
   if(atticT>0){const A=Math.round(H-40),k=W+'x'+A+'x'+DPR;if(!room||roomKey!==k){room=buildRoom(W,A,DPR);roomKey=k;}
    hits=drawAttic(ctx,room,{W,A,ry:aFloor-camNow-A,items:atticItems,TIERS,vt,RM,lit:climbLight(atticT)});drawLadder(ctx,{W,H,fy:aFloor-camNow,t:ease(atticT)});}

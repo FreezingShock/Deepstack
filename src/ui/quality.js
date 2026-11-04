@@ -2,7 +2,7 @@
    effects read `params()` (or `scale()`), nobody else guesses.
      high   everything as designed
      medium lighter DPR, ~60% particles and dust
-     low    DPR 1, 30 fps canvas, ~30% particles, little dust, no creatures
+     low    DPR 1, 30 fps canvas, ~30% particles, little dust, no creatures, no back stacks
    `pref` is 'auto' (default), 'high', 'medium' or 'low'. Auto starts from device hints (memory, cores,
    data saver) and steps down once or twice if the first seconds of frames are slow. A manual choice is
    never overridden. Stored under its own key so the save and the settings shape are untouched. */
@@ -12,9 +12,9 @@ export const TIER_NAMES = ['high', 'medium', 'low'];
 export const PREFS = ['auto', ...TIER_NAMES];
 
 export const TIERS = Object.freeze({
-  high:   Object.freeze({name: 'high',   dprMax: 2,   frameMs: 0,        particles: 1,   particleCap: 1000, dust: 100, ambient: true,  glow: true}),
-  medium: Object.freeze({name: 'medium', dprMax: 1.5, frameMs: 0,        particles: 0.6, particleCap: 500,  dust: 60,  ambient: true,  glow: true}),
-  low:    Object.freeze({name: 'low',    dprMax: 1,   frameMs: 1000 / 30, particles: 0.3, particleCap: 200,  dust: 25,  ambient: false, glow: false}),
+  high:   Object.freeze({name: 'high',   dprMax: 2,   frameMs: 0,        particles: 1,   particleCap: 1000, dust: 100, ambient: true,  glow: true,  backStacks: true}),
+  medium: Object.freeze({name: 'medium', dprMax: 1.5, frameMs: 0,        particles: 0.6, particleCap: 500,  dust: 60,  ambient: true,  glow: true,  backStacks: true}),
+  low:    Object.freeze({name: 'low',    dprMax: 1,   frameMs: 1000 / 30, particles: 0.3, particleCap: 200,  dust: 25,  ambient: false, glow: false, backStacks: false}),
 });
 
 export function sanitizePref(v) { return PREFS.includes(v) ? v : 'auto'; }
