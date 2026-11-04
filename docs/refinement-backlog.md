@@ -10,6 +10,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 **Keeping this alive (every thread):** when your PR merges, (1) tick your item here and update your row in the inventory, (2) append any new taste nate expressed in your thread to `nate-preferences.md` (one dated line under the matching pattern), (3) add 2 to 3 fresh items to the end of this file that follow from what he asked, in his wording and in the same format. Keep edits to a few lines so threads do not conflict.
 
 ## What nate needs to do
+- Home screen: the recent-books row under the alcove is gone. Scroll up (or tap the "↑ The attic" cue at the top) to see recent guesses; the Shelf still lists every word. Say if you would rather reach the attic some other way. (attic thread)
 - Pull `main` and look at the held book (Descend, any run) and the alcove numeral plaque: does the stand and the bolts read right at your screen size? (PR 137, backlog 100/101)
 
 ## Standard preamble (add to every brief)
@@ -21,6 +22,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 
 ## In progress (do not start)
 - [x] C. Attic for earlier Shelf finds (backfill floors from Daily history, scroll-up attic)
+- [x] Recent guesses move to the attic: top-shelf recent row removed from home, attic opens from home (cue, wheel-up, swipe-down, ArrowUp), Shelf shows every word (PR pending)
 - [~] Spacing and type pass on every screen
 - [~] Run screen overhaul (alcove, wall lettering, candle timer, input)
 - [~] Floors: distinct look per floor (#81)
@@ -770,3 +772,11 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** The depth tracker and the Stats cross-section show each floor's door sign and wall swatch, so the same identity appears everywhere.
 **Brief:** Goal: reuse `THRESHOLDS`/wall materials to paint small swatches. Files: `tracker.js`, `statsPages.js`. Done when: 375 and 1280 screenshots, long floor name readable.
 **Touches:** HOME, tracker. **Conflicts:** 2.
+
+### AT1. Attic: ladder climb from home
+**Pitch:** Scrolling up on home should feel like climbing: the alcove wall slides down, the ladder and skylight come into view.
+**Brief:** Goal: a short physical climb into the attic from home, same motion language as #125. Files: `src/ui/attic.js`, `atticHome.js`, `attic.css`. Done when: reduced motion cuts, wheel/swipe/ArrowUp still work. **Touches:** UI. **Conflicts:** 74 (attic ladder), welcome/home.
+
+### AT2. Attic crates you can rearrange
+**Pitch:** Let recent guesses sit in the attic as loose books on the beams with how many you want to keep up there (5, 12, 30).
+**Brief:** Goal: setting for how many recent guesses the attic holds (`RECENT_N` in `src/core/attic.js`), saved additively. Done when: tested, default stays 12. **Touches:** core. **Conflicts:** 75.

@@ -42,3 +42,8 @@
 /* phone: spines tighten so a 14-letter word stays readable */
 @media(max-width:480px){.at-shelf{gap:6px;padding-left:6px;padding-right:6px}.bk-spread.menu .at-shelf .sb-band:last-child{display:none}.bk-spread.menu .at-shelf .sb-t{font-size:10px;letter-spacing:.01em;padding:3px 1px}.bk-spread.menu .at-shelf .sb-spine{gap:3px;padding:0 3px 0 2px}}
 @media(prefers-reduced-motion:reduce){.attic{transition:none}.at-sky b,.at-sky u{animation:none}.at-sky u{display:none}.bk-spread .attic-cue{transition:none}}
+/* home: cue to climb up into the attic (recent guesses live there now) */
+.attic-home{position:absolute;z-index:6;top:10px;left:50%;transform:translateX(-50%);margin:0;padding:4px 14px 6px;border:0;border-radius:0 0 6px 6px;background:linear-gradient(180deg,var(--c-oak-2b1b10),var(--c-oak-1a110a));
+ color:var(--c-brass-d8c08c);font:500 20px/1.1 var(--bs-hand,var(--serif));cursor:pointer;box-shadow:0 2px 8px var(--c-black-alpha-88),inset 0 0 0 1px var(--c-oak-5a3d22);transition:color .2s,transform .25s}
+.attic-home:hover,.attic-home:focus-visible{color:var(--c-brass-f6d98a);transform:translate(-50%,2px)}
+@media(prefers-reduced-motion:reduce){.attic-home{transition:none}}

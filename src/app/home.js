@@ -11,6 +11,7 @@ import {World} from '../world/world.js';
 import {$} from './util.js';
 import {setRun,startDaily,startUnlimited} from './run.js';
 import {showFinal} from './final.js';
+import {bindAtticHome} from '../ui/atticHome.js';
 
 /* ---------- home ---------- */
 export let cdTimer=0;
@@ -26,6 +27,7 @@ export function showHome(){
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
  
  bookify(ui.home);applyHomeTier(ui.home);
+ bindAtticHome(ui.home,{count:Math.min(12,S.shelf.length),openShelf:()=>$('#bAll')&&$('#bAll').click()});
  setBookSfx(n=>n==="whoosh"?Sfx.whoosh(.22):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;

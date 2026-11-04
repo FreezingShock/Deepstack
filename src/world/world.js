@@ -101,7 +101,7 @@ export const World=(()=>{
    ctx.globalAlpha=1;
    if(layer===0&&(r!==0||fl.motif==='stacks'))floorWall(fl,bx0,bx1,y,base,rh,r);
    if(layer===0&&r===0){hits=[];let x=Math.max(34,(W-Math.min(W-60,1040))/2),maxX=W-Math.max(34,(W-Math.min(W-60,1040))/2);
-    const vis=[];let tot=0;for(let i=shelf.length-1;i>=0;i--){const b=shelf[i],dm=shelfDims(b,RH);if(tot+dm.w+3>maxX-x-40)break;tot+=dm.w+3;vis.unshift({b,dm});}
+    const vis=[]; // recent guesses no longer stand here: they live in the attic (ui/attic.js)
     for(const v of vis){const {b,dm}=v;for(let i=1;i<3;i++){const px=i*(W/3);if(x<px+9&&x+dm.w>px-9)x=px+9;} // never stand a spine behind a pillar
      const bx=x+dm.w/2;ctx.save();ctx.translate(bx,base);
      bookArt(ctx,{w:dm.w,h:dm.h,fit:dm.fit,tier:b.tier,seed:seedOf(b),word:b.w,ribbon:b.tier>=1||seedOf(b)%3===0?RIBBONS[seedOf(b)%RIBBONS.length]:null},vt);ctx.restore();

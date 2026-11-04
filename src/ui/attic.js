@@ -1,27 +1,31 @@
 /* The attic above the Shelf. Scroll up past the top of the Shelf book (wheel, ArrowUp, swipe down, or the pencilled
    cue) and the attic lowers over the pages: rafters, a skylight, crates of earlier finds. Scroll down past the last
    crate, press Escape, or take the ladder button to come back. Hooks into the shelf book's onPaint. */
-import {atticItems,atticCrates} from '../core/attic.js';
+import {atticAll,atticCrates} from '../core/attic.js';
 
 const reduce=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
 
 /* deps: {S, esc, book(x)->html for one spine, collapse(list)->[{b,i,n}], openCard, showTip, hideTip} */
 export function atticHTML(items,deps){
- const crates=atticCrates(items);
+ const recent=items.filter(x=>x.recent),crates=[...(recent.length?[{label:'Recent guesses',items:recent,recent:true}]:[]),...atticCrates(items.filter(x=>!x.recent))];
  const html=crates.map((c,k)=>{
   const list=deps.collapse(c.items),stacks=[];
   for(let i=0;i<list.length;i+=4)stacks.push(list.slice(i,i+4));
-  return `<section class="at-crate"><div class="at-tag"><span>${deps.esc(c.label)}${c.cont?' · cont.':''}</span><small>Crate ${ROMAN[k]||k+1}</small></div><div class="sshelf at-shelf">${stacks.map(s=>`<div class="sstack">${s.map(deps.book).join('')}</div>`).join('')}</div></section>`;
+  return `<section class="at-crate"><div class="at-tag"><span>${deps.esc(c.label)}${c.cont?' · cont.':''}</span><small>${c.recent?'Newest':`Crate ${ROMAN[k-(recent.length?1:0)]||k+1}`}</small></div><div class="sshelf at-shelf">${stacks.map(s=>`<div class="sstack">${s.map(deps.book).join('')}</div>`).join('')}</div></section>`;
  }).join('');
  return `<div class="at-beams" aria-hidden="true"><i></i><i></i><i></i></div><div class="at-sky" aria-hidden="true"><b></b><u></u><u></u><u></u><u></u><u></u></div>
-  <div class="at-scroll" tabindex="-1"><header class="at-head"><h1>The Attic</h1><p>Earlier finds, from before the library marked what floor you found them on. Dusty, but still yours.</p><div class="kicker">${items.length} ${items.length===1?'book':'books'}</div></header>${html}
+  <div class="at-scroll" tabindex="-1"><header class="at-head"><h1>The Attic</h1><p>Your latest guesses, freshest first, and any earlier finds from before the library marked floors. Every word is still on the Shelf.</p><div class="kicker">${items.length} ${items.length===1?'book':'books'}</div></header>${html}
   <footer class="at-foot"><button class="at-down" type="button">Down the ladder ↓</button></footer></div>`;
 }
 
+/* The home screen can ask the next Shelf book to open with the attic already raised. */
+let wantAttic=false;
+export const openShelfInAttic=()=>{wantAttic=true;};
+
 export function bindAttic(sp,ctl,deps){
  const {S}=deps;
- const items=atticItems(S.shelf);
+ const items=atticAll(S.shelf);
  let st=sp._attic;
  if(!st){
   const layer=document.createElement('div');layer.className='attic';layer.hidden=true;layer.setAttribute('role','region');layer.setAttribute('aria-label','The attic');
@@ -68,6 +72,7 @@ export function bindAttic(sp,ctl,deps){
  st.deps=deps;st.items=items;
  st.cue.hidden=!items.length||ctl.index!==0||st.open;
  st.cue.textContent=`↑ The attic · ${items.length}`;
- st.cue.setAttribute('aria-label',`Climb up to the attic: ${items.length} earlier ${items.length===1?'find':'finds'}`);
+ st.cue.setAttribute('aria-label',`Climb up to the attic: ${items.length} ${items.length===1?'book':'books'}`);
  if(st.open&&!items.length)st.closeAttic();
+ if(wantAttic){wantAttic=false;if(items.length&&!st.open)st.openAttic();}
 }
