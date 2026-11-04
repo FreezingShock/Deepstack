@@ -51,3 +51,13 @@ test('paging to another month keeps the spread numbers of days',()=>{
  const {start,leaves}=dailyLeaves({daily:{}},'2026-12-10',{wordsFor,month:'2026-11'});
  assert.match(leaves[1],/November 2026/);assert.ok(leaves[1].includes(`data-spread="${start+30}"`)); // 10 Dec is No.38 (newest, spread start); 10 Nov is No.8 -> start+30
 });
+
+test('played days draw a pen ring; today gets an animated underline; reduced motion stops both',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const js=readFileSync(new URL('../src/ui/dailyCalendar.js',import.meta.url),'utf8');
+ const css=readFileSync(new URL('../src/ui/dailyCalendar.css',import.meta.url),'utf8');
+ assert.match(js,/cal-ring/);
+ assert.match(css,/@keyframes cal-ring/);assert.match(css,/@keyframes cal-underline/);
+ const rm=css.slice(css.indexOf('prefers-reduced-motion'));
+ assert.match(rm,/cal-ring path/);assert.match(rm,/animation:none/);
+});

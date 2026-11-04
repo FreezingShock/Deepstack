@@ -39,14 +39,17 @@ export function dayState(S,key,today){
 const tierInk=t=>(TIERS[t]||TIERS[0]).spine;
 const dayNum=key=>+key.slice(8);
 
-function cell(S,key,today,spreadOf){
+/* The circle is one looping pen stroke (a little overshoot, like a real circle) that CSS draws on when the leaf paints. */
+const RING='<svg class="cal-ring" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path pathLength="1" d="M9 8 C 16 2, 33 3, 36 17 C 39 30, 24 38, 14 35 C 4 31, 2 16, 10 9 C 14 6, 20 5, 26 6"/></svg>';
+
+function cell(S,key,today,spreadOf,order=0){
  if(!key)return '<span class="cal-d blank"></span>';
  const st=dayState(S,key,today),n=dayNum(key);
  if(st==='none')return `<span class="cal-d none">${n}</span>`;
  const rec=(S.daily||{})[key];
- const ink=st==='played'?` style="--ink-tier:${tierInk(rec.best)}"`:'';
+ const ink=st==='played'?` style="--ink-tier:${tierInk(rec.best)};--i:${order}"`:'';
  const lbl=`No. ${dailyNumber(key)}, ${key}${st==='played'?`, played, average ${rec.avg}`:st==='today'?', today':', not played'}`;
- return `<button class="cal-d ${st}" data-spread="${spreadOf(key)}" aria-label="${esc(lbl)}"${ink}>${n}</button>`;
+ return `<button class="cal-d ${st}" data-spread="${spreadOf(key)}" aria-label="${esc(lbl)}"${ink}>${st==='played'?RING:''}${n}</button>`;
 }
 
 /* The seven days ending today, as a strip: letter, number, and the day's average if played. */
@@ -74,7 +77,7 @@ export function calendarLeaf(S,today,ym,{spreadOf,streak=0}={}){
  const week=weekStrip(S,today);
  return `<div class="dly cal"><div class="kicker">Calendar · tap a day to turn to it</div>
   <div class="cal-head"><button class="cal-nav" data-month="${shiftMonth(ym,-1)}" aria-label="Previous month"${prev?'':' disabled'}>‹</button><h1>${esc(monthTitle(ym))}</h1><button class="cal-nav" data-month="${shiftMonth(ym,1)}" aria-label="Next month"${next?'':' disabled'}>›</button></div>
-  <div class="cal-grid" role="group" aria-label="${esc(monthTitle(ym))}">${DOW_LETTERS.map(d=>`<span class="cal-dow">${d}</span>`).join('')}${weeks.flat().map(k=>cell(S,k,today,spreadOf)).join('')}</div>
+  <div class="cal-grid" role="group" aria-label="${esc(monthTitle(ym))}">${DOW_LETTERS.map(d=>`<span class="cal-dow">${d}</span>`).join('')}${(()=>{let o=0;return weeks.flat().map(k=>cell(S,k,today,spreadOf,k&&dayState(S,k,today)==='played'?o++:0)).join('');})()}</div>
   <div class="cal-week"><h2>This week</h2><div class="cal-strip">${week.map(d=>`<span class="cal-w ${d.st}"><i>${d.dow}</i><b>${d.n}</b><small>${d.avg==null?'':d.avg}</small></span>`).join('')}</div></div>
   <p class="cal-margin">${esc(streakNote(streak))}</p></div>`;
 }

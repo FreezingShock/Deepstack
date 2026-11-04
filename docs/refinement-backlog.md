@@ -383,6 +383,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Touches:** BOOK, new files. **Conflicts:** none.
 
 ### 62. Calendar that fills in as you play
+**Status:** [~] circles and today's underline animate (#115); the "rarest this month" margin line is still open.
 **Serves:** Daily book, handwritten, rarity is the hero.
 **Pitch:** Played days get a pen-drawn circle that finishes itself (animated stroke) in the tier ink, and the month page shows a small tally of rarest books that month.
 **Brief:** Goal: animate the circles on open (reduced-motion: drawn instantly) and add a "rarest this month" margin line. Files: `dailyCalendar.js`, `dailyCalendar.css`. Done when: reduced-motion test, 375 px screenshot.
@@ -569,3 +570,16 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: one ink token per floor on the answer slip. Files: `inkInput.css`, `colors.js`. Done when: tokens only, contrast still readable.
 **Touches:** colors. **Conflicts:** 81.
 
+
+
+### 74. Ink the circles by hand on the day you play
+**Serves:** Daily book, handwritten, immersive.
+**Pitch:** After you finish a Daily and return to the calendar, today's circle is drawn live in your book's tier ink, so finishing feels like the pen signing your day.
+**Brief:** Goal: on first calendar open after a Daily result, play the ring draw only for the new day (others static). Files: `dailyCalendar.js`, `dailyBook.js`. Done when: no re-animation on later opens, reduced-motion static.
+**Touches:** BOOK. **Conflicts:** 62, 63.
+
+### 75. Pen sound for ink strokes
+**Serves:** integrated, motion should be physical.
+**Pitch:** A faint scratch of nib on paper while rings, underlines and tab strokes draw, quiet and optional.
+**Brief:** Goal: tiny shared `penScratch()` hooked to the draw-in animations, off when sound is off. Files: new `src/sound/pen.js`. Done when: respects settings, no audio before first gesture.
+**Touches:** new files. **Conflicts:** none.
