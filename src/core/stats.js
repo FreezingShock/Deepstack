@@ -2,6 +2,7 @@
    Daily results (S.daily) are never trimmed, unlike the shelf which is capped. */
 const DAY=864e5;
 const dayMs=k=>Date.parse(k+'T00:00:00Z');
+import {currentStreak} from './streak.js';
 export const dayKey=ms=>new Date(ms).toISOString().slice(0,10);
 
 export function longestStreak(keys){
@@ -31,7 +32,7 @@ export function computeStats(S,today){
     }
   }
   let rarest=-1;tiers.forEach((n,i)=>{if(n)rarest=i;});
-  const streak=liveStreak(S.streak,today);
+  const streak=keys.length?currentStreak(keys,today):liveStreak(S.streak,today);
   return{
     runs:keys.length,books,answered,tiers,rarest,best,deepest,deepestDay,totalFt,
     avg:answered?Math.round(sum/answered):0,
