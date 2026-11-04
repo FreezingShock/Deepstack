@@ -266,12 +266,12 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## G. Performance
 
-### 37. Frame-time telemetry (done, PR pending)
+### 37. Frame-time telemetry (done, PR #104)
 **Pitch:** `?perf` overlay shows frame time and dropped frames, and `scripts/perf.mjs` records a 10 s headless p95.
 **Brief:** Files: new `src/ui/perf.js`, `scripts/perf.mjs`. Done when: zero cost when off, baseline in the PR.
 **Touches:** new files. **Conflicts:** none.
 
-### 38. Canvas draw budget
+### 38. Canvas draw budget (done, this PR)
 **Pitch:** Cut per-frame cost: cached gradients, batched dust, DPR cap on huge screens.
 **Brief:** Files: WORLD. Done when: p95 improved vs item 37, snapshots unchanged.
 **Touches:** WORLD. **Conflicts:** floors, particles, 1-3 (run last).
