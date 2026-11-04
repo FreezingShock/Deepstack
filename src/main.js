@@ -22,6 +22,8 @@ import {initA11y} from './ui/a11y.js';
 import {initTopbar} from './ui/topbar.js';
 import {reducedMotion} from './ui/settings.js';
 import {initTransitions} from './ui/transitions.js';
+import {coverWorld,liftWorld} from './ui/screenFx.js';
+import './ui/screenFx.css';
 import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
 import {initBrowse} from './ui/browse.js';
 import {pullX as pullXAt} from './core/pull.js';
@@ -578,9 +580,9 @@ function finishRun(){
 const BLK='▁▂▃▄▅▆▇';
 function shareText(d){return `Deepstack ${d.mode==='unlimited'?'Unlimited \u00b7 Lexicon '+d.lex:'No. '+dailyNo()}\nDepth ${d.depth} ft${d.floor?' · '+FLOORS[d.floor].name:''} · average closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' · ')}`;}
 async function showFinal(d,fromHome){
- if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;World.setShelf([]);
+ if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;await coverWorld();World.setShelf([]);
   /* replay the whole descent: every alcove and floor again, ending at the results */
-  const L=replayLayout(d.books,{gapRows:World.nextRows(),ftPerRow:FT});World.restore(L);ui.hud.hidden=false;
+  const L=replayLayout(d.books,{gapRows:World.nextRows(),ftPerRow:FT});World.restore(L);ui.hud.hidden=false;liftWorld();
   if(L.finalRow>0){await World.glide(L.finalRow);if(!ui.home.hidden)return;}}
  ui.hud.hidden=false;$('#dnum').textContent=d.depth;
  World.openNiche(World.restRow,{label:'FINIS',books:[]});
