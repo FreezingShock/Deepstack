@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {falloff,darkness,reach,flickerAt,addLight,darkAt} from '../src/ui/lighting.js';
+import {mapStep,falloff,darkness,reach,flickerAt,addLight,darkAt} from '../src/ui/lighting.js';
 import {FLOORS,atmosphereAt} from '../src/core/floors.js';
 
 const atmOf=f=>atmosphereAt(f.row+10);
@@ -34,3 +34,7 @@ test('flicker follows the floor and is absent in reduced motion',()=>{
 });
 
 test('the light registry is capped',()=>{for(let i=0;i<100;i++)addLight(i,i,10,1);});
+
+test('the light map gets coarser on slower quality tiers',()=>{
+ assert.ok(mapStep('high')<mapStep('medium'));assert.ok(mapStep('medium')<mapStep('low'));assert.equal(mapStep(undefined),mapStep('high'));
+});

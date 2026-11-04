@@ -283,7 +283,7 @@ export const World=(()=>{
   drawFloorAtmosphere(ctx,W,H,atm,vt,lx,ly,RM);
   });
   ambItems=updateAmbient(dt,ambEnv(camNow,top,bot));drawAmbient(ctx,ambItems,vt,'body',atm.lamp);
-  drawLighting(ctx,{W,H,atm,t:vt,lx,ly,rects:arects,still:RM,low:lowQuality()}); // deeper floors: only lit pools stay readable
+  drawLighting(ctx,{W,H,atm,t:vt,lx,ly,rects:arects,still:RM,tier:Quality.params().name}); // deeper floors: only lit pools stay readable
   ctx.globalCompositeOperation='lighter';
   if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
   const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick*atm.flick;

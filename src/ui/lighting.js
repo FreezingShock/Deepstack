@@ -27,6 +27,9 @@ export function flickerAt(atm, t, ph, still) {
   return 1 + .03 * f * (Math.sin(t * 9 + ph) * .6 + Math.sin(t * 23 + ph * 2.1) * .4) + p * .07 * Math.sin(t * 1.1 + ph);
 }
 
+/** Light-map downscale for a Quality tier (ui/quality.js): cheaper maps on slower devices. */
+export const mapStep = tier => (tier === 'low' ? 6 : tier === 'medium' ? 5 : 4);
+
 /** Register a light for this frame, in screen px. r = reach on the top floor, k = strength 0..1. Cheap; extra lights beyond the cap are ignored. */
 export function addLight(x, y, r, k = 1) {
   if (n >= MAX_LIGHTS) return;
@@ -60,12 +63,12 @@ function roundRect(g, x, y, w, h, r) {
 }
 
 /** Composite the dark over the world. Call once per frame after the world is drawn and before additive glows.
-   o: {W,H,atm,t,lx,ly,rects (alcoves),still (reduced motion),low (saver mode)} */
+   o: {W,H,atm,t,lx,ly,rects (alcoves),still (reduced motion),tier (Quality.params().name)} */
 export function drawLighting(ctx, o) {
   const count = n; n = 0; // the registry is per frame
   const {W, H, atm} = o, dk = darkness(atm);
   if (dk < .03) return;
-  const step = o.low ? 6 : 4, w = Math.ceil(W / step), h = Math.ceil(H / step);
+  const step = mapStep(o.tier), w = Math.ceil(W / step), h = Math.ceil(H / step);
   if (!map) { map = document.createElement('canvas'); spr = sprite(); }
   if (w !== mw || h !== mh || step !== ms) { mw = map.width = w; mh = map.height = h; ms = step; mctx = map.getContext('2d'); }
   const g = mctx, sc = reach(atm), t = o.t, still = o.still;
