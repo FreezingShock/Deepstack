@@ -1,4 +1,5 @@
 import {PALETTE} from '../theme/colors.js';
+import {untilt} from './physics.js';
 // Lore books: a few thick books on the background shelves of the descent can be clicked to
 // reveal a word and its definition. Nothing is stored per book: which books are marked, and
 // which word each holds, are pure functions of the row seed, so shelves stay identical when a
@@ -88,10 +89,7 @@ export function hitLoreBook(d, r, rh, W, cam, a, px, py, covered = () => false, 
   for (const b of d.bs) {
     if (!isHit(b, W) || px < b.x - 4 || px > b.x + b.w + 4 || covered(b, base)) continue;
     let lx = px - (b.x + b.w / 2), ly = py - base;
-    if (b.tilt) { // books lean about the middle of their foot
-      const ox = b.w / 2, dx = lx - ox, s = Math.sin(-b.tilt), k = Math.cos(-b.tilt);
-      lx = ox + dx * k - ly * s; ly = dx * s + ly * k;
-    }
+    if (b.tilt) [lx, ly] = untilt(lx, ly, b.tilt, b.w); // books lean about the foot corner they rest on
     if (lx >= -b.w / 2 && lx <= b.w / 2 && ly >= -b.h && ly <= 2 && py <= seen) return b;
   }
   return null;

@@ -69,7 +69,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: redraw the alcove frame and ledge props, keep the word lettering area clear for the run screen thread. Files: new `src/ui/alcoveArt.js`. Done when: the ledge fits 7 books plus the skipped slot at 375 px, no overlap with the word at 14 letters.
 **Touches:** WORLD. **Conflicts:** run screen thread; sequence after it.
 
-### 6. Realistic hanging and physical sanity audit
+### 6. Realistic hanging and physical sanity audit — [x] (PR #113, report: docs/physical-sanity-audit.md)
 **Serves:** "why are the lanterns hanging from nothing", "floating book".
 **Pitch:** Sweep the world for things that float, clip or lack support: lanterns, banners, plaques, ledge books, pulled books, lore halos.
 **Brief:** Goal: a screenshot audit of every floor at several scroll positions listing physics/logic glitches, then fix them (chains reach a ceiling, books rest on planks). Files: WORLD files. Done when: report in `docs/` with before/after crops, a test for any new geometry helper.
@@ -426,6 +426,21 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Pitch:** Books shelved before floors were logged sit in "Earlier finds"; derive their floor so the floor bays are complete (skip if the attic thread covers it).
 **Brief:** Goal: derive `fl` additively from old Daily results. Files: new `src/core/shelfFloors.js`. Done when: tolerates missing data, tested.
 **Touches:** core. **Conflicts:** attic (#126).
+
+### 100. Wall-hung things get a visible mount
+**Pitch:** Plaques, banners and lantern plates show their screws, brackets and a cast shadow on the wall, so nothing hangs from nothing.
+**Brief:** Goal: a mount helper (bolt, bracket, shadow) used by the numeral plaque, floor banner, tracker plaques and lanterns. Files: new `src/ui/mounts.js`, one-line hooks. Done when: mounts visible at 375 and 1280, a geometry test that every hung object's anchor lies on a surface.
+**Touches:** WORLD, tracker. **Conflicts:** 5 (alcove).
+
+### 101. The held book rests on something
+**Pitch:** The pulled book is presented on a reading stand or in a gloved hand of light instead of hovering mid-shelf.
+**Brief:** Goal: replace the hover pose with a lectern or lit cradle that rises with the pull, shadow on the shelves behind. Files: `src/main.js` pulled-target block (small), new `src/ui/lectern.js`. Done when: pose looks supported at 375 and 1280, reduced motion shows it already raised.
+**Touches:** MAIN (pull block), results. **Conflicts:** tier reveals thread.
+
+### 102. Fallen books on the shelf floor
+**Pitch:** Where a leaning book has no support it should have fallen: tumbled books and loose pages lie in front of gaps on deep floors.
+**Brief:** Goal: scatter fallen books (flat, rotated, resting on the plank) in front of wide gaps from `settleBooks`. Files: `src/ui/physics.js`, row generation. Done when: no fallen book overlaps a standing one, seeded and stable per row, a test pinning it.
+**Touches:** WORLD. **Conflicts:** 3, 4.
 
 ---
 
