@@ -110,22 +110,22 @@
 .bk-spread.out{opacity:0}
 .bs-board,.bs-page,.bs-cover{position:absolute;top:0;bottom:0;width:50%}
 .bs-board{top:-9px;bottom:-9px;background:var(--tex,none),linear-gradient(135deg,var(--bk),var(--bk2));box-shadow:0 0 0 1px #000,0 30px 70px -12px #000}
-.bs-board.l{left:-10px;width:calc(50% + 10px);border-radius:7px 0 0 7px;opacity:0;transition:opacity .25s .15s}
+.bs-board.l{left:-10px;width:calc(50% + 10px);border-radius:7px 0 0 7px;opacity:0;transition:opacity .2s}
 .bs-board.r{right:-10px;width:calc(50% + 10px);border-radius:0 7px 7px 0}
-.bk-spread.open .bs-board.l{opacity:1}
+.bk-spread.open .bs-board.l{opacity:1;transition:opacity .25s .15s}
 .bs-page{background:repeating-linear-gradient(0deg,transparent 0 27px,#7a5a301a 27px 28px),linear-gradient(90deg,#d9c9a3,#efe3c4 45%,#e6d8b4);color:#2a2013;display:flex;flex-direction:column}
-.bs-page.l{left:0;border-radius:3px 0 0 3px;box-shadow:inset -22px 0 26px -12px #0008,inset 0 0 34px #5b3a1d55;opacity:0;transition:opacity .2s .3s}
+.bs-page.l{left:0;border-radius:3px 0 0 3px;box-shadow:inset -22px 0 26px -12px #0008,inset 0 0 34px #5b3a1d55;opacity:0;transition:opacity .15s}
 .bs-page.r{right:0;border-radius:0 3px 3px 0;box-shadow:inset 22px 0 26px -12px #0008,inset 0 0 34px #5b3a1d55}
-.bk-spread.open .bs-page.l{opacity:1}
+.bk-spread.open .bs-page.l{opacity:1;transition:opacity .2s .3s}
 .bk-spread.turning .pg-in{opacity:0;transform:translateY(4px)}
 /* the cover: closed it fills the right half; opened it swings about the centre spine */
-.bs-cover{right:0;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .62s cubic-bezier(.5,0,.2,1),visibility 0s .62s}
-.bk-spread.open .bs-cover{transform:rotateY(-180deg);visibility:hidden}
+.bs-cover{right:0;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .62s cubic-bezier(.5,0,.2,1),visibility 0s}
+.bk-spread.open .bs-cover{transform:rotateY(-180deg);visibility:hidden;transition:transform .62s cubic-bezier(.5,0,.2,1),visibility 0s .62s}
 /* a loose leaf follows the cover over, for a flourish of paper */
-.bs-leaf{position:absolute;right:0;top:3px;bottom:3px;width:49%;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .5s .1s cubic-bezier(.5,0,.2,1),visibility 0s .6s}
+.bs-leaf{position:absolute;right:0;top:3px;bottom:3px;width:49%;transform-origin:0 50%;transform-style:preserve-3d;transition:transform .5s .05s cubic-bezier(.5,0,.2,1),visibility 0s}
 .bs-leaf i{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(90deg,#d9c9a3,#efe3c4 45%,#e6d8b4);border-radius:0 3px 3px 0}
 .bs-leaf i+i{transform:rotateY(180deg);background:linear-gradient(270deg,#d9c9a3,#efe3c4 45%,#e6d8b4);border-radius:3px 0 0 3px}
-.bk-spread.open .bs-leaf{transform:rotateY(-179deg);visibility:hidden}
+.bk-spread.open .bs-leaf{transform:rotateY(-179deg);visibility:hidden;transition:transform .5s .1s cubic-bezier(.5,0,.2,1),visibility 0s .6s}
 .cv-front,.cv-in{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .cv-front{border-radius:0 7px 7px 0;display:flex;align-items:center;justify-content:center;
  background:var(--tex,none),linear-gradient(105deg,var(--bk2),var(--bk) 9%,var(--bk) 88%,var(--bk2));
@@ -181,3 +181,8 @@
 #stats .bigs{column-gap:20px}
 @media(max-width:700px){#all .panel,#stats .panel,#sets .panel{box-shadow:inset 0 0 40px #000a;background:linear-gradient(180deg,#1d150d,#130d08)}}
 
+/* closing: text clears, cover swings shut, then the book flies back to its stack */
+.bk-spread.closing .pg-in,.bk-spread.closing .pg-foot{opacity:0;transition:opacity .15s}
+.bk-spread.closing{pointer-events:none}
+.bk-spread.closing:not(.flyback){transition:transform .62s cubic-bezier(.45,0,.2,1)}
+.bk-spread.flyback{transition:transform .38s cubic-bezier(.55,0,.75,.35),opacity .2s .18s}

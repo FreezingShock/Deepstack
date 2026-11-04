@@ -87,7 +87,17 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  requestAnimationFrame(()=>requestAnimationFrame(()=>sp.classList.add('go')));
  const timers=[];let idx=0,closed=false;
  const t=(fn,ms)=>timers.push(setTimeout(fn,ms));
- const close=()=>{if(closed)return;closed=true;timers.forEach(clearTimeout);document.removeEventListener('keydown',key,true);sp.classList.add('out');setTimeout(()=>{sp.remove();onClose();},400);};
+ const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+ /* Close: with pages the cover swings shut over them, the book slides back to its closed
+    position, then flies back to where it came from. Without pages it just fades. */
+ const close=()=>{if(closed)return;closed=true;timers.forEach(clearTimeout);document.removeEventListener('keydown',key,true);document.removeEventListener('pointerdown',away,true);
+  if(!(spreads&&spreads.length)){sp.classList.add('out');setTimeout(()=>{sp.remove();onClose();},400);return;}
+  const swing=sp.classList.contains('open')&&!reduce?BOOK_SWING_MS:0,fly=reduce?0:BOOK_FLY_MS;
+  sp.removeAttribute('role');sp.setAttribute('aria-hidden','true');sp.classList.remove('intro','open');sp.classList.add('closing');
+  setTimeout(()=>{sp.classList.remove('go');sp.classList.add('flyback','out');setTimeout(()=>{sp.remove();onClose();},fly+30);},swing+90);
+ };
+ /* a press anywhere outside the book closes it (ignoring other popups stacked on top) */
+ const away=ev=>{if(sp.contains(ev.target)||(ev.target.closest&&ev.target.closest('#cardlayer,#topPanel,.tip')))return;close();};
  const paint=()=>{
   const sd=spreads[idx],L=sp.querySelector('.bs-page.l'),R=sp.querySelector('.bs-page.r'),n=spreads.length;
   const foot=(side)=>{const num=idx*2+(side==='l'?1:2);const nav=n>1?(side==='l'?`<button class="bs-turn prev" ${idx?'':'disabled'} aria-label="Previous pages">‹</button>`:`<button class="bs-turn next" ${idx<n-1?'':'disabled'} aria-label="Next pages">›</button>`):'';
@@ -105,7 +115,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  if(spreads&&spreads.length){
   t(()=>{
    paint();sp.classList.add('intro');sp.setAttribute('role','dialog');sp.setAttribute('aria-label',label||title);sp.removeAttribute('aria-hidden');
-   document.addEventListener('keydown',key,true);
+   document.addEventListener('keydown',key,true);document.addEventListener('pointerdown',away,true);
    const f=sp.querySelector('.bs-start')||sp.querySelector('.pg-in button,.pg-in input');if(f)f.focus({preventScroll:true});
   },BOOK_OPEN_MS-120);
  }
