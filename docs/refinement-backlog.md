@@ -724,3 +724,11 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 ### 142. Mounts for the alcove numeral on phones
 **Pitch:** Check every hung thing at 375 px for bolts that crowd the text and give the narrow plaques a one-bolt variant.
 **Brief:** Goal: audit `plaqueBolts` at phone widths with 14-letter labels. Files: `src/ui/mounts.js`. Done when: screenshots attached. **Touches:** WORLD. **Conflicts:** 5.
+
+### CI1. Shard the browser checks
+**Pitch:** Smoke and snapshots are about 35 to 55 s of a 75 to 120 s run; splitting snapshots into two parallel jobs would cut the wait further.
+**Brief:** Goal: run `snapshots.mjs` per viewport/screen group in a matrix, keeping one required `check` job that depends on them. Files: `.github/workflows/ci.yml`, `scripts/snapshots.mjs`. Done when: median green time drops and `check` is still the only required context. **Touches:** TOOLING. **Conflicts:** none.
+
+### CI2. Merge queue for bursts of PRs
+**Pitch:** If strict up-to-date is ever turned on, a merge queue tests PRs together instead of making each one re-run after every merge.
+**Brief:** Goal: only relevant if main starts breaking from semantic conflicts between parallel PRs. Needs nate to enable it in repo settings and add a `merge_group` trigger to CI. **Touches:** TOOLING. **Conflicts:** none.

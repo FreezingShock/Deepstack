@@ -20,28 +20,52 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+        with:
+          fetch-depth: 2
+      # Docs/notes-only changes (*.md, docs/) cannot affect the app, so skip install, build and browser steps.
+      # The job still runs and reports "check", so the required status is satisfied in seconds.
+      # pull_request checks out the merge commit, so HEAD^1 is main and the diff is exactly this PR's changes.
+      - name: Detect docs-only change
+        id: scope
+        run: |
+          files=$(git diff --name-only HEAD^1 HEAD || true)
+          echo "$files"
+          if [ -n "$files" ] && ! echo "$files" | grep -qvE '(^docs/|\.md$)'; then
+            echo "heavy=false" >> "$GITHUB_OUTPUT"
+            echo "Docs-only change: skipping build and browser steps."
+          else
+            echo "heavy=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.scope.outputs.heavy == 'true'
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npm test
+      - if: steps.scope.outputs.heavy == 'true'
+        run: npm ci
+      - if: steps.scope.outputs.heavy == 'true'
+        run: npm test
       # Self-hosted embedding model: cache it so the build doesn't re-download from Hugging Face.
-      - uses: actions/cache@v4
+      - if: steps.scope.outputs.heavy == 'true'
+        uses: actions/cache@v4
         with:
           path: public/models
           key: model-${{ hashFiles('src/scorer/model.js') }}
       # prebuild tries to self-host the embedding model and skips gracefully if the network blocks it.
-      - run: npm run build
+      - if: steps.scope.outputs.heavy == 'true'
+        run: npm run build
       - name: Get Playwright version
+        if: steps.scope.outputs.heavy == 'true'
         id: pw
         run: echo "v=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v4
+      - if: steps.scope.outputs.heavy == 'true'
+        uses: actions/cache@v4
         id: pwcache
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.v }}
       - name: Install Chromium
+        if: steps.scope.outputs.heavy == 'true'
         run: |
           if [ "${{ steps.pwcache.outputs.cache-hit }}" = "true" ]; then
             npx playwright install-deps chromium
@@ -50,6 +74,7 @@ jobs:
           fi
       # Both scripts serve the build on their own random port, so they can run side by side.
       - name: Smoke test and screenshot snapshots (in parallel)
+        if: steps.scope.outputs.heavy == 'true'
         run: |
           node scripts/smoke.mjs & smoke=$!
           node scripts/snapshots.mjs & snaps=$!

@@ -14,6 +14,9 @@
 ## Screenshot snapshots
 `node scripts/snapshots.mjs` (after `npm run build`) renders home, an open book, gameplay, a result card and the home screen after a run, with a fixed clock, date and random seed, and compares them with `test/snapshots/*.png` using a tolerant diff (fails above 10% changed pixels). If you change the look on purpose, run `node scripts/snapshots.mjs --update` and commit the new PNGs so reviewers can see them. A failing CI run uploads the actual images as the `snapshot-diffs` artifact.
 
+## Keeping CI fast
+Every push restarts CI (older runs are cancelled), so a full run is about 1.5 to 2 minutes from your last push. Push once when the work is done: fold notes and docs edits into the final commit instead of pushing them separately. Changes that only touch `*.md` or `docs/` take a fast path (about 15 seconds) that skips install, build and the browser steps but still reports `check`.
+
 ## Repo settings (one-time, by the owner)
 - Settings > General > Pull Requests: allow auto-merge, allow squash merging, automatically delete head branches.
 - Settings > Branches > add rule for `main` (or a ruleset): require status check `check`, require a pull request, no required approvals (so auto-merge isn't blocked on reviewers). Leave "require branches to be up to date" off so parallel PRs don't each need a re-run; CI already tests against current `main`.
