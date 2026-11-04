@@ -40,7 +40,7 @@ export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
  const secs=stacks.map(n=>`<ul class="hshelf" data-stack="${n}">${HOME_LINKS.filter(l=>(l.stack||0)===n).map(book).join('')}</ul>`).join('');
  return `<div class="sheet home">
   <h1 class="title">Deepstack</h1>
-  <p class="tagline">Explain a hard word. The closer you get to its true meaning, the deeper into the library you descend.</p>
+  <p class="tagline">Every word is a step into the dark.</p>
   <ol class="how" aria-label="How it works">${steps}</ol>
   ${d?`<div class="row"><button class="btn pri big" id="bRes">Today’s result</button></div><p class="next" id="nextd"></p>`
      :`<div class="row"><button class="descend" id="bPlay"><i class="d-flame" aria-hidden="true"></i><span class="d-t">Descend</span><i class="d-chev" aria-hidden="true"></i></button></div><p class="next daily-tag">Daily No. ${no}</p>`}
