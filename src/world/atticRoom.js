@@ -7,6 +7,7 @@
 import {PALETTE} from '../theme/colors.js';
 import {paintProps,drawLantern,lanternPos,swayAngle} from './atticProps.js';
 import {Quality} from '../ui/quality.js';
+import {skyAt,drawSky} from './sky.js';
 
 const rgb=(r,g,b,a=1)=>`rgba(${r|0},${g|0},${b|0},${a})`;
 const hexRgb=h=>{const n=parseInt(String(h).slice(1,7),16);return[n>>16&255,n>>8&255,n&255];};
@@ -222,6 +223,7 @@ export function drawAttic(ctx,room,o){
  const q=Quality.params(),sw=lanternPos(W,ry,A,EAVE,swayAngle(vt,{RM,glow:q.glow})),lx=sw.x,ly=sw.y+5,fl=RM?1:1+.06*Math.sin(vt*11)+.04*Math.sin(vt*23);
  const lg=ctx.createRadialGradient(lx,ly,0,lx,ly,A*.5*fl);lg.addColorStop(0,rgb(255,190,100,.2*lit));lg.addColorStop(1,rgb(255,150,60,0));ctx.fillStyle=lg;ctx.fillRect(lx-A*.55,ly-A*.55,A*1.1,A*1.1);
  ctx.restore();
+ drawSky(ctx,{win,ry,A,W,vt,lit,sky:o.sky||((!room.sky||Math.abs(Date.now()-room.skyAt)>6e4)&&(room.sky=skyAt(),room.skyAt=Date.now()),room.sky),RM,low:q.name==='low'});
  drawLantern(ctx,W,ry,A,EAVE,vt,{RM,glow:q.glow});
  /* piles, back rows first */
  const {piles,hidden}=layoutPiles(items,W),hits=[],phone=W<600;
