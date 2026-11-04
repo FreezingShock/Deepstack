@@ -162,7 +162,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: restyle the input only, keep behaviour. Files: new `src/ui/inkInput.js` + css. Done when: IME and mobile keyboard work, long answers scroll, typing sound still rate-limited.
 **Touches:** run screen. **Conflicts:** run screen thread, a11y thread.
 
-### 21. Skipped and cleared books in the ledge
+### 21. [x] Skipped and cleared books in the ledge (PR pending)
 **Serves:** integrated.
 **Pitch:** Skipped words leave a dashed slot, close calls get a ribbon, a streak of Folios gets a chain link, all visible on the alcove ledge.
 **Brief:** Goal: richer ledge states using existing run data. Files: `ledge.js`. Done when: states tested, books fit at 375 px.
@@ -235,7 +235,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## F. Mechanics and progression
 
-### 32. Chain feedback you can feel
+### 32. [x] Chain feedback you can feel (PR pending)
 **Serves:** rarity, tactile.
 **Pitch:** A combo is visible in the world: a brass chain climbs the ledge, each Folio+ adds a link, a break clunks and the chain falls.
 **Brief:** Goal: surface the existing combo chain (cap x2) with art and sound, no rule changes. Files: new `src/ui/chain.js`. Done when: link count matches `applyCombo`, break animation, reduced motion.
@@ -508,3 +508,15 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Serves:** variety, discovery. **Pitch:** "hidden curios on the shelves": rare tiny objects (a key, a skull, a folded map) tucked between books that glow on hover and reveal a line of lore.
 **Brief:** Goal: seeded rare curios per floor on shelf rows, hover tooltip, a collection page. Files: new `src/ui/curios.js`. Done when: never under an alcove, tests for seeding.
 **Touches:** WORLD hook. **Conflicts:** 6, lore books.
+### L1. Chain climbs the wall
+**Serves:** rarity, integrated.
+**Pitch:** A long chain should be seen from across the room: past 3 links the brass chain lifts off the ledge and loops up to the alcove lantern, and the lantern burns warmer at the x2 cap.
+**Brief:** Goal: extend `chain.js` with a taller chain art for chains of 4+, same `runStory` data, no rule changes. Files: `chain.js`, `lanterns.js` hook. Done when: reduced motion static, books still fit at 375 px.
+**Touches:** `chain.js`, lanterns. **Conflicts:** particles thread.
+
+### L2. Close-call ribbon on the shelf and the card
+**Serves:** everything is a book, rarity.
+**Pitch:** A book that missed a rarity by a few points keeps its crimson ribbon tab on the shelf and on its result card ("3 short of Codex"), so near misses are collectable stories.
+**Brief:** Goal: reuse `closeGap` from `chain.js` on the shelf spines and the book card. Files: shelf draw hook, `bookCard.css`. Done when: tokens only, 14-letter spine still readable at 375 px.
+**Touches:** shelf, card. **Conflicts:** 7, 16.
+

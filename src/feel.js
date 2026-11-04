@@ -142,6 +142,10 @@ export const Sfx = (() => {
     },
     key() { const n = performance.now(); if (n - lastKey < 45) return; lastKey = n; noise(.03, 'highpass', 2500, 4000, .04, { send: .05 }); },
     whoosh(d) { noise(d, 'bandpass', 200, 1400, .12, { attack: Math.min(.4, d * .4), send: .3 }); },
+    /** a brass link settling on its book (pitch climbs a little with the chain) */
+    link(n = 1) { const f = 1500 + 90 * Math.min(8, n); tone(f, 0, .09, .05, { type: 'triangle', attack: .003, send: .3 }); tone(f * 1.51, .01, .07, .025, { type: 'triangle', attack: .003, send: .3 }); },
+    /** a chain letting go: links rattle down and land with a clunk */
+    clunk() { for (let i = 0; i < 6; i++) tone(1100 - i * 90, .15 + i * .08, .06, .035, { type: 'triangle', attack: .003, send: .25 }); noise(.16, 'lowpass', 700, 150, .2, { at: .62, send: .3 }); tone(95, .62, .3, .16, { glide: .5, attack: .006, send: .3 }); },
     thud() { tone(80, 0, .35, .2, { glide: .6, attack: .008, send: .4 }); noise(.14, 'lowpass', 500, 120, .16, { send: .4 }); },
     /** tier chime: a pentatonic bell phrase that grows with tier (1 = single soft note) */
     chime(t) {
