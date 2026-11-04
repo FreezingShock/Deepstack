@@ -17,3 +17,7 @@ test('skip button warns about what it costs', () => {
   assert.match(skipButtonLabel(2, 0), /chain/);
   assert.match(skipButtonLabel(0, 1), /hints wasted/);
 });
+test('a free hint is labelled free', () => {
+  assert.match(hintSlipHtml({kind: 'synonym', text: 'odd'}, 'x', 0, 1), /free/);
+  assert.match(hintButtonLabel({kind: 'synonym'}, 0, 1), /free, once per run/);
+});
