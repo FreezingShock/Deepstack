@@ -45,7 +45,7 @@ export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
  const stacks=[...new Set(HOME_LINKS.map(l=>l.stack||0))].sort((a,b)=>a-b);
  const secs=stacks.map(n=>`<ul class="hshelf" data-stack="${n}">${HOME_LINKS.filter(l=>(l.stack||0)===n).map(book).join('')}</ul>`).join('');
  return `<div class="sheet home">
-  <header class="hz hz-title"><p class="hz-kicker">The Reading Room</p><h1 class="title">Deepstack</h1>
+  <header class="hz hz-title"><h1 class="title wordmark">Deepstack</h1>
   <p class="tagline">Every word is a step into the dark.</p></header>
   <section class="hz hz-plaque" aria-label="Descend">${rules}${slip}${d?`<div class="row"><button class="btn pri big" id="bRes">Today’s result</button></div><p class="next" id="nextd"></p>`
      :`<div class="row"><button class="descend" id="bPlay"><i class="d-flame" aria-hidden="true"></i><span class="d-t">Descend</span><i class="d-chev" aria-hidden="true"></i></button></div><p class="next daily-tag">Daily No. ${no}</p>`}</section>

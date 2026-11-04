@@ -1,30 +1,26 @@
 /* Welcome screen as a reading room: the rules are a catalogue card and the records a borrower's
    slip, both pinned to the niche beside the Descend plaque. Loaded after home.css. */
-.home .hz-kicker{margin:0 0 calc(var(--hz-g,16px)*.3);font:600 11px var(--label);letter-spacing:.42em;text-transform:uppercase;color:var(--c-brass-65);display:flex;align-items:center;gap:12px;justify-content:center}
-.home .hz-kicker::before,.home .hz-kicker::after{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--c-brass-65))}
-.home .hz-kicker::after{transform:scaleX(-1)}
 .home .hz-plaque{position:relative}
-.home .cat-card,.home .stats.slip{--ink:var(--c-oak-1a1208);position:absolute;bottom:-18px;width:196px;box-sizing:border-box;padding:22px 14px 12px;text-align:left;text-shadow:none;color:var(--c-oak-1a1208);
+.home .cat-card,.home .stats.slip{--ink:var(--c-oak-1a1208);position:absolute;top:50%;width:218px;box-sizing:border-box;min-height:168px;padding:28px 16px 14px;text-align:left;text-shadow:none;color:var(--c-oak-1a1208);
  background:repeating-linear-gradient(180deg,transparent 0 19px,color-mix(in srgb,var(--c-oak-4a3a22) 28%,transparent) 19px 20px),radial-gradient(120% 90% at 30% 10%,var(--c-parchment-85),var(--c-parchment-dim));
  border:0;border-radius:2px;box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 10px 18px -6px var(--c-black),0 0 0 1px var(--c-black-alpha-66);
  transition:transform var(--m-base) var(--e-settle),box-shadow var(--m-base);display:none}
-.home .cat-card{left:-52px;transform:rotate(-2.2deg);transform-origin:50% 0}
-.home .stats.slip{right:-52px;transform:rotate(1.8deg);transform-origin:50% 0;flex-direction:column;flex-wrap:nowrap;gap:0;align-items:stretch;justify-content:flex-start;margin:0;padding-top:22px;border-top:0;border-bottom:0;font:400 13px/20px var(--mono);letter-spacing:.02em;text-transform:none}
-.home .cat-card:hover,.home .stats.slip:hover{transform:rotate(0) translateY(-3px);box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 16px 24px -8px var(--c-black),0 0 0 1px var(--c-black-alpha-66)}
-.home .cat-card::after,.home .stats.slip::after{content:"";position:absolute;left:0;right:0;top:15px;height:1px;background:var(--c-bronze-51)}
+.home .cat-card{left:-60px;--rot:-2deg;transform:translateY(-50%) rotate(var(--rot)) scale(var(--s,1))}
+.home .stats.slip{right:-60px;--rot:1.6deg;transform:translateY(-50%) rotate(var(--rot)) scale(var(--s,1));flex-direction:column;flex-wrap:nowrap;gap:0;align-items:stretch;justify-content:flex-start;margin:0;padding-top:22px;border-top:0;border-bottom:0;font:400 14px/30px var(--mono);letter-spacing:.02em;text-transform:none}
+.home .cat-card:hover,.home .stats.slip:hover{transform:translateY(calc(-50% - 3px)) rotate(0) scale(var(--s,1));box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 16px 24px -8px var(--c-black),0 0 0 1px var(--c-black-alpha-66)}
+.home .cat-card::after,.home .stats.slip::after{content:"";position:absolute;left:0;right:0;top:19px;height:1px;background:var(--c-bronze-51)}
 .home .wc-pin{position:absolute;top:-5px;left:14px;width:11px;height:11px;margin-left:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c-amber-fff6d0),var(--c-brass-62) 45%,var(--c-oak-24));box-shadow:0 3px 3px var(--c-black-alpha-88)}
-.home .wc-head{position:absolute;left:0;right:0;top:0;padding:3px 0 0;text-align:center;font:600 9.5px/12px var(--label);letter-spacing:.2em;text-transform:uppercase;color:var(--c-book-red)}
+.home .wc-head{position:absolute;left:0;right:0;top:0;padding:4px 0 0;text-align:center;font:600 11px/14px var(--label);letter-spacing:.16em;text-transform:uppercase;color:var(--c-book-red)}
 /* rules: typed lines with a handwritten numeral, like entries on an index card */
 .home .cat-card .how{display:block;margin:0;padding:0;width:auto;list-style:none}
-.home .cat-card .how .step{display:block;position:relative;padding:0 0 0 20px;margin:0 0 2px;border:0;background:none;box-shadow:none;border-radius:0;font:400 11.5px/20px var(--mono);color:var(--c-oak-1a1208)}
-.home .cat-card .how .step b{font:600 12.5px/20px var(--mono);color:var(--c-oak-1a1208);display:inline;margin-right:5px}
-.home .cat-card .how .hn{position:absolute;left:0;top:0;width:auto;height:auto;border:0;display:inline;font:700 15px/20px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-blue)}
+.home .cat-card .how .step{display:block;position:relative;padding:0 0 0 22px;margin:0 0 4px;border:0;background:none;box-shadow:none;border-radius:0;font:400 13px/22px var(--mono);color:var(--c-oak-1a1208)}
+.home .cat-card .how .step b{font:600 14px/22px var(--mono);color:var(--c-oak-1a1208);display:inline;margin-right:5px}
+.home .cat-card .how .hn{position:absolute;left:0;top:0;width:auto;height:auto;border:0;display:inline;font:700 18px/22px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-blue)}
 .home .cat-card .how .step span:last-child{display:inline;grid-column:auto}
-.home .cat-card .how .step{line-height:20px}
 /* slip: dotted leaders between a label and its stamped value */
 .home .stats.slip span{display:flex;justify-content:space-between;gap:6px;color:var(--c-oak-1a1208);white-space:nowrap}
 .home .stats.slip span::after{content:none}
-.home .stats.slip b{font:700 13px/20px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-red);min-width:0;overflow:hidden;text-overflow:ellipsis}
+.home .stats.slip b{font:700 17px/30px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-red);min-width:0;overflow:hidden;text-overflow:ellipsis}
 /* shown only where there is wall for them: wide rooms; the rules also fit inline on tablets */
 @media(min-width:1000px){
  [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card,[data-room=snug] .home .cat-card,
@@ -37,3 +33,16 @@
 }
 @media(prefers-reduced-motion:reduce){.home .cat-card,.home .stats.slip{transition:none}}
 html[data-motion="reduce"] .home .cat-card,html[data-motion="reduce"] .home .stats.slip{transition:none}
+
+/* Today's result and the next-descent line sit as the centrepiece of the room */
+.home #bRes{font:500 20px/1 var(--label);letter-spacing:.22em;padding:16px 34px;min-width:280px}
+.home .hz-plaque .next{font-size:17px}
+/* wordmark: gilt lettering tooled into the cover, one static layer (no animation, cheap to paint) */
+.home .title.wordmark{font-weight:500;letter-spacing:.035em;color:transparent;text-shadow:none;
+ background:linear-gradient(180deg,var(--c-amber-fff6d0) 0%,var(--c-lamplight) 30%,var(--c-brass-65) 50%,var(--c-bronze-51) 51%,var(--c-brass-62) 78%,var(--c-oak-4a3a22) 100%);
+ -webkit-background-clip:text;background-clip:text;
+ filter:drop-shadow(0 1px 0 var(--c-black)) drop-shadow(0 3px 2px var(--c-black-alpha-88)) drop-shadow(0 0 26px var(--c-amber-ffb84d-alpha-44))}
+@media(forced-colors:active){.home .title.wordmark{color:CanvasText;background:none;filter:none}}
+/* short rooms (laptop heights): the cards shrink so they stay clear of the title and the book stacks */
+[data-room=snug] .home .cat-card,[data-room=snug] .home .stats.slip{--s:.86}
+[data-room=cozy] .home .cat-card,[data-room=cozy] .home .stats.slip{--s:.92}
