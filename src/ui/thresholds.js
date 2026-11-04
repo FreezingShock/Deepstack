@@ -189,7 +189,7 @@ const SIGNS = {
     c.textAlign = 'center'; c.textBaseline = 'alphabetic';
     c.save(); c.shadowColor = 'rgba(255,50,70,.9)'; c.shadowBlur = 22; c.fillStyle = 'rgba(255,150,160,1)';
     fitText(c, name.toUpperCase().split('').join(' '), cinzel(600), 17, b.w + 40, b.cx, b.y + b.h * .5); c.restore();
-    c.fillStyle = 'rgba(240,120,140,.8)'; fitText(c, sub, fell, 11, b.w + 20, b.cx, b.y + b.h * .8);
+    c.fillStyle = 'rgba(255,170,185,1)'; fitText(c, sub, fell, 12, b.w + 20, b.cx, b.y + b.h * .8);
   }
 };
 
@@ -337,7 +337,7 @@ function flame(c, x, y, s, t, still, lamp) {
   const f = still ? 1 : 1 + Math.sin(t * 9 + x) * .12 + Math.sin(t * 23 + x * 3) * .08;
   c.save(); c.globalCompositeOperation = 'lighter';
   const g = c.createRadialGradient(x, y - s, 1, x, y - s, s * 6 * f);
-  g.addColorStop(0, rgb(lamp, .5)); g.addColorStop(1, rgb(lamp, 0));
+  g.addColorStop(0, rgb(lamp, .75)); g.addColorStop(1, rgb(lamp, 0));
   c.fillStyle = g; c.fillRect(x - s * 7, y - s * 7, s * 14, s * 14);
   c.globalCompositeOperation = 'source-over';
   c.fillStyle = rgb([255, 210, 130], .95); c.beginPath(); c.ellipse(x, y - s * .9, s * .38, s * .95 * f, 0, 0, TAU); c.fill();
