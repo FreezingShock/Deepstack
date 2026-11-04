@@ -23,6 +23,7 @@ import {$,RM,clamp} from '../app/util.js';
 import {FT,TIERS,atmosphereAt,floorAtRow,hashStr,mulberry,tierOf} from '../app/state.js';
 import {bookDims,seedOf,shelfDims} from './bookArt.js';
 import {buildRoom,drawAttic} from './atticRoom.js';
+import {drawLadder,climbLight} from './atticClimb.js';
 
 /* ---------- the stacks (continuous canvas world) ---------- */
 export const World=(()=>{
@@ -249,7 +250,7 @@ export const World=(()=>{
   let tgt=null;
   for(let r=top;r<=bot;r++){const o=drawRow(r,0,camNow,1,1);if(st&&r===st.row)tgt=o;}
   if(atticT>0){const A=Math.round(H-40),k=W+'x'+A+'x'+DPR;if(!room||roomKey!==k){room=buildRoom(W,A,DPR);roomKey=k;}
-   hits=drawAttic(ctx,room,{W,A,ry:aFloor-camNow-A,items:atticItems,TIERS,vt,RM});}
+   hits=drawAttic(ctx,room,{W,A,ry:aFloor-camNow-A,items:atticItems,TIERS,vt,RM,lit:climbLight(atticT)});drawLadder(ctx,{W,H,fy:aFloor-camNow,t:ease(atticT)});}
   for(const [nr,nv] of niches)drawNiche(nr,nv,camNow,now);
   drawLoreGlows(top,bot,camNow);
   if(ledgeCb){const cn=niches.get(restRow);ledgeCb(!st&&!rest&&cn&&cn.hit&&cn.books?cn.hit:null,cn&&cn.books);}
