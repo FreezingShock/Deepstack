@@ -1,0 +1,56 @@
+/* Streak mantel (mantel.js): candles standing on an oak shelf above Descend. One flame per streak day. Wide rooms put it
+   between the cabinet and the ledger at the height of their slabs, so it reads as part of the same wall; narrower rooms
+   set it in the flow above Descend. Only transform and opacity animate; the glow of each flame is one static gradient. */
+.home .mantel{--mc-s:1;position:relative;width:min(100%,336px);margin:0 auto;padding-top:calc(52px*var(--mc-s));pointer-events:none}
+.home .mantel-row{position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:center;gap:calc(5px*var(--mc-s));height:calc(40px*var(--mc-s));padding:0 8px}
+.home .mantel-beam{position:relative;height:9px;margin:0 -6px;border-radius:2px 2px 1px 1px;
+ background:linear-gradient(180deg,var(--c-oak-24),var(--c-oak-21) 55%,var(--c-oak-12));
+ box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 0 0 1px var(--c-black),0 10px 14px -8px var(--c-black)}
+.home .mantel-plate{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:0 7px;white-space:nowrap;font:600 7.5px/10px var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--c-oak-1a1208);
+ border:1px solid var(--c-bronze-51);border-radius:2px;background:linear-gradient(180deg,var(--c-parchment-85),var(--c-parchment-dim))}
+/* ---- one candle ---- */
+.home .mc{position:relative;flex:0 0 auto;display:block;width:calc(11px*var(--mc-s));height:calc(var(--h,28px)*var(--mc-s))}
+.home .mc b{position:absolute;display:block}
+.home .mc-wax{inset:0;border-radius:2px 2px 1px 1px;
+ background:linear-gradient(90deg,var(--c-parchment-dim),var(--c-parchment) 42%,var(--c-parchment-85) 58%,var(--c-oak));
+ box-shadow:0 0 0 1px var(--c-black-alpha-66),2px 0 3px var(--c-black-alpha-44)}
+/* a drip down one side and the pooled top, both on the wax face */
+.home .mc-wax::before{content:"";position:absolute;left:1px;top:0;width:3px;height:40%;border-radius:0 0 3px 3px;background:var(--c-parchment-alpha-55)}
+.home .mc-wax::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:2px 2px 50% 50%/2px 2px 3px 3px;background:var(--c-white-alpha-33)}
+.home .mc-wick{left:50%;top:calc(-4px*var(--mc-s));width:1.5px;height:calc(5px*var(--mc-s));margin-left:-.75px;background:var(--c-black)}
+.home .mc-flame{left:50%;bottom:100%;width:calc(8px*var(--mc-s));height:calc(15px*var(--mc-s));margin:0 0 calc(1px*var(--mc-s)) calc(-4px*var(--mc-s));transform-origin:50% 90%;
+ border-radius:50% 50% 50% 50%/62% 62% 38% 38%;
+ background:radial-gradient(ellipse at 50% 70%,var(--c-amber-fff6d0) 0 22%,var(--c-amber) 62%,transparent 100%)}
+.home .mc-glow{left:50%;bottom:calc(100% - 2px);width:calc(46px*var(--mc-s));height:calc(46px*var(--mc-s));margin-left:calc(-23px*var(--mc-s));margin-bottom:calc(-6px*var(--mc-s));
+ background:radial-gradient(circle,var(--c-amber-ffb84d-alpha-44) 0,transparent 68%);transform-origin:50% 60%}
+/* ---- unlit things: the waiting candle and the cold stub ---- */
+.home .mc-new .mc-wax{filter:brightness(.78)}
+.home .mc-cold{height:calc(10px*var(--mc-s));margin-right:calc(8px*var(--mc-s))}
+.home .mc-cold .mc-wax{filter:brightness(.8) saturate(.8);border-radius:2px 2px 1px 1px}
+.home .mc-cold .mc-wick{top:calc(-3px*var(--mc-s));height:calc(3px*var(--mc-s));transform:rotate(14deg)}
+/* the ring of wax: a flat pool round the foot, darker where it has run */
+.home .mc-ring{left:50%;bottom:calc(-3px*var(--mc-s));width:calc(28px*var(--mc-s));height:calc(8px*var(--mc-s));margin-left:calc(-14px*var(--mc-s));border-radius:50%;
+ background:radial-gradient(ellipse,var(--c-parchment-dim) 0 45%,var(--c-oak) 70%,transparent 100%);opacity:.95;box-shadow:0 1px 1px var(--c-black-alpha-66)}
+.home .mc-cold .mc-ring{z-index:-1}
+/* ---- lighting up, then a slow, uneven flicker; both off when motion is reduced ---- */
+@keyframes mc-light{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:none}}
+@keyframes mc-flick{0%,100%{transform:scale(1,1) rotate(0)}22%{transform:scale(.94,1.07) rotate(-2deg)}47%{transform:scale(1.04,.95) rotate(1.5deg)}71%{transform:scale(.97,1.05) rotate(-1deg)}}
+@keyframes mc-breathe{0%,100%{opacity:.85}50%{opacity:1}}
+.home .mc-lit .mc-flame{animation:mc-light var(--m-smooth) var(--e-settle) both,mc-flick calc(1.9s + var(--r,0)*.13s) ease-in-out infinite;
+ animation-delay:calc(300ms + var(--i,0)*110ms),calc(300ms + var(--i,0)*110ms + var(--m-smooth))}
+.home .mc-lit .mc-glow{animation:mc-light var(--m-smooth) var(--e-settle) both,mc-breathe calc(2.3s + var(--r,0)*.11s) ease-in-out infinite;
+ animation-delay:calc(300ms + var(--i,0)*110ms),calc(300ms + var(--i,0)*110ms + var(--m-smooth))}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .mc-lit .mc-flame,html:not([data-motion="full"]) .home .mc-lit .mc-glow{animation:none}}
+html[data-motion="reduce"] .home .mc-lit .mc-flame,html[data-motion="reduce"] .home .mc-lit .mc-glow{animation:none}
+/* ---- where it sits ---- */
+/* tablets and phones: in the flow above Descend, a size smaller in snug rooms; very short rooms drop it rather than crowd the plaque */
+[data-room=snug] .home .mantel{--mc-s:.8}
+[data-room=tight] .home .mantel{display:none}
+.home .mantel{margin-bottom:calc(var(--hz-g,12px)*.4)}
+/* wide rooms: between the cabinet and the ledger, the beam level with the tops of their slabs (cabinet half-height: 86 / 75 / 70) */
+@media(min-width:1000px){
+ .home .mantel{--fh2:86px;position:absolute;left:50%;top:calc(50% - var(--fh2) - 9px - 92px*var(--mc-s) + 8px);transform:translateX(-50%);margin:0}
+ [data-room=cozy] .home .mantel{--mc-s:.8}
+ [data-room=snug] .home .mantel{--fh2:75px;--mc-s:.8}
+ [data-room=tight] .home .mantel{display:block;--fh2:70px;--mc-s:.7}
+}

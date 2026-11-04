@@ -1017,3 +1017,4 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** "show-off", "drive away" and "cast out" still miss because the frequency filter and the matcher stay with single words.
 **Brief:** Goal: admit common two-word synonyms from WordNet into `c`, match them in `terms()`. Files: `scripts/lib/wordnet.mjs`, `src/scorer/relations.js`. Done when: judge:eval good/synonym passes 88% with wrong answers not rising.
 **Touches:** JUDGE. **Conflicts:** none.
+- [x] N11. Streak candles on the mantel (`src/ui/mantel.js`, this PR). New ideas: N16 candles burn down through the day, N17 hover a candle for its day and word, N18 milestone candlesticks at 7/30/100 (briefs in the project notes).
