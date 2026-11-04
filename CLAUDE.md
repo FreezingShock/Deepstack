@@ -19,4 +19,8 @@ Many Claude threads work in parallel here, each on its own feature, and every PR
 `npm run dev`, `npm test`, `npm run build`, `node scripts/smoke.mjs` (after build; set `CHROMIUM_PATH` to a Chromium binary if Playwright's own isn't installed).
 
 ## Keep the maps current
-`docs/feature-inventory.md` (what exists, quality, gaps) and `docs/refinement-backlog.md` (numbered ideas and in-flight work) are how the coordinator offers the next round of work. In your PR, tick your item in the backlog (`[x]` + PR number) and update your row in the inventory. Run `node scripts/inventory.mjs` to refresh the generated file map. Keep edits to a line or two so these files don't conflict.
+`docs/feature-inventory.md` (what exists, quality, gaps), `docs/refinement-backlog.md` (numbered ideas and in-flight work) and `docs/nate-preferences.md` (what nate repeatedly asks for) are how the coordinator offers the next round of work. Read the preferences before you design anything. In your PR, when your work is finished:
+1. Tick your backlog item (`[x]` + PR number) and update your row in the inventory. `node scripts/inventory.mjs` refreshes the generated file map.
+2. If nate said anything new about taste in your thread (a correction, a "don't", a "love this"), append one dated line under the matching pattern in `docs/nate-preferences.md`.
+3. Add 2 to 3 fresh backlog items that follow from what he asked, in his wording and in the same format (title, pitch, brief, conflicts).
+Keep each edit to a few lines so these files don't conflict. After the PR merges, the coordinator copies them to the project notes folder.
