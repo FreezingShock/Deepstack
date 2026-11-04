@@ -88,7 +88,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: refine the open and close choreography (cover lift with perspective, page block thickness, ribbon drop, closing thud with sound). Files: `bookMenus.js`, new `bookOpenFx.js`. Done when: open under 600 ms, close on outside click swings the cover shut, timing test via the transitions helper, reduced motion uses a fade.
 **Touches:** HOME. **Conflicts:** transitions thread, 9.
 
-### 9. Page content that feels written [x] (PR #PRNUM)
+### 9. Page content that feels written [x] (PR #105)
 **Serves:** handwritten, sectioned.
 **Pitch:** Every book page has margin notes, underlines, ink blots, a drawn divider, and small doodles keyed to the section.
 **Brief:** Goal: a decorations helper that adds hand-drawn dividers/underlines (SVG stroke-draw animation) to page headings across Shelf, Sets, Stats and Daily. Files: new `src/ui/ink.js` + `ink.css`; light edits in BOOK files. Done when: stroke-draw respects reduced motion, text contrast unchanged, one headings test.
