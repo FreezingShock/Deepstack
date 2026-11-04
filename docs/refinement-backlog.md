@@ -31,6 +31,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - If the look is new, ask nate at most 3-5 styling questions with a recommended default, then start on the default.
 
 ## In progress (do not start)
+- [x] S1 + S2. Big sigils on result-card covers, set books share a ring (`src/ui/coverSigil.js`, PR #174)
 - [x] F / 102. Fallen books in front of shelf gaps (toppled, stacked, open face-down; `src/ui/fallenBooks.js`, PR #140)
 - [x] C. Attic for earlier Shelf finds (backfill floors from Daily history, scroll-up attic)
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
@@ -1027,3 +1028,11 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** a ladder, a hanging lamp or a distant reader's lit window now and then in the back row, never in the way.
 **Brief:** Goal: seeded rare props baked into the per-floor back tile. Files: `src/world/backStacks.js`. Done when: at most one per floor tile, none on the Hollow and Abyss except a single faint light.
 **Touches:** WORLD. **Conflicts:** none.
+
+### S3. Stamp the sigil into the open pages
+**Pitch:** the sigil is on every cover but the opened card still shows only words; press a faint watermark of it into the vellum behind the definition so the mark follows the book inside.
+**Brief:** Goal: draw `drawSigil` at ~6% alpha large behind `.book .page .inner`. Files: `src/ui/coverSigil.js`, `src/ui/bookCard.css`. Done when: text stays fully readable at 14 letters, reduced motion unchanged. **Touches:** BOOK. **Conflicts:** none.
+
+### S4. A set's ring on its Sets page and complete-set seal
+**Pitch:** the Sets book should show each set's ring as its crest, and completing a set stamps the ring in wax.
+**Brief:** Goal: render `setRing(i)` via a ring-only sigil on each set leaf; wax-seal state when `done`. Files: `src/sets/ui.js`, `src/ui/sigil.js`. Done when: six distinct crests, a test pins set to crest. **Touches:** SETS. **Conflicts:** none.
