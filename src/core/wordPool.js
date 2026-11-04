@@ -48,7 +48,7 @@ export function rejectReason(e) {
   return null;
 }
 
-/** Fallback when the dump has no example sentence: reveal shape, not meaning. */
+/** Fallback when the dump has no example sentence: not usable as a sentence hint (hintLadder skips it). */
 export function templateHint(w) {
   return `${w.pos === 'adjective' ? 'An' : 'A'} ${w.pos} of ${w.w.length} letters, beginning with “${w.w[0]}”.`;
 }
