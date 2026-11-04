@@ -1,8 +1,8 @@
 /* Popup for clicking a lore book on the background shelves: a small parchment slip, like the shelf tooltip. */
-#lore{position:fixed;z-index:65;max-width:min(300px,calc(100vw - 20px));box-sizing:border-box;padding:10px 14px 12px;background:#f1e7d0;color:#2a2013;border:1px solid #8a6a3a;border-radius:2px;box-shadow:0 8px 24px #000c,0 0 0 3px #0006;pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity .18s,transform .18s}
+#lore{position:fixed;z-index:65;max-width:min(300px,calc(100vw - 20px));box-sizing:border-box;padding:10px 14px 12px;background:var(--c-parchment-88);color:var(--c-ink);border:1px solid var(--c-bronze-38);border-radius:2px;box-shadow:0 8px 24px var(--c-black-alpha-cc),0 0 0 3px var(--c-black-alpha-66);pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity .18s,transform .18s}
 #lore[hidden]{display:none}
 #lore.on{opacity:1;transform:none}
 #lore b{font:600 18px "IM Fell English",Georgia,serif;letter-spacing:.02em}
-#lore i{font:italic 13px Newsreader,Georgia,serif;color:#6a5638;margin-left:4px}
+#lore i{font:italic 13px Newsreader,Georgia,serif;color:var(--c-bronze-6a5638);margin-left:4px}
 #lore p{margin:5px 0 0;font:400 14px/1.4 Newsreader,Georgia,serif}
 @media (prefers-reduced-motion:reduce){#lore{transition:none;transform:none}}
