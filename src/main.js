@@ -22,6 +22,7 @@ import {initTransitions} from './ui/transitions.js';
 import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
 import {initBrowse} from './ui/browse.js';
 import {pullX as pullXAt} from './core/pull.js';
+import {fitSpine,spineFont,resetSpineMeasure} from './ui/spineLabel.js';
 import {loreCovered as loreCoveredAt} from './ui/loreCover.js';
 import {isLore,drawLoreMark,drawLoreGlow,hitLoreBook,initLore} from './ui/lore.js';
 import './ui/lore.css';
@@ -81,7 +82,7 @@ function bookArt(c,o,t=0){
  const bands=T>=3?[.1,.2,.5,.84]:[.12,.2,.84];
  for(const p of bands){const yy=y0+h*p;c.fillStyle='rgba(0,0,0,.5)';c.fillRect(x0,yy,w,2);c.fillStyle=T>=4?PALETTE.brass66:'rgba(255,230,180,.26)';c.fillRect(x0,yy+2,w,1.4);if(T>=4){c.fillStyle=PALETTE.whiteAlpha66;c.fillRect(x0+w*.2,yy+2,w*.3,.8);}}
  // label / lettering
- const lw=w*.7,lh=Math.min(h*.5,Math.max(28,(o.word||'').length*5.6)),ly=y0+h*.3;
+ const F=o.fit,lw=w*(F?.82:.7),lh=F?F.lh:Math.min(h*.5,Math.max(28,(o.word||'').length*5.6)),ly=F?y0+F.top+(h-F.top-lh)/2:y0+h*.3;
  if(T<=2&&(o.word||T>=1)){c.save();c.translate(0,ly+lh/2);c.rotate(((o.seed%7)-3)*.012);c.fillStyle=PALETTE.parchmentE6d8b2;c.globalAlpha=.94;c.fillRect(-lw/2,-lh/2,lw,lh);c.globalAlpha=.4;c.fillStyle=PALETTE.black;c.fillRect(-lw/2,-lh/2,lw,1);c.fillRect(-lw/2,lh/2-1,lw,1);c.restore();}
  if(T===0||T===-1&&rng()<.3){c.save();c.globalAlpha=.7;c.fillStyle=PALETTE.brassD8cca8;c.translate(0,y0+h*.58);c.rotate(-.5);c.fillRect(-w*.7,-3,w*1.4,6);c.restore();}
  if(T>=4){c.fillStyle=PALETTE.brass67;c.globalAlpha=.85;c.fillRect(x0+w*.14,ly-6,w*.72,1.4);c.fillRect(x0+w*.14,ly+lh+4,w*.72,1.4);c.globalAlpha=1;}
@@ -91,8 +92,8 @@ function bookArt(c,o,t=0){
  c.fillStyle='rgba(255,255,255,.2)';c.fillRect(x0,y0,1.4,h);c.fillStyle='rgba(0,0,0,.35)';c.fillRect(x0+w-1.6,y0,1.6,h);
  c.restore();
  // word on spine
- if(o.word){c.save();c.translate(0,ly+lh/2);c.rotate(-Math.PI/2);const fs=clamp(w*.46,8,13);c.font=`${fs}px "IM Fell English",Georgia,serif`;c.textAlign='center';c.textBaseline='middle';
-  if(T>=3){c.fillStyle=PALETTE.brass67;c.shadowColor=PALETTE.black;c.shadowBlur=2;}else c.fillStyle=PALETTE.ink;c.fillText(o.word,0,0,lh*.94);c.restore();}
+ if(o.word){c.save();c.translate(0,ly+lh/2);c.rotate(-Math.PI/2);const fs=F?F.fs:clamp(w*.46,8,13);c.font=F?spineFont(fs):`${fs}px "IM Fell English",Georgia,serif`;c.textAlign='center';c.textBaseline='middle';
+  if(T>=3){if(F){c.lineJoin='round';c.lineWidth=3;c.strokeStyle=PALETTE.blackAlpha99;c.strokeText(o.word,0,0);c.fillStyle=PALETTE.brassF6d98a;}else{c.fillStyle=PALETTE.brass67;c.shadowColor=PALETTE.black;c.shadowBlur=2;}}else c.fillStyle=PALETTE.ink;F?c.fillText(o.word,0,0):c.fillText(o.word,0,0,lh*.94);c.restore();}
  // gems / seals
  if(T===5){c.fillStyle=PALETTE.blood40;c.beginPath();c.arc(0,y0+h*.14,Math.min(5,w*.2),0,6.3);c.fill();c.fillStyle=PALETTE.blood78;c.fillRect(-1,y0+h*.14-2,1.5,1.5);}
  if(T===6){c.save();c.translate(0,y0+h*.14);c.rotate(.785);const r=Math.min(5.5,w*.2);const gg=c.createLinearGradient(-r,-r,r,r);gg.addColorStop(0,PALETTE.teal96);gg.addColorStop(.55,PALETTE.aqua);gg.addColorStop(1,PALETTE.teal40);c.fillStyle=gg;c.shadowColor=PALETTE.aqua;c.shadowBlur=10;c.fillRect(-r,-r,r*2,r*2);c.restore();}
@@ -103,6 +104,8 @@ function bookArt(c,o,t=0){
 }
 const RIBBONS=[PALETTE.bloodA3202a,PALETTE.bronze47,PALETTE.bronze2d6a4f,PALETTE.steel36,PALETTE.bronze7a2a7a];
 function bookDims(b,rh){const hs=((b.w||'a').charCodeAt(0)*13+(b.w||'a').length*7)%20;return{w:Math.round(22+Math.min(16,(b.w||'').length*1.5)+b.tier*1.8),h:Math.round(rh*(.5+.04*b.tier)+hs),};}
+// the recent-books shelf: spines sized from the word so the whole word always fits and reads
+function shelfDims(b,rh){const d=bookDims(b,rh),f=fitSpine(b.w||'',{baseH:d.h,baseW:d.w,maxH:Math.round(rh-22),top:b.tier>=5?16:0});return{w:f.w,h:f.h,fit:{fs:f.fs,lh:f.lh,top:f.top}};}
 const seedOf=b=>hashStr(b.w+(b.t||''))&0xffff;
 const urlCache=new Map();
 function spineURL(b,rh=110){const k=b.w+'|'+b.tier+'|'+rh;if(urlCache.has(k))return urlCache.get(k);
@@ -110,7 +113,7 @@ function spineURL(b,rh=110){const k=b.w+'|'+b.tier+'|'+rh;if(urlCache.has(k))ret
  bookArt(c,{w:d.w,h:d.h,tier:b.tier,seed:seedOf(b),word:b.w,ribbon:b.tier>=1||seedOf(b)%3===0?RIBBONS[seedOf(b)%RIBBONS.length]:null},0);
  const r={url:cv.toDataURL(),w:pw,h:ph};urlCache.set(k,r);return r;}
 const spineImg=(b,i,src,rh=110,scale=1)=>{const s=spineURL(b,rh);return `<img src="${s.url}" width="${s.w*scale}" height="${s.h*scale}" alt="${esc(b.w)}, ${TIERS[b.tier].name}" data-i="${i}" data-src="${src}" data-tip="${esc(b.w)} · ${TIERS[b.tier].name} · ${b.score}">`;};
-if(document.fonts&&document.fonts.load)Promise.all(['16px "IM Fell English"','16px Newsreader','24px Caveat'].map(f=>document.fonts.load(f))).then(()=>{urlCache.clear();}).catch(()=>{});
+if(document.fonts&&document.fonts.load)Promise.all(['16px "IM Fell English"','16px Newsreader','24px Caveat'].map(f=>document.fonts.load(f))).then(()=>{urlCache.clear();resetSpineMeasure();}).catch(()=>{});
 
 /* ---------- the stacks (continuous canvas world) ---------- */
 const World=(()=>{
@@ -205,9 +208,10 @@ const World=(()=>{
    ctx.globalAlpha=1;
    if(layer===0&&(r!==0||fl.motif==='stacks'))floorWall(fl,bx0,bx1,y,base,rh,r);
    if(layer===0&&r===0){hits=[];let x=Math.max(34,(W-Math.min(W-60,1040))/2),maxX=W-Math.max(34,(W-Math.min(W-60,1040))/2);
-    const vis=[];let tot=0;for(let i=shelf.length-1;i>=0;i--){const b=shelf[i],dm=bookDims(b,RH);if(tot+dm.w+3>maxX-x)break;tot+=dm.w+3;vis.unshift({b,dm});}
-    for(const v of vis){const {b,dm}=v;const bx=x+dm.w/2;ctx.save();ctx.translate(bx,base);
-     bookArt(ctx,{w:dm.w,h:dm.h,tier:b.tier,seed:seedOf(b),word:b.w,ribbon:b.tier>=1||seedOf(b)%3===0?RIBBONS[seedOf(b)%RIBBONS.length]:null},vt);ctx.restore();
+    const vis=[];let tot=0;for(let i=shelf.length-1;i>=0;i--){const b=shelf[i],dm=shelfDims(b,RH);if(tot+dm.w+3>maxX-x-40)break;tot+=dm.w+3;vis.unshift({b,dm});}
+    for(const v of vis){const {b,dm}=v;for(let i=1;i<3;i++){const px=i*(W/3);if(x<px+9&&x+dm.w>px-9)x=px+9;} // never stand a spine behind a pillar
+     const bx=x+dm.w/2;ctx.save();ctx.translate(bx,base);
+     bookArt(ctx,{w:dm.w,h:dm.h,fit:dm.fit,tier:b.tier,seed:seedOf(b),word:b.w,ribbon:b.tier>=1||seedOf(b)%3===0?RIBBONS[seedOf(b)%RIBBONS.length]:null},vt);ctx.restore();
      hits.push({x:x,y:base-dm.h,w:dm.w,h:dm.h+16,b});x+=dm.w+3;}
     shelfVisible=vis.length;
     // fill the rest of this shelf with the same procedural books as every other row, so the top never reads as a bare band
@@ -240,7 +244,8 @@ const World=(()=>{
   if(!d.bmp){const pad=40,cw=Math.ceil(W*DPR),ch=Math.ceil((rh+pad*2)*DPR),oc=bmpPool.pop()||document.createElement('canvas');
    if(oc.width!==cw||oc.height!==ch){oc.width=cw;oc.height=ch;}const o=oc.getContext('2d');o.setTransform(DPR,0,0,DPR,0,0);o.clearRect(0,0,W,rh+pad*2);
    ctx=o;building=true;try{drawRowLive(r,0,r*rh-pad,1,1);}finally{ctx=ctx0;building=false;}d.bmp=oc;d.pad=pad;}
-  ctx.drawImage(d.bmp,0,0,d.bmp.width,d.bmp.height,0,y-d.pad,W,rh+d.pad*2);
+  const cp=r===1?d.pad:0; // row 1's bitmap pad would paint over the bottom of the recent-books shelf above it, hiding the spines' lower end
+  ctx.drawImage(d.bmp,0,cp*DPR,d.bmp.width,d.bmp.height-cp*DPR,0,y-d.pad+cp,W,rh+d.pad*2-cp);
   const a=abn(r),fl=d.fl;
   for(const wb of d.webs)if(wb.k==='strand')drawWeb(wb,y,a,fl.web);
   if(fl.motif==='flood')floodOverlay(fl,0,W,y,rh,r);
