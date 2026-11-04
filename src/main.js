@@ -21,6 +21,8 @@ import {reducedMotion} from './ui/settings.js';
 import {initTransitions} from './ui/transitions.js';
 import {deepWall,deepProp,deepProps} from './ui/floorArt.js';
 import {initBrowse} from './ui/browse.js';
+import {pullX as pullXAt} from './core/pull.js';
+import {loreCovered as loreCoveredAt} from './ui/loreCover.js';
 import {isLore,drawLoreMark,drawLoreGlow,hitLoreBook,initLore} from './ui/lore.js';
 import './ui/lore.css';
 import {shelfBook,statsBook} from './ui/bookMenus.js';
@@ -124,7 +126,7 @@ const World=(()=>{
  function resize(){DPR=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);RH=clamp(H*.22,108,172);BM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);rows.clear();
   document.documentElement.style.setProperty('--shelfH',(RH+BM+10)+'px');setNicheVars();document.documentElement.style.setProperty('--rh',Math.round(RH*.8)+'px');if(!st)cam=restCam(restRow);}
  // where the book for row r is pulled from: a random spot along that shelf, stable for the row
- function pullX(r){return W*(.12+.76*mulberry(r*40503+11)());}
+ function pullX(r){return pullXAt(r,W);}
  function genRow(r,layer){
   const key=r*2+layer;if(rows.has(key))return rows.get(key);
   const rng=mulberry(r*7919+layer*104729+13),a=abn(r),fl=floorAtRow(r),sc=layer?.72:1,bs=[],webs=[],props=[];let x=-6;
@@ -259,8 +261,7 @@ const World=(()=>{
   if(r.verdict){ctx.font='italic 400 16px Newsreader,Georgia,serif';ctx.fillStyle=PALETTE.brass76;ctx.fillText(r.verdict,cx,ry+24,sw);}
   ctx.restore();}
 // Lore books are lit after the alcoves are drawn, and a book an alcove covers is neither lit nor clickable.
- function loreCovered(b,base,cam_){const n=nicheBox();if(b.x+b.w<=n.x||b.x>=n.x+n.w)return false;
-  for(const [nr] of niches){const ny=n.t+(nr*RH-(H-RH-BM))-cam_;if(base>ny&&base-b.h<ny+n.h)return true;}return false;}
+ function loreCovered(b,base,cam_){return loreCoveredAt(b,base,cam_,nicheBox(),niches.keys(),RH,H,BM);}
  function drawLoreGlows(top,bot,camNow){
   for(let r=top;r<=bot;r++){const d=r?rows.get(r*2):null;if(!d)continue;
    const y=r*RH-camNow,base=y+RH-12,a=abn(r);
