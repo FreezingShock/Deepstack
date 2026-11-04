@@ -1,0 +1,42 @@
+/* Run screen: the word cut into the wall, a candle that melts and lights the slip, a slip that feels written on. */
+#stage{--fr:1}
+/* word lettered into the stone, lit from the candle side */
+.center .word{color:var(--c-parchment-88);letter-spacing:.01em;
+ text-shadow:0 -1px 0 color-mix(in srgb,var(--c-white) 22%,transparent),0 2px 0 var(--c-black),0 0 38px color-mix(in srgb,var(--c-amber-ffb84d-alpha-88) calc(10% + 30% * var(--fr)),transparent),0 6px 22px var(--c-black-alpha-cc)}
+.center .word span{animation-name:rise,glint;animation-duration:.5s,3.6s;animation-iteration-count:1,infinite;animation-fill-mode:forwards,none}
+@keyframes glint{0%,100%{filter:none}50%{filter:brightness(1.12)}}
+.center .pos{font-size:19px;letter-spacing:.04em}
+.center .wlabel{letter-spacing:.3em}
+/* the clock: small typewritten numerals under the part of speech */
+.clock{font:400 15px var(--mono);letter-spacing:.2em;color:var(--mute);margin:-2px 0 10px;font-variant-numeric:tabular-nums;transition:color .3s,text-shadow .3s}
+.clock.low{color:var(--c-amber-ffd98a);text-shadow:0 0 12px var(--c-blood-ff4a2a-alpha-66);animation:tick 1s steps(2) infinite}
+@keyframes tick{50%{opacity:.6}}
+/* the candle stands beside the page and its light pool grows as the wax shrinks */
+.candle{left:max(8px,calc(50% - 420px));bottom:14px;width:44px;transform:scale(1.35);transform-origin:50% 100%;z-index:0}
+.candle .wax{width:20px;border-radius:3px 3px 0 0;background:linear-gradient(90deg,var(--c-brass-74),var(--c-parchment-90) 42%,var(--c-brass-c2b793));box-shadow:inset -3px 0 4px var(--c-black-alpha-33),0 0 0 1px var(--c-black-alpha-33)}
+.candle .wax::after{content:"";position:absolute;right:2px;top:0;width:3px;height:calc(10px + 18px * (1 - var(--fr)));border-radius:0 0 3px 3px;background:var(--c-parchment-90);opacity:.85}
+.candle .plate{width:42px;height:8px;border-radius:50% 50% 3px 3px/100% 100% 3px 3px}
+.candle::before{content:"";position:absolute;left:50%;bottom:20px;width:520px;height:420px;margin-left:-260px;pointer-events:none;z-index:-1;
+ background:radial-gradient(ellipse at 50% 80%,color-mix(in srgb,var(--c-amber-ffa83c-alpha-66) calc(var(--fr) * 45% + 25%),transparent),transparent 62%);
+ opacity:calc(.35 + .65 * var(--fr));animation:breathe 2.6s ease-in-out infinite alternate}
+@keyframes breathe{from{transform:scale(.96)}to{transform:scale(1.04)}}
+.candle.dying .flame{animation-duration:.05s}
+.candle.dying{animation:gutter .35s steps(3) infinite}
+@keyframes gutter{50%{opacity:.82}}
+.candle .flame{width:12px;height:22px;margin-left:-6px;top:-23px}
+@media(max-width:1000px){.candle{left:6px;transform:scale(1)}.candle::before{width:300px;height:300px;margin-left:-150px}}
+/* a lit slip rises a little when you write; ink presses in */
+.slipwrap{transition:transform .25s cubic-bezier(.2,.8,.2,1),filter .25s}
+.slipwrap:focus-within{transform:translateY(-3px);filter:drop-shadow(0 16px 18px var(--c-black-alpha-aa)) drop-shadow(0 0 22px color-mix(in srgb,var(--c-amber-ffb84d-alpha-44) 70%,transparent))}
+.slip textarea{caret-color:var(--c-blood-43);text-shadow:0 0 .5px var(--c-steel-23)}
+.slip textarea:focus::placeholder{opacity:.25;transition:opacity .3s}
+.slipwrap.sending{transform:translateY(-10px) rotate(1.2deg) scale(.97);opacity:0;transition:transform .26s ease-in,opacity .26s}
+/* hints read as a penciled note on the wall, buttons as small brass tabs */
+.hintline{font-size:17px;max-width:46ch;margin-left:auto;margin-right:auto}
+.center .row .btn{font-family:var(--label);font-size:12px;letter-spacing:.14em;text-transform:uppercase;padding:8px 16px}
+.keys{font-family:var(--mono);letter-spacing:.06em;opacity:.8}
+/* phones: no candle, so the bar becomes a thin melting wick line */
+@media(max-width:640px){.timer{height:4px;border-radius:2px;margin-bottom:6px}.timer i{background:linear-gradient(90deg,var(--c-amber-ffd98a),var(--c-parchment));box-shadow:0 0 10px var(--c-amber-ffb84d-alpha-88)}.clock{margin-top:0}}
+@media(prefers-reduced-motion:reduce){.center .word span,.candle::before,.candle.dying,.clock.low{animation:none}.slipwrap{transition:none}}
+/* short windows: keep the hint and skip buttons in view */
+@media(max-height:780px){.center .word{font-size:clamp(46px,9vw,76px)}.slip textarea{height:118px}.clock{margin-bottom:6px}.hintline{min-height:0;margin-top:6px}}
