@@ -29,3 +29,37 @@ export function skipButtonLabel(combo, hintsUsed) {
   else if (hintsUsed) bits.push('hints wasted');
   return bits.length > 1 ? `${bits[0]} (${bits.slice(1).join(', ')})` : 'Skip';
 }
+
+/** Visible hint control: one handwritten word and a pip per clue. Pips already spent are hollow,
+ *  the next free one is ringed. The long rules live in aria-label / the Library Rules card. */
+export function hintButtonHtml(total, used, free, justSpent) {
+  const pips = Array.from({length: total}, (_, i) => {
+    const cls = i < used ? 'spent' + (justSpent && i === used - 1 ? ' snuff' : '') : (free && i === used ? 'free' : 'left');
+    return `<i class="${cls}"></i>`;
+  }).join('');
+  return `<span class="hs-word">${used >= total ? 'Hints gone' : 'Hint'}</span><span class="hs-pips" aria-hidden="true">${pips}</span>`;
+}
+
+/** Visible skip control: the word, plus a small broken-link mark when skipping costs you something. */
+export function skipButtonHtml(combo, hintsUsed) {
+  const costly = combo >= 1 || hintsUsed > 0;
+  return `<span class="hs-word">Skip</span>${costly ? '<span class="hs-cost" aria-hidden="true"></span>' : ''}`;
+}
+
+/** Paint both controls from the run state. Shared by the word and riddle screens. */
+export function paintHintControls(root, run, ft, justSpent) {
+  const h = root.querySelector('#hint'), k = root.querySelector('#skip');
+  const n = run.ladder[run.hintN], total = run.ladder.length;
+  if (h) {
+    h.classList.add('hs-btn');
+    h.disabled = !n;
+    h.innerHTML = hintButtonHtml(total, run.hintN, !!run.freeHint, justSpent);
+    h.setAttribute('aria-label', hintButtonLabel(n, n ? (run.freeHint ? 0 : n.cost * ft | 0) : 0, total - run.hintN));
+  }
+  if (k) {
+    k.classList.add('hs-btn', 'hs-skip');
+    k.classList.toggle('costly', run.combo >= 1 || run.hintN > 0);
+    k.innerHTML = skipButtonHtml(run.combo, run.hintN);
+    k.setAttribute('aria-label', skipButtonLabel(run.combo, run.hintN));
+  }
+}
