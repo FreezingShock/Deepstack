@@ -1056,11 +1056,11 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** The four Graphics choices ran past the panel at 375 so Low was half off-screen. Now the legend takes its own line and the buttons share the width (test pins the rule).
 **Touches:** settings. **Conflicts:** 55 (written settings).
 
-### Q4. Filter page overflows the book page with no way to tell
+### Q4. [x] Filter page overflows the book page with no way to tell
 **Serves:** words fully readable, everything is a page.
 **Pitch:** On the Shelf book the Sort, Bay, Show and Rarity lists run past the bottom of page 1 ("Hardbound / Folio" cut mid-line at 1640, "Paperback" cut at 375) and the right page is empty for a new player.
 **Brief:** Goal: fit the filters (two rows of handwritten words, rarity as one row of tier-coloured ticks) or let the page scroll under a deckled fade, and use the empty right page for something useful (the first tier shelf, or a hand-drawn "your first answer goes here"). Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: nothing is clipped at 375x667 or 1280x720 with 0 and 60 books.
-**Touches:** SHELF book. **Conflicts:** 11, 82.
+**Touches:** SHELF book. **Conflicts:** 11, 82. Done: filters in a compact two-column written layout with a foot fade (`src/ui/shelfFilters.css`); empty Shelf shows a sketched empty shelf on the right page.
 
 ### Q5. Descent complete is still boxes and a half-empty alcove
 **Serves:** everything is a book/page, no outlined rectangles, rarity is the hero.

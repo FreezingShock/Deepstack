@@ -65,6 +65,7 @@ import './ui/bookpages.css';
 import './ui/bookStyle.css';
 import './ui/statsPages.css';
 import './ui/penInk.css';
+import './ui/shelfFilters.css';
 import './ui/ink.css';
 import './ui/inkInput.css';
 import './ui/inkInput.js';
