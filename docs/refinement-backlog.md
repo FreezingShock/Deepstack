@@ -75,17 +75,28 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: a lighting pass where lit radius shrinks with depth and unlit shelves fade to silhouette; lantern/alcove light cast on nearby books. Files: new `src/ui/lighting.js`; hook in `World`. Done when: Abyss is legible only near lights but the word and alcove stay readable (contrast test on the alcove), cached offscreen light map, reduced motion removes flicker.
 **Touches:** WORLD. **Conflicts:** 1, 3, 33, floors thread.
 
-### LM1. Candles and braziers cast light on the shelves
+### LM1. [x] (this PR) Candles and braziers cast light on the shelves
 **Serves:** dark and mysterious, physical.
 **Pitch:** Wall mounts, candle stubs on ledges and the odd brazier become real light sources, so the Abyss has a few warm islands to head for and the Hollow has cold ones.
 **Brief:** Goal: any new lit prop calls `addLight(x, y, r, k)` from `src/ui/lighting.js` and gets a pool in the dark for free. Files: the prop's own file. Done when: it stays lit at Abyss depth, 375 and 1280 screenshots.
 **Touches:** WORLD. **Conflicts:** E (wall mounts), 3.
 
-### LM2. The dark has something in it
+### LM2. [x] (this PR) The dark has something in it
 **Serves:** immersion, rarity.
 **Pitch:** Out past the lantern pools a pair of eyes or a moving shape shows only while the cursor light is nowhere near, and flees when it arrives.
 **Brief:** Goal: one rare silhouette per deep floor, driven by `pointerLightState` in `cursorLight.js`. Done when: never over the alcove or HUD, off in reduced motion and saver mode.
 **Touches:** WORLD. **Conflicts:** 3.
+
+
+### LM3. Embers that warm what they light
+**Serves:** physical, dark and mysterious.
+**Pitch:** Braziers throw a few drifting sparks, and books in a brazier's pool show their real colours instead of grey silhouette.
+**Brief:** Goal: tint the pool by the light's colour and add 6 to 10 sparks per brazier. Files: `litProps.js`, `lighting.js`. Done when: no extra cost on Low. **Touches:** WORLD. **Conflicts:** LM1.
+
+### LM4. Something that follows at a distance
+**Serves:** immersion, rarity.
+**Pitch:** The eyes sometimes drift a shelf closer between sightings, and a very rare second pair opens beside the first.
+**Brief:** Goal: persist a small tension counter per run so sightings escalate. Files: `eyes.js`. Done when: still rare, never in reduced motion. **Touches:** WORLD. **Conflicts:** none.
 
 ### 3. [x] Things that live down here (this PR)
 **Serves:** immersion, physical realism.
