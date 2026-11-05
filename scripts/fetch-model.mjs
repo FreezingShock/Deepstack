@@ -19,7 +19,8 @@ try {
     console.log('fetched', f);
   }
   await mkdir('public/ort', {recursive: true});
-  for (const f of ['ort-wasm-simd-threaded.wasm', 'ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.asyncify.wasm', 'ort-wasm-simd-threaded.asyncify.mjs']) {
+  // plain WASM build only: the 27 MB asyncify build is for WebGPU, which the judge does not use
+  for (const f of ['ort-wasm-simd-threaded.wasm', 'ort-wasm-simd-threaded.mjs']) {
     await copyFile(join('node_modules/onnxruntime-web/dist', f), join('public/ort', f));
   }
   console.log('model and runtime ready for self-hosting');

@@ -15,8 +15,10 @@ async function selfHostedOrt(env, base) { // keep the ONNX runtime off third-par
     if (!r.ok || /html/.test(r.headers.get('content-type') || '')) return;
     const p = env.backends.onnx?.wasm?.wasmPaths;
     if (p && typeof p === 'object') {
-      const local = u => `${base}ort/${u.split('/').pop()}`;
-      env.backends.onnx.wasm.wasmPaths = {mjs: local(p.mjs), wasm: local(p.wasm)};
+      // transformers.js defaults to the *.asyncify build (27 MB, meant for WebGPU/JSEP). We only run the plain WASM
+      // execution provider, so ship the 14 MB plain build: half the bytes on first visit, same results.
+      const plain = u => `${base}ort/${u.split('/').pop().replace('.asyncify', '')}`;
+      env.backends.onnx.wasm.wasmPaths = {mjs: plain(p.mjs), wasm: plain(p.wasm)};
     }
   } catch { /* stay on defaults */ }
 }
