@@ -225,7 +225,7 @@ export const World=(()=>{
   if(nv.label){ctx.font='600 13px Newsreader,Georgia,serif';const tw=ctx.measureText(nv.label).width+26,px=x+w/2-tw/2,py=y-12;plaqueShadow(ctx,px,py,tw,24);const pg=ctx.createLinearGradient(0,py,0,py+24);pg.addColorStop(0,PALETTE.bronze35);pg.addColorStop(1,PALETTE.oak3d2916);ctx.fillStyle=pg;ctx.fillRect(px,py,tw,24);ctx.strokeStyle=PALETTE.brass;ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,tw-1,23);ctx.fillStyle=PALETTE.parchmentF3e3bd;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(nv.label,x+w/2,py+12.5);plaqueMount(ctx,px,py,tw,24);}
   if(nv.res)drawNicheResult(nv.res,x,y,w,h,now);
   // this run's books stand on the ledge in word order; a skipped word leaves an empty slot
-  const nk=nookMetrics(w);nv.hit=nv.books&&nv.books.length?drawLedge(ctx,{books:nv.books,x,y,w,h,now,RH,inset:nk.inset,maxH:nk.maxBookH,dims:b=>bookDims({w:b.w,tier:b.tier},RH),bookArt,ribbons:RIBBONS,hash:hashStr}):null;
+  const nk=nookMetrics(w);nv.hit=nv.books&&nv.books.length?drawLedge(ctx,{books:nv.books,x,y,w,h,now,RH,inset:nk.inset,maxH:nk.maxBookH,dims:b=>shelfDims({w:b.w,tier:b.tier},RH),bookArt,ribbons:RIBBONS,hash:hashStr}):null;
   ctx.restore();}
  const ease=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
  const shade=(hx,f)=>{const n=parseInt(hx.slice(1),16);return `rgb(${(n>>16)*f|0},${(n>>8&255)*f|0},${(n&255)*f|0})`;};

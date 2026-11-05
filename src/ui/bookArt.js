@@ -138,8 +138,8 @@ export function bookArt(c, o, t = 0) {
   if (F) { fs = F.fs; lh = F.lh; }
   else if (o.word) {
     fs = clamp(w * .46, 8, 13); c.font = spineFont(fs);
-    const room = h * .8 - 12; while (fs > 6 && c.measureText(o.word).width > room) { fs -= .5; c.font = spineFont(fs); }
-    lh = Math.min(h * .8, c.measureText(o.word).width + 12);
+    const room = h - 20; while (fs > 3 && c.measureText(o.word).width > room) { fs -= .5; c.font = spineFont(fs); } // shrink until the whole word fits the book, never clip
+    lh = Math.min(h - 8, c.measureText(o.word).width + 12);
   } else lh = Math.min(h * .5, 28);
   const lw = w * (F ? .82 : .7), ly = F ? y0 + F.top + (h - F.top - lh) / 2 : y0 + h * .3;
   if (T <= 2 && (o.word || T >= 1)) { c.save(); c.translate(0, ly + lh / 2); c.rotate(((o.seed % 7) - 3) * .012); c.fillStyle = PALETTE.parchmentE6d8b2; c.globalAlpha = .94; c.fillRect(-lw / 2, -lh / 2, lw, lh); c.globalAlpha = .4; c.fillStyle = PALETTE.black; c.fillRect(-lw / 2, -lh / 2, lw, 1); c.fillRect(-lw / 2, lh / 2 - 1, lw, 1); c.restore(); }

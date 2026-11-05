@@ -1224,8 +1224,8 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: polish the gap mark and slip entrance using the shared motion tokens. Files: `src/ui/hintSlips.css`. Done when: reduced-motion shows no animation.
 **Touches:** UI. **Conflicts:** none.
 - [x] Shelf spine labels never clipped: type shrinks to fit, ×N/star hang off the spine as tags, other one-line words wrap (spine-labels thread).
-- [ ] Sweep the remaining ellipsis uses (plaques, daily-book titles) for words that can clip. Pitch: nate wants no clipped words anywhere. Conflicts: shelfBays.css, home.css.
-- [ ] Attic and ledge spine labels: apply the same fit helper. Conflicts: src/world/bookArt.js.
+- [x] (clip-sweep PR) Sweep the remaining ellipsis uses (plaques, daily-book titles) for words that can clip. Pitch: nate wants no clipped words anywhere. Conflicts: shelfBays.css, home.css.
+- [x] (clip-sweep PR) Attic and ledge spine labels: apply the same fit helper. Conflicts: src/world/bookArt.js.
 
 
 - [x] Page flip overhaul (PR #199; curl, page-edge thickness, handwritten cue, tug hint, lifted leaf)
