@@ -1116,6 +1116,12 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: shorten or scale the handwritten CTA so it stays on one line ("Start the Riddles"), give the pen underline and Close a consistent gap. Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: all six books' CTAs on one line at 1280 and 375.
 **Touches:** books. **Conflicts:** Q7.
 
+### Q12b. Daily page date is clipped at the right edge on phones
+**Serves:** words fully readable, spacing.
+**Pitch:** On the open Daily book at 375, "Thursday, 5 November 2026" runs past the page and the last digit of the year is cut off.
+**Brief:** Goal: let the date wrap or scale to fit inside the page margin. Files: `src/ui/dailyBook.css`. Done when: full date visible at 375x667 and 360x640.
+**Touches:** Daily book, phone. **Conflicts:** Q14.
+
 ### Q14. Daily calendar header has stray marks
 **Serves:** spacing and polish, handwritten.
 **Pitch:** The "‹ November 2026" header has a tiny back arrow, a blue underline that runs off the right edge of the page, and small dash ornaments on the margin of page 1.
