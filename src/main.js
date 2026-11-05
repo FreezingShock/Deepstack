@@ -14,6 +14,7 @@ import {tryDustOff} from './ui/atticDust.js';
 import {setsBook} from './sets/ui.js';
 import './ui/results.js';
 import './ui/results.css';
+import './ui/finalPage.css';
 import './ui/card.css';
 import './ui/bookCard.css';
 import './ui/coverSigil.css';
