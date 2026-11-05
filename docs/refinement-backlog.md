@@ -5,6 +5,9 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 ## What nate needs to do
 - Open the Unlimited book at your window size and on your phone: a big Descend button (Find my rank before you are placed) now sits under your rank, with "Place me again" quietly beneath. Say if it reads clearly. (Unlimited pages, UB1)
 - Look at the top centre of home: the "↑ The attic · 36" pill is now a trapdoor in the ceiling beam with a swaying pull cord and a brass tag holding the count. Hover or Tab to it, press Enter, and say if it reads as an entrance and not a button (thread: attic entrance).
+
+
+- Open and close each menu book (Shelf, Sets, Stats, Daily, Unlimited, Practice), and click a second book while the first is still flying home: the pages should already be written when the cover swings, nothing should pop in afterwards, the room should fade back as the book flies home, and the second book should open as soon as the first lands. Say if it still stutters on your machine and which book. (book switching thread)
 - Pick from the new G1 to G10 goal-level menu (section G near the end of this file). (polish menu thread)
 - Pull `main` and look at the home screen: a stone fireplace now burns between the book stacks on a brick back wall, and the fire lights the room (lamps down). Move the cursor near it (flames lean away) and click it to stoke. Check your window size and phone, and say if the room is too dark. It was hidden once today's Daily was played and on phones under ~800 tall; both fixed in the fireplace-visibility PR, so look again on your phone, before and after playing the Daily. (fireside home, FH1)
 - Open the Unlimited book: the left page is Unlimited, the right page is Riddle, each with its own Start link. Open the Daily book: its first page now has Daily and Daily Riddle with Descend / Open today's riddle. Say if the sections read clearly or if the Riddle half needs more weight. (merged modes)
@@ -45,6 +48,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [x] Q7. Empty pages for a new player: Almanac, Sets and Riddle books get a faint pen sketch plus one written line (`src/ui/emptyPages.js`); Shelf left to Q4 (#181); margin notes no longer repeat on a spread (PR TBD)
 - [x] C. Attic for earlier Shelf finds (backfill floors from Daily history, scroll-up attic)
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
+- [x] Smooth book switching: pages painted before the first frame, cover dissolves instead of popping, room returns during the fly-home, clicks mid-close queue (`src/ui/home.js`, `bookOpenFx.css`, `test/book-switch.test.js`)
 - [~] Spacing and type pass on every screen
 - [~] Run screen overhaul (alcove, wall lettering, candle timer, input)
 - [x] Text size applies to all text and keeps layouts intact (`--ts` on every font size, `src/ui/textScale.css`, PR #206)
@@ -1454,3 +1458,12 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### AE3. A matching way down: the ladder drops from the same hatch
 **Pitch:** Replace the "Down the ladder ↓" plaque with a rope ladder hanging from the hatch you came up through, so exit and entrance are one object.
 **Brief:** Goal: draw the ladder at top centre while up there, click or Escape to descend. Files: `atticHome.js`, `attic.css`. Done when: keyboard and swipe paths unchanged. **Touches:** UI. **Conflicts:** attic floor/rows thread.
+
+
+### BS1. Page-turn sound and paper shadow that follow the leaf
+**Pitch:** The leaf already flips smoothly; make it feel like paper by shading the page beneath as it lifts and adding a soft rustle that follows the turn speed.
+**Brief:** Goal: tie a moving shade on the pages under `.bs-flip` to the same keyframes (opacity only) and call the existing flip sound at the lift, not the end. Files: `src/ui/pageFlip.css`, `src/ui/home.js` (turn). Done when: filmstrip at 375 and 1280 shows the shade tracking the leaf. **Touches:** UI. **Conflicts:** `home.js` (book thread).
+
+### BS2. Switch books without going home
+**Pitch:** Today you close a book and pick another from the stack. A bookmark tab on the open book's edge for each sibling would swap one book for the next in a single turn.
+**Brief:** Goal: ribbons or tabs on the spread that cross-fade pages (pre-built like the open) and re-colour the board. Files: `src/ui/home.js`, new `src/ui/bookTabs.js`. Done when: switching Shelf to Sets never shows the room. **Touches:** UI, UX. **Conflicts:** `home.js`, Unlimited pages thread.

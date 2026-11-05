@@ -107,7 +107,7 @@ export function introSpreads(intro){
    Returns {el, close}. */
 export const BOOK_FLY_MS=BOOK_TIMING.fly, BOOK_HOLD_MS=BOOK_TIMING.hold, BOOK_SWING_MS=BOOK_TIMING.swing;
 export const BOOK_OPEN_MS=BOOK_FLY_MS+BOOK_HOLD_MS+BOOK_SWING_MS;
-export function openBook({from,colors={},title='',spreads=null,label='',cls='',keepOnEsc=null,onClose=()=>{}}){
+export function openBook({from,colors={},title='',spreads=null,label='',cls='',keepOnEsc=null,onFly=()=>{},onClose=()=>{}}){
  const sp=document.createElement('div');sp.className='bk-spread'+(cls?' '+cls:'');sp.setAttribute('aria-hidden','true');
  const r=from||{left:innerWidth/2,top:innerHeight/2,width:0,height:0};
  sp.style.cssText=`--bk:${colors.bk};--bk2:${colors.bk2};--bk-gild:${colors.gild};--tex:${colors.tex||'none'};--fx:${r.left+r.width/2-innerWidth/2}px;--fy:${r.top+r.height/2-innerHeight/2}px`;
@@ -129,7 +129,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   const swing=sp.classList.contains('open')?T.swing:0,fly=T.flyBack;
   sp.removeAttribute('role');sp.setAttribute('aria-hidden','true');sp.classList.remove('intro','open');sp.classList.add('closing');
   if(swing)setTimeout(()=>thud(sp),swing);
-  setTimeout(()=>{sp.classList.remove('go');sp.classList.add('flyback','out');setTimeout(()=>{sp.remove();onClose();},(reduce?T.fade:fly)+30);},swing+T.shutHold);
+  setTimeout(()=>{sp.classList.remove('go');sp.classList.add('flyback','out');onFly();setTimeout(()=>{sp.remove();onClose();},(reduce?T.fade:Math.max(fly,300))+30);},swing+T.shutHold);
  };
  /* a press anywhere outside the book closes it (ignoring other popups stacked on top) */
  const away=ev=>{if(sp.contains(ev.target)||(ev.target.closest&&ev.target.closest('#cardlayer,#topPanel,.tip')))return;close();};
@@ -203,8 +203,11 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0,only){settle();queued=0;spreads=s;idx=Math.max(0,Math.min(i,s.length-1));if(!only)side='l';paint(only);}};
  t(()=>{sp.classList.add('open');bookSound('flip');},T.fly+T.hold);
  if(spreads&&spreads.length){
+  /* Both pages are built before the first frame (a microtask, after the caller has hooked onPaint), so they are
+     already there, under the cover, when it swings: nothing is rendered or decorated mid-animation or afterwards. */
+  queueMicrotask(()=>{if(!closed)paint();});
   t(()=>{
-   paint();sp.classList.add('intro');hintCurl(sp,reduce);sp.setAttribute('role','dialog');sp.setAttribute('aria-label',label||title);sp.removeAttribute('aria-hidden');
+   sp.classList.add('intro');hintCurl(sp,reduce);sp.setAttribute('role','dialog');sp.setAttribute('aria-label',label||title);sp.removeAttribute('aria-hidden');
    document.addEventListener('keydown',key,true);document.addEventListener('pointerdown',away,true);
    const f=sp.querySelector('.bs-start')||sp.querySelector('.pg-in button,.pg-in input');if(f)f.focus({preventScroll:true});
   },Math.max(0,T.open-120));
@@ -220,17 +223,22 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
 export const BOOK_PAGES={};
 export function bookify(root,{wait=BOOK_OPEN_MS}={}){
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+ let busy=false,flying=false,pending=null;
  root.querySelectorAll('.hbook').forEach(el=>{
   const go=el.onclick;if(!go&&!BOOK_PAGES[el.id])return;
   el.onclick=e=>{
-   if(root.classList.contains('book-opening'))return;
+   if(busy){if(!el.classList.contains('opening'))pending=()=>el.onclick(e);return;}
    const pages=BOOK_PAGES[el.id];
    if(reduce&&!pages&&!BOOK_INTROS[el.id]?.riddle){go.call(el,e);return;}
    const cs=getComputedStyle(el),intro=BOOK_INTROS[el.id];
    const title=el.querySelector('.hb-t')?.firstChild?.textContent?.trim()||'';
-   root.classList.add('book-opening');el.classList.add('opening');
-   const fin=()=>{el.classList.remove('opening');root.classList.remove('book-opening');};
-   const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onClose:fin,
+   busy=true;flying=false;root.classList.add('book-opening');el.classList.add('opening');
+   /* The room comes back while the book is still flying home (not after it lands), so closing is one motion,
+      and the spine it left fades in as the book settles onto it. */
+   const lift=()=>{flying=true;root.classList.remove('book-opening');setTimeout(()=>el.classList.remove('opening'),reduce?0:130);};
+   const fin=()=>{el.classList.remove('opening');root.classList.remove('book-opening');busy=false;flying=false;
+    if(pending){const n=pending;pending=null;n();}};
+   const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onFly:lift,onClose:fin,
     colors:{bk:cs.getPropertyValue('--bk'),bk2:cs.getPropertyValue('--bk2'),gild:cs.getPropertyValue('--bk-gild'),tex:cs.getPropertyValue('--tex')}});
    if(pages){bk.onPaint=(sp,idx)=>{inkPage(sp,pages.label);pages.onPaint&&pages.onPaint(sp,bk,idx);};}
    else if(intro){
