@@ -102,6 +102,7 @@ import './ui/feedback.js';
 import './core/feedback.js';
 import './ui/feedback.css';
 import './ui/alsoAccepted.css';
+import './ui/explain.css';
 import './ui/alsoMeans.css';
 import './ui/textScale.css';
 import {deferAfterPaint} from './core/boot.js';

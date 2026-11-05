@@ -49,7 +49,7 @@ export function hitTerm(term,pool){ // all parts must match some unused/any toke
 }
 export function judge(text,word){
  const P=prep(word),A=analyze(text,word);
- const res={score:0,caught:[],missed:[],opposite:false,usedWord:A.usedWord,empty:false,words:A.toks.length};
+ const res={score:0,caught:[],missed:[],opposite:false,usedWord:A.usedWord,empty:false,words:A.toks.length,hits:[]};
  if(A.content===0){res.empty=true;P.concepts.forEach(c=>res.missed.push(c.label));return res;}
  let cov=0;
  for(const c of P.concepts){
@@ -69,5 +69,6 @@ export function judge(text,word){
  let s=100*cov*(.86+.14*p);
  if(s>=40){const longN=A.pos.filter(u=>u.used&&u.raw.length>=9).length;s+=Math.min(6,2*longN);}
  res.score=Math.max(0,Math.min(100,Math.round(s)));
+ res.hits=[...new Set(A.pos.filter(u=>u.used&&!FILL.has(u.raw)).map(u=>u.raw))];
  return res;
 }
