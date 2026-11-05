@@ -44,3 +44,43 @@
    mantel inside them, fade above). The room itself (the hearth and its light) stays lit behind the spread; no veil,
    since #home is a transformed box and a fixed veil inside it painted a black rectangle over the alcove. */
 .book-opening .hbook:not(.opening){opacity:0;transition:opacity var(--m-quick)}
+
+/* ---- book switching v4: one continuous motion, nothing built or popped in mid-flight ---- */
+/* The pages are painted before the first frame, so there is no staggered rise-in when the cover finishes. */
+.bk-spread.intro .pg-in>*{animation:none}
+/* Ink strokes draw as the cover swings open, not while the closed book is still flying in. */
+@media(prefers-reduced-motion:no-preference){
+ .bk-spread.menu .ink-rule,.bk-spread.menu .ink-under,.bk-spread.menu .ink-doodle{animation-delay:calc(var(--o-fly,230ms) + var(--m-quick))}
+ .bk-spread.menu .ink-under{animation-delay:calc(var(--o-fly,230ms) + var(--m-quick) + 80ms)}
+ .bk-spread.menu .ink-doodle{animation-delay:calc(var(--o-fly,230ms) + var(--m-base))}
+ .bk-spread.menu .ink-blot{animation-delay:calc(var(--o-fly,230ms) + var(--m-smooth))}
+}
+/* Curls, page edges and the cue fade with the cover instead of switching on (display) once the book has settled. */
+.bk-spread:not(.open) .bs-corner{display:block;opacity:0;visibility:hidden}
+.bk-spread:not(.open) .bs-corner[hidden]{display:none}
+.bs-corner{transition:opacity var(--m-smooth) var(--e-cruise),visibility 0s}
+.bk-spread:not(.open) .bs-corner{transition:opacity var(--m-quick),visibility 0s var(--m-quick)}
+.bk-spread:not(.open) .bs-page::before,.bk-spread:not(.open) .bs-page::after{display:block;opacity:0}
+.bs-page::before,.bs-page::after{transition:opacity var(--m-smooth) var(--e-cruise)}
+.bk-spread:not(.one) .bs-page.l::after,.bk-spread:not(.one) .bs-page.r::before{display:none}
+/* The landing glow animated box-shadow (a repaint of a 70px blur every frame). It is now a faded layer: opacity only. */
+.bk-spread.go:not(.open) .bs-board.r{animation:none}
+.bs-board.r::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;box-shadow:0 0 50px 4px color-mix(in srgb,var(--bk-gild) 60%,transparent)}
+.bk-spread.go:not(.open) .bs-board.r::after{animation:bk-glow var(--o-fly,230ms) var(--e-settle)}
+@keyframes bk-glow{60%{opacity:1}}
+/* Own compositor layer while the book moves; released once it sits still and its text is crisp. */
+.bk-spread:not(.intro){will-change:transform,opacity}
+.bs-cover,.bs-leaf{will-change:transform}
+.bk-spread.intro .bs-cover,.bk-spread.intro .bs-leaf{will-change:auto}
+/* The spine this book came from fades back in as the book lands on it, rather than popping when the flight ends. */
+.hbook.opening{visibility:visible;opacity:0;transition:none}
+.hbook{transition:transform var(--m-base) var(--e-spring),filter var(--m-base),opacity var(--m-quick)}
+@media(prefers-reduced-motion:reduce){.bs-corner,.bs-page::before,.bs-page::after{transition:none}}
+/* The cover's inside and the leaf ride over the left page and then dissolve on landing, instead of vanishing in one
+   frame (visibility) and uncovering a page that has only just started to appear. The left page is already in place
+   beneath them. Only the faces fade; the cover itself keeps its 3D transform so no face flips into view. */
+.cv-in,.bs-leaf i{transition:opacity 60ms}
+.bk-spread.open .cv-in,.bk-spread.open .bs-leaf i{opacity:0;transition:opacity var(--m-quick) calc(var(--o-swing,320ms)*.85)}
+.bk-spread.open .bs-cover,.bk-spread.open .bs-leaf{transition-property:transform,visibility;transition-delay:0s,calc(var(--o-swing,320ms)*.85 + var(--m-quick))}
+.bk-spread.open .bs-page.l,.bk-spread.open .bs-board.l{transition:opacity var(--m-quick) calc(var(--o-swing,320ms)*.3)}
+.bk-spread.rm .cv-in,.bk-spread.rm .bs-leaf i{transition:none}

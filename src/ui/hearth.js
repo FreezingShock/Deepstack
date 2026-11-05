@@ -446,7 +446,8 @@ function createHearth(home, sfx) {
     raf = 0;
     if (!visible()) return;
     const rm = reducedMotion();
-    if (lowFps && now - lastDraw < lowFps - 2) { raf = requestAnimationFrame(frame); return; }
+    const gap = lowFps || (home.classList.contains('book-opening') ? 33 : 0); /* half rate while a book is on screen: it frees the main thread for the book's motion */
+    if (gap && now - lastDraw < gap - 2) { raf = requestAnimationFrame(frame); return; }
     const dt = Math.min(.05, (now - last) / 1000); last = now; lastDraw = now; t += dt;
     const {OP, FIRE, mantel} = G;
     const dx = px - FIRE.cx, dy = py - (FIRE.base - OP.h * .3), dist = Math.hypot(dx, dy), near = clamp(1 - dist / (OP.w * 1.6), 0, 1);
