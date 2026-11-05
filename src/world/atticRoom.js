@@ -8,6 +8,8 @@ import {PALETTE} from '../theme/colors.js';
 import {paintProps,drawLantern,lanternPos,swayAngle} from './atticProps.js';
 import {Quality} from '../ui/quality.js';
 import {skyAt,drawSky} from './sky.js';
+import {bookArt,RIBBONS} from '../ui/bookArt.js';
+import {hashStr} from '../core/daily.js';
 
 const rgb=(r,g,b,a=1)=>`rgba(${r|0},${g|0},${b|0},${a})`;
 const hexRgb=h=>{const n=parseInt(String(h).slice(1,7),16);return[n>>16&255,n>>8&255,n&255];};
@@ -22,20 +24,27 @@ export const VP_Y=.5,FAR=.6,EAVE=.38;
    takes a different look (KINDS) so the floor reads as a lived-in heap rather than a row of identical stacks. */
 export const SIZES=[4,2,5,3,5,3,4];
 export const KINDS=['stack','heap','trunk','slump','crate','plank','heap','stack','slump','trunk'];
-export function layoutPiles(items,W,{rowsMax=3}={}){
- const phone=W<600,pileW=phone?150:214,fit=Math.max(1,Math.floor((W-28)/pileW)),cap=fit*rowsMax;
+export const MAX_LAYERS=4,ROWS=3;
+/* Piles are laid in rows. A group (recent guesses, earlier finds) always starts on a fresh row, so the two never share
+   a row and each wears one sign. Each room (layer) holds ROWS rows; what does not fit goes into the next room back,
+   up to MAX_LAYERS rooms. Every pile gets {layer,row,x,w}; `layers` is how many rooms are in use. */
+export function layoutPiles(items,W,{rowsMax=ROWS,layersMax=MAX_LAYERS}={}){
+ const phone=W<600,pileW=phone?150:214,fit=Math.max(1,Math.floor((W-28)/pileW));
  const groups=[items.filter(x=>x.recent),items.filter(x=>!x.recent)].filter(g=>g.length);
- const chunk=bump=>{const out=[];groups.forEach(g=>{for(let k=0,o=0;k<g.length;o++){const n=SIZES[(o+(g[0].recent?0:3))%SIZES.length]+bump;out.push({items:g.slice(k,k+n),group:g[0].recent?'recent':'earlier',first:k===0,ord:o});k+=n;}});return out;};
- let piles=chunk(0);for(let bump=1;bump<=1&&piles.length>cap;bump++)piles=chunk(bump);
- const shown=piles.slice(0,cap),hidden=piles.slice(cap).reduce((n,p)=>n+p.items.length,0);
- shown.forEach((p,i)=>{p.kind=KINDS[(i*3+(p.group==='recent'?0:2))%KINDS.length];});
- let at=0;
- for(let row=0;row<rowsMax&&at<shown.length;row++){
-  const n=Math.min(fit,shown.length-at),span=n*pileW,x0=(W-span)/2+pileW/2;
-  for(let k=0;k<n;k++){const p=shown[at+k];p.row=row;p.x=x0+k*pileW;p.w=pileW;}
-  at+=n;
- }
- return{piles:shown,hidden,pileW};
+ const rows=[];
+ groups.forEach(g=>{
+  const recent=!!g[0].recent,piles=[];
+  for(let k=0,o=0;k<g.length;o++){const n=SIZES[(o+(recent?0:3))%SIZES.length];piles.push({items:g.slice(k,k+n),group:recent?'recent':'earlier',first:k===0,ord:o});k+=n;}
+  for(let k=0;k<piles.length;k+=fit)rows.push(piles.slice(k,k+fit));
+ });
+ const cap=rowsMax*layersMax,shownRows=rows.slice(0,cap),shown=[];
+ const hidden=rows.slice(cap).reduce((n,r)=>n+r.reduce((m,p)=>m+p.items.length,0),0);
+ shownRows.forEach((r,ri)=>{
+  const layer=Math.floor(ri/rowsMax),row=ri%rowsMax,span=r.length*pileW,x0=(W-span)/2+pileW/2;
+  r.forEach((p,k)=>{p.layer=layer;p.row=row;p.x=x0+k*pileW;p.w=pileW;p.kind=KINDS[(shown.length*3+(p.group==='recent'?0:2))%KINDS.length];p.head=layer>0&&row===0&&k===0;shown.push(p);});
+ });
+ const layers=shown.length?Math.max(...shown.map(p=>p.layer))+1:1;
+ return{piles:shown,hidden,pileW,layers};
 }
 
 /* ---- static room ---- */
@@ -57,7 +66,19 @@ function geometry(W,A){
  const P=(x,y,s)=>({x:vp.x+(x-vp.x)*s,y:vp.y+(y-vp.y)*s});
  return{vp,P,eaveY:A*EAVE,floorBackY:vp.y+(A-vp.y)*FAR};
 }
-export function buildRoom(W,A,DPR=1,seed=7){
+/* A doorway in the back wall, cut right through the painted room so the next room back shows in it. It stands on the
+   far floor line and is framed in timber; the next room is drawn behind at the far-wall scale (FAR), so what shows is
+   exactly what you would see from that doorway. */
+export function doorRect(W,A){const vpy=A*VP_Y,floor=vpy+(A-vpy)*FAR,dw=Math.max(54,W*.15),dh=A*.21;return{x:W/2-dw/2,y:floor-dh,w:dw,h:dh,floor};}
+function punchDoor(c,W,A){
+ const d=doorRect(W,A),r=d.w/2,path=()=>{c.beginPath();c.moveTo(d.x,d.floor);c.lineTo(d.x,d.y+r);c.arc(d.x+r,d.y+r,r,Math.PI,0);c.lineTo(d.x+d.w,d.floor);c.closePath();};
+ c.save();c.globalCompositeOperation='destination-out';c.fillStyle='#000';path();c.fill();c.restore();
+ c.save();c.lineJoin='round';c.strokeStyle=rgb(34,23,12);c.lineWidth=Math.max(5,d.w*.09);path();c.stroke();
+ c.strokeStyle=rgb(112,80,44,.7);c.lineWidth=1.2;path();c.stroke();
+ c.fillStyle=rgb(34,23,12);c.fillRect(d.x-d.w*.06,d.floor-3,d.w*1.12,5); // threshold
+ c.restore();
+}
+export function buildRoom(W,A,DPR=1,seed=7,{sign=true,door=false}={}){
  const cv=document.createElement('canvas');cv.width=Math.ceil(W*DPR);cv.height=Math.ceil(A*DPR);
  const c=cv.getContext('2d');c.scale(DPR,DPR);
  const R=rng(seed),{vp,P,eaveY}=geometry(W,A);
@@ -120,15 +141,18 @@ export function buildRoom(W,A,DPR=1,seed=7){
   c.strokeStyle=rgb(228,222,206,.2);c.lineWidth=.8;
   for(let k=0;k<7;k++){const x=cl.x+R()*(cr.x-cl.x),y=cl.y+th*.4,len=14+R()*46*sc,sw=(R()-.5)*8;c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x+sw,y+len*.5,x+sw*.4,y+len);c.stroke();}
  }
- /* the sign on the back wall */
+ /* the sign on the back wall (only the first room has one) */
  const sg=P(W/2,A*.575,FAR),sw=Math.max(130,W*.17)*.9,sh=Math.max(26,sw*.19);
+ if(sign){
  c.fillStyle=rgb(70,48,26);c.fillRect(sg.x-sw/2,sg.y-sh/2,sw,sh);c.strokeStyle=rgb(120,88,50,.8);c.lineWidth=1.4;c.strokeRect(sg.x-sw/2+1,sg.y-sh/2+1,sw-2,sh-2);
  c.fillStyle=rgb(216,192,140);c.font=`600 ${Math.round(sh*.5)}px Cinzel,Georgia,serif`;c.textAlign='center';c.textBaseline='middle';c.fillText('THE ATTIC',sg.x,sg.y+1);
  c.strokeStyle=rgb(40,28,16);c.lineWidth=1.4;c.beginPath();c.moveTo(sg.x-sw*.4,sg.y-sh/2);c.lineTo(sg.x-sw*.4,sg.y-sh/2-A*.05);c.moveTo(sg.x+sw*.4,sg.y-sh/2);c.lineTo(sg.x+sw*.4,sg.y-sh/2-A*.05);c.stroke();
+ }
  /* corner webs low on the posts and in the far floor corners */
  web(c,W*.045+10,A*.6,1,-1,W*.05,.16);web(c,W*.955-10,A*.6,-1,-1,W*.05,.16);
- paintProps(c,geometry(W,A),W,A);
- return{cv,win:{x:wc.x,y:wc.y,r:wr},geo:geometry(W,A)};
+ if(sign)paintProps(c,geometry(W,A),W,A); // the hatch, ladder and trunks belong to the first room only
+ if(door)punchDoor(c,W,A,vp);
+ return{cv,win:{x:wc.x,y:wc.y,r:wr},geo:geometry(W,A),dpr:DPR};
 }
 
 /* ---- ageing ---- */
@@ -144,9 +168,9 @@ const DUST=hexRgb(PALETTE.parchmentDim),WEB=hexRgb(PALETTE.parchment);
 function ageBook(c,w,h,age,seed){
  if(age<.02)return;const R=rng(seed^0x9e3779b9);
  c.save();c.beginPath();c.rect(-w/2,-h,w,h);c.clip();
- c.fillStyle=rgb(...DUST,.05+.2*age);c.fillRect(-w/2,-h,w,h); // dull the cloth
- const tg=c.createLinearGradient(0,-h,0,-h*.35);tg.addColorStop(0,rgb(...DUST,.5*age));tg.addColorStop(1,rgb(...DUST,0));
- c.fillStyle=tg;c.fillRect(-w/2,-h,w,h*.65); // dust settles on top
+ c.fillStyle=rgb(...DUST,.02+.07*age);c.fillRect(-w/2,-h,w,h); // dull the cloth, lightly so the lettering stays readable
+ const tg=c.createLinearGradient(0,-h,0,-h*.35);tg.addColorStop(0,rgb(...DUST,.42*age));tg.addColorStop(1,rgb(...DUST,0));
+ c.fillStyle=tg;c.fillRect(-w/2,-h,w,h*.3); // dust settles on top
  for(let k=0,n=Math.round(w*age*.5);k<n;k++){c.fillStyle=rgb(...DUST,.18+.3*R());c.fillRect(-w/2+R()*w,-h+R()*h*.8,1+R()*1.5,1);}
  if(age>.45){ // cobweb draped from the left end, strands hanging from the top
   const a=Math.min(1,(age-.45)/.4)*.4,len=Math.min(w*.3,h*2.2);c.strokeStyle=rgb(...WEB,a);c.lineWidth=.7;
@@ -158,20 +182,40 @@ function ageBook(c,w,h,age,seed){
 }
 
 /* ---- books ---- */
-function lyingBook(c,x,y,w,h,spine,word,rot,fav,age=0,seed=1){
+/* A lying book is the very same spine the Shelf draws (bookArt: tier material, headbands, gilt, runed leather, seal,
+   the word's sigil and lettering), turned on its side. The spine is painted once into a small bitmap and re-used every
+   frame; dust and webs go on top each frame, so ageing stays live. */
+const sprites=new Map();
+if(typeof document!=='undefined'&&document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>sprites.clear()).catch(()=>{});
+export const seedOfBook=b=>hashStr(String(b.w)+(b.t||''))&0xffff;
+function spineSprite(b,len,th,dpr){
+ const key=[b.w,b.tier,Math.round(len),Math.round(th),dpr,b.t||''].join('|');
+ let cv=sprites.get(key);if(cv)return cv;
+ if(sprites.size>160)sprites.clear();
+ const seed=seedOfBook(b);
+ cv=document.createElement('canvas');cv.width=Math.ceil(th*dpr);cv.height=Math.ceil(len*dpr);
+ const c=cv.getContext('2d');c.scale(dpr,dpr);c.translate(th/2,len);
+ bookArt(c,{w:th,h:len,tier:b.tier,seed,word:b.w,ribbon:b.tier>=1||seed%3===0?RIBBONS[seed%RIBBONS.length]:null},0);
+ sprites.set(key,cv);return cv;
+}
+function lyingBook(c,x,y,w,h,b,rot,age=0,seed=1,dpr=1,n=1){
  c.save();c.translate(x,y);c.rotate(rot);
- const g=c.createLinearGradient(0,-h,0,0);g.addColorStop(0,shade(spine,1.18));g.addColorStop(.35,shade(spine,.95));g.addColorStop(1,shade(spine,.76));
- c.fillStyle=g;c.fillRect(-w/2,-h,w,h);
- c.fillStyle=rgb(236,224,190);c.fillRect(w/2,-h+2,Math.max(5,h*.28),h-4); // page block
- c.strokeStyle=rgb(150,134,100,.8);c.lineWidth=.7;for(let k=1;k<4;k++){const yy=-h+2+(h-4)*k/4;c.beginPath();c.moveTo(w/2,yy);c.lineTo(w/2+Math.max(5,h*.28),yy);c.stroke();}
- c.fillStyle=rgb(216,184,110,.9*(1-.75*age));for(const bx of[-w/2+h*.55,w/2-h*.55])c.fillRect(bx-1.5,-h,3,h);
+ /* fore-edge: the page block, with a little shade where the cover overhangs it */
+ const pw=Math.max(5,h*.28);
+ c.fillStyle=rgb(236,224,190);c.fillRect(w/2,-h+2,pw,h-4);
+ c.strokeStyle=rgb(150,134,100,.8);c.lineWidth=.7;for(let k=1;k<4;k++){const yy=-h+2+(h-4)*k/4;c.beginPath();c.moveTo(w/2,yy);c.lineTo(w/2+pw,yy);c.stroke();}
+ c.fillStyle=rgb(0,0,0,.28);c.fillRect(w/2,-h+2,2,h-4);
+ /* the spine, turned so the lettering reads left to right */
+ c.save();c.translate(0,-h/2);c.rotate(Math.PI/2);c.drawImage(spineSprite(b,w,h,dpr),-h/2,-w/2,h,w);c.restore();
  c.fillStyle=rgb(255,240,200,.1);c.fillRect(-w/2,-h,w,1.2);
  ageBook(c,w,h,age,seed);
- c.fillStyle=rgb(246,236,210,.95);c.textAlign='center';c.textBaseline='middle';
- let fs=Math.max(9,Math.min(15,h*.52));c.font=`600 ${fs}px Cinzel,Georgia,serif`;const maxW=w-h*1.5;
- while(c.measureText(word).width>maxW&&fs>7){fs-=.5;c.font=`600 ${fs}px Cinzel,Georgia,serif`;}
- c.lineJoin='round';c.lineWidth=2.4;c.strokeStyle=rgb(0,0,0,.55);c.strokeText(String(word).toUpperCase(),0,-h/2+.5,maxW);c.fillText(String(word).toUpperCase(),0,-h/2+.5,maxW);
- if(fav){c.fillStyle=rgb(246,217,138);c.fillText('★',w/2-h*.95,-h/2+.5);}
+ if(b.fav){c.font='600 13px Cinzel,Georgia,serif';c.fillStyle=rgb(246,217,138);c.textAlign='center';c.textBaseline='middle';c.fillText('★',w/2-h*.6,-h/2+.5);}
+ if(n>1){ /* the same word found again: one book stands for all, with a brass tally */
+  const r=Math.max(7,h*.28),bx=-w/2+r+2,by=-h-r*.1;
+  c.fillStyle=rgb(46,32,18,.92);c.beginPath();c.arc(bx,by,r+1.5,0,6.3);c.fill();
+  c.fillStyle=rgb(196,158,84);c.beginPath();c.arc(bx,by,r,0,6.3);c.fill();
+  c.fillStyle=rgb(34,22,12);c.font=`600 ${Math.round(r*1.05)}px "Special Elite",Georgia,serif`;c.textAlign='center';c.textBaseline='middle';c.fillText('×'+n,bx,by+.5);
+ }
  c.restore();
 }
 
@@ -210,29 +254,43 @@ function plinth(c,kind,x,y,bw,bh,n=3){
  return 0;
 }
 
-/* Paint the room (and what moves in it) at screen offset ry (top of the room). Returns hit rects in screen space,
-   topmost first. */
-export function drawAttic(ctx,room,o){
- const {W,A,ry,items,TIERS,vt,RM}=o,lit=o.lit==null?1:o.lit; // lit: 0 dark .. 1 skylight at full (grows as you climb)
+/* A hanging sign: a plank on two cords from the beams, hand-lettered in the same small caps as THE ATTIC. */
+function hangSign(c,cx,cy,label,sub,cordTop,u){
+ const fs=Math.round(12*u+2);c.font=`600 ${fs}px Cinzel,Georgia,serif`;
+ const text=label.toUpperCase(),tw=c.measureText(text).width,sw=Math.max(88*u,tw+26),sh=fs*2.5+(sub?fs*.2:0);
+ c.strokeStyle=rgb(40,28,16);c.lineWidth=1.3;c.beginPath();
+ for(const k of[-.36,.36]){c.moveTo(cx+sw*k,cordTop);c.lineTo(cx+sw*k,cy-sh/2);}c.stroke();
+ c.save();c.translate(cx,cy);c.rotate(-.012);
+ c.fillStyle=rgb(0,0,0,.35);c.fillRect(-sw/2+2,-sh/2+3,sw,sh);
+ const g=c.createLinearGradient(0,-sh/2,0,sh/2);g.addColorStop(0,rgb(92,64,34));g.addColorStop(1,rgb(58,40,22));
+ c.fillStyle=g;c.fillRect(-sw/2,-sh/2,sw,sh);
+ c.strokeStyle=rgb(150,112,60,.75);c.lineWidth=1.2;c.strokeRect(-sw/2+2.5,-sh/2+2.5,sw-5,sh-5);
+ c.fillStyle=rgb(196,158,84);for(const k of[-.43,.43]){c.beginPath();c.arc(cx*0+sw*k,-sh/2+6,1.8,0,6.3);c.fill();}
+ c.textAlign='center';c.textBaseline='middle';c.fillStyle=rgb(226,204,152);c.font=`600 ${fs}px Cinzel,Georgia,serif`;c.fillText(text,0,sub?-fs*.35:1);
+ if(sub){c.fillStyle=rgb(190,168,120,.85);c.font=`${Math.round(fs*.8)}px "Special Elite",Georgia,serif`;c.fillText(sub,0,fs*.8);}
+ c.restore();
+}
+
+/* One room of the attic, painted into ctx at screen offset ry (its vanishing point is the camera's). `front` is the
+   room you are standing in: only it carries dust motes, the window bloom and hit rects. Returns hit rects (topmost first). */
+function drawLayer(ctx,room,o){
+ const {W,A,ry,TIERS,vt,RM,layer,L,front,lit,now,rank,total}=o,q=Quality.params();
  ctx.drawImage(room.cv,0,ry,W,A);
- /* dust in the shaft + lamp glow (additive) */
- const {win}=room;
+ const {win}=room,phone=W<600,hits=[];
  ctx.save();ctx.globalCompositeOperation='lighter';
- if(!RM)for(let k=0;k<18;k++){const ph=k*1.7,u=((vt*.02+k*.137)%1),x=win.x+Math.sin(vt*.3+ph)*win.r*(1+u*3)+(k%2?1:-1)*u*W*.03,y=ry+win.y+u*(A-win.y),al=Math.sin(u*Math.PI)*.5*lit;
+ if(front&&!RM)for(let k=0;k<18;k++){const ph=k*1.7,u=((vt*.02+k*.137)%1),x=win.x+Math.sin(vt*.3+ph)*win.r*(1+u*3)+(k%2?1:-1)*u*W*.03,y=ry+win.y+u*(A-win.y),al=Math.sin(u*Math.PI)*.5*lit;
   ctx.fillStyle=rgb(255,236,190,al);ctx.beginPath();ctx.arc(x,y,1+(k%3)*.5,0,6.3);ctx.fill();}
- const q=Quality.params(),sw=lanternPos(W,ry,A,EAVE,swayAngle(vt,{RM,glow:q.glow})),lx=sw.x,ly=sw.y+5,fl=RM?1:1+.06*Math.sin(vt*11)+.04*Math.sin(vt*23);
- const lg=ctx.createRadialGradient(lx,ly,0,lx,ly,A*.5*fl);lg.addColorStop(0,rgb(255,190,100,.2*lit));lg.addColorStop(1,rgb(255,150,60,0));ctx.fillStyle=lg;ctx.fillRect(lx-A*.55,ly-A*.55,A*1.1,A*1.1);
+ const sw=lanternPos(W,ry,A,EAVE,swayAngle(vt,{RM,glow:q.glow})),lx=sw.x,ly=sw.y+5,fl=RM?1:1+.06*Math.sin(vt*11)+.04*Math.sin(vt*23);
+ if(front||q.glow){const lg=ctx.createRadialGradient(lx,ly,0,lx,ly,A*.5*fl);lg.addColorStop(0,rgb(255,190,100,.2*lit));lg.addColorStop(1,rgb(255,150,60,0));ctx.fillStyle=lg;ctx.fillRect(lx-A*.55,ly-A*.55,A*1.1,A*1.1);}
  ctx.restore();
- drawSky(ctx,{win,ry,A,W,vt,lit,sky:o.sky||((!room.sky||Math.abs(Date.now()-room.skyAt)>6e4)&&(room.sky=skyAt(),room.skyAt=Date.now()),room.sky),RM,low:q.name==='low'});
+ if(layer===0)drawSky(ctx,{win,ry,A,W,vt,lit,sky:o.sky||((!room.sky||Math.abs(Date.now()-room.skyAt)>6e4)&&(room.sky=skyAt(),room.skyAt=Date.now()),room.sky),RM,low:q.name==='low'});
  drawLantern(ctx,W,ry,A,EAVE,vt,{RM,glow:q.glow});
  /* piles, back rows first */
- const {piles,hidden}=layoutPiles(items,W),hits=[],phone=W<600;
- const now=Date.now(),rank=new Map(items.map((x,k)=>[x,k]));
- const base=r=>ry+A*(1-.03-.075*r),sc=r=>1-.12*r;
+ const piles=L.piles.filter(p=>p.layer===layer),signs=[];
+ const base=r=>ry+A*(1-.03-.075*r),sc=r=>1-.12*r,dpr=room.dpr||1;
  for(const p of piles.slice().sort((a,b)=>b.row-a.row)){
   const s=sc(p.row),bw=p.w*(phone?.84:.8)*s,bh=(phone?19:29)*s,pr=rng(((p.items[0].i+1)*40503+p.ord*977)>>>0);
-  const cx=p.x+(pr()-.5)*p.w*.12,y0=base(p.row)+(pr()-.5)*A*.012;let y=y0;
-  /* one soft contact shadow on the floor under the whole pile (none between books) */
+  const cx=p.x+(pr()-.5)*p.w*.12,y0=base(p.row)+(pr()-.5)*A*.012;let y=y0,topY=y0;
   const sg=ctx.createRadialGradient(cx,y0+2,0,cx,y0+2,bw*.62);sg.addColorStop(0,rgb(0,0,0,.3));sg.addColorStop(1,rgb(0,0,0,0));
   ctx.save();ctx.translate(0,y0+2);ctx.scale(1,.16);ctx.translate(0,-(y0+2));ctx.fillStyle=sg;ctx.fillRect(cx-bw*.7,y0+2-bw*.7,bw*1.4,bw*1.4);ctx.restore();
   const kind=p.kind,n=p.items.length,inner=kind==='crate'?.9:1;
@@ -249,19 +307,68 @@ export function drawAttic(ctx,room,o){
    else if(kind==='slump'&&top){rot=(k===order.length-1?-1:1)*(.1+R()*.08);jx=(k===order.length-1?1:-1)*bw*(.04+R()*.06);}
    else if(kind==='crate'){jx=(R()-.5)*bw*.04;}
    const lift=Math.abs(Math.sin(rot))*w*.42,yy=y-lift;
-   lyingBook(ctx,cx+jx,yy,w,bh,TIERS[x.b.tier].spine,x.b.w,rot,x.b.fav,bookAge(x.b,rank.get(x),items.length,now),seed);
+   lyingBook(ctx,cx+jx,yy,w,bh,x.b,rot,bookAge(x.b,rank.get(x),total,now),seed,dpr,x.n||1);
    const ext=Math.abs(Math.sin(rot))*w/2;
-   hits.unshift({x:cx+jx-w/2,y:yy-bh-ext,w:w+bh*.3,h:bh+ext*2,b:x.b});
-   y=yy-bh+1;
+   if(front)hits.unshift({x:cx+jx-w/2,y:yy-bh-ext,w:w+bh*.3,h:bh+ext*2,b:x.b});
+   y=yy-bh+1;topY=Math.min(topY,yy-bh-ext);
   });
   if(kind==='crate')plinth(ctx,'crate-ends',cx,y0,bw,bh,n);
-  if(p.first){const label=p.group==='recent'?'Recent guesses':'Earlier finds',fs=phone?13:16;
-   ctx.font=`500 ${fs}px "Fuzzy Bubbles",Georgia,serif`;const tw=ctx.measureText(label).width+14;
-   ctx.save();ctx.translate(cx,y-8*s);ctx.rotate(-.03);ctx.fillStyle=rgb(236,224,190);ctx.fillRect(-tw/2,-fs-2,tw,fs+8);ctx.fillStyle=rgb(40,28,16);ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(label,0,0);ctx.restore();}
+  p.top=topY;
+  if(p.first||p.head)signs.push(p);
  }
- /* the skylight grows as you rise: the whole room starts in shadow and brightens, with a window bloom on top */
+ /* signs hang last, above the tallest pile near them in any row, so they never sit on top of books */
+ const u=phone?.8:1,beamY=ry+A*.3;
+ for(const p of signs){
+  const near=piles.filter(o2=>Math.abs(o2.x-p.x)<p.w*.6).map(o2=>o2.top),top=Math.min(...near);
+  const grp=p.first?(p.group==='recent'?'Recent guesses':'Earlier finds'):'Further back';
+  const cnt=p.first?L.counts[p.group]:0;
+  const sh=(12*u+2)*2.5,cy=Math.max(ry+A*.34+sh/2,top-sh/2-12);
+  hangSign(ctx,p.x,cy,grp,cnt?`${cnt} ${cnt===1?'book':'books'}`:'',beamY,u);
+ }
  if(lit<1){ctx.fillStyle=rgb(4,3,2,(1-lit)*.78);ctx.fillRect(0,ry,W,A);}
- if(lit>0){ctx.save();ctx.globalCompositeOperation='lighter';const wb=ctx.createRadialGradient(win.x,ry+win.y,0,win.x,ry+win.y,Math.max(W,A)*.55);wb.addColorStop(0,rgb(255,240,200,.16*lit*(1-lit*.5)));wb.addColorStop(1,rgb(255,240,200,0));ctx.fillStyle=wb;ctx.fillRect(0,ry,W,A);ctx.restore();}
- if(hidden>0){ctx.fillStyle=rgb(216,192,140,.8);ctx.font='italic 14px "Anthropic Serif Text",Georgia,serif';ctx.textAlign='center';ctx.fillText(`and ${hidden} more on the Shelf`,W/2,ry+A-6);}
+ if(front&&lit>0){ctx.save();ctx.globalCompositeOperation='lighter';const wb=ctx.createRadialGradient(win.x,ry+win.y,0,win.x,ry+win.y,Math.max(W,A)*.55);wb.addColorStop(0,rgb(255,240,200,.16*lit*(1-lit*.5)));wb.addColorStop(1,rgb(255,240,200,0));ctx.fillStyle=wb;ctx.fillRect(0,ry,W,A);ctx.restore();}
+ if(L.hidden>0&&layer===L.layers-1){ctx.fillStyle=rgb(216,192,140,.8);ctx.font='italic 14px "Anthropic Serif Text",Georgia,serif';ctx.textAlign='center';ctx.fillText(`and ${L.hidden} more on the Shelf`,W/2,ry+A-6);}
  return hits;
+}
+
+/* The attic as a run of rooms, one behind the other. `depth` (0 .. rooms-1, eased by the caller) is how far back you
+   have gone: room i is drawn at scale FAR^(i-depth) about the vanishing point, so walking back scales the near room up
+   and past you (fading out) while the next one grows into the doorway and becomes the room you stand in. Farther rooms
+   are dimmer, and `pan` (-1..1) slides each room sideways by an amount that grows with nearness, which is the parallax.
+   Pure canvas 2D, no per-frame allocation beyond the drawn rooms: at most three at once (two on low quality). */
+export const DEPTH_FADE=.3;
+export function layerView(i,depth,fade=DEPTH_FADE){
+ const z=i-depth;
+ return{z,scale:Math.pow(FAR,z),alpha:z>=-fade?1:Math.max(0,(z+1)/(1-fade)),dark:z>0?Math.min(.62,.14+z*.3):0};
+}
+export function drawAttic(ctx,room,o){
+ const {W,A,ry,items,vt}=o,lit=o.lit==null?1:o.lit,depth=o.depth||0,pan=o.pan||0,q=Quality.params();
+ const cacheOk=room.lay&&room.lay.items===items&&room.lay.W===W;
+ if(!cacheOk)room.lay={items,W,L:(()=>{const L=layoutPiles(items,W);L.counts={recent:0,earlier:0};for(const p of L.piles)L.counts[p.group]+=p.items.length;return L;})()};
+ const L=room.lay.L,n=L.layers,now=Date.now(),rank=new Map(items.map((x,k)=>[x,k]));
+ const frontIdx=Math.min(n-1,Math.max(0,Math.round(depth))),vpx=W/2,vpy=ry+A*VP_Y;
+ const last=Math.min(n-1,Math.floor(depth)+(q.name==='low'?1:2)),first=Math.min(n-1,Math.floor(depth));
+ let hits=[];
+ for(let i=last;i>=first;i--){
+  const v=layerView(i,depth);if(v.alpha<=.01)continue;
+  const rm=roomFor(room,W,A,i,n),near=Math.max(0,Math.min(1,v.scale));
+  ctx.save();
+  ctx.translate(vpx+pan*W*.045*near*(RM_OFF(o)?0:1),vpy);ctx.scale(v.scale,v.scale);ctx.translate(-vpx,-vpy);
+  ctx.globalAlpha=v.alpha;
+  const h=drawLayer(ctx,rm,{...o,ry,lit,layer:i,L,front:i===frontIdx,now,rank,total:items.length});
+  if(v.dark>0){ctx.globalAlpha=1;ctx.fillStyle=rgb(4,3,2,v.dark);ctx.fillRect(0,ry,W,A);}
+  ctx.restore();
+  if(i===frontIdx)hits=h.map(r=>({...r,x:vpx+(r.x-vpx)*v.scale+pan*W*.045*near,y:vpy+(r.y-vpy)*v.scale,w:r.w*v.scale,h:r.h*v.scale}));
+ }
+ return hits;
+}
+const RM_OFF=o=>!!o.RM;
+/* The room canvases: the first (with the sign) is built by the caller; deeper ones are built when first reached, each
+   a different timber layout, with a doorway when another room lies behind it. Rebuilt with the front room's size. */
+function roomFor(front,W,A,i,n){
+ const door=i<n-1,k=i+'|'+(door?1:0);
+ if(i===0&&!door)return front;
+ front.v=front.v||{};
+ if(i===0){return front.vd||(front.vd=buildRoom(W,A,front.dpr||1,7,{sign:true,door:true}));}
+ return front.v[k]||(front.v[k]=buildRoom(W,A,front.dpr||1,7+i*6,{sign:false,door}));
 }
