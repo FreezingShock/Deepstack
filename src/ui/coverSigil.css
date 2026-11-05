@@ -1,3 +1,6 @@
 /* Big sigil stamped on the result-card front cover (see coverSigil.js). Sized from the cover, never the viewport. */
 .cover .cv-sigil{width:clamp(72px,32%,132px);aspect-ratio:1;height:auto;flex:none;pointer-events:none;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--tc) 45%,transparent))}
 @media (max-width:420px),(max-height:560px){.cover .cv-sigil{width:clamp(60px,26%,92px)}}
+/* Watermark behind the definition: ~6% ink drawn into the canvas, text above it, never intercepts clicks. */
+.book .page .inner{position:relative;isolation:isolate}
+.book .page .inner>.pg-sigil{position:absolute;z-index:-1;left:50%;top:50%;width:min(86%,260px);aspect-ratio:1;height:auto;transform:translate(-50%,-50%);pointer-events:none}

@@ -3,7 +3,7 @@
 // shows the same mark everywhere. One canvas per cover, drawn once; it never animates.
 import {drawSigil} from './sigil.js';
 
-const SIZE = 192;
+const SIZE = 192, MARK = 256;
 /** Append a sigil canvas to a `.cover` element, right after its first label. Returns the canvas, or null. */
 export function stampCover(cover, word, tier) {
   if (!cover || !word || typeof document === 'undefined') return null;
@@ -13,5 +13,17 @@ export function stampCover(cover, word, tier) {
   if (!c || !drawSigil(c, word, tier, SIZE / 2, SIZE / 2, SIZE / 2, .9, SIZE)) return null;
   const first = cover.querySelector('.ct');
   first ? first.after(cv) : cover.prepend(cv);
+  return cv;
+}
+
+/** Press the word's sigil faintly into the vellum behind the definition (the open result card). Sits under the text. */
+export function stampPage(page, word, tier) {
+  const inner = page && page.querySelector('.inner');
+  if (!inner || !word || typeof document === 'undefined') return null;
+  const cv = document.createElement('canvas');
+  cv.className = 'pg-sigil'; cv.width = cv.height = MARK; cv.setAttribute('aria-hidden', 'true');
+  const c = cv.getContext('2d');
+  if (!c || !drawSigil(c, word, tier, MARK / 2, MARK / 2, MARK / 2, .06, MARK)) return null;
+  inner.prepend(cv);
   return cv;
 }
