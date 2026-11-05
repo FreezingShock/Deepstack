@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Open the Unlimited book at your window size and on your phone: a big Descend button (Find my rank before you are placed) now sits under your rank, with "Place me again" quietly beneath. Say if it reads clearly. (Unlimited pages, UB1)
+- Look at the top centre of home: the "↑ The attic · 36" pill is now a trapdoor in the ceiling beam with a swaying pull cord and a brass tag holding the count. Hover or Tab to it, press Enter, and say if it reads as an entrance and not a button (thread: attic entrance).
 - Pick from the new G1 to G10 goal-level menu (section G near the end of this file). (polish menu thread)
 - Pull `main` and look at the home screen: a stone fireplace now burns between the book stacks on a brick back wall, and the fire lights the room (lamps down). Move the cursor near it (flames lean away) and click it to stoke. Check your window size and phone, and say if the room is too dark. On a short phone (667 tall) and on tablets in portrait there is no room for it yet. (fireside home, FH1)
 - Open the Unlimited book: the left page is Unlimited, the right page is Riddle, each with its own Start link. Open the Daily book: its first page now has Daily and Daily Riddle with Descend / Open today's riddle. Say if the sections read clearly or if the Riddle half needs more weight. (merged modes)
@@ -26,7 +27,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 **Keeping this alive (every thread):** when your PR merges, (1) tick your item here and update your row in the inventory, (2) append any new taste nate expressed in your thread to `nate-preferences.md` (one dated line under the matching pattern), (3) add 2 to 3 fresh items to the end of this file that follow from what he asked, in his wording and in the same format. Keep edits to a few lines so threads do not conflict.
 
 ## What nate needs to do
-- Home screen: scroll up (or tap "↑ The attic" at the top right) to climb into the attic room and see recent guesses in piles. Check the look at your screen size and say what is missing (lantern, trunks, more clutter?). (attic thread)
+- Home screen: scroll up (or pull the cord on the ceiling hatch, top centre) to climb into the attic room and see recent guesses in piles. Check the look at your screen size and say what is missing (lantern, trunks, more clutter?). (attic thread)
 - Pull `main` and look at the held book (Descend, any run) and the alcove numeral plaque: does the stand and the bolts read right at your screen size? (PR 137, backlog 100/101)
 
 - Pull `main` and play an Unlimited run, answering well enough for a Folio or better: depth should now count up (it was NaN with an empty world). (hotfix, Unlimited descent)
@@ -1442,3 +1443,14 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### UB3. Riddle half gets its own weight
 **Pitch:** The Riddle section is a plain twin of Unlimited; give it a small sketch and a best-streak line.
 **Brief:** Goal: one hand-drawn sketch plus a stat line on the Riddle page. Files: `src/ui/home.js`, new css. Done when: both pages feel balanced. **Touches:** UI. **Conflicts:** UB2.
+### AE1. [x] (attic entrance PR) The attic entrance is a ceiling hatch, not a pill
+**Pitch:** Centred trapdoor with a pull cord; the brass tag carries the book count.
+**Brief:** Done in `src/ui/atticHome.js` + `attic.css`.
+
+### AE2. The hatch creaks open and the room lights up as you climb
+**Pitch:** On click the lid swings down, a shaft of warm light falls onto the home panel and the cord is pulled for real, then the climb starts.
+**Brief:** Goal: sequence lid, light shaft and cord tug (motion tokens) before `World.setAttic(true)`. Files: `atticHome.js`, `attic.css`, a short sound hook. Done when: reduced motion skips straight to the climb. **Touches:** UI. **Conflicts:** attic climb threads.
+
+### AE3. A matching way down: the ladder drops from the same hatch
+**Pitch:** Replace the "Down the ladder ↓" plaque with a rope ladder hanging from the hatch you came up through, so exit and entrance are one object.
+**Brief:** Goal: draw the ladder at top centre while up there, click or Escape to descend. Files: `atticHome.js`, `attic.css`. Done when: keyboard and swipe paths unchanged. **Touches:** UI. **Conflicts:** attic floor/rows thread.

@@ -1,16 +1,39 @@
 /* The attic is a room in the world canvas (world/atticRoom.js). These are the DOM controls around it:
    the ladder cue on home, "Down the ladder" while up there, and the home panel sliding away. */
-.attic-cue-home{position:fixed;z-index:6;right:18px;top:78px;margin:0;padding:5px 14px 7px;border:0;border-radius:6px;background:linear-gradient(180deg,var(--c-oak-2b1b10),var(--c-oak-1a110a));
- color:var(--c-brass-d8c08c);font:500 calc(20px*var(--ts))/1.1 var(--bs-hand,var(--serif));cursor:pointer;box-shadow:0 2px 8px var(--c-black-alpha-88),inset 0 0 0 1px var(--c-oak-5a3d22);transition:color .2s,transform .25s}
-.attic-cue-home:hover,.attic-cue-home:focus-visible{color:var(--c-brass-f6d98a);transform:translateY(-2px)}
+/* The way up: a trapdoor set into the ceiling beam, dead centre, with a pull cord and a brass tag that carries the count.
+   A <button> underneath (focus ring, Enter/Space) but it is drawn as part of the room. Motion uses the shared tokens. */
+.attic-cue-home{--hw:112px;position:fixed;z-index:6;left:50%;top:0;width:calc(var(--hw) + 16px);height:104px;margin:0 0 0 calc((var(--hw) + 16px)/-2);padding:0;border:0;background:none;color:var(--c-brass-d8c08c);cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;font:inherit}
+.ach-hatch{position:absolute;left:8px;top:8px;width:var(--hw);height:32px;box-sizing:border-box;border:3px solid var(--c-oak-1a110a);border-radius:2px;background:var(--c-oak-5);box-shadow:0 0 0 1px var(--c-oak-5a3d22),0 3px 6px rgba(0,0,0,.6),inset 0 2px 5px #000;perspective:260px}
+.ach-glow{position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,200,110,.85) 30%,rgba(255,170,60,.9) 70%,transparent);opacity:.22;transition:opacity var(--m-smooth) var(--e-settle)}
+.ach-hatch::after{content:"";position:absolute;left:-10px;right:-10px;top:100%;height:34px;background:radial-gradient(ellipse at 50% 0,rgba(255,190,100,.38),transparent 70%);opacity:0;pointer-events:none;transition:opacity var(--m-smooth) var(--e-settle)}
+.ach-lid{position:absolute;inset:0;transform-origin:0 50%;display:flex;align-items:center;justify-content:center;
+ background:repeating-linear-gradient(90deg,transparent 0 21px,rgba(0,0,0,.5) 21px 22px),linear-gradient(180deg,var(--c-oak-15),var(--c-oak-3d2916) 55%,var(--c-oak-2b1d12));box-shadow:inset 0 1px 0 rgba(255,220,160,.14),inset 0 -2px 3px rgba(0,0,0,.55);
+ transition:transform var(--m-smooth) var(--e-settle)}
+.ach-lid::before{content:"";position:absolute;left:2px;top:4px;bottom:4px;width:5px;background:linear-gradient(90deg,var(--c-brass-d3b077),var(--c-brass));border-radius:1px;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
+.ach-word{position:relative;margin-left:6px;font:calc(10px*var(--ts))/1 "Special Elite",var(--serif);letter-spacing:.32em;text-indent:.32em;text-transform:uppercase;color:var(--c-brass-d8c08c);opacity:.5;transition:opacity var(--m-base) var(--e-cruise)}
+.ach-cord{position:absolute;left:calc(var(--hw) - 6px);top:38px;width:2px;height:40px;margin-left:-1px;transform-origin:50% 0;transition:transform var(--m-smooth) var(--e-settle);animation:ach-sway 7s ease-in-out infinite alternate}
+.ach-rope{position:absolute;inset:0;background:repeating-linear-gradient(180deg,var(--c-brass-65) 0 2px,var(--c-oak-24) 2px 4px);box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.ach-tag{position:absolute;left:50%;top:100%;width:28px;height:25px;margin:-1px 0 0 -14px;display:flex;align-items:center;justify-content:center;border-radius:3px 3px 10px 10px;
+ background:linear-gradient(180deg,var(--c-brass-d3b077),var(--c-brass) 60%,var(--c-oak-24));box-shadow:0 2px 4px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,244,214,.45)}
+.ach-tag::before{content:"";position:absolute;left:50%;top:2px;width:3px;height:3px;margin-left:-1.5px;border-radius:50%;background:var(--c-oak-7)}
+.ach-tag b{margin-top:6px;font:400 calc(13px*var(--ts))/1 "Special Elite",var(--serif);color:var(--c-oak-7)}
+@keyframes ach-sway{from{transform:rotate(-1.6deg)}to{transform:rotate(1.6deg)}}
+.attic-cue-home:hover .ach-glow,.attic-cue-home:focus-visible .ach-glow{opacity:1}
+.attic-cue-home:hover .ach-hatch::after,.attic-cue-home:focus-visible .ach-hatch::after{opacity:1}
+.attic-cue-home:hover .ach-lid,.attic-cue-home:focus-visible .ach-lid{transform:rotateY(30deg)}
+.attic-cue-home:hover .ach-word,.attic-cue-home:focus-visible .ach-word{opacity:.95}
+.attic-cue-home:hover .ach-cord,.attic-cue-home:focus-visible .ach-cord{animation:none;transform:translateY(5px)}
+.attic-cue-home:active .ach-cord{transform:translateY(12px);transition-duration:var(--m-press);transition-timing-function:var(--e-press)}
+.attic-cue-home:focus-visible .ach-hatch{box-shadow:0 0 0 2px var(--c-brass-f6d98a),0 3px 6px rgba(0,0,0,.6),inset 0 2px 5px #000}
 .attic-cue-home[hidden],.attic-down[hidden],#home[hidden]~.attic-cue-home,#home[hidden]~.attic-down{display:none}
 .attic-down{position:fixed;z-index:6;left:50%;top:64px;transform:translateX(-50%);margin:0;padding:4px 16px 6px;border:0;border-bottom:2px solid var(--c-brass-67-alpha-88);background:var(--c-black-alpha-88);border-radius:0 0 6px 6px;white-space:nowrap;
  color:var(--c-brass-d8c08c);font:500 calc(24px*var(--ts))/1.1 var(--bs-hand,var(--serif));cursor:pointer}
 .attic-down:hover,.attic-down:focus-visible{color:var(--c-brass-f6d98a)}
 /* the panel rides with the world camera (atticHome.js sets its transform and opacity every frame), so no transition */
 #home.attic-away{pointer-events:none}
-@media(max-width:560px){.attic-down{font-size:calc(20px*var(--ts));top:58px}.attic-cue-home{right:10px;top:64px;font-size:calc(17px*var(--ts));padding:4px 10px 6px}}
-@media(prefers-reduced-motion:reduce){.attic-cue-home{transition:none}}
+@media(max-width:560px){.attic-down{font-size:calc(20px*var(--ts));top:58px}.attic-cue-home{--hw:72px}.ach-word{font-size:calc(9px*var(--ts));letter-spacing:.2em;text-indent:.2em}}
+@media(prefers-reduced-motion:reduce){.ach-cord{animation:none}}
+html[data-motion="reduce"] .ach-cord{animation:none}
 /* which room of the attic you are in; a quiet line low in the shelf strip, hidden unless there is more than one room */
 .attic-depth{position:fixed;z-index:6;left:50%;bottom:8px;transform:translateX(-50%);margin:0;padding:2px 12px;border-radius:4px;background:var(--c-black-alpha-88);pointer-events:none;max-width:calc(100vw - 16px);box-sizing:border-box;text-align:center;
  color:var(--c-brass-d8c08c);font:calc(12px*var(--ts))/1.3 "Special Elite",var(--serif);letter-spacing:.04em}

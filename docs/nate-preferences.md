@@ -68,6 +68,7 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 
 - 2026-11-04 attic: "i want the back fill to make you scroll up and for it to be an attic" -> a backfill is a place, not a silent migration: scroll up past the top of the Shelf into a dusty attic of crates (thread: attic)
 - 2026-11-04 world: asked for wall mounts and a reading stand (backlog E, via 'physically makes sense') -> every hung or held object needs a visible support; nate also wants threads to keep the backlog, his to-do list and preferences updated automatically.
+- 2026-11-05 attic entrance: "overhaul this Attic button and make it more centralized and less of like a button and an attic entrance" -> doors and ways in should be objects in the room (centred, in-world), not UI pills; they stay real buttons underneath for keyboard use (thread: attic entrance)
 
 ## Changelog
 - 2026-11-04 initial version from project chat history.
