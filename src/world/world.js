@@ -23,6 +23,7 @@ import {createPass,passCam} from '../ui/thresholdPass.js';
 import {doorSpan,drawWallMaterial,drawThreshold,drawThresholdLive,drawThresholdSign} from '../ui/thresholds.js';
 import {drawFloorAtmosphere} from '../ui/floorAtmosphere.js';
 import {drawLighting,addLight,reach} from '../ui/lighting.js';
+import {registerCandleLight,drawCandleGlow} from '../ui/candleLight.js';
 import {drawEyes} from '../ui/eyes.js';
 import {litProp,brazierProps,isLit} from '../ui/litProps.js';
 import {nookMetrics,drawNook,paintAroundAlcoves,alcoveRects} from '../ui/alcoveArt.js';
@@ -301,12 +302,14 @@ export const World=(()=>{
   drawFloorAtmosphere(ctx,W,H,atm,vt,lx,ly,RM);
   });
   ambItems=updateAmbient(dt,ambEnv(camNow,top,bot));drawAmbient(ctx,ambItems,vt,'body',atm.lamp);
+  registerCandleLight(vt,RM); // the run candle is a real light (ui/candleLight.js)
   drawLighting(ctx,{W,H,atm,t:vt,lx,ly,rects:arects,still:RM,tier:Quality.params().name}); // deeper floors: only lit pools stay readable
   drawEyes(ctx,{W,H,atm,sc:reach(atm),rects:arects,top:barPx()+40,bottom:RH+BM+60,still:RM,ambient:Quality.params().ambient,t:vt,dt,camDy:camNow-eyeCam});eyeCam=camNow; // something in the dark (ui/eyes.js)
   ctx.globalCompositeOperation='lighter';
   if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
   const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick*atm.flick;
   {const l=atm.lamp.map(v=>v|0),c=`${l[0]},${l[1]+6},${l[2]+10}`;stampGlow(ctx,glowSprite('flame'+c,[[0,`rgba(${c},1)`],[1,`rgba(${c},0)`]]),lx,ly,Math.max(W,H)*.45,Math.max(0,fl));}
+  drawCandleGlow(ctx,vt,RM,Quality.params().name);
   if(st){const zi=st.prog>=1?st.tier:Math.min(st.tier,tierOf(st.prog*st.score));const zc=TIERS[zi].spine;ctx.globalAlpha=.5+.5*settle;stampGlow(ctx,glowSprite('tier'+zc,[[0,zc+'26'],[1,zc+'00']]),lx,ly,Math.max(W,H)*.6);ctx.globalAlpha=1;gaugeCb&&gaugeCb(zi,st);}
   if(!RM){ // dust batched: 8 alpha buckets, one path and fill each, instead of a style string and fill per mote
    const dm=Math.max(W,H)*.45,bk=dustB;for(const b of bk)b.length=0;
