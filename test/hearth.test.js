@@ -47,9 +47,12 @@ test('wide layout threshold matches the mantel CSS breakpoint', () => {
   assert.match(css, new RegExp(`@media\\(min-width:${WIDE_MIN}px\\)`));
 });
 
-test('hearth hides behind an opening book and its light only shows on home', () => {
+test('the room stays lit behind an open book (no black veil) and its light only shows on home', () => {
   const css = readFileSync('src/ui/hearth.css', 'utf8');
-  assert.match(css, /#home\.book-opening>\.hearth\{opacity:0\}/);
+  assert.doesNotMatch(css, /book-opening>\.hearth\{opacity:0/);
+  const fx = readFileSync('src/ui/bookOpenFx.css', 'utf8');
+  assert.doesNotMatch(fx, /\.book-opening::after/);
+  assert.match(fx, /\.book-opening \.hbook:not\(\.opening\)\{opacity:0/);
   assert.match(css, /\.hearth-light\{[^}]*opacity:0/);
   assert.match(css, /html\.hearth-lit \.hearth-light\{opacity:1\}/);
   const js = readFileSync('src/ui/hearth.js', 'utf8');

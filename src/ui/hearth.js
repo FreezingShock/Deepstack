@@ -12,8 +12,8 @@
    - Interaction: flames lean away from a nearby cursor and stir when it hovers the fire; clicking the fire stokes it
      (flare, spark burst, a soft whoosh).
    - Budget: low quality runs at 30 fps with fewer flames and no embers in the air; reduced motion draws one still
-     frame. Nothing animates while home is hidden, in the attic, or the tab is hidden. A menu book hides it all
-     (#home.book-opening), so nothing shows behind an opening book. */
+     frame. Nothing animates while home is hidden, in the attic, or the tab is hidden. The fire keeps burning behind
+     an open menu book (#home.book-opening), so the room stays lit around it; clicks there don't stoke it. */
 import {Quality} from './quality.js';
 import {reducedMotion} from './settings.js';
 
