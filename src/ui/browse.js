@@ -3,6 +3,7 @@
 // offsets its camera while idle. Also owns the depth tracker, so main.js needs one line to hook in.
 import './browse.css';
 import {buildTracker} from './tracker.js';
+import {writeInRun} from './runWriteIn.js';
 
 export function initBrowse({world, floors, startOf, ft, rm, doc = document}) {
   const $ = s => doc.querySelector(s);
@@ -26,6 +27,8 @@ export function initBrowse({world, floors, startOf, ft, rm, doc = document}) {
   world.onBrowse(b => {
     doc.body.classList.toggle('browsing', b);
     snap.hidden = !b;
+    // coming back to the run: the alcove writes its elements in as the camera settles, not in one snap
+    if (!b && !ui.querySelector('#stage')?.hidden) writeInRun(ui.querySelector('#stage'), {wait: 160});
     if (b) snap.textContent = `↓ Back to ${Math.round(world.restRow * ft)} ft`;
   });
 

@@ -3,15 +3,16 @@
 // Pure string builders so they are testable without a DOM.
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 
-export const HINT_TITLE = {sentence: 'In a sentence', synonym: 'A neighbour', opening: 'The definition begins'};
+export const HINT_TITLE = {sentence: 'In a sentence', synonym: 'A neighbour', opening: 'The definition begins', kin: 'Kin to', kind: 'A kind of', opposite: 'The other way'};
 
 /** One revealed hint as a pinned slip. `ft` is what it cost, `n` its 1-based order. */
 export function hintSlipHtml(h, word, ft, n) {
+  // a riddle passes no word: the gap stays a gap
   const body = h.kind === 'sentence'
-    ? esc(h.text).replace('___', `<mark>${esc(word)}</mark>`)
+    ? esc(h.text).replace('___', word ? `<mark>${esc(word)}</mark>` : '<mark class="gap" aria-label="blank"></mark>')
     : esc(h.text);
   const tilt = (n % 2 ? -1 : 1) * (0.6 + (n % 3) * 0.4);
-  return `<div class="hslip" data-kind="${h.kind}" style="--tilt:${tilt}deg"><i class="hpin"></i>` +
+  return `<div class="hslip" data-kind="${h.kind}" style="--tilt:${tilt}deg;--hn:${Math.max(0, n - 1) % 4}"><i class="hpin"></i>` +
     `<span class="hcap">${HINT_TITLE[h.kind] || 'Hint'} <b>${ft ? '−' + ft + ' ft' : 'free'}</b></span><span class="hbody">${body}</span></div>`;
 }
 

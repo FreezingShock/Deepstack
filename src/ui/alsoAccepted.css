@@ -1,0 +1,4 @@
+/* "Also accepted": a handwritten line under the definition. Quiet; the tier stays the hero. */
+.also{margin:4px 0 0;font-family:var(--font-hand,inherit);font-size:calc(15px*var(--ts));line-height:1.35;opacity:.75;overflow-wrap:anywhere}
+.also small{font-size:calc(11px*var(--ts));letter-spacing:.14em;text-transform:uppercase;opacity:.7;margin-right:4px}
+.also u{text-decoration-thickness:1.5px;text-underline-offset:3px}

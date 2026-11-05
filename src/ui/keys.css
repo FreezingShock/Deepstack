@@ -1,10 +1,10 @@
-.skiplink{position:fixed;left:12px;top:-60px;z-index:200;padding:10px 16px;background:var(--c-black);color:var(--c-parchment);border:2px solid var(--c-lamplight);border-radius:4px;font:600 14px/1 var(--f-label,serif);text-decoration:none;transition:top var(--m-quick)}
+.skiplink{position:fixed;left:12px;top:-60px;z-index:200;padding:10px 16px;background:var(--c-black);color:var(--c-parchment);border:2px solid var(--c-lamplight);border-radius:4px;font:600 calc(14px*var(--ts))/1 var(--f-label,serif);text-decoration:none;transition:top var(--m-quick)}
 .skiplink:focus{top:12px;outline:none}
 .keyhelp{position:fixed;inset:0;z-index:180;display:flex;align-items:center;justify-content:center;background:var(--c-black-alpha-aa);padding:16px}
 .khbox{max-width:480px;width:100%;max-height:90vh;overflow:auto;padding:22px 24px;background:var(--c-black);color:var(--c-parchment);border:1px solid var(--c-brass-70);border-radius:6px;box-shadow:0 12px 40px var(--c-black-alpha-aa)}
-.khbox h2{margin:0 0 12px;font-size:20px}
+.khbox h2{margin:0 0 12px;font-size:calc(20px*var(--ts))}
 .khbox table{border-collapse:collapse;width:100%;margin-bottom:16px}
-.khbox th,.khbox td{text-align:left;padding:6px 8px;vertical-align:top;font-weight:400;font-size:15px}
+.khbox th,.khbox td{text-align:left;padding:6px 8px;vertical-align:top;font-weight:400;font-size:calc(15px*var(--ts))}
 .khbox th{white-space:nowrap}
 .khbox kbd{font:inherit;padding:1px 7px;border:1px solid var(--c-brass-70);border-radius:3px}
 .khbox :focus-visible{outline:3px solid var(--c-lamplight);outline-offset:3px}

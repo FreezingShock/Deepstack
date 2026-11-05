@@ -1,0 +1,30 @@
+/* Menu-book wear (S1b) and plaque/mantel tone (S1c). Loaded after home.css and mantel.css.
+   Wear is painted only on the static spine: rubbed corners and a scuffed shoulder (pseudo-elements), a faded title.
+   Each book wears a little differently via its position in the stack; nothing here animates. */
+.hb-spine::before,.hb-spine::after{content:"";position:absolute;pointer-events:none;border-radius:inherit}
+/* rubbed head and tail: the cloth thins to a paler, duller patch where fingers pull the book out */
+.hb-spine::before{inset:0;
+ background:radial-gradient(ellipse 22px 14px at 0 0,var(--c-parchment-alpha-55),transparent 75%),
+  radial-gradient(ellipse 20px 12px at 100% 100%,var(--c-parchment-alpha-55),transparent 75%),
+  radial-gradient(ellipse 22px 5px at 62% 0,var(--c-parchment-alpha-2a),transparent 80%);
+ opacity:var(--wear,.7);}
+/* scuffs along the shoulder, soft dark mottling for stains */
+.hb-spine::after{inset:2px 5px;
+ background:radial-gradient(ellipse 30% 40% at 78% 70%,var(--c-black-alpha-4d),transparent),
+  repeating-linear-gradient(97deg,transparent 0 11px,var(--c-white-alpha-0d) 11px 12px,transparent 12px 23px);
+ opacity:calc(var(--wear,.7)*.8)}
+/* faded gilt: the lettering has lost some of its shine, more on some books than others */
+.hb-t{color:color-mix(in srgb,var(--bk-gild) var(--fade,78%),var(--bk));text-shadow:0 1px 0 var(--c-black-alpha-66)}
+.hshelf li:nth-child(5n+1) .hbook{--wear:.6;--fade:84%}
+.hshelf li:nth-child(5n+2) .hbook{--wear:1;--fade:66%}
+.hshelf li:nth-child(5n+3) .hbook{--wear:.8;--fade:76%}
+.hshelf li:nth-child(5n+4) .hbook{--wear:.9;--fade:70%}
+.hshelf li:nth-child(5n) .hbook{--wear:.7;--fade:80%}
+.hshelf li:nth-child(2n) .hb-spine::before{transform:scaleX(-1)}
+.hshelf li:nth-child(3n) .hb-spine::after{transform:scaleY(-1)}
+.hbook:hover .hb-t,.hbook:focus-visible .hb-t{color:var(--c-amber-fff3c9)}
+.hbook:hover .hb-spine::before,.hbook:focus-visible .hb-spine::before{opacity:calc(var(--wear,.7)*.5)}
+/* S1c: the plaque and mantel oak take the same muted, slightly greyed tone as the cloth spines */
+.descend{background:radial-gradient(120% 160% at 50% 0%,color-mix(in srgb,var(--c-oak-24) 90%,var(--c-parchment-dim)) 0%,color-mix(in srgb,var(--c-oak-11) 92%,var(--c-parchment-dim)) 55%,var(--c-oak-7) 100%);
+ border-color:color-mix(in srgb,var(--c-bronze-c98a4a) 78%,var(--c-oak-11))}
+.home .mantel-beam{background:linear-gradient(180deg,color-mix(in srgb,var(--c-oak-24) 90%,var(--c-parchment-dim)),color-mix(in srgb,var(--c-oak-21) 92%,var(--c-parchment-dim)) 55%,var(--c-oak-12))}
