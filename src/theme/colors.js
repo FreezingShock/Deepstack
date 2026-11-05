@@ -2,6 +2,23 @@
 // `npm run gen:tokens` writes src/theme/tokens.css from this file; the canvas code imports it directly.
 // A test fails if tokens.css drifts from this file.
 export const COLORS={
+ 'spine-navy':'#2b4066',
+ 'spine-navy-dk':'#141f36',
+ 'spine-oxblood':'#6e2228',
+ 'spine-oxblood-dk':'#36100f',
+ 'spine-aubergine':'#54324f',
+ 'spine-aubergine-dk':'#2a1428',
+ 'spine-verdigris':'#2f6160',
+ 'spine-verdigris-dk':'#143030',
+ 'spine-bottle':'#2f5238',
+ 'spine-bottle-dk':'#122818',
+ 'spine-calf':'#8a5e36',
+ 'spine-calf-dk':'#432a14',
+ 'spine-ochre':'#a07a2c',
+ 'spine-ochre-dk':'#4e3a10',
+ 'spine-slate':'#4d5660',
+ 'spine-slate-dk':'#232930',
+ 'spine-gilt-cream':'#efe0b4',
  'book-blue':'#1c1cb4',
  'book-blue-dk':'#0a0a5c',
  'book-red':'#ae1414',

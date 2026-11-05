@@ -1212,3 +1212,5 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** same idea again: could Practice live inside the Daily book as a third section, and Shelf/Sets/Stats share one book?
 **Brief:** Goal: audit which home books are related modes and propose merges before building. Files: `src/ui/home.js`. Done when: a short plan in this file.
 **Touches:** UI. **Conflicts:** `src/ui/home.js`.
+### S1. [x] Menu spines in real book-cloth colours (done: navy, oxblood, bottle green, tan calf, ochre, slate; muted, tier colours untouched)
+- Follow-ups: S1a recolour the Riddle/merged-riddle spines once the riddle-merge thread lands (muted aubergine/verdigris from `HOME_BOOK_COLORS`); S1b per-book spine wear (rubbed corners, faded titles) so the stack reads as old; S1c let the Descend plaque and mantel wood take a matching muted tone.
