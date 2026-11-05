@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Pull `main` and look at the fire: it now burns low on a 0 streak and roars after a few weeks, and its sparks take the colour of your last book's tier (aqua after an Apocrypha, red after a Grimoire). At 375x667 and 800x900 the fireplace now shows, with the Daily and Unlimited spines still on screen. Say if the low 0-streak fire feels too dim.
 - Open the Unlimited book at your window size and on your phone: a big Descend button (Find my rank before you are placed) now sits under your rank, with "Place me again" quietly beneath. Say if it reads clearly. (Unlimited pages, UB1)
 - Look at the top centre of home: the "↑ The attic · 36" pill is now a trapdoor in the ceiling beam with a swaying pull cord and a brass tag holding the count. Hover or Tab to it, press Enter, and say if it reads as an entrance and not a button (thread: attic entrance).
 
@@ -1311,15 +1312,23 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: `src/sound/hearth.js` on the existing sound bus, gain tied to the fire's intensity (`fireIntensity`). Done when: stoke is audible, the loop is seamless, mute works.
 **Touches:** FEEL. **Conflicts:** `src/ui/hearth.js` (one hook).
 
-### FH3. A fire that remembers you
+### FH3. A fire that remembers you [x] (PR TBD)
 **Pitch:** the hearth reflects your play: it burns higher with your streak, and the sparks take your last book's tier colour (aqua after an Apocrypha).
 **Brief:** Goal: read streak and last tier from the save (no new fields), map them to flame height and spark tint. Done when: a 0 streak shows a low fire, a long streak a roaring one.
 **Touches:** MECHANICS, UI. **Conflicts:** `src/ui/hearth.js`.
 
-### FH4. Hearth on short phones and portrait tablets [x] (fireplace-visibility PR: candles and the Daily caption give way for height; fire shows from ~600 tall; under that still skipped)
+### FH4. Hearth on short phones and portrait tablets [x] (PR TBD) (compact room: stacks, gaps and title a size down so the fire and the Daily and Unlimited spines fit at 375x667 and 800x900)
 **Pitch:** at 375x667 and around 800 wide the home has no spare height, so the fireplace is skipped; give it a compact form there (a low fire under the mantel, stacks a size down).
 **Brief:** Goal: a compact `planFlow` that fits 80-100 px by shrinking the mantel's headroom and the stack books. Done when: a fire shows at 375x667 and 800x900 with nothing overlapping or sinking behind the ledge.
 **Touches:** UI. **Conflicts:** `src/ui/hearth.js`, `homeLayout.js`.
+
+### FH5. Fire that remembers the day
+**Pitch:** the fire also reads the time of your last play: banked embers and a lower glow when you return after days away, a fresh flare the first visit of a new Daily.
+**Brief:** Goal: use the last Daily key in the save (no new fields) to drive a "banked" start (low flames, ember glow) that builds to the streak height over a few seconds. Done when: a 5-day absence shows banked embers and a streak of 0 stays low. **Touches:** MECHANICS, UI. **Conflicts:** `src/ui/hearthMood.js`, `src/ui/hearth.js`.
+
+### FH6. Tier-tinted room glow
+**Pitch:** after a Grimoire or Apocrypha the room light carries a faint tier tint along the hearth edge, not only the sparks.
+**Brief:** Goal: tint the `hl-glow` edge layer with the last tier colour at low strength, never washing the shelves. Done when: aqua after an Apocrypha is visible but subtle at 1280 and 375. **Touches:** UI. **Conflicts:** `src/ui/hearth.css`, `src/ui/hearth.js`.
 
 
 ## G. Goal-level polish menu (2026-11-05, from a play-through at 1280 and 375 plus nate's repeated asks)

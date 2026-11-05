@@ -18,6 +18,7 @@ import {bindDeskProps} from '../ui/deskProps.js';
 import {rankHTML} from '../ui/lexiconRank.js';
 import {trendHTML} from '../ui/lexiconTrend.js';
 import {mountHearth} from '../ui/hearth.js';
+import {hearthMood} from '../ui/hearthMood.js';
 
 /* ---------- home ---------- */
 export let cdTimer=0;
@@ -41,7 +42,7 @@ export function showHome(){
  bookify(ui.home);applyHomeTier(ui.home);
  bindAtticHome(ui.home,{shelf:S.shelf});
  bindDeskProps(ui.home,{sfx:Sfx});
- mountHearth(ui.home,{sfx:Sfx});
+ mountHearth(ui.home,{sfx:Sfx,mood:hearthMood(S,st.streak)});
  setBookSfx(n=>n==="whoosh"?Sfx.whoosh(.22):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;

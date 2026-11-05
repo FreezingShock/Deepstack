@@ -74,6 +74,18 @@ function sprites() {
   EMBER = sprite(32, 32, g => { const r = g.createRadialGradient(16, 16, 0, 16, 16, 16); r.addColorStop(0, rgba(255, 240, 200)); r.addColorStop(.18, rgba(255, 190, 90, .9)); r.addColorStop(.5, rgba(255, 110, 30, .25)); r.addColorStop(1, rgba(255, 80, 20, 0)); g.fillStyle = r; g.fillRect(0, 0, 32, 32); });
   LICK = sprite(16, 40, g => { const r = g.createRadialGradient(8, 26, 0, 8, 26, 14); r.addColorStop(0, rgba(255, 200, 90)); r.addColorStop(.5, rgba(255, 120, 30, .6)); r.addColorStop(1, rgba(200, 50, 10, 0)); g.fillStyle = r; g.beginPath(); g.ellipse(8, 22, 7, 18, 0, 0, 7); g.fill(); });
 }
+/** A spark sprite in the given tint (white-hot core, tint through the body); null keeps the warm default. */
+const emberCache = new Map();
+function emberSprite(tint) {
+  if (!tint) return EMBER;
+  const key = tint.join();
+  if (!emberCache.has(key)) emberCache.set(key, sprite(32, 32, g => {
+    const [r, gg, b] = tint, lift = v => Math.round(v + (255 - v) * .78), r0 = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+    r0.addColorStop(0, rgba(lift(r), lift(gg), lift(b))); r0.addColorStop(.18, rgba(r, gg, b, .92)); r0.addColorStop(.5, rgba(r, gg, b, .26)); r0.addColorStop(1, rgba(r, gg, b, 0));
+    g.fillStyle = r0; g.fillRect(0, 0, 32, 32);
+  }));
+  return emberCache.get(key);
+}
 const BOOKCOL = [[222, 40, 30], [355, 42, 30], [140, 30, 24], [38, 50, 34], [205, 22, 34], [20, 35, 26]];
 
 /* ---------- the room light (one per page) ---------- */
@@ -94,15 +106,16 @@ function roomLight() {
 /* ---------- mount ---------- */
 let current = null;
 /** Build the hearth into #home (call after every home render). Returns {destroy, stoke}. */
-export function mountHearth(home, {sfx} = {}) {
+export function mountHearth(home, {sfx, mood} = {}) {
   if (current) current.destroy();
   if (!home || typeof document === 'undefined') return null;
-  current = createHearth(home, sfx);
+  current = createHearth(home, sfx, mood);
   return current;
 }
 
-function createHearth(home, sfx) {
+function createHearth(home, sfx, mood) {
   sprites();
+  const MH = mood && mood.h > 0 ? mood.h : 1, SPARK = emberSprite(mood && mood.tint);
   const doc = document, root = doc.documentElement;
   const layer = doc.createElement('div'); layer.className = 'hearth'; layer.setAttribute('aria-hidden', 'true');
   const cStatic = doc.createElement('canvas'), cAnim = doc.createElement('canvas');
@@ -113,8 +126,9 @@ function createHearth(home, sfx) {
   let raf = 0, dead = false, seed = 7;
   const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296, rr = (a, b) => a + (b - a) * rnd();
   const touched = [];
-  const setStyle = (el, k, v) => { if (!el) return; touched.push([el, k]); el.style[k] = v; };
-  const undo = () => { for (const [el, k] of touched.splice(0)) el.style[k] = ''; home.classList.remove('hearth-wide', 'hearth-flow', 'hearth-narrow'); };
+  // custom properties (--x) go through setProperty; undo puts back whatever was there (the home tier's own --hz-* values)
+  const setStyle = (el, k, v) => { if (!el) return; const cp = k[0] === '-'; touched.push([el, k, cp ? el.style.getPropertyValue(k) : '']); if (cp) el.style.setProperty(k, v); else el.style[k] = v; };
+  const undo = () => { for (const [el, k, was] of touched.splice(0).reverse()) { if (k[0] === '-') { if (was) el.style.setProperty(k, was); else el.style.removeProperty(k); } else el.style[k] = ''; } home.classList.remove('hearth-wide', 'hearth-flow', 'hearth-narrow', 'hearth-compact'); };
 
   /* ----- layout ----- */
   function layout() {
@@ -149,26 +163,33 @@ function createHearth(home, sfx) {
       const candles = q('.mantel-row');
       if (getComputedStyle(mantelEl).display === 'none') { setStyle(mantelEl, 'display', 'block'); setStyle(candles, 'display', 'none'); }
       home.classList.add('hearth-flow');
-      // room under the mantel: the mantel's own headroom plus whatever is left above the stacks, at most 170
+      // room under the mantel: the mantel's own headroom plus whatever is left above the stacks, at most 230
       const stacksTop = () => shelves.length ? Math.min(...shelves.map(s => loc(s).y)) : H;
       const bottom = () => loc(tag && tag.style.display !== 'none' ? tag : descend).b;
       const stacksBottom = () => shelves.length ? Math.max(...shelves.map(s => loc(s).b)) : 0;
-      const sink0 = Math.max(0, stacksBottom() - H); // how far the stacks already ran past the floor before the hearth
+      const floorY = H - (parseFloat(getComputedStyle(home).paddingBottom) || 0); // the ledge the stacks stand on
+      const sink0 = 0; // nothing may sink behind the ledge: shrink the fire instead
       const solve = () => {
         setStyle(mantelEl, 'marginBottom', '0px');
         const pad = parseFloat(getComputedStyle(mantelEl).paddingTop) || 0;
         const column = bottom() - loc(mantelEl).y - pad; // candles, beam, Descend and caption
-        setStyle(mantelEl, 'paddingTop', '6px');
-        let h = clamp(stacksTop() - 14 - (loc(tagline).b + 8) - column - 16, 0, Math.min(170, W * .5));
+        setStyle(mantelEl, 'paddingTop', home.classList.contains('hearth-compact') ? '0px' : '6px');
+        let h = clamp(stacksTop() - 14 - (loc(tagline).b + 8) - column - 16, 0, Math.min(230, W * .5));
         setStyle(mantelEl, 'marginBottom', (h + 10) + 'px');
         // the column is centred in its zone, so check both ends and give back what overlaps
-        const over = Math.max(bottom() + 10 - stacksTop(), loc(tagline).b + 4 - loc(mantelEl).y, stacksBottom() - H - sink0);
-        if (over > 0) { h -= over; setStyle(mantelEl, 'marginBottom', Math.max(0, h + 10) + 'px'); }
+        // (shrinking the fire moves the centred column, so measure again until nothing overlaps or sinks)
+        for (let i = 0; i < 4; i++) {
+          const over = Math.max(bottom() + 10 - stacksTop(), loc(tagline).b + 4 - loc(mantelEl).y, stacksBottom() - floorY - sink0, home.scrollHeight - home.clientHeight);
+          if (over <= .5) break;
+          h -= over; setStyle(mantelEl, 'marginBottom', Math.max(0, h + 10) + 'px');
+        }
         return h;
       };
       let h = solve();
       // not enough room for a fireplace worth seeing: give up the candles (the streak stays on the plaque) for height
       if (h < 100 && getComputedStyle(candles).display !== 'none') { setStyle(candles, 'display', 'none'); h = solve(); }
+      // short phones (375x667) and portrait tablets with no spare height: a compact room (stacks and gaps a size down)
+      if (h < 76) { home.classList.add('hearth-compact'); setStyle(home, '--hz-book', '24px'); setStyle(home, '--hz-g', '3px'); h = solve(); }
       // very short: the "Daily No. N" caption under Descend repeats the book titles, so it gives way too
       if (h < 76 && tag) { setStyle(tag, 'display', 'none'); h = solve(); }
       plan = planFlow({W, beam: loc(beamEl), h});
@@ -391,7 +412,7 @@ function createHearth(home, sfx) {
   function spawn(burst) {
     if (sparks.length > 140 * QK) return;
     const {FIRE, OP} = G, a = rr(-1, 1);
-    sparks.push({x: FIRE.cx + a * FIRE.w * .35, y: FIRE.base - rr(0, OP.h * .2), vx: rr(-14, 14) + (burst ? a * 30 : 0), vy: -rr(36, 80) * (burst ? 2.1 : 1) * (OP.h / 140), life: 0, max: rr(.8, burst ? 2.6 : 2.2), r: rr(.6, 1.6), ph: rr(0, 9), esc: G.wide && QK > .5 && rnd() < .4});
+    sparks.push({x: FIRE.cx + a * FIRE.w * .35, y: FIRE.base - rr(0, OP.h * .2), vx: rr(-14, 14) + (burst ? a * 30 : 0), vy: -rr(36, 80) * (burst ? 2.1 : 1) * (OP.h / 140) * (.75 + .25 * MH), life: 0, max: rr(.8, burst ? 2.6 : 2.2), r: rr(.6, 1.6), ph: rr(0, 9), esc: G.wide && QK > .5 && rnd() < .4});
   }
   function stoke() {
     if (!G) return;
@@ -462,12 +483,12 @@ function createHearth(home, sfx) {
     g.drawImage(cLogsB, FB.x * DPR, FB.y * DPR, FB.w * DPR, FB.h * DPR, FB.x, FB.y, FB.w, FB.h);
     g.globalCompositeOperation = 'lighter';
     for (const L of LOGS) for (let k = 0; k <= 4; k++) { const u = k / 4, x = mix(L.x0, L.x1, u), y = mix(L.y0, L.y1, u) + L.r * .6; g.globalAlpha = clamp((.18 + .14 * S(t * 3 + k * 1.7 + L.x0) / 1.75) * I, 0, 1); g.drawImage(EMBER, x - L.r * 2.4, y - L.r * 1.6, L.r * 4.8, L.r * 3.2); }
-    g.globalAlpha = clamp(.55 * I, 0, 1); g.drawImage(EMBER, FIRE.cx - FIRE.w * .7, FIRE.base - OP.h * .32, FIRE.w * 1.4, OP.h * .62);
+    g.globalAlpha = clamp(.55 * I * (.7 + .3 * MH), 0, 1); g.drawImage(EMBER, FIRE.cx - FIRE.w * .7, FIRE.base - OP.h * .32, FIRE.w * 1.4, OP.h * (.3 + .32 * MH));
     g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
     // flames: drawn at half resolution, then scaled up (soft edges for free), clipped to the opening
     gF.clearRect(0, 0, G.fw, G.fh); gF.globalCompositeOperation = 'lighter';
     const ox = (FIRE.cx - OP.x) / 2 + 2, base = (FIRE.base - (OP.y - OP.arch)) / 2 + 2 + OP.h * .01;
-    for (const T of TONGUES) tongue(gF, T, t, ox, base, FIRE.w / 2, OP.h * 1.02 / 2);
+    for (const T of TONGUES) tongue(gF, T, t, ox, base, FIRE.w / 2, OP.h * 1.02 / 2 * MH);
     if (!rm && QK > .5 && Math.random() < dt * 9 * I) { const T = TONGUES[(Math.random() * TONGUES.length) | 0]; licks.push({x: ox + T.x * FIRE.w / 2 + lean * 8, y: base - T.h * OP.h * .4 * rr(.55, .85), life: 0, max: rr(.22, .42), w: rr(3, 6) * FIRE.w / 220, vy: -rr(28, 50) * OP.h / 300}); }
     for (let i = licks.length - 1; i >= 0; i--) { const k = licks[i]; k.life += dt; if (k.life > k.max) { licks.splice(i, 1); continue; } k.y += k.vy * dt; k.x += lean * 20 * dt; const f = 1 - k.life / k.max; gF.globalAlpha = f * .8; gF.drawImage(LICK, k.x - k.w * f, k.y - k.w * 2.6 * f, k.w * 2 * f, k.w * 5.2 * f); }
     gF.globalAlpha = 1; gF.globalCompositeOperation = 'source-over';
@@ -481,7 +502,7 @@ function createHearth(home, sfx) {
     grate(g);
     // sparks from the fire; a few escape into the room, and embers drift in the air
     if (!rm) {
-      if (Math.random() < (14 + flare * 30) * QK * dt) spawn(false);
+      if (Math.random() < (14 * MH * MH + flare * 30) * QK * dt) spawn(false);
       g.globalCompositeOperation = 'lighter';
       for (let i = sparks.length - 1; i >= 0; i--) {
         const p = sparks[i]; p.life += dt;
@@ -489,7 +510,7 @@ function createHearth(home, sfx) {
         p.vy -= 8 * dt; p.vx += S(t * 2 + p.ph) * 20 * dt + lean * 30 * dt; p.vx *= .99; p.x += p.vx * dt; p.y += p.vy * dt;
         if (!p.esc && !(p.y > OP.y && p.x > OP.x && p.x < OP.x + OP.w)) { sparks.splice(i, 1); continue; }
         const k = 1 - p.life / p.max, s = p.r * (4 + 3 * k) * (G.wide ? 1 : .7);
-        g.globalAlpha = clamp(k * 1.3, 0, 1) * (.6 + .4 * Math.sin(t * 20 + p.ph)); g.drawImage(EMBER, p.x - s, p.y - s, s * 2, s * 2);
+        g.globalAlpha = clamp(k * 1.3, 0, 1) * (.6 + .4 * Math.sin(t * 20 + p.ph)); g.drawImage(SPARK, p.x - s, p.y - s, s * 2, s * 2);
       }
       for (const m of motes) {
         m.x += (m.vx + S(t * .6 + m.ph) * 5 + lean * 6) * dt; m.y += m.vy * dt;
@@ -501,7 +522,7 @@ function createHearth(home, sfx) {
       g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
     }
     void mantel;
-    if (glowEl) glowEl.style.setProperty('--hl-k', clamp(.78 + (I - 1) * 1.6, .5, 1).toFixed(3));
+    if (glowEl) glowEl.style.setProperty('--hl-k', clamp((.7 + .08 * MH) + (I - 1) * 1.6, .5, 1).toFixed(3));
     try { Quality.sample(now); } catch (e) {}
     if (!rm || flare > 0) raf = requestAnimationFrame(frame);
   }
