@@ -250,6 +250,19 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 
 ## D. Motion, sound and feel (smooth, physical)
 
+### 22a. [x] Run screen writes in smoothly (this PR)
+Coming back from looking up the descent no longer snaps: the candle, pips, word, part of speech, clock, answer slip and hint row now rise in staggered on the motion language, for new words and for "Back to N ft". Reduced motion shows it at once, low graphics fades the stage once. `src/ui/runWriteIn.js`.
+
+### 22b. Candle and alcove light up with the write-in
+**Pitch:** as the word writes in, the candle flame should catch and the alcove glow rise with it, so the room wakes up too.
+**Brief:** Goal: ease the candle flame and alcove lamp in alongside `writeInRun`. Files: `src/ui/runWriteIn.js`, `src/ui/candle.css`. Done when: no light pops on at full strength.
+**Touches:** UI. **Conflicts:** `src/ui/runWriteIn.js`.
+
+### 22c. The same write-in for the result card and riddle
+**Pitch:** the riddle screen and result card should arrive with the same staggered write-in.
+**Brief:** Goal: reuse `writeInRun` (or a sibling) for `src/app/riddle.js` and the card. Done when: no screen pops in whole.
+**Touches:** UI. **Conflicts:** `src/app/riddle.js`.
+
 ### 22. [x] Motion language (#127)
 **Serves:** smooth motion.
 **Pitch:** One set of durations and easings (accelerate, cruise, settle) for every move: page flips, book opens, camera glides, modal enters.

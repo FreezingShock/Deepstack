@@ -9,6 +9,7 @@ import {replayLayout,ROMAN} from '../core/replay.js';
 import {resumable,snapshotRun} from '../core/dailyRun.js';
 import {attachInk} from '../ui/inkInput.js';
 import {paintRun} from '../ui/runScreen.js';
+import {writeInRun} from '../ui/runWriteIn.js';
 import {hintButtonLabel,skipButtonLabel,hintSlipHtml} from '../ui/hintSlips.js';
 import {feedbackData} from '../core/feedback.js';
 import {FT,S,TIERS,dailyNo,dailyWords,floorAtFt,floorAtRow,save,tierOf,utc,wordsReady} from './state.js';
@@ -52,7 +53,7 @@ export async function startUnlimited(){
 export function pipsHTML(){return `<div class="pips" aria-label="word ${run.i+1} of 7">${run.words.map((_,i)=>{const r=run.results[i];const T=r?TIERS[r.tier]:null;return `<i class="pip ${i===run.i?'now':''} ${r?'done':''}" style="${T?`background:${T.spine};box-shadow:0 0 8px ${T.spine}99`:''}"></i>`;}).join('')}</div>`;}
 export function showWord(){
  if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();run.limit=45000;
- const el=ui.stage;el.hidden=false;el.className='center fadein';
+ const el=ui.stage;el.hidden=false;el.className='center';
  el.innerHTML=`<div class="candle" id="candle" aria-hidden="true"><div class="wax" id="wax"><i class="flame"></i><i class="wick"></i></div><div class="plate"></div></div><div class="sheet">${pipsHTML()}
   <div class="wlabel">Word ${run.i+1} of ${run.words.length}</div>${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
   <div class="word" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
@@ -62,6 +63,7 @@ export function showWord(){
   <div class="hintline" id="hl" aria-live="polite"></div>
   <div class="row" style="margin-top:6px"><button class="btn" id="hint"></button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
  World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});
+ writeInRun(el);
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
  attachInk(ta);

@@ -47,6 +47,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Transitions (Descend, leave run, return home) | `src/ui/transitions.js`, `descend.js` | B | Transitions thread in flight. |
 | Shared book style (`.bookbox`, `--bs-*` tokens) for Settings and Credits; spreads share the page token | `src/ui/bookStyle.css` | B | Foundation only: Sets overlay and Daily book still to adopt it. |
 | Top bar: Sound, Credits, Settings, judge status | `src/ui/topbar.js`, `topbar.css` | B | Credits cover Wiktionary CC BY-SA. |
+| Run screen write-in: candle, pips, word, clock, slip and hints rise in staggered for each new word and when the camera snaps back from browsing; reduced motion instant, low graphics one fade | `src/ui/runWriteIn.js`, hook in `src/app/run.js`, `src/ui/browse.js` | B | Riddle screen and result card not yet staggered (backlog 22c). |
 | Motion language: named durations/easings as CSS tokens + JS helpers, reduced motion in one place | `src/ui/motion.js`, `motion.css` | B | Raw easings banned by test. JS waits and delay literals not yet migrated (backlog 66, 68). |
 | Settings: volume, reduced motion, text size, high contrast | `src/ui/settings.js` | B | Own key `deepstack.settings.v1`. No keybinding or colour-blind options. |
 | Low-end mode: quality tiers (auto from device hints and slow frames, or manual Graphics setting) | `src/ui/quality.js`, hooks in `world.js`, `fx.js`, `ambient.js`, `topbar.js` | B | Own key `deepstack.quality.v1`. Dust, particles, DPR, 30 fps cap, creatures. New effects must read `Quality.params()`. |
