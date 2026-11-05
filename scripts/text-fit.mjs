@@ -61,10 +61,10 @@ for (const view of VIEWS) for (const size of SIZES) {
   await run('home', async () => { await page.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T}); await scan(page, tag('home')); });
   await run('settings', async () => {
     await page.locator('#bSettings').click({timeout: T});
-    await page.locator('#topPanel .tpbox').waitFor({state: 'visible', timeout: T});
+    await page.locator('[role=dialog].intro.panel').waitFor({state: 'visible', timeout: T});
     await scan(page, tag('settings'));
     await page.keyboard.press('Escape');
-    await page.locator('#topPanel').waitFor({state: 'hidden', timeout: T});
+    await page.locator('.bk-spread.panel').waitFor({state: 'detached', timeout: T});
   });
   await run('shelf', async () => {
     await page.locator('#bAll').click({timeout: T});
