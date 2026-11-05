@@ -1,0 +1,7 @@
+/* "You wrote" never ends in an ellipsis: it scrolls under a soft fade when long. */
+.wrote{display:block;-webkit-line-clamp:unset;overflow:visible}
+.wrote .wt{margin:0;max-height:calc(14px*var(--ts)*1.4*4);overflow-y:auto;overflow-wrap:anywhere;scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 14px),transparent)}
+.wrote .wt::-webkit-scrollbar{display:none}
+.wrote .wt u{text-decoration-thickness:1.5px;text-underline-offset:3px;text-decoration-color:var(--tc,currentColor)}
+.wrote .wmore{margin:3px 0 0;font-family:var(--font-hand,inherit);font-style:normal;font-size:calc(14px*var(--ts));line-height:1.3;opacity:.7}

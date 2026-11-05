@@ -10,6 +10,7 @@ import {stampCover} from '../ui/coverSigil.js';
 import {FX} from './fx.js';
 import {countUp} from './chrome.js';
 import {alsoAcceptedHTML} from '../ui/alsoAccepted.js';
+import {wroteHTML} from '../ui/explain.js';
 import {fillMeans} from '../ui/alsoMeans.js';
 
 /* ---------- result card ---------- */
@@ -26,7 +27,7 @@ export function openCard(b,opts={}){
    <p class="def">${esc(b.def)}</p>
    <span class="means-slot"></span>
    ${alsoAcceptedHTML(b)}
-   ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
+   ${wroteHTML(b)}
    ${feedbackHTML(b)}
    <div class="chips">
     ${opts.fresh?`<span><b>+${b.ft} ft</b> \u00b7 ${opts.depth1} ft</span>`:b.t?`<span>${b.mode==='daily'?'No. '+Math.max(1,core.dailyNumber(new Date(b.t).toISOString().slice(0,10)))+' \u00b7 ':''}${new Date(b.t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</span>`:''}

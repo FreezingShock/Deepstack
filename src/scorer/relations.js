@@ -98,6 +98,7 @@ export function relate(text, word, rel = REL) {
     }
     out.cover = hit / D.length;
   }
+  out.hit = [...new Set([...hitStems, ...tied, ...tieD, ...out.links.flatMap(t => t.split(' ')), ...ans.filter(a => D.includes(a))])];
   return out;
 }
 

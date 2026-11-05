@@ -1310,7 +1310,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: contextual first-time notes, not a tutorial screen or pop-up. Flag each in additive `S.seen.*`. Files: new `src/ui/firstNotes.js` plus css, one hook in `showWord`. Done when: each note shows once, reduced motion shows it static, Daily timing is not changed by it, 14-letter word and 375 checked.
 **Touches:** RUN, HOME. **Conflicts:** run screen thread, 29 (welcome).
 
-### G2. A score that explains itself
+### [x] G2. A score that explains itself (PR #226)
 **Serves:** scoring clarity, rarity is the hero, words fully readable, lenient judging.
 **Pitch:** The card says "Pamphlet, 0/100" and a vague line like "Nothing here points at the meaning yet", but not why. Show it: in "You wrote" underline the words the judge counted, and add one quiet handwritten caption saying what a stronger answer would have named. A long answer must never be cut with an ellipsis ("somethin…" today).
 **Brief:** Goal: surface the judge's matched concepts/relations in the card, no scoring change. Files: `src/ui/alsoAccepted.js`, `src/app/card.js`, judge result already carries hits. Done when: matched words are underlined, caption is under 12 words, "You wrote" wraps fully or scrolls under a fade (never ellipsis), rarity stays the hero.
@@ -1363,3 +1363,15 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Floors, decks and rooms will all be "a place with its own words". Give them one registry now so a new zone is data, not code, and decide where its door lives (a doorway in the niche, a section of the Unlimited book) so nothing is retrofitted. Content is out of scope.
 **Brief:** Goal: a single `places` registry (id, name, floor art key, word filter, unlock rule) read by the picker, floors, shelf bays and Almanac; default place unchanged. Files: new `src/core/places.js`, picker and floors read it. Done when: output with only the default place is byte-identical in tests, saves untouched, one test adds a fake place and sees it in picker and bays.
 **Touches:** CORE, WORLD. **Conflicts:** 35 topic decks (do together), word pool thread.
+
+### G13. Tap a counted word to see why it counted
+**Serves:** scoring clarity, everything is a book or a page.
+**Pitch:** The underlined words on "You wrote" could answer back: tap one and a handwritten margin note says what it matched ("quiet: a synonym of the word").
+**Brief:** Goal: store the match kind per counted word and show it as a margin note. Files: `src/ui/explain.js`, `src/scorer/index.js`. Done when: no scoring change, note under 8 words.
+**Touches:** RESULT, JUDGE. **Conflicts:** G2 follow-ups, N20.
+
+### G14. Say why a zero card is empty
+**Serves:** scoring clarity, lenient judging.
+**Pitch:** A 0/100 with nothing underlined feels arbitrary. Add one kind line ("nothing you wrote touched the meaning yet") that points at the stronger-answer caption.
+**Brief:** Goal: zero-hit cards get a single gentle line. Files: `src/ui/explain.js`, `src/app/card.js`. Done when: copy under 12 words, no ellipsis.
+**Touches:** RESULT. **Conflicts:** G2 follow-ups.

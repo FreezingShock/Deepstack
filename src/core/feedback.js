@@ -17,8 +17,10 @@ export function feedbackData(j, w) {
   if (!j || j.empty && !(j.missed && j.missed.length)) return undefined;
   const c = (j.caught || []).map(l => clean(l, w.w)).filter(Boolean);
   const m = (j.missed || []).map(l => clean(l, w.w)).filter(Boolean);
-  if (!c.length && !m.length) return undefined;
+  const h = (j.hits || []).filter(t => !(w.w && t.includes(w.w.toLowerCase())));
+  if (!c.length && !m.length && !h.length) return undefined;
   const fb = {c, m};
+  if (h.length) fb.h = h;
   if (j.opposite) fb.o = 1;
   if (j.usedWord) fb.u = 1;
   return fb;

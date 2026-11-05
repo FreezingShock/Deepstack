@@ -1,6 +1,6 @@
 // Scorer facade. The app only calls judgeAnswer(); it uses the embedding model when ready
 // and the lexical stand-in otherwise (see docs/PLAN.md).
-import {judge as lexicalJudge} from './lexical.js';
+import {judge as lexicalJudge, stem, STOP} from './lexical.js';
 import {cosine, referenceTexts, prepareAnswer, scoreFromSims} from './embedding.js';
 import {embed, whenReady, modelStatus} from './model.js';
 import {hubTexts, hubSim} from './hubness.js';
@@ -32,6 +32,13 @@ export async function prepareWords(words) {
   await Promise.all([hubFor(), ...words.map(refsFor)]);
 }
 
+/** Answer words the judge counted: the lexical matches plus any word tied to the target by the relation data. */
+function countedWords(text, lexHits, rl) {
+  const st = new Set(rl?.hit || []), out = new Set(lexHits || []);
+  for (const t of text.toLowerCase().replace(/n['\u2019]t\b/g, 'nt').split(/[^a-z]+/)) if (t.length >= 3 && !STOP.has(t) && st.has(stem(t))) out.add(t);
+  return [...out];
+}
+
 // Without concept lists the lexical scorer can only reward definition-word overlap; keep that as an honest, rough fallback.
 function fallback(text, word) {
   const j = lexicalJudge(text, word);
@@ -48,10 +55,11 @@ export async function judgeAnswer(text, word) {
     const prep = prepareAnswer(text, word);
     await Promise.all([loadRelations(), loadSenses()]);
     const [{vecs, grp, singles, alt, gloss, wordVec}, [a], hv] = await Promise.all([refsFor(word), embed([prep.text || text]), hubFor()]);
+    const rl = relate(text, word);
     const r = scoreFromSims(vecs.map(v => cosine(a, v)), prep, text, {word, wordSim: cosine(a, wordVec), hub: hubSim(a, hv, word),
-      rel: relate(text, word), altSim: alt.length ? Math.max(...alt.map(v => cosine(a, v))) : null, glossSim: gloss.length ? Math.max(...gloss.map(v => cosine(a, v))) : null, synSim: singles.length ? Math.max(...singles.map(v => cosine(a, v))) : null, grpSim: grp ? cosine(a, grp) : null});
+      rel: rl, altSim: alt.length ? Math.max(...alt.map(v => cosine(a, v))) : null, glossSim: gloss.length ? Math.max(...gloss.map(v => cosine(a, v))) : null, synSim: singles.length ? Math.max(...singles.map(v => cosine(a, v))) : null, grpSim: grp ? cosine(a, grp) : null});
     return {score: r.score, sim: r.sim, caught: lex.caught, missed: lex.missed, opposite: r.opposite || lex.opposite,
-      usedWord: lex.usedWord, empty: false, words: lex.words, engine: 'embedding'};
+      usedWord: lex.usedWord, empty: false, words: lex.words, hits: countedWords(text, lex.hits, rl), engine: 'embedding'};
   } catch (err) {
     console.warn('Embedding judge failed, using fallback:', err);
     return fallback(text, word);
