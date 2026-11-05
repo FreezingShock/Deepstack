@@ -14,10 +14,10 @@ test('unplayed Daily: Descend means today’s Daily and says so',()=>{
  const h=homeHTML({...base,S:S0,d:null});
  assert.match(h,/id="bPlay"/);assert.doesNotMatch(h,/id="bRes"|id="bNext"/);
 });
-test('mid-run Daily: Continue, with the word you are on',()=>{
+test('mid-run Daily: Continue, with how many words you have written',()=>{
  const S={...S0,dailyRun:{day:TODAY,results:[{},{},{}],combo:0}};
  const p=plaqueState({S,played:false,no:7,today:TODAY});
- assert.deepEqual([p.kind,p.label,p.tag],['resume','Continue','Daily No. 7 · word 4 of 7']);
+ assert.deepEqual([p.kind,p.label,p.tag],['resume','Continue','Daily No. 7 · 3 of 7 written']);
  assert.match(homeHTML({...base,S,d:null}),/data-next="resume"/);
  assert.equal(dailyBadge({S,played:false,no:7,today:TODAY}),'No. 7 · resume');
 });

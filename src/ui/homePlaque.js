@@ -8,7 +8,7 @@ export function plaqueState({S,played,no,today,lexicon=()=>''}){
  const rating=(S&&S.rating)||{};
  if(played)return {kind:'unlimited',label:'Descend',tag:rating.placed?`Unlimited · Lexicon ${lexicon(rating.L)}`:'Unlimited · find your rank',second:true};
  const r=resumable(S,today,DAILY_WORDS);
- if(r)return {kind:'resume',label:'Continue',tag:`Daily No. ${no} · word ${Math.min(r.results.length+1,DAILY_WORDS)} of ${DAILY_WORDS}`,second:false};
+ if(r)return {kind:'resume',label:'Continue',tag:`Daily No. ${no} · ${Math.min(r.results.length,DAILY_WORDS)} of ${DAILY_WORDS} written`,second:false};
  return {kind:'daily',label:'Descend',tag:`Daily No. ${no}`,second:false};
 }
 /* Spine badges for the two play books, so a spine says what is waiting inside it. */
