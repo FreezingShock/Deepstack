@@ -13,6 +13,7 @@ import {loadRelations} from '../scorer/index.js';
 import {relOf} from '../scorer/relations.js';
 import {attachInk} from '../ui/inkInput.js';
 import {paintRun} from '../ui/runScreen.js';
+import {seatCandle} from '../ui/candle.js';
 import {hintButtonLabel,skipButtonLabel,hintSlipHtml} from '../ui/hintSlips.js';
 import {FT,S,TIERS,dailyNo,utc,floorAtFt,floorAtRow,save,tierOf,wordsReady} from './state.js';
 import {World} from '../world/world.js';
@@ -55,6 +56,7 @@ export function showRiddle(){
   <div class="hintline" id="hl" aria-live="polite"></div>
   <div class="row" style="margin-top:6px"><button class="btn" id="hint"></button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
  World.openNiche(World.restRow,{label:NUMERALS[run.i],books:run.results});
+ seatCandle(el,run.limit);
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();submit(false);}};
  attachInk(ta);

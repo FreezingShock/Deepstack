@@ -26,3 +26,26 @@ test('flame height never grows as time runs down', () => {
   let prev = 2;
   for (let t = L; t >= 0; t -= 250) { const s = flameState(t, L).scale; assert.ok(s <= prev + 1e-9); prev = s; }
 });
+
+import {waxHeight, gaugeMarks, milestoneCrossed, secondsText, WAX_MIN, WAX_SPAN} from '../src/ui/candle.js';
+test('the wax is a ruler: tall at the start, short and never negative at the end', () => {
+  assert.equal(waxHeight(L, L), WAX_MIN + WAX_SPAN);
+  assert.equal(waxHeight(0, L), WAX_MIN);
+  assert.ok(waxHeight(30000, L) > waxHeight(20000, L));
+});
+test('rings sit every 10 s and the 10 s ring is the last-stretch mark', () => {
+  const m = gaugeMarks(L);
+  assert.deepEqual(m.map(x => x.s), [10, 20, 30, 40]);
+  assert.deepEqual(m.filter(x => x.last).map(x => x.s), [10]);
+  assert.ok(m[0].y < m[3].y);
+});
+test('spoken milestones fire once as time crosses them', () => {
+  assert.equal(milestoneCrossed(10100, 9900), 10);
+  assert.equal(milestoneCrossed(9900, 9800), 0);
+  assert.equal(milestoneCrossed(30100, 29900), 30);
+  assert.equal(milestoneCrossed(1100, 0), 0);
+});
+test('screen-reader text is plain words', () => {
+  assert.equal(secondsText(43100), '44 seconds left');
+  assert.equal(secondsText(400), '1 second left');
+});

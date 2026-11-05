@@ -1376,3 +1376,5 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Make Unlimited and Practice draw from `placeWords(place, WORDS)` so a topic room is only data.
 **Brief:** Goal: pass the active place into `pickWord` callers; default unchanged. Files: `src/core/level.js`, `unlimited.js`. Done when: tests prove the default pool is untouched.
 **Touches:** CORE. **Conflicts:** word pool thread.
+### G5. Time you can feel at a glance [x] (candle is the one run clock, PR pending)
+**Follow-ups:** G5a. Let the candle's wax drip a bead at each 10 s ring so crossing a ring is a small physical event (reduced motion: no bead). Conflicts: `src/ui/candle.css`. G5b. A "show the seconds" toggle in Settings for people who want the numeral back (the screen-reader text is already there). Conflicts: settings, `src/ui/candle.js`.

@@ -9,6 +9,7 @@ import {replayLayout,ROMAN} from '../core/replay.js';
 import {resumable,snapshotRun} from '../core/dailyRun.js';
 import {attachInk} from '../ui/inkInput.js';
 import {paintRun} from '../ui/runScreen.js';
+import {seatCandle} from '../ui/candle.js';
 import {writeInRun} from '../ui/runWriteIn.js';
 import {hintButtonLabel,skipButtonLabel,hintSlipHtml} from '../ui/hintSlips.js';
 import {feedbackData} from '../core/feedback.js';
@@ -63,7 +64,7 @@ export function showWord(){
   <div class="hintline" id="hl" aria-live="polite"></div>
   <div class="row" style="margin-top:6px"><button class="btn" id="hint"></button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
  World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});
- writeInRun(el);
+ writeInRun(el);seatCandle(el,run.limit);
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
  attachInk(ta);
