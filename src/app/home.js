@@ -2,7 +2,7 @@ import * as core from '../core/index.js';
 import {Sfx} from '../feel.js';
 import {modelStatus} from '../scorer/index.js';
 import {judgeLabel} from '../ui/judgeLabel.js';
-import {homeHTML,bookify} from '../ui/home.js';
+import {homeHTML,bookify,BOOK_ACTS} from '../ui/home.js';
 import {setBookSfx} from '../ui/bookOpenFx.js';
 import {applyHomeTier} from '../ui/homeLayout.js';
 import {descendInto} from '../ui/descend.js';
@@ -27,7 +27,8 @@ export function showHome(){
  World.clearNiches();World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
- $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;$('#bRid')&&($('#bRid').onclick=startRiddle);$('#bRidD')&&($('#bRidD').onclick=startTodayRiddle);
+ $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
+ BOOK_ACTS.riddle=startRiddle;BOOK_ACTS.dailyRiddle=startTodayRiddle;BOOK_ACTS.daily=()=>d?showFinal(d,true):startDaily(false);
  
  bookify(ui.home);applyHomeTier(ui.home);
  bindAtticHome(ui.home,{shelf:S.shelf});

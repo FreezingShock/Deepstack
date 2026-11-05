@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Open the Unlimited book: the left page is Unlimited, the right page is Riddle, each with its own Start link. Open the Daily book: its first page now has Daily and Daily Riddle with Descend / Open today's riddle. Say if the sections read clearly or if the Riddle half needs more weight. (merged modes)
 - Pick from the Q1 to Q16 audit menu (end of this file). Q11 is decided (a 0 keeps its book and 13 ft).
 - Descend past a floor door (Archive 101 ft, Catacombs 252 ft and deeper) and say if the half-speed hold at the door, the one-time swing of the sign and the quiet floor sound feel right or too subtle; also check Settings reduced motion removes the hold and swing. (door walk-through thread)
 - Play a run and answer with plain synonyms of rare words ("curt" for laconic, "blunt" or "forthright" for candid, "conscientious" for diligent): they should now land in Paperback or better. Tell me any everyday word that still scores 0 or any wrong word that scores well. (judge thesaurus, backlog 90)
@@ -1180,3 +1181,23 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 ### P3. Paper sound that follows the hand
 **Pitch:** a soft rustle as the corner lifts and a different settle when the page lands, quieter for short flips.
 **Brief:** Goal: two synthesised paper cues in `feel.js` tied to hover-lift and turn end. Files: `src/feel.js`, `pageFlip.js`. Done when: off with sound off. **Touches:** FEEL. **Conflicts:** F1.
+
+### M1. [x] Merge riddle modes into Unlimited and Daily (this PR)
+**Pitch:** "combine riddle shelf into Unlimited, making it sectioned off but still on the same two pages, it should also be Daily and Daily Riddle".
+**Done:** the Riddle Shelf and Today's Riddle menu books are removed; Unlimited's spread holds Unlimited and Riddle, the Daily cover holds Daily and Daily Riddle; renamed everywhere; saves untouched.
+**Touches:** UI. **Conflicts:** `src/ui/home.js`, `src/ui/dailyBook.js`.
+
+### M2. Riddle history inside the Daily book
+**Pitch:** each Daily day spread should show that day's seven riddle definitions and your answers, like the words, not just a solved count.
+**Brief:** Goal: a "Daily Riddle" block on every day's pages (sealed until played, open once the day passes). Files: `src/ui/dailyBook.js`, `src/core/riddleDaily.js`. Done when: today's riddle stays sealed until played and tests cover it.
+**Touches:** UI. **Conflicts:** `src/ui/dailyBook.js`.
+
+### M3. Unlimited stats that count both halves
+**Pitch:** the Unlimited book should show your Lexicon and your riddle solved count side by side, since they share a book now.
+**Brief:** Goal: a one-line tally under each section's Start link. Files: `src/ui/home.js`. Done when: fresh saves show a written empty line, not zeros.
+**Touches:** UI. **Conflicts:** `src/ui/home.js`.
+
+### M4. Fewer books on the home stack, audit the rest
+**Pitch:** same idea again: could Practice live inside the Daily book as a third section, and Shelf/Sets/Stats share one book?
+**Brief:** Goal: audit which home books are related modes and propose merges before building. Files: `src/ui/home.js`. Done when: a short plan in this file.
+**Touches:** UI. **Conflicts:** `src/ui/home.js`.

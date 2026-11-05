@@ -50,7 +50,7 @@ function cell(S,key,today,spreadOf,order=0){
  const rec=(S.daily||{})[key];
  const ink=st==='played'?` style="--ink-tier:${tierInk(rec.best)};--i:${order}"`:'';
  const lbl=`No. ${dailyNumber(key)}, ${key}${st==='played'?`, played, average ${rec.avg}`:st==='today'?', today':', not played'}`;
- return `<button class="cal-d ${st}" data-spread="${spreadOf(key)}" aria-label="${esc(lbl)}"${ink}>${st==='played'?RING:''}${n}${riddleDay(S,key)?'<i class="cal-rid" title="Riddle solved that day"></i>':''}</button>`;
+ return `<button class="cal-d ${st}" data-spread="${spreadOf(key)}" aria-label="${esc(lbl)}"${ink}>${st==='played'?RING:''}${n}${riddleDay(S,key)?'<i class="cal-rid" title="Daily Riddle played that day"></i>':''}</button>`;
 }
 
 /* The seven days ending today, as a strip: letter, number, and the day's average if played. */
@@ -73,8 +73,8 @@ export function streakNote(streak){
 /* The riddle book's line under the Daily margin note: its own streak, in the same hand. */
 export function riddleNote(S,today){
  const n=riddleDayStreak(S&&S.riddle,today);
- if(!n)return `<p class="cal-margin cal-rid-note"><i class="cal-rid"></i> Today’s Riddle keeps its own tally: a dot under a day marks a riddle played.</p>`;
- return `<p class="cal-margin cal-rid-note"><i class="cal-rid"></i> Riddle: ${n===1?'1 day':n+' days'} in a row.</p>`;
+ if(!n)return `<p class="cal-margin cal-rid-note"><i class="cal-rid"></i> A dot under a day marks a Daily Riddle played.</p>`;
+ return `<p class="cal-margin cal-rid-note"><i class="cal-rid"></i> Daily Riddle: ${n===1?'1 day':n+' days'} in a row.</p>`;
 }
 
 /* The calendar leaf for month ym. spreadOf(key) gives the book spread of a day; canPrev/canNext bound the paging. */

@@ -38,7 +38,7 @@ function shareHTML(txt) {
 // The whole results sheet. Hierarchy: kicker, title, depth (the hero), one line of run facts,
 // the shelf of books, stat cards, the word list, the torn share note, then the buttons.
 export function finalHTML(d, S, o) {
-  const kicker = d.mode === 'riddle' ? (d.day ? 'Riddle No. ' + o.dayNo : 'Riddle Shelf') : d.mode === 'unlimited' ? (d.placing ? 'Placement' : 'Unlimited') : d.practice ? 'Practice run' : 'Daily No. ' + o.no;
+  const kicker = d.mode === 'riddle' ? (d.day ? 'Daily Riddle No. ' + o.dayNo : 'Riddle') : d.mode === 'unlimited' ? (d.placing ? 'Placement' : 'Unlimited') : d.practice ? 'Practice run' : 'Daily No. ' + o.no;
   const lex = d.mode === 'riddle' ? `<span>Solved <b>${d.solved}</b> of ${d.of}</span>` : d.mode === 'unlimited' ? `<span>Lexicon <b>${d.lex}</b>${d.placing ? '' : ` (${d.lex >= d.lex0 ? '+' : '\u2212'}${Math.abs(d.lex - d.lex0)})`} \u00b7 ${esc(o.levelTitle(d.lex / 10))}</span>` : '';
   return `<div class="sheet fin">
   <div class="fhead"><p class="fkick">${kicker}</p>

@@ -98,3 +98,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-05 spine labels: clipped words on Shelf spines ("CONDOMI...", "ADMINISTRA...") -> no clipped or ellipsized words anywhere; shrink the type or wrap, and keep the ×N count off the label (thread: spine labels).
 - 2026-11-05 attic books: flat, cartoonish, repeating piles are not acceptable -> attic books get the same detail as the Shelf (material, sigil, ageing), one book per word, clear grouping, and more rooms to scroll back through with perspective/parallax. Words are never clipped or ellipsized.
 - 2026-11-05 N20: keep the also-accepted line a quiet handwritten caption under the definition; rarity stays the hero.
+- 2026-11-05 menu books: "combine riddle shelf into Unlimited, making it sectioned off but still on the same two pages, it should also be Daily and Daily Riddle" -> fewer menu books; related modes are sections of one book, same two pages, not extra books.
