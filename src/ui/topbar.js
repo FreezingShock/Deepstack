@@ -1,7 +1,9 @@
 /* Library-themed top bar: brass plaque, wooden lintel, and the buttons on it
    (Sound, Credits, Settings) plus the panels they open. */
 import './topbar.css';
+import './panelBook.css';
 import {Quality,PREFS} from './quality.js';
+import {openPanelBook} from './panelBook.js';
 import {loadSettings,saveSettings,applySettings,TEXT_SIZES,reducedMotion} from './settings.js';
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -51,13 +53,26 @@ export function initTopbar({Sfx,doc=document}={}){
    <div class="tprow"><label for="sVol">Volume</label><input id="sVol" type="range" min="0" max="100" step="5" value="${Math.round(st.volume*100)}" aria-valuetext="${Math.round(st.volume*100)} percent"><output id="oVol">${Math.round(st.volume*100)}%</output></div>
    <div class="tprow"><span id="lMot">Reduced motion</span><button type="button" class="tpsw" id="sMotion" role="switch" aria-checked="${st.motion==='reduce'}" aria-labelledby="lMot"><i></i></button></div>
    <p class="tphint">Calmer animations. The candle, dust and book-opening effects settle fully the next time the page loads.</p>
+   <!--pg-->
    <fieldset class="tprow tpseg"><legend>Text size</legend>${TEXT_SIZES.map((t,i)=>`<button type="button" data-text="${t}" aria-pressed="${st.text===t}" style="font-size:${14+i*3}px">A${i?'+'.repeat(i):''}<span class="sr-only"> ${['Normal','Large','Extra large'][i]}</span></button>`).join('')}</fieldset>
    <fieldset class="tprow tpseg" id="sQual"><legend>Graphics</legend>${PREFS.map(p=>`<button type="button" data-q="${p}" aria-pressed="${Quality.pref()===p}">${p[0].toUpperCase()+p.slice(1)}</button>`).join('')}</fieldset>
    <p class="tphint">Auto lightens dust, particles and resolution on slow devices. Pick Low if the library stutters.</p>
    <div class="tprow"><span id="lCon">High contrast</span><button type="button" class="tpsw" id="sContrast" role="switch" aria-checked="${st.contrast}" aria-labelledby="lCon"><i></i></button></div>`;
   },
  };
+ const useBook=doc===globalThis.document&&typeof matchMedia==='function';
+ let book=null;
+ /* Settings and Credits grow out of the pressed button as a book (panelBook.js); the plain panel below is the fallback. */
+ function openAsBook(k,from){
+  if(book)return;
+  const raw=body[k]().replace(/<h2 id="tpT">\w+<\/h2>/,''),[l,r]=k==='settings'?raw.split('<!--pg-->'):[raw,''];
+  current=k;opener=from||opener;
+  book=openPanelBook({from,title:k==='settings'?'Settings':'Credits',kicker:k==='settings'?'Your library, your way':'Who made this possible',left:l,right:r,
+   wire:sp=>{if(k==='settings')wireSettings(sp);},
+   onClose:()=>{book=null;current=null;const o=opener;opener=null;if(o&&o.isConnected)o.focus({preventScroll:true});}});
+ }
  function openPanel(k,from){
+  if(useBook){openAsBook(k,from);return;}
   opener=from||opener;current=k;
   layer.innerHTML=`<div class="tpbox bookbox" role="dialog" aria-modal="true" aria-labelledby="tpT"><button type="button" class="tpx" id="tpClose" aria-label="Close">×</button>${body[k]()}</div>`;
   layer.classList.remove('leaving');layer.hidden=false;
@@ -71,14 +86,19 @@ export function initTopbar({Sfx,doc=document}={}){
   layer.classList.add('leaving');
   setTimeout(()=>{if(current)return;layer.classList.remove('leaving');layer.hidden=true;layer.innerHTML='';},reducedMotion()?0:160);
  }
- function wireSettings(){
+ function wireSettings(root=layer){
+  const $=s=>root.querySelector(s);
+  /* pages repaint on a turn: show the live values, not the ones the book was opened with */
+  $('#sSound').setAttribute('aria-checked',!!snd&&snd.getAttribute('aria-pressed')==='true');$('#sMotion').setAttribute('aria-checked',st.motion==='reduce');$('#sContrast').setAttribute('aria-checked',st.contrast);
+  $('#sVol').value=Math.round(st.volume*100);$('#oVol').textContent=Math.round(st.volume*100)+'%';
+  root.querySelectorAll('[data-text]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.text===st.text));root.querySelectorAll('[data-q]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.q===Quality.pref()));
   const sw=(el,fn)=>el.onclick=()=>{const v=el.getAttribute('aria-checked')!=='true';el.setAttribute('aria-checked',v);fn(v);};
   sw($('#sSound'),()=>{snd&&snd.click();$('#sSound').setAttribute('aria-checked',snd.getAttribute('aria-pressed')==='true');});
   sw($('#sMotion'),v=>set({motion:v?'reduce':'full'}));
   sw($('#sContrast'),v=>set({contrast:v}));
-  layer.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{Quality.setPref(b.dataset.q);layer.querySelectorAll('[data-q]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
+  root.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{Quality.setPref(b.dataset.q);root.querySelectorAll('[data-q]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
   const vol=$('#sVol');vol.oninput=()=>{const n=+vol.value;$('#oVol').textContent=n+'%';vol.setAttribute('aria-valuetext',n+' percent');set({volume:n/100});};
-  layer.querySelectorAll('[data-text]').forEach(b=>b.onclick=()=>{set({text:b.dataset.text});layer.querySelectorAll('[data-text]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
+  root.querySelectorAll('[data-text]').forEach(b=>b.onclick=()=>{set({text:b.dataset.text});root.querySelectorAll('[data-text]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
  }
  layer.addEventListener('click',e=>{if(e.target===layer)closePanel();});
  /* capture phase so Esc closes this panel before main.js sees it; Tab stays inside */
@@ -93,5 +113,5 @@ export function initTopbar({Sfx,doc=document}={}){
    else if(!e.shiftKey&&a===f[f.length-1]){e.preventDefault();f[0].focus();}
   }else if(e.key==='Enter'&&e.target.tagName==='BUTTON'){e.stopImmediatePropagation();}
  },true);
- return{openPanel,closePanel};
+ return{openPanel,closePanel:()=>book?book.close():closePanel()};
 }
