@@ -1376,3 +1376,17 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Make Unlimited and Practice draw from `placeWords(place, WORDS)` so a topic room is only data.
 **Brief:** Goal: pass the active place into `pickWord` callers; default unchanged. Files: `src/core/level.js`, `unlimited.js`. Done when: tests prove the default pool is untouched.
 **Touches:** CORE. **Conflicts:** word pool thread.
+
+### LM4. [x] (this PR) The run candle really lights the room
+**Serves:** pattern 8 (immersion), pattern 5 (mysterious, believable light).
+**Pitch:** The candle's glow was a gradient inside the answer box and ended in a hard line at the alcove edge. It is now a canvas light that spills over the frame, ledge, shelves and books, fading with distance, and registers with the dark pass.
+**Brief:** Done: `src/ui/candleLight.js`, hooks in `world.js` and `runScreen.js`, DOM halo removed in `candle.css`. Test: `test/candle-light.test.js`.
+**Touches:** WORLD, UI. **Conflicts:** G5 (candle as run clock).
+
+### LM5. Shadows for the candle
+**Pitch:** The light should be blocked by things: the slip, the open book and the hanging lanterns throw soft shadows across the wall.
+**Brief:** Goal: darken a few soft shapes on the glow using the slip and lantern rects. Files: `candleLight.js`. Done when: moving the slip changes nothing visible but the wall shows a faint shadow, no extra cost. **Touches:** UI. **Conflicts:** G5.
+
+### LM6. Lantern light spills out of the alcove too
+**Pitch:** Same treatment for the two alcove lanterns: their glow should reach the frame and the shelves beside the alcove, not stop at the alcove edge.
+**Brief:** Goal: audit `lanterns.js` glow radius against the frame and widen with falloff. Files: `lanterns.js`. Done when: no visible edge at 1280 and 1640. **Touches:** UI. **Conflicts:** none.

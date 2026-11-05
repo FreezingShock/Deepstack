@@ -14,3 +14,6 @@
 .clock.low{animation:none;text-shadow:0 0 12px var(--c-amber-ffb84d-alpha-88)}
 .timer.low i{background:linear-gradient(90deg,var(--c-amber-ffd98a),var(--c-parchment))}
 @media(prefers-reduced-motion:reduce){.candle .flame,.candle.dying .flame{animation:none;transition:none}.candle.out .wick::after{animation:none;opacity:0}}
+/* the candle's light now lives on the world canvas (ui/candleLight.js): the DOM halo was clipped by the answer box at the alcove edge */
+.candle::before{display:none}
+.candle .flame,.candle.low .flame{box-shadow:none}
