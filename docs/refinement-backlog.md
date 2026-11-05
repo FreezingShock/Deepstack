@@ -1116,7 +1116,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: shorten or scale the handwritten CTA so it stays on one line ("Start the Riddles"), give the pen underline and Close a consistent gap. Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: all six books' CTAs on one line at 1280 and 375.
 **Touches:** books. **Conflicts:** Q7.
 
-### Q14. Daily calendar header has stray marks
+### Q14. [x] Daily calendar header has stray marks (done in this PR: hand-drawn SVG prev/next arrows, 44 px, no text-decoration underline)
 **Serves:** spacing and polish, handwritten.
 **Pitch:** The "‹ November 2026" header has a tiny back arrow, a blue underline that runs off the right edge of the page, and small dash ornaments on the margin of page 1.
 **Brief:** Goal: a clear hand-drawn previous and next arrow pair, the underline kept inside the text block, the corner dashes removed or made a real page-curl. Files: `src/ui/dailyBook.js`, its css. Done when: screenshot at 1280 and 375, arrows hit 44 px.
