@@ -1164,3 +1164,18 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 - [x] Shelf spine labels never clipped: type shrinks to fit, ×N/star hang off the spine as tags, other one-line words wrap (spine-labels thread).
 - [ ] Sweep the remaining ellipsis uses (plaques, daily-book titles) for words that can clip. Pitch: nate wants no clipped words anywhere. Conflicts: shelfBays.css, home.css.
 - [ ] Attic and ledge spine labels: apply the same fit helper. Conflicts: src/world/bookArt.js.
+
+
+- [x] Page flip overhaul (PR pending; curl, page-edge thickness, handwritten cue, tug hint, lifted leaf)
+
+### P1. Ribbon markers that jump pages
+**Pitch:** each menu book has a ribbon; tug it to jump to the contents page, and let a pen-ink bookmark remember where you stopped.
+**Brief:** Goal: a clickable ribbon on open books that returns to page 1, plus the last page remembered per book for the session. Files: new `src/ui/bookRibbon.js`, hook in `home.js` paint. Done when: keys and swipe unaffected, tested with a fake spread. **Touches:** BOOKS. **Conflicts:** page flip.
+
+### P2. Drag the corner to turn
+**Pitch:** grab the curled corner and drag it across the page; letting go early lays it back, past halfway it turns.
+**Brief:** Goal: pointer-drag on `.bs-corner` drives the leaf's rotate with spring settle. Files: `src/ui/pageFlip.js`, `pageFlip.css`. Done when: click still turns, reduced motion falls back to a click. **Touches:** BOOKS. **Conflicts:** none.
+
+### P3. Paper sound that follows the hand
+**Pitch:** a soft rustle as the corner lifts and a different settle when the page lands, quieter for short flips.
+**Brief:** Goal: two synthesised paper cues in `feel.js` tied to hover-lift and turn end. Files: `src/feel.js`, `pageFlip.js`. Done when: off with sound off. **Touches:** FEEL. **Conflicts:** F1.

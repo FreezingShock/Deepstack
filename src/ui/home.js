@@ -1,6 +1,7 @@
 import {PALETTE} from '../theme/colors.js';
 import {BOOK_TIMING,bookTimings,dressBook,thud,bookSound} from './bookOpenFx.js';
 import {decorate as inkPage} from './ink.js';
+import {cornersHTML,paintEdges,noteTurned,hintCurl} from './pageFlip.js';
 /* Home screen markup. Kept separate from main.js so other features can add
    entries (modes, links) by pushing onto HOME_LINKS / HOME_STEPS without
    touching the layout. */
@@ -91,7 +92,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const r=from||{left:innerWidth/2,top:innerHeight/2,width:0,height:0};
  sp.style.cssText=`--bk:${colors.bk};--bk2:${colors.bk2};--bk-gild:${colors.gild};--tex:${colors.tex||'none'};--fx:${r.left+r.width/2-innerWidth/2}px;--fy:${r.top+r.height/2-innerHeight/2}px`;
  sp.innerHTML='<div class="bs-board l"></div><div class="bs-board r"></div><div class="bs-page l"></div><div class="bs-page r"></div><div class="bs-leaf"><i></i><i></i></div>'+
-  '<button class="bs-corner prev" aria-label="Previous page" hidden><i></i></button><button class="bs-corner next" aria-label="Next page" hidden><i></i></button>'+
+  cornersHTML()+
   '<div class="bs-cover"><div class="cv-front"><i class="cv-hinge"></i><div class="cv-frame"><span class="cv-orn" aria-hidden="true"></span><span class="cv-t"></span><span class="cv-orn" aria-hidden="true"></span></div></div><div class="cv-in"></div></div>';
  sp.querySelector('.cv-t').textContent=title;
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches,T=bookTimings(reduce);
@@ -130,6 +131,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   if(only!=='l')R.innerHTML=pageHTML(idx,'r',nr);
   const m=one?fl.length:n,at=one?pos:idx;
   corners.forEach(c=>{const prev=c.classList.contains('prev');c.hidden=m<2;c.disabled=prev?at<=0:at>=m-1;});
+  paintEdges(sp,at,m);
   if(api.onPaint)api.onPaint(sp,idx);
  };
  /* Page turn: a leaf lifts from the corner and swings about the spine (two pages) or peels away (phones).
@@ -141,7 +143,9 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   if(flying){queued=d;return;}
   if(one){const fl=flat(),p=fl.findIndex(f=>f.i===idx&&f.s===side)+d;if(p<0||p>=fl.length)return;j=fl[p].i;s2=fl[p].s;}
   else if(j<0||j>=spreads.length)return;
+  noteTurned(sp);
   if(reduce||!sp.classList.contains('intro')){idx=j;side=s2;paint();return;}
+  bookSound('flip');
   const next=d>0,leaf=document.createElement('div');leaf.className='bs-flip '+(next?'next':'prev')+(one?' one':'');
   const face=(cls,html)=>`<div class="bs-face ${cls} bs-page" inert>${html}</div>`;
   const L=sp.querySelector('.bs-page.l'),R=sp.querySelector('.bs-page.r');
@@ -177,7 +181,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  t(()=>{sp.classList.add('open');bookSound('flip');},T.fly+T.hold);
  if(spreads&&spreads.length){
   t(()=>{
-   paint();sp.classList.add('intro');sp.setAttribute('role','dialog');sp.setAttribute('aria-label',label||title);sp.removeAttribute('aria-hidden');
+   paint();sp.classList.add('intro');hintCurl(sp,reduce);sp.setAttribute('role','dialog');sp.setAttribute('aria-label',label||title);sp.removeAttribute('aria-hidden');
    document.addEventListener('keydown',key,true);document.addEventListener('pointerdown',away,true);
    const f=sp.querySelector('.bs-start')||sp.querySelector('.pg-in button,.pg-in input');if(f)f.focus({preventScroll:true});
   },Math.max(0,T.open-120));
