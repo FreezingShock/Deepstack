@@ -425,7 +425,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Files: `scripts/build-relations.mjs`, `public/data/relations.json`. Done when: `npm run judge:eval` good/synonym in band beats 79% on `relation-answers.json` without wrong answers rising.
 **Touches:** JUDGE. **Conflicts:** none.
 
-### J1. [x] Judge accepts other meanings and broad ideas, books show them (PR pending)
+### J1. [x] Judge accepts other meanings and broad ideas, books show them (PR #214)
 **Pitch:** A word's other senses and its synonyms' senses count as targets; general ideas and words related to the definition earn a low score; the book lists the other meanings.
 **Brief:** Files: `scripts/build-senses.mjs`, `public/data/senses.json`, `src/scorer/senses.js`, `src/ui/alsoMeans.{js,css}`. Done: `npm run judge:eval` good 79% to 85%, AUC 0.899 to 0.916.
 **Touches:** JUDGE, card hook. **Conflicts:** none.
