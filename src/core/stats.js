@@ -3,7 +3,8 @@
 const DAY=864e5;
 const dayMs=k=>Date.parse(k+'T00:00:00Z');
 import {currentStreak} from './streak.js';
-export const dayKey=ms=>new Date(ms).toISOString().slice(0,10);
+/* Daily days roll over at the player's local midnight (not UTC): YYYY-MM-DD in local time. */
+export const dayKey=ms=>{const d=new Date(ms),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;};
 
 export function longestStreak(keys){
   const ds=[...new Set(keys)].map(dayMs).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
@@ -40,5 +41,5 @@ export function computeStats(S,today){
     recent:keys.slice(-14).map(k=>({day:k,depth:S.daily[k].depth,avg:S.daily[k].avg,best:S.daily[k].best}))
   };
 }
-export function msUntilNextDaily(now=Date.now()){const t=new Date(now);return Date.UTC(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate()+1)-now;}
+export function msUntilNextDaily(now=Date.now()){const t=new Date(now);return new Date(t.getFullYear(),t.getMonth(),t.getDate()+1).getTime()-now;}
 export const fmtCountdown=ms=>{const s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?`${h}h ${String(m).padStart(2,'0')}m`:`${m}m ${String(s%60).padStart(2,'0')}s`;};

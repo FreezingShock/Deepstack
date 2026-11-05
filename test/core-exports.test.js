@@ -6,7 +6,7 @@ import * as core from '../src/core/index.js';
 test('core barrel exposes distinct day-key helpers', () => {
   assert.equal(typeof core.dayKey, 'function');
   assert.equal(typeof core.bookDayKey, 'function');
-  assert.equal(core.dayKey(Date.UTC(2026, 10, 4, 5)), '2026-11-04');
-  assert.equal(core.bookDayKey({t: Date.UTC(2026, 10, 4, 5)}), '2026-11-04');
+  assert.equal(core.dayKey(new Date(2026, 10, 4, 23, 30).getTime()), '2026-11-04');
+  assert.equal(core.bookDayKey({t: new Date(2026, 10, 4, 12).getTime()}), '2026-11-04');
   assert.equal(core.bookDayKey({}), '');
 });

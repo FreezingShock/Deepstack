@@ -1,3 +1,4 @@
+import {dayKey} from './stats.js';
 // Pure shelf logic: filtering, sorting and grouping. Books are entries of S.shelf;
 // each item here is {b, i} where i is the index in S.shelf. Extra predicates
 // (e.g. book sets) can be added to EXTRA_FILTERS without touching the UI code.
@@ -11,7 +12,7 @@ export const SORTS={
 };
 // key -> (item, opts) => boolean, applied when opts[key] is truthy.
 export const EXTRA_FILTERS={fav:x=>!!x.b.fav};
-export const bookDayKey=b=>b.t?new Date(b.t).toISOString().slice(0,10):'';
+export const bookDayKey=b=>b.t?dayKey(b.t):'';
 export function filterShelf(shelf,{tier=-1,q='',sort='new',...rest}={}){
   const needle=q.trim().toLowerCase();
   return shelf.map((b,i)=>({b,i}))

@@ -1,10 +1,11 @@
+import {dayKey as coreDayKey} from '../core/stats.js';
 /* Shelf bays: the Shelf book is a small library section. Books are shelved in labelled bays (by rarity, floor found,
    set, Daily date, or all together); each bay gets a brass label with a count and a second line of detail.
    Pure functions (no DOM) so tests can pin them. Grouping works on the collapsed list [{b,i,n}]. */
 import {SETS} from '../sets/sets.js';
 
 export const BAY_MODES=[['tier','By rarity'],['floor','By floor found'],['set','By set'],['day','By Daily date'],['none','Together']];
-const dayKey=b=>b&&b.t?new Date(b.t).toISOString().slice(0,10):'';
+const dayKey=b=>b&&b.t?coreDayKey(b.t):'';
 const fmtDay=k=>new Date(k+'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
 const setOfWord=(()=>{const m=new Map();for(const s of SETS)for(const w of s.words)m.set(w,s);return w=>m.get(String(w).toLowerCase());})();
 

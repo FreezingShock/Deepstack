@@ -26,5 +26,5 @@ test('computeStats aggregates tiers, skips, depth',()=>{
 test('countdown formatting',()=>{
   assert.equal(fmtCountdown(3600e3*5+60e3*7),'5h 07m');
   assert.equal(fmtCountdown(75e3),'1m 15s');
-  assert.ok(msUntilNextDaily(Date.UTC(2026,0,1,23,0,0))===3600e3);
+  assert.ok(msUntilNextDaily(new Date(2026,0,1,23,0,0).getTime())===3600e3);
 });

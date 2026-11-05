@@ -13,6 +13,6 @@ export let S=Object.assign({shelf:[],daily:{},streak:{last:'',n:0},bestDepth:0,b
 S.rating=core.loadRating(S.rating);
 export const save=()=>store.set('deepstack.v1',S);
 backfillSets(S);
-export const utc=()=>new Date().toISOString().slice(0,10);
+export const utc=()=>core.dayKey(Date.now()); // local date key (name kept for callers)
 export const dailyNo=()=>Math.max(1,core.dailyNumber(utc()));
 export const HINT_LABEL={sentence:'used in a sentence',synonym:'a related word',opening:'how the definition begins'};
