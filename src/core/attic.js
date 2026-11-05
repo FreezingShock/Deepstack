@@ -78,3 +78,13 @@ export function atticTidy(items){
  }
  return out;
 }
+
+/* The attic's sections, in the order you climb through them: first the recent guesses, then the earlier finds, one
+   section per month they were found (newest month first; books with no date go in an undated section last).
+   Each is {key,title,items}; layout splits a crowded section into "continued" sections. Pure. */
+export function atticSections(items){
+ const recent=(items||[]).filter(x=>x.recent),rest=(items||[]).filter(x=>!x.recent),out=[];
+ if(recent.length)out.push({key:'recent',title:'Recent guesses',items:recent});
+ for(const c of atticCrates(rest,{perCrate:1e9}))out.push({key:c.key,title:c.key==='none'?'Undated finds':`Found in ${c.label}`,items:c.items});
+ return out;
+}
