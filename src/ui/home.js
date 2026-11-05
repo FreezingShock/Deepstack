@@ -229,6 +229,7 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
   el.onclick=e=>{
    if(busy){if(!el.classList.contains('opening'))pending=()=>el.onclick(e);return;}
    const pages=BOOK_PAGES[el.id];
+   if(pages&&pages.load){pages.load().then(()=>el.onclick(e),()=>{});return;} // lazy book (lazyScreens.js): fetch its code, then open as usual
    if(reduce&&!pages&&!BOOK_INTROS[el.id]?.riddle){go.call(el,e);return;}
    const cs=getComputedStyle(el),intro=BOOK_INTROS[el.id];
    const title=el.querySelector('.hb-t')?.firstChild?.textContent?.trim()||'';

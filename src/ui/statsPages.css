@@ -1,7 +1,7 @@
 /* The Almanac: hand-kept stats pages inside the menu book. Scoped to .alm. Colours via tokens or the book's own vars. */
 .bk-spread.menu .alm{--hand:'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive;min-width:0}
 .bk-spread.menu .alm h2{font:600 calc(24px*var(--ts))/1.2 var(--hand);letter-spacing:.02em;text-transform:none;color:var(--bk);margin:18px 0 6px;border-bottom:1.5px solid var(--rule)}
-.bk-spread.menu .alm .hand{font:500 calc(23px*var(--ts))/1.3 var(--hand);color:var(--c-oak-4a3a22);margin:6px 0}
+.bk-spread.menu .alm .hand:not(.ep-empty .hand){font:500 calc(23px*var(--ts))/1.3 var(--hand);color:var(--c-oak-4a3a22);margin:6px 0}
 .bk-spread.menu .alm .dim{color:var(--mute);font-size:calc(19px*var(--ts))}
 .bk-spread.menu .alm .empty{margin:16px 0 4px}
 .bk-spread.menu .alm .note{font:italic 400 calc(15px*var(--ts))/1.4 var(--serif);color:var(--mute);margin:6px 0 0}
