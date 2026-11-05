@@ -1181,22 +1181,23 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 ### P3. Paper sound that follows the hand
 **Pitch:** a soft rustle as the corner lifts and a different settle when the page lands, quieter for short flips.
 **Brief:** Goal: two synthesised paper cues in `feel.js` tied to hover-lift and turn end. Files: `src/feel.js`, `pageFlip.js`. Done when: off with sound off. **Touches:** FEEL. **Conflicts:** F1.
-### S1. [x] Merge riddle modes into Unlimited and Daily (this PR)
+
+### M1. [x] Merge riddle modes into Unlimited and Daily (this PR)
 **Pitch:** "combine riddle shelf into Unlimited, making it sectioned off but still on the same two pages, it should also be Daily and Daily Riddle".
 **Done:** the Riddle Shelf and Today's Riddle menu books are removed; Unlimited's spread holds Unlimited and Riddle, the Daily cover holds Daily and Daily Riddle; renamed everywhere; saves untouched.
 **Touches:** UI. **Conflicts:** `src/ui/home.js`, `src/ui/dailyBook.js`.
 
-### S2. Riddle history inside the Daily book
+### M2. Riddle history inside the Daily book
 **Pitch:** each Daily day spread should show that day's seven riddle definitions and your answers, like the words, not just a solved count.
 **Brief:** Goal: a "Daily Riddle" block on every day's pages (sealed until played, open once the day passes). Files: `src/ui/dailyBook.js`, `src/core/riddleDaily.js`. Done when: today's riddle stays sealed until played and tests cover it.
 **Touches:** UI. **Conflicts:** `src/ui/dailyBook.js`.
 
-### S3. Unlimited stats that count both halves
+### M3. Unlimited stats that count both halves
 **Pitch:** the Unlimited book should show your Lexicon and your riddle solved count side by side, since they share a book now.
 **Brief:** Goal: a one-line tally under each section's Start link. Files: `src/ui/home.js`. Done when: fresh saves show a written empty line, not zeros.
 **Touches:** UI. **Conflicts:** `src/ui/home.js`.
 
-### S4. Fewer books on the home stack, audit the rest
+### M4. Fewer books on the home stack, audit the rest
 **Pitch:** same idea again: could Practice live inside the Daily book as a third section, and Shelf/Sets/Stats share one book?
 **Brief:** Goal: audit which home books are related modes and propose merges before building. Files: `src/ui/home.js`. Done when: a short plan in this file.
 **Touches:** UI. **Conflicts:** `src/ui/home.js`.
