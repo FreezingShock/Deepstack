@@ -40,6 +40,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 ## In progress (do not start)
 - [x] S1 + S2. Big sigils on result-card covers, set books share a ring (`src/ui/coverSigil.js`, PR #174)
 - [x] F / 102. Fallen books in front of shelf gaps (toppled, stacked, open face-down; `src/ui/fallenBooks.js`, PR #140)
+- [x] Q7. Empty pages for a new player: Almanac, Sets and Riddle books get a faint pen sketch plus one written line (`src/ui/emptyPages.js`); Shelf left to Q4 (#181); margin notes no longer repeat on a spread (PR TBD)
 - [x] C. Attic for earlier Shelf finds (backfill floors from Daily history, scroll-up attic)
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
 - [~] Spacing and type pass on every screen
