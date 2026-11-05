@@ -1110,7 +1110,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: start the book below the top bar, keep the ribbon fully inside the cover, keep Close reachable without scrolling. Files: `src/ui/bookOpen.css`. Done when: all six menu books screenshot clean at 375x667 and 360x640.
 **Touches:** books, phone. **Conflicts:** 104, 95.
 
-### Q13. Written calls to action never wrap
+### Q13. Written calls to action never wrap [x] (Riddle Shelf CTA shortened to "Start the Riddles")
 **Serves:** words fully readable, handwritten.
 **Pitch:** "Start the Riddle Shelf" wraps to "Shelf" alone on its own line while "Start Unlimited" fits; Close the book sits tight beneath it.
 **Brief:** Goal: shorten or scale the handwritten CTA so it stays on one line ("Start the Riddles"), give the pen underline and Close a consistent gap. Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: all six books' CTAs on one line at 1280 and 375.
