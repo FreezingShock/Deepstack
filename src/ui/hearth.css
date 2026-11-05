@@ -1,0 +1,30 @@
+/* The hearth (hearth.js). The layer sits under every home element; the room light sits between the world canvas and
+   the UI, so it tints the shelves and never the labels. Both fade with the motion tokens. */
+#home>.hearth{position:absolute;inset:0;z-index:-1;pointer-events:none;transition:opacity var(--m-base) var(--e-cruise)}
+#home>.hearth[hidden]{display:none}
+#home>.hearth canvas{position:absolute;left:0;top:0}
+/* nothing behind an opening menu book */
+#home.book-opening>.hearth{opacity:0}
+html.hearth-hover,html.hearth-hover #world{cursor:pointer}
+
+.hearth-light{position:fixed;inset:0;display:block;pointer-events:none;opacity:0;transition:opacity var(--m-smooth) var(--e-cruise)}
+html.hearth-lit .hearth-light{opacity:1}
+html.hearth-lit .hearth-light.hl-glow{opacity:var(--hl-k,1)}
+html.hearth-lit body.browsing .hearth-light{opacity:0}
+/* the fire is the key light: everything away from it falls into shadow, warm near it */
+.hearth-light.hl-shade{mix-blend-mode:multiply;background:radial-gradient(calc(var(--hl-r,900px)*.95) calc(var(--hl-r,900px)*.76) at var(--hl-x,50%) var(--hl-y,70%),rgba(255,235,215,1) 0,rgba(200,170,150,1) 30%,rgba(96,78,78,1) 62%,rgba(46,40,54,1) 100%)}
+.hearth-light.hl-glow{mix-blend-mode:screen;transition:none;background:
+ radial-gradient(calc(var(--hl-r,900px)*1.05) calc(var(--hl-r,900px)*.8) at var(--hl-x,50%) var(--hl-y,70%),rgba(255,140,50,.36) 0,rgba(240,100,30,.16) 38%,rgba(200,70,20,0) 72%),
+ radial-gradient(var(--hl-fw,380px) var(--hl-fh,80px) at var(--hl-fx,50%) var(--hl-fy,80%),rgba(255,150,60,.42) 0,rgba(255,110,40,0) 70%)}
+/* cool shadow at the far edges, like moonlight against the fire */
+.hearth-light.hl-cool{mix-blend-mode:screen;background:linear-gradient(90deg,rgba(60,90,150,.13) 0,rgba(60,90,150,0) 22%,rgba(60,90,150,0) 78%,rgba(60,90,150,.13) 100%)}
+html[data-quality=low] .hearth-light.hl-cool{display:none}
+
+/* wide rooms: the streak candles stand on the fireplace mantel (drawn on the canvas), so the oak beam steps aside;
+   its "N in a row" plate stays */
+#home.hearth-wide .mantel-beam,#home.hearth-flow .mantel-beam{background:none;box-shadow:none}
+#home.hearth-wide .hz-plaque .next::before{inset:-6px -30px}
+/* narrower stacks beside the fire: titles a size down so nothing clips */
+#home.hearth-narrow .hb-t{font-size:calc(14px*var(--ts,1));letter-spacing:.04em;padding:2px 3px}
+#home.hearth-narrow .hb-t small{font-size:calc(7.5px*var(--ts,1));margin-left:4px;letter-spacing:.06em}
+@media(prefers-reduced-motion:reduce){#home>.hearth,.hearth-light{transition:none}}

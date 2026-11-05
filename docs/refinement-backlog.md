@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Pull `main` and look at the home screen: a stone fireplace now burns between the book stacks on a brick back wall, and the fire lights the room (lamps down). Move the cursor near it (flames lean away) and click it to stoke. Check your window size and phone, and say if the room is too dark. On a short phone (667 tall) and on tablets in portrait there is no room for it yet. (fireside home, FH1)
 - Open the Unlimited book: the left page is Unlimited, the right page is Riddle, each with its own Start link. Open the Daily book: its first page now has Daily and Daily Riddle with Descend / Open today's riddle. Say if the sections read clearly or if the Riddle half needs more weight. (merged modes)
 - Play a run and answer with general ideas, close concepts and words that relate to the definition ("money" for frugal, "related to time" for ephemeral): they should now earn a small score (Pamphlet to Paperback), never as much as a precise answer. Open any book: other meanings and the meanings of close synonyms appear under "Also means". Tell me any wrong answer that scores well or any book that looks too tall. (judge leniency, backlog J1)
 - Pick from the Q1 to Q16 audit menu (end of this file). Q11 is decided (a 0 keeps its book and 13 ft).
@@ -1278,3 +1279,23 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** catch overlaps and clipped text at every size before nate does.
 **Brief:** Goal: a smoke step that opens home, run, Shelf and Settings at normal/large/xlarge in 375 and 1280 and fails on text overflowing its box. Files: `scripts/`, `test/`. Done when: it fails on a deliberately broken label.
 **Touches:** HEALTH. **Conflicts:** `scripts/smoke.mjs`.
+
+### FH1. Fireside home [x] (PR pending)
+**Done:** nate picked "B with a C background": stone fireplace between the stacks with grate, logs, live flames (lean from the cursor, click to stoke), book piles, streak candles on its mantel, brick back wall, firelit room light on the shelves (`src/ui/hearth.{js,css}`). Mockups: `screenshots/fireplace-home/`.
+**Follow-ups:** FH2 fire sounds, FH3 a fire that remembers you, FH4 room for the hearth on short phones and portrait tablets. **Conflicts:** `src/ui/home.css`, `mantel.css`.
+
+### FH2. Fire sounds
+**Pitch:** a soft crackle loop that swells when you stoke the fire, an ember pop now and then, silent when sound is off or the tab is hidden.
+**Brief:** Goal: `src/sound/hearth.js` on the existing sound bus, gain tied to the fire's intensity (`fireIntensity`). Done when: stoke is audible, the loop is seamless, mute works.
+**Touches:** FEEL. **Conflicts:** `src/ui/hearth.js` (one hook).
+
+### FH3. A fire that remembers you
+**Pitch:** the hearth reflects your play: it burns higher with your streak, and the sparks take your last book's tier colour (aqua after an Apocrypha).
+**Brief:** Goal: read streak and last tier from the save (no new fields), map them to flame height and spark tint. Done when: a 0 streak shows a low fire, a long streak a roaring one.
+**Touches:** MECHANICS, UI. **Conflicts:** `src/ui/hearth.js`.
+
+### FH4. Hearth on short phones and portrait tablets
+**Pitch:** at 375x667 and around 800 wide the home has no spare height, so the fireplace is skipped; give it a compact form there (a low fire under the mantel, stacks a size down).
+**Brief:** Goal: a compact `planFlow` that fits 80-100 px by shrinking the mantel's headroom and the stack books. Done when: a fire shows at 375x667 and 800x900 with nothing overlapping or sinking behind the ledge.
+**Touches:** UI. **Conflicts:** `src/ui/hearth.js`, `homeLayout.js`.
+
