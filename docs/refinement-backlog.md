@@ -47,7 +47,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [x] S3 + S4. Sigil watermark behind the open card's definition; set crests and wax seal on the Sets book (`stampPage`, `setCrest`)
 - [x] S1 + S2. Big sigils on result-card covers, set books share a ring (`src/ui/coverSigil.js`, PR #174)
 - [x] F / 102. Fallen books in front of shelf gaps (toppled, stacked, open face-down; `src/ui/fallenBooks.js`, PR #140)
-- [x] Q7. Empty pages for a new player: Almanac, Sets and Riddle books get a faint pen sketch plus one written line (`src/ui/emptyPages.js`); Shelf left to Q4 (#181); margin notes no longer repeat on a spread (PR TBD)
+- [x] Q7. Empty pages for a new player: Almanac, Sets and Riddle books get a faint pen sketch plus one written line (`src/ui/emptyPages.js`); Shelf left to Q4 (#181); margin notes no longer repeat on a spread (PR #254)
 - [x] C. Attic for earlier Shelf finds (backfill floors from Daily history, scroll-up attic)
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
 - [x] Smooth book switching: pages painted before the first frame, cover dissolves instead of popping, room returns during the fly-home, clicks mid-close queue (`src/ui/home.js`, `bookOpenFx.css`, `test/book-switch.test.js`)
@@ -1312,12 +1312,12 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: `src/sound/hearth.js` on the existing sound bus, gain tied to the fire's intensity (`fireIntensity`). Done when: stoke is audible, the loop is seamless, mute works.
 **Touches:** FEEL. **Conflicts:** `src/ui/hearth.js` (one hook).
 
-### FH3. A fire that remembers you [x] (PR TBD)
+### FH3. A fire that remembers you [x] (PR #254)
 **Pitch:** the hearth reflects your play: it burns higher with your streak, and the sparks take your last book's tier colour (aqua after an Apocrypha).
 **Brief:** Goal: read streak and last tier from the save (no new fields), map them to flame height and spark tint. Done when: a 0 streak shows a low fire, a long streak a roaring one.
 **Touches:** MECHANICS, UI. **Conflicts:** `src/ui/hearth.js`.
 
-### FH4. Hearth on short phones and portrait tablets [x] (PR TBD) (compact room: stacks, gaps and title a size down so the fire and the Daily and Unlimited spines fit at 375x667 and 800x900)
+### FH4. Hearth on short phones and portrait tablets [x] (PR #254) (compact room: stacks, gaps and title a size down so the fire and the Daily and Unlimited spines fit at 375x667 and 800x900)
 **Pitch:** at 375x667 and around 800 wide the home has no spare height, so the fireplace is skipped; give it a compact form there (a low fire under the mantel, stacks a size down).
 **Brief:** Goal: a compact `planFlow` that fits 80-100 px by shrinking the mantel's headroom and the stack books. Done when: a fire shows at 375x667 and 800x900 with nothing overlapping or sinking behind the ledge.
 **Touches:** UI. **Conflicts:** `src/ui/hearth.js`, `homeLayout.js`.
