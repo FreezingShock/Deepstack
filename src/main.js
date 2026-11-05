@@ -26,7 +26,7 @@ import './ui/coverLock.css';
 import './ui/reveal.js';
 import * as core from './core/index.js';
 import {Sfx} from './feel.js';
-import {onModelStatus,startModelLoad,judgeAnswer} from './scorer/index.js';
+import {onModelStatus,startModelLoad,judgeAnswer,prepareWords} from './scorer/index.js';
 import {BOOK_PAGES} from './ui/home.js';
 import './ui/home.css';
 import './ui/welcome.css';
@@ -164,6 +164,8 @@ const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();
 initTransitions();
 showHome();
-wordsReady.catch(()=>{}).then(()=>deferAfterPaint(startModelLoad,1500));
+wordsReady.catch(()=>{}).then(()=>deferAfterPaint(startModelLoad,1500))
+ // once the model is up, warm the judge in idle time: relations/senses (7 MB of JSON parse) and the distractor embeddings, so the first answer isn't slow
+ .then(ok=>ok&&deferAfterPaint(()=>prepareWords([]),2500)).catch(()=>{});
  // judge model downloads after first paint and the word list
 window.__deepstack={openCard,S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,get run(){return run;}};
