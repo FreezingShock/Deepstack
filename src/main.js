@@ -30,6 +30,7 @@ import {Sfx} from './feel.js';
 import {onModelStatus,startModelLoad,judgeAnswer,prepareWords} from './scorer/index.js';
 import {BOOK_PAGES} from './ui/home.js';
 import './ui/home.css';
+import './ui/descendGlow.css';
 import './ui/welcome.css';
 import './ui/deskProps.css';
 import './ui/mantel.css';
