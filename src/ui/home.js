@@ -22,15 +22,24 @@ export const HOME_BOOK_COLORS={
  aqua:[PALETTE.bookAqua,PALETTE.bookAquaDk,PALETTE.brass62],
  purple:[PALETTE.bookPurple,PALETTE.bookPurpleDk,PALETTE.brass65],
  brown:[PALETTE.bookBrown,PALETTE.bookBrownDk,PALETTE.brass65],
+ /* menu spines: muted antique book-cloth and leather (navy buckram, oxblood, bottle green, tan calf...) */
+ navy:[PALETTE.spineNavy,PALETTE.spineNavyDk,PALETTE.brass62],
+ oxblood:[PALETTE.spineOxblood,PALETTE.spineOxbloodDk,PALETTE.brass62],
+ aubergine:[PALETTE.spineAubergine,PALETTE.spineAubergineDk,PALETTE.brass65],
+ verdigris:[PALETTE.spineVerdigris,PALETTE.spineVerdigrisDk,PALETTE.brass65],
+ bottle:[PALETTE.spineBottle,PALETTE.spineBottleDk,PALETTE.brass62],
+ calf:[PALETTE.spineCalf,PALETTE.spineCalfDk,PALETTE.spineGiltCream],
+ ochre:[PALETTE.spineOchre,PALETTE.spineOchreDk,PALETTE.spineGiltCream],
+ slate:[PALETTE.spineSlate,PALETTE.spineSlateDk,PALETTE.brass65],
 };
 /* stack: which pile the book lies in (0 = play modes, 1 = collection). */
 export const HOME_LINKS=[
- {id:'bDaily',stack:0,tex:'grain',color:'blue',label:'Daily',note:'Every Daily, word by word',badge:(s,x)=>x.dailyNo?'No. '+x.dailyNo:''},
- {id:'bUnl',stack:0,color:'red',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>s.rating&&s.rating.placed?'Lexicon '+x.lexicon(s.rating.L):'placement'},
- {id:'bPrac',stack:0,tex:'cloth',color:'green',label:'Practice',note:'Same words, no pressure'},
- {id:'bAll',stack:1,tex:'worn',color:'aqua',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
- {id:'bSets',stack:1,tex:'vellum',color:'purple',label:'Sets',note:'Themed collections'},
- {id:'bStats',stack:1,tex:'grain',color:'brown',label:'Stats',note:'Streaks, depth and tiers'},
+ {id:'bDaily',stack:0,tex:'grain',color:'navy',label:'Daily',note:'Every Daily, word by word',badge:(s,x)=>x.dailyNo?'No. '+x.dailyNo:''},
+ {id:'bUnl',stack:0,color:'oxblood',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>s.rating&&s.rating.placed?'Lexicon '+x.lexicon(s.rating.L):'placement'},
+ {id:'bPrac',stack:0,tex:'cloth',color:'bottle',label:'Practice',note:'Same words, no pressure'},
+ {id:'bAll',stack:1,tex:'worn',color:'calf',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
+ {id:'bSets',stack:1,tex:'vellum',color:'ochre',label:'Sets',note:'Themed collections'},
+ {id:'bStats',stack:1,tex:'grain',color:'slate',label:'Stats',note:'Streaks, depth and tiers'},
 ];
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
