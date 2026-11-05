@@ -1080,7 +1080,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: one empty-state pass: a hand-drawn faint outline or sketch per book (an empty shelf, a sealed ledger, a riddle slip), one line of written invitation, no repeated notes. Files: `src/ui/bookPages.js` and the almanac/sets files, new `src/ui/emptyPages.css`. Done when: every menu book at 0 played looks finished at 1280 and 375.
 **Touches:** books. **Conflicts:** 54, 55, 56.
 
-### Q8. Home: loose air between Descend and the book stacks
+### Q8. [x] Home: loose air between Descend and the book stacks (PR pending)
 **Serves:** spacing and polish, dark and mysterious.
 **Pitch:** At 1280 and 1640 there is about 100 px of dead space between "Daily No. 2" and the first book, the mantel shelf holds one candle, and floating dust specks sit on the caption like stray marks.
 **Brief:** Goal: tighten the vertical rhythm (move the stacks up or give the gap a purpose: the streak candles, a hanging sign), keep dust away from text. Files: `src/styles/home-base.css`, `src/ui/mantel.css`. Done when: balanced at 1000x700, 1280x800, 1640x900 and nothing overlaps the cabinet or ledger.

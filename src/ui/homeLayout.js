@@ -4,7 +4,7 @@
    which optional strips (how-it-works steps, records) are shown; CSS reads data-room and --hz-*.
    The stacks zone always sits on the niche floor (the ledge), so nothing floats. */
 export const HOME_TIERS=[
- {name:'roomy',min:600,gap:20,bookH:40,steps:true,stats:true},
+ {name:'roomy',min:600,gap:20,bookH:46,steps:true,stats:true},
  {name:'cozy',min:460,gap:15,bookH:38,steps:true,stats:false},
  {name:'snug',min:380,gap:11,bookH:34,steps:false,stats:false},
  {name:'tight',min:0,gap:8,bookH:30,steps:false,stats:false},
