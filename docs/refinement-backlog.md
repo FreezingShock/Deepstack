@@ -1068,7 +1068,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: rebuild as the closing page of a ledger: tallies written in ink, the seven books lined on the ledge as the hero, Copy and Back as handwritten words with the pen underline, depth numeral large. Files: `src/app/final.js`, `src/styles/result.css` or new `src/ui/finalPage.css`. Done when: fits one view at 1280x720 and 375x667, 14-letter word does not clip, share note unchanged.
 **Touches:** RESULT. **Conflicts:** 16, 70, Q16.
 
-### Q6. "Next word" ribbon is a flat grey banner on every tier
+### Q6. [x] "Next word" ribbon takes the tier material (PR pending)
 **Serves:** rarity is the hero, tier material.
 **Pitch:** The ribbon button under the result card stays plain grey whether the book is a Pamphlet or an Apocrypha, and the frame around the card is grey too, so the card looks the same dull colour for every tier; "0 /100" also has a stray space.
 **Brief:** Goal: tint ribbon, frame and Enter key from the tier's own material (silk for Folio, wax red for Grimoire, aqua thread for Apocrypha), keep Pamphlet grey. Fix the "0 /100" spacing. Files: `src/ui/tierFrames.css`, `src/app/card.js`. Done when: seven tiers screenshot side by side, contrast of the label passes on each.

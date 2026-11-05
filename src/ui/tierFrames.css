@@ -27,3 +27,23 @@
 .book.t6 .page::after{opacity:1;background:radial-gradient(ellipse 40% 55% at 30% 30%,color-mix(in srgb,var(--tc) 22%,transparent),transparent),radial-gradient(ellipse 35% 45% at 70% 70%,color-mix(in srgb,var(--c-white) 12%,transparent),transparent);mix-blend-mode:screen;animation:tfShimmer 5s ease-in-out infinite alternate}
 @keyframes tfShimmer{from{transform:translate(-3%,-2%);opacity:.55}to{transform:translate(3%,2%);opacity:1}}
 @media (prefers-reduced-motion:reduce){.book .page::after{animation:none}.book.t4 .page::after{background-position:40% 0}.book.t5 .page::after{opacity:.85}.book.t6 .page::after{transform:none;opacity:.8}}
+/* Q6: the Next word ribbon and the board frame take each tier's own material. Pamphlet stays plain grey.
+   Labels are white on a dark base so contrast holds on every tier. */
+.book .page .go{color:var(--c-white);text-shadow:0 1px 1px var(--c-black-alpha-aa)}
+.book.t0 .page .go{background:linear-gradient(180deg,color-mix(in srgb,var(--tc) 40%,var(--c-black)),color-mix(in srgb,var(--tc) 26%,var(--c-black)))}
+/* Paperback: woven cloth */
+.book.t1 .page .go{background:repeating-linear-gradient(90deg,var(--c-black-alpha-1f) 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,var(--c-black-alpha-1f) 0 1px,transparent 1px 3px),linear-gradient(180deg,color-mix(in srgb,var(--tc) 46%,var(--c-black)),color-mix(in srgb,var(--tc) 28%,var(--c-black)))}
+/* Hardbound: stitched linen */
+.book.t2 .page .go{background:repeating-linear-gradient(90deg,var(--c-white-alpha-0d) 0 6px,transparent 6px 12px) 0 50%/100% 1px no-repeat,linear-gradient(180deg,color-mix(in srgb,var(--tc) 58%,var(--c-black)),color-mix(in srgb,var(--tc) 36%,var(--c-black)))}
+/* Folio: silk with a soft sheen */
+.book.t3 .page .go{background:linear-gradient(100deg,transparent 30%,var(--c-white-alpha-22) 46%,transparent 62%),linear-gradient(180deg,color-mix(in srgb,var(--tc) 60%,var(--c-black)),color-mix(in srgb,var(--tc) 40%,var(--c-black)))}
+/* Codex: gilt-edged silk */
+.book.t4 .page .go{background:linear-gradient(180deg,var(--c-brass-f6d98a) 0 1px,transparent 1px calc(100% - 1px),var(--c-brass-f6d98a) calc(100% - 1px)),linear-gradient(180deg,color-mix(in srgb,var(--tc) 48%,var(--c-black)),color-mix(in srgb,var(--tc) 30%,var(--c-black)))}
+/* Grimoire: glossy wax red */
+.book.t5 .page .go{background:radial-gradient(ellipse 60% 120% at 28% 0%,var(--c-white-alpha-33),transparent 60%),linear-gradient(180deg,color-mix(in srgb,var(--tc) 66%,var(--c-black)),color-mix(in srgb,var(--tc) 38%,var(--c-black)))}
+/* Apocrypha: aqua thread woven through dark silk */
+.book.t6 .page .go{background:repeating-linear-gradient(115deg,transparent 0 5px,color-mix(in srgb,var(--tc) 38%,transparent) 5px 6px),linear-gradient(180deg,color-mix(in srgb,var(--tc) 42%,var(--c-black)),color-mix(in srgb,var(--tc) 24%,var(--c-black)))}
+/* frame boards: richer tier material instead of grey-brown */
+.book.t1{--lt:color-mix(in srgb,var(--tc) 52%,var(--c-black));--ld:color-mix(in srgb,var(--tc) 26%,var(--c-black))}
+.book.t2{--lt:color-mix(in srgb,var(--tc) 58%,var(--c-black));--ld:color-mix(in srgb,var(--tc) 30%,var(--c-black))}
+.book.t5{--lt:color-mix(in srgb,var(--tc) 56%,var(--c-black));--ld:color-mix(in srgb,var(--tc) 26%,var(--c-black))}
