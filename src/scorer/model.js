@@ -88,6 +88,12 @@ export function startModelLoad() {
   })();
 }
 
+/** After a failed load, forget it and try again (Daily keeps asking until the full judge arrives). */
+export function retryModelLoad() {
+  if (status.state === 'error') { loading = null; backend = null; }
+  return startModelLoad();
+}
+
 /** Resolves true if the model is ready within `ms` (waits for an in-flight load, never starts one). */
 export async function whenReady(ms) {
   if (status.state === 'ready') return true;
