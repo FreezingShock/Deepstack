@@ -46,7 +46,7 @@ export const blot=seed=>{const r=rng(seed),pts=[];for(let i=0;i<9;i++){const a=i
 
 /* Dress one rendered book spread. Idempotent: pages already inked are left alone. */
 export function decorate(sp,label=''){
- const kind=kindOf(label);
+ const kind=kindOf(label),usedNotes=new Set();
  sp.querySelectorAll('.pg-in').forEach(pg=>{
   if(pg.dataset.inked)return;pg.dataset.inked='1';
   const h1=pg.querySelector('h1'),seed=hash((h1?h1.textContent:pg.textContent.slice(0,40))+kind);
@@ -56,6 +56,8 @@ export function decorate(sp,label=''){
   const after=h1.nextElementSibling&&h1.nextElementSibling.classList.contains('kicker')?h1.nextElementSibling:h1;
   after.insertAdjacentHTML('afterend',rule(seed));
   pg.insertAdjacentHTML('afterbegin',doodle(kind));
-  pg.insertAdjacentHTML('beforeend',`<p class="ink-note">${seed%3===0?blot(seed):''}<span>${noteFor(kind,seed>>>3)}</span></p>`);
+  /* never write the same margin note on both pages of a spread */
+  let nt=noteFor(kind,seed>>>3);for(let k=1;usedNotes.has(nt)&&k<8;k++)nt=noteFor(kind,(seed>>>3)+k);usedNotes.add(nt);
+  pg.insertAdjacentHTML('beforeend',`<p class="ink-note">${seed%3===0?blot(seed):''}<span>${nt}</span></p>`);
  });
 }

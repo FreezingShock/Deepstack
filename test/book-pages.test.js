@@ -26,9 +26,9 @@ test('stagger is small and stable',()=>{
  assert.equal(stagger('frost'),stagger('frost'));
  for(const w of ['a','tempest','glacier'])assert.ok(Math.abs(stagger(w))<=4);
 });
-test('stats leaves: one empty page, several when there are runs',()=>{
+test('stats leaves: two empty pages, several when there are runs',()=>{
  const TIERS=Array.from({length:7},(_,i)=>({id:i,name:'T'+i,spine:'#fff'}));
- assert.equal(statsLeaves({runs:0},{},{TIERS,FLOORS,floorStartFt}).length,1);
+ assert.equal(statsLeaves({runs:0},{},{TIERS,FLOORS,floorStartFt}).length,2);
  const st={runs:2,books:14,answered:12,tiers:[1,2,3,0,0,0,0],rarest:2,best:{w:'tempest',score:80,tier:2},deepest:400,deepestDay:'2026-11-01',totalFt:800,avg:50,streak:2,bestStreak:3,recent:[{day:'2026-11-01',depth:400,avg:50,best:2}]};
  const l=statsLeaves(st,{bestFloor:1},{TIERS,FLOORS,floorStartFt});
  assert.equal(l.length,4);

@@ -1,6 +1,7 @@
 import './sets.css';
 import {toSpreads} from '../ui/bookpages.js';
 import {TIERS, tierOf} from '../core/index.js';
+import {emptyBlock} from '../ui/emptyPages.js';
 import {setStatus, bonusFt, MIN_SCORE} from './sets.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
@@ -11,7 +12,7 @@ export function setLeaves(S) {
   const done = st.filter(s => s.complete).length, bonus = bonusFt(S);
   const overview = `<h1>Book sets</h1><div class="kicker">${done} of ${st.length} complete${bonus ? ` \u00b7 +${bonus} ft bonus depth` : ''}</div>
    <p class="note">Collect every word in a set with an answer of at least ${MIN_SCORE}/100 and it pays out bonus depth.</p>
-   <h2>Contents</h2><ul class="toc">${st.map(s => `<li><span>${esc(s.name)}</span><b>${s.n}/${s.total}${s.complete ? ' \u2713' : ''}</b></li>`).join('')}</ul>`;
+   <h2>Contents</h2><ul class="toc">${st.map(s => `<li><span>${esc(s.name)}</span><b>${s.n}/${s.total}${s.complete ? ' \u2713' : ''}</b></li>`).join('')}</ul>${done || bonus || st.some(s => s.n) ? '' : emptyBlock('ledger', 'Nothing crossed off yet.', 'compact')}`;
   const pages = st.map(s => `<div class="setpage${s.complete ? ' done' : ''}"><div class="kicker">Set</div><h1>${esc(s.name)}</h1>
    <p class="note">${esc(s.blurb)}</p>
    <div class="setbar"><i style="width:${s.n / s.total * 100}%"></i></div>

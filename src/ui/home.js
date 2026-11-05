@@ -75,7 +75,7 @@ export function introSpreads(intro){
  /* phones show one page at a time: keep the Start button on the first page */
  if(narrow)return [{l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button><button class="bs-back-btn pen-ink">Close the book</button></div>`,r:''}];
  return [{
-  l:pg.head(intro.kicker,intro.h)+pg.body(intro.p),
+  l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+(intro.art?`<div class="intro-sketch">${intro.art}</div>`:''),
   r:pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button><button class="bs-back-btn pen-ink">Close the book</button></div>`,
  }];
 }

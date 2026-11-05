@@ -67,6 +67,7 @@ import './ui/statsPages.css';
 import './ui/penInk.css';
 import './ui/shelfFilters.css';
 import './ui/ink.css';
+import './ui/emptyPages.css';
 import './ui/inkInput.css';
 import './ui/inkInput.js';
 import './ui/shelfBays.css';

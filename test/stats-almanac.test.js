@@ -7,9 +7,9 @@ const TIERS=Array.from({length:7},(_,i)=>({id:i,name:['Pamphlet','Paperback','Ha
 const ctx={TIERS,FLOORS,floorStartFt};
 const base={runs:2,books:14,answered:12,tiers:[1,2,3,0,0,0,0],rarest:2,best:{w:'tempest',score:80,tier:2},deepest:400,deepestDay:'2026-11-01',totalFt:800,avg:50,streak:7,bestStreak:7,recent:[{day:'2026-11-01',depth:400,avg:50,best:2}]};
 
-test('empty almanac is one written page',()=>{
+test('empty almanac is a written page plus the depths',()=>{
  const l=statsLeaves({runs:0},{},ctx);
- assert.equal(l.length,1);assert.match(l[0],/Nothing shelved yet\./);
+ assert.equal(l.length,2);assert.match(l[0],/Finish your first Daily/);assert.match(l[1],/The Depths/);
 });
 test('four pages once there is anything saved, Unlimited-only players included',()=>{
  assert.equal(statsLeaves(base,{},ctx).length,4);
