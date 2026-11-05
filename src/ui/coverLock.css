@@ -1,0 +1,72 @@
+/* Cover closures: tape, twine, strap, clasp, wax seal, chain, glowing seam. One per tier, so the seven covers read
+   differently at a glance. Pieces rest in place; `.book.open` runs the unlatch, ending when the cover starts to swing. */
+.cvl{position:absolute;inset:0;z-index:3;pointer-events:none;display:block}
+.cvl b{position:absolute;display:block}
+.book:not(.rvc) .cvl{display:none}
+.book.t0 .cover::after,.book.t1 .cover::after,.book.t5 .cover::after,.book.t6 .cover::after{content:none}
+.book.open .cvl b{animation-duration:var(--lk-ms);animation-delay:var(--lk-at);animation-fill-mode:both;animation-timing-function:var(--e-accelerate)}
+
+/* 0 Pamphlet: a strip of tape across the corner that peels off */
+.cvl-tape .a{left:-4%;top:17%;width:44%;height:30px;transform:rotate(-24deg);transform-origin:left center;background:var(--c-brass-d9cfae-alpha-99);box-shadow:0 1px 3px var(--c-black-alpha-66)}
+.cvl-tape .b{right:-5%;bottom:13%;width:34%;height:24px;transform:rotate(16deg);transform-origin:right center;background:var(--c-brass-d9cfae-alpha-88);box-shadow:0 1px 3px var(--c-black-alpha-55)}
+.book.open .cvl-tape .a{animation-name:cvpeelA}.book.open .cvl-tape .b{animation-name:cvpeelB}
+@keyframes cvpeelA{40%{transform:rotate(-40deg) translateY(-6px)}100%{transform:rotate(-70deg) translate(-30px,-26px);opacity:0}}
+@keyframes cvpeelB{40%{transform:rotate(30deg) translateY(4px)}100%{transform:rotate(58deg) translate(26px,22px);opacity:0}}
+
+/* 1 Paperback: twine tied round the book, the knot pulls loose and the cord slips off */
+.cvl-twine .a{left:0;right:0;top:80%;height:4px;margin-top:-2px;background:repeating-linear-gradient(90deg,var(--c-brass-d8cca8) 0 5px,var(--c-bronze-7a5a3a) 5px 7px);box-shadow:0 1px 2px var(--c-black-alpha-66)}
+.cvl-twine .b{top:0;bottom:0;left:88%;width:4px;margin-left:-2px;background:repeating-linear-gradient(0deg,var(--c-brass-d8cca8) 0 5px,var(--c-bronze-7a5a3a) 5px 7px);box-shadow:1px 0 2px var(--c-black-alpha-66)}
+.cvl-twine .c{left:88%;top:80%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c-brass-d8cca8),var(--c-bronze-7a5a3a));box-shadow:0 2px 4px var(--c-black-alpha-88)}
+.book.open .cvl-twine .a{animation-name:cvslideX}.book.open .cvl-twine .b{animation-name:cvslideY}.book.open .cvl-twine .c{animation-name:cvknot}
+@keyframes cvslideX{30%{transform:scaleX(1.02)}100%{transform:translateX(60%) scaleX(.2);opacity:0}}
+@keyframes cvslideY{30%{transform:scaleY(1.02)}100%{transform:translateY(-60%) scaleY(.2);opacity:0}}
+@keyframes cvknot{30%{transform:scale(1.25) rotate(18deg)}100%{transform:scale(.2) rotate(140deg);opacity:0}}
+
+/* 2 Hardbound: a leather strap and buckle across the fore-edge; the buckle flips and the strap slides out */
+.cvl-strap .a{right:-6px;top:80%;width:40%;height:28px;margin-top:-14px;border-radius:3px 0 0 3px;background:linear-gradient(180deg,var(--c-bronze-6a4a30),var(--c-bronze-7a5a3a) 45%,var(--c-bronze-6a4a30));box-shadow:0 2px 5px var(--c-black-alpha-99),inset 0 1px 0 var(--c-white-alpha-22)}
+.cvl-strap .a::before{content:"";position:absolute;left:8px;right:12px;top:4px;bottom:4px;border-top:1px dashed var(--c-brass-d8cca8);border-bottom:1px dashed var(--c-brass-d8cca8);opacity:.55}
+.cvl-strap .b{right:34%;top:80%;width:26px;height:38px;margin-top:-19px;border:4px solid var(--c-brass-f6d98a);border-radius:4px;box-shadow:0 2px 4px var(--c-black-alpha-88)}
+.cvl-strap .c{right:calc(34% + 8px);top:80%;width:4px;height:44px;margin-top:-22px;background:var(--c-brass-f6d98a)}
+.book.open .cvl-strap .a{animation-name:cvstrap}.book.open .cvl-strap .b{animation-name:cvbuckle}.book.open .cvl-strap .c{animation-name:cvbuckle}
+@keyframes cvstrap{50%{transform:translateX(-8px)}100%{transform:translateX(80%);opacity:0}}
+@keyframes cvbuckle{40%{transform:translateY(-8px) rotate(-14deg)}100%{transform:translate(44px,60px) rotate(40deg);opacity:0}}
+
+/* 3 Folio: a brass clasp with a hook that pops loose with a click glint */
+.cvl-clasp .a{right:-8px;top:50%;width:36px;height:84px;margin-top:-42px;border-radius:6px;background:linear-gradient(90deg,var(--c-bronze-b88a2c),var(--c-brass-f6d98a),var(--c-bronze-a87618));box-shadow:0 0 10px var(--c-brass-67-alpha-88),0 3px 6px var(--c-black-alpha-99)}
+.cvl-clasp .b{right:14px;top:50%;width:14px;height:26px;margin-top:-13px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--c-brass-f6d98a),var(--c-bronze-a87618));box-shadow:inset 0 0 0 3px var(--c-black-alpha-55)}
+.cvl-clasp .c{right:-6px;top:50%;width:40px;height:40px;margin:-20px 0 0 0;border-radius:50%;background:radial-gradient(circle,var(--c-white),transparent 60%);opacity:0}
+.book.open .cvl-clasp .a{animation-name:cvclasp;transform-origin:right center}.book.open .cvl-clasp .b{animation-name:cvclasp;transform-origin:right center}.book.open .cvl-clasp .c{animation-name:cvglint}
+@keyframes cvclasp{30%{transform:translateX(-4px)}60%{transform:translateX(6px) rotate(-8deg)}100%{transform:translate(40px,70px) rotate(34deg);opacity:0}}
+@keyframes cvglint{40%{opacity:0;transform:scale(.3)}55%{opacity:.95;transform:scale(1.3)}100%{opacity:0;transform:scale(1.8)}}
+
+/* 4 Codex: a wax seal on the fore-edge that cracks in two; the halves fall away */
+.cvl-seal .a,.cvl-seal .b{right:-6px;top:50%;width:62px;height:124px;margin-top:-62px;background:radial-gradient(circle at 60% 40%,color-mix(in srgb,var(--tc) 70%,var(--c-white)),var(--tc) 55%,color-mix(in srgb,var(--tc) 55%,var(--c-black)));box-shadow:0 4px 8px var(--c-black-alpha-99)}
+.cvl-seal .a{width:62px;border-radius:62px 0 0 62px/62px 0 0 62px;clip-path:polygon(0 0,100% 0,78% 30%,100% 55%,70% 100%,0 100%);right:-6px}
+.cvl-seal .b{border-radius:0 62px 62px 0/0 62px 62px 0;clip-path:polygon(100% 0,100% 100%,0 100%,70% 100%,100% 55%,78% 30%,100% 0);opacity:0}
+.cvl-seal .a::after{content:"";position:absolute;inset:26px 14px;border-radius:50%;border:2px solid var(--c-black-alpha-44);box-shadow:inset 0 1px 0 var(--c-white-alpha-44)}
+.cvl-seal .c{right:-10px;top:50%;width:70px;height:130px;margin-top:-65px;border-radius:50%;background:radial-gradient(circle,var(--tc),transparent 66%);opacity:0;mix-blend-mode:screen}
+.book.open .cvl-seal .a{animation-name:cvcrackA}.book.open .cvl-seal .c{animation-name:cvseamglow}
+@keyframes cvcrackA{35%{transform:translateX(-2px)}55%{transform:translate(-8px,-4px) rotate(-4deg)}100%{transform:translate(-30px,120px) rotate(-38deg);opacity:0}}
+@keyframes cvseamglow{50%{opacity:.7}100%{opacity:0;transform:scale(1.5)}}
+
+/* 5 Grimoire: crossed chains and a padlock; the lock drops and the chains rattle off */
+.cvl-chain .a,.cvl-chain .b{left:-4%;width:108%;height:14px;margin-top:-7px;background:repeating-linear-gradient(90deg,var(--c-steel-88) 0 10px,var(--c-steel-28) 10px 14px);box-shadow:0 2px 4px var(--c-black-alpha-99),inset 0 -3px 0 var(--c-black-alpha-44);border-radius:7px}
+.cvl-chain .a{top:22%;transform:rotate(-3deg)}.cvl-chain .b{top:78%;transform:rotate(3deg)}
+.cvl-chain .c{left:50%;top:78%;width:42px;height:46px;margin:-14px 0 0 -21px;border-radius:6px;background:linear-gradient(135deg,var(--c-bronze-b88a2c),var(--c-brass-f6d98a) 45%,var(--c-bronze-a87618));box-shadow:0 0 14px var(--c-brass-67-alpha-88),0 3px 6px var(--c-black-alpha-99)}
+.cvl-chain .c::before{content:"";position:absolute;left:8px;right:8px;top:-18px;height:24px;border:5px solid var(--c-steel-88);border-bottom:0;border-radius:14px 14px 0 0}
+.book.open .cvl-chain .a{animation-name:cvchainA}.book.open .cvl-chain .b{animation-name:cvchainB}.book.open .cvl-chain .c{animation-name:cvlock}
+@keyframes cvchainA{30%{transform:rotate(-3deg) translateX(-6px)}100%{transform:rotate(-8deg) translate(-90px,-120px);opacity:0}}
+@keyframes cvchainB{30%{transform:rotate(3deg) translateX(6px)}100%{transform:rotate(8deg) translate(90px,120px);opacity:0}}
+@keyframes cvlock{20%{transform:rotate(-6deg)}40%{transform:rotate(7deg)}100%{transform:translateY(220px) rotate(24deg);opacity:0}}
+
+/* 6 Apocrypha: no hardware at all; a seam of light splits the cover, grows until it blazes, then the cover tears open */
+.cvl-seam .a{left:calc(88% - 2px);top:0;bottom:0;width:4px;background:linear-gradient(180deg,transparent,var(--c-aqua) 20%,var(--c-white) 50%,var(--c-aqua) 80%,transparent);box-shadow:0 0 18px var(--c-aqua),0 0 46px var(--c-aqua-alpha-cc);transform:scaleY(0);opacity:0}
+.cvl-seam .b{left:calc(88% - 28px);top:0;bottom:0;width:56px;background:linear-gradient(90deg,transparent,var(--c-aqua-alpha-cc),transparent);opacity:0;mix-blend-mode:screen}
+.cvl-seam .c{left:calc(88% - 9px);top:calc(50% - 9px);width:18px;height:18px;transform:rotate(45deg);background:linear-gradient(135deg,var(--c-teal-96),var(--c-aqua) 55%,var(--c-teal-40));box-shadow:0 0 22px var(--c-aqua-alpha-cc),0 0 4px var(--c-white)}
+.book.open .cvl-seam .a{animation-name:cvseam}.book.open .cvl-seam .b{animation-name:cvseambloom}.book.open .cvl-seam .c{animation-name:cvgem}
+@keyframes cvseam{0%{opacity:0;transform:scaleY(0)}35%{opacity:1;transform:scaleY(.55)}85%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:scaleY(1) scaleX(8)}}
+@keyframes cvseambloom{60%{opacity:0}90%{opacity:.9}100%{opacity:0}}
+@keyframes cvgem{0%{transform:rotate(45deg) scale(1)}85%{transform:rotate(225deg) scale(1.6)}100%{transform:rotate(225deg) scale(.1);opacity:0}}
+
+@media (prefers-reduced-motion:reduce){.cvl{display:none}}
+@media (max-width:480px){.cvl-seal .a,.cvl-seal .b{width:46px;height:96px;margin-top:-48px}.cvl-seal .a::after{inset:20px 10px}.cvl-clasp .a{width:30px}}
