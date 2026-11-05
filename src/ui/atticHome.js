@@ -6,12 +6,15 @@ import {World} from '../world/world.js';
 import {atticAll,atticTidy} from '../core/attic.js';
 import './attic.css';
 
-let cue=null,down=null,home=null,count=0,wired=false,depthEl=null;
+let cue=null,down=null,home=null,count=0,wired=false,depthEl=null,pulling=0;
+const PULL_MS=520; // cord pull + lid swing + light on the panel, then the climb starts
+const reduced=()=>{const r=document.documentElement,m=r.getAttribute('data-motion');return m==='reduce'||(m!=='full'&&matchMedia('(prefers-reduced-motion:reduce)').matches);};
 const ui=()=>({live:!!home&&!home.hidden&&home.isConnected&&World.canAttic&&!document.querySelector('.bk-spread,[role=dialog]:not([hidden]),#cardlayer.on')});
 function sync(open){
  if(home)home.classList.toggle('attic-away',open);
  if(home)home.toggleAttribute('inert',open);
- if(cue)cue.hidden=open||!count||!(home&&!home.hidden);
+ if(cue){cue.hidden=open||!count||!(home&&!home.hidden);if(open||cue.hidden){clearTimeout(pulling);pulling=0;if(!open)cue.classList.remove('pulling');}}
+ document.documentElement.classList.toggle('attic-lit',!!pulling);
  if(down)down.hidden=!open;
  if(open&&down)down.focus({preventScroll:true});
  if(depthEl)depthEl.hidden=!open||World.atticRows<2;
@@ -52,8 +55,11 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
  World.onAtticRow(showSection);
  if(!cue){
   cue=document.createElement('button');cue.type='button';cue.className='attic-cue-home';
-  down=document.createElement('button');down.type='button';down.className='attic-down';down.textContent='Down the ladder ↓';down.hidden=true;
-  homeEl.after(cue,down); // siblings of #home, so CSS hides them whenever home is hidden
+  down=document.createElement('button');down.type='button';down.className='attic-down';down.hidden=true;
+  down.innerHTML='<span class="adl-frame" aria-hidden="true"></span><span class="adl-ladder" aria-hidden="true"><i class="adl-rail"></i><i class="adl-rail"></i></span><span class="adl-word">Down the ladder</span>';
+  down.setAttribute('aria-label','Down the ladder');
+  const beam=document.createElement('div');beam.className='attic-beam';beam.setAttribute('aria-hidden','true');
+  homeEl.after(cue,down,beam); // siblings of #home, so CSS hides them whenever home is hidden
   cue.onclick=()=>open();down.onclick=()=>close();
 }
  paintCue();
@@ -80,5 +86,12 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
    if(World.atticOpen){if(dy>60)World.atticStep(1);else if(dy<-60&&!World.atticStep(-1))close();}else if(dy>60&&count&&ui().live)open();});
 }
 }
-function open(){if(count&&ui().live)World.setAttic(true);}
+/* Click the hatch: the cord is pulled, the lid swings down and warm light falls onto the panel (CSS, class "pulling"),
+   then the climb starts. Reduced motion skips the show and climbs at once. */
+function open(){
+ if(!count||!ui().live||pulling)return;
+ if(reduced()||!cue){World.setAttic(true);return;}
+ cue.classList.add('pulling');document.documentElement.classList.add('attic-lit');
+ pulling=setTimeout(()=>{pulling=0;World.setAttic(true);if(!World.atticOpen)cue.classList.remove('pulling');document.documentElement.classList.remove('attic-lit');},PULL_MS);
+}
 function close(){World.setAttic(false);}

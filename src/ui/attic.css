@@ -25,15 +25,35 @@
 .attic-cue-home:hover .ach-cord,.attic-cue-home:focus-visible .ach-cord{animation:none;transform:translateY(5px)}
 .attic-cue-home:active .ach-cord{transform:translateY(12px);transition-duration:var(--m-press);transition-timing-function:var(--e-press)}
 .attic-cue-home:focus-visible .ach-hatch{box-shadow:0 0 0 2px var(--c-brass-f6d98a),0 3px 6px rgba(0,0,0,.6),inset 0 2px 5px #000}
-.attic-cue-home[hidden],.attic-down[hidden],#home[hidden]~.attic-cue-home,#home[hidden]~.attic-down{display:none}
-.attic-down{position:fixed;z-index:6;left:50%;top:64px;transform:translateX(-50%);margin:0;padding:4px 16px 6px;border:0;border-bottom:2px solid var(--c-brass-67-alpha-88);background:var(--c-black-alpha-88);border-radius:0 0 6px 6px;white-space:nowrap;
- color:var(--c-brass-d8c08c);font:500 calc(24px*var(--ts))/1.1 var(--bs-hand,var(--serif));cursor:pointer}
-.attic-down:hover,.attic-down:focus-visible{color:var(--c-brass-f6d98a)}
+.attic-cue-home[hidden],.attic-down[hidden],#home[hidden]~.attic-cue-home,#home[hidden]~.attic-down,#home[hidden]~.attic-beam{display:none}
+/* The way down: a rope ladder dropping out of the same hatch (open frame, glowing) with the words hand-lettered under the last rung. */
+.attic-down{--hw:112px;--lh:132px;height:calc(var(--lh) + 72px);position:fixed;z-index:6;left:50%;top:0;width:calc(var(--hw) + 16px);margin:0 0 0 calc((var(--hw) + 16px)/-2);padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;font:inherit;color:var(--c-brass-d8c08c)}
+.adl-frame{position:absolute;left:8px;top:8px;width:var(--hw);height:32px;box-sizing:border-box;border:3px solid var(--c-oak-1a110a);border-radius:2px;background:linear-gradient(180deg,rgba(255,196,110,.55),rgba(255,150,50,.25));box-shadow:0 0 0 1px var(--c-oak-5a3d22),0 3px 6px rgba(0,0,0,.6),0 6px 22px rgba(255,170,70,.35)}
+.adl-ladder{position:absolute;left:calc(50% - 22px);top:36px;width:44px;height:var(--lh,132px);transform-origin:50% 0;
+ background:repeating-linear-gradient(180deg,transparent 0 20px,var(--c-oak-5a3d22) 20px 24px,transparent 24px 28px);animation:adl-drop calc(var(--m-smooth)*1.6) var(--e-settle) both}
+.adl-rail{position:absolute;top:0;bottom:0;width:3px;background:repeating-linear-gradient(180deg,var(--c-brass-65) 0 2px,var(--c-oak-24) 2px 4px);box-shadow:0 0 0 1px rgba(0,0,0,.45);animation:ach-sway 5s ease-in-out infinite alternate;transform-origin:50% 0}
+.adl-rail:first-child{left:0}.adl-rail:last-child{right:0}
+.adl-word{position:absolute;left:0;right:0;top:calc(var(--lh,132px) + 42px);text-align:center;white-space:nowrap;font:500 calc(20px*var(--ts))/1.1 var(--bs-hand,var(--serif));text-shadow:0 1px 4px #000,0 0 10px #000;animation:adl-word calc(var(--m-smooth)*2) var(--e-settle) both}
+.attic-down:hover .adl-word,.attic-down:focus-visible .adl-word{color:var(--c-brass-f6d98a)}
+.attic-down:focus-visible .adl-frame{box-shadow:0 0 0 2px var(--c-brass-f6d98a),0 3px 6px rgba(0,0,0,.6)}
+@keyframes adl-drop{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}
+@keyframes adl-word{0%,55%{opacity:0}to{opacity:1}}
+/* AE2: the click. Cord pulled down, lid swung wide, warm light on the home panel below, then the climb. */
+.attic-cue-home.pulling{pointer-events:none}
+.attic-cue-home.pulling .ach-cord{animation:none;transform:translateY(14px);transition-duration:var(--m-base)}
+.attic-cue-home.pulling .ach-lid{transform:rotateY(78deg);transition-delay:90ms}
+.attic-cue-home.pulling .ach-glow{opacity:1}
+.attic-cue-home.pulling .ach-hatch::after{opacity:1;height:44px}
+.attic-cue-home.pulling .ach-word{opacity:0}
+.attic-beam{position:fixed;z-index:5;left:50%;top:40px;width:min(420px,92vw);height:min(70vh,520px);margin-left:calc(min(420px,92vw)/-2);pointer-events:none;opacity:0;clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);
+ background:linear-gradient(180deg,rgba(255,200,120,.42),rgba(255,170,80,.12) 60%,transparent);transition:opacity var(--m-smooth) var(--e-settle)}
+.attic-lit .attic-beam{opacity:1}
 /* the panel rides with the world camera (atticHome.js sets its transform and opacity every frame), so no transition */
 #home.attic-away{pointer-events:none}
-@media(max-width:560px){.attic-down{font-size:calc(20px*var(--ts));top:58px}.attic-cue-home{--hw:72px}.ach-word{font-size:calc(9px*var(--ts));letter-spacing:.2em;text-indent:.2em}}
+@media(max-width:560px){.adl-word{font-size:calc(18px*var(--ts))}.attic-down,.attic-cue-home{--hw:72px}.attic-down{--lh:112px}.ach-word{font-size:calc(9px*var(--ts));letter-spacing:.2em;text-indent:.2em}}
 @media(prefers-reduced-motion:reduce){.ach-cord{animation:none}}
-html[data-motion="reduce"] .ach-cord{animation:none}
+@media(prefers-reduced-motion:reduce){.adl-rail{animation:none}html:not([data-motion="full"]) .adl-ladder,html:not([data-motion="full"]) .adl-word{animation:none}}
+html[data-motion="reduce"] .ach-cord,html[data-motion="reduce"] .adl-rail,html[data-motion="reduce"] .adl-ladder,html[data-motion="reduce"] .adl-word{animation:none}
 /* which room of the attic you are in; a quiet line low in the shelf strip, hidden unless there is more than one room */
 .attic-depth{position:fixed;z-index:6;left:50%;bottom:8px;transform:translateX(-50%);margin:0;padding:2px 12px;border-radius:4px;background:var(--c-black-alpha-88);pointer-events:none;max-width:calc(100vw - 16px);box-sizing:border-box;text-align:center;
  color:var(--c-brass-d8c08c);font:calc(12px*var(--ts))/1.3 "Special Elite",var(--serif);letter-spacing:.04em}
