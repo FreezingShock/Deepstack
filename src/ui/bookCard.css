@@ -39,3 +39,7 @@
 .book .page .go:focus-visible{outline:0;filter:brightness(1.22);box-shadow:inset 0 3px 0 var(--c-white),inset 0 -3px 0 var(--c-white)}
 .book .page .go:hover{filter:brightness(1.18)}
 @media (max-width:420px){.book{margin:16px 14px 22px 22px;width:min(calc(100% - 36px),430px)}.book .page .inner{padding:10px 22px 20px}.book .page .go{margin:12px -22px 0}}
+/* fit to the window: cardFit.js sets --fz when the natural height would not fit, so no scrollbar */
+.book{zoom:var(--fz,1)}
+.book .page{max-height:calc((100dvh - 32px) / var(--fz,1) - 42px)}
+@media (max-width:420px){.book .page{max-height:calc((100dvh - 32px) / var(--fz,1) - 38px)}}

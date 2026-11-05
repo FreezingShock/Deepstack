@@ -1223,3 +1223,15 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 ### R3. Card ink follows the lamp
 **Pitch:** the card's ink and parchment warm or cool with the time-of-day light in the nook, so the card reads as part of the room.
 **Brief:** Goal: tint `--lg-ink` mixes by the existing time-of-day variable. Files: `welcome.css`. **Conflicts:** none.
+### S1. Scrollbars gone (done, PR pending)
+**Pitch:** no default browser scrollbars anywhere; surfaces fit, long pages use a slim dark bar. Shipped: cardFit.js, pageFit.js, scrollbars.css.
+**Brief:** Goal: audit the remaining panels (Settings, Credits, keys help, topbar panel, final-screen ledger) for scrollbars once #189/#191/#193 land. Files: `src/styles/scrollbars.css`. Done when: `node /tmp` style audit shows none at 1640, 1280, 375.
+**Touches:** UI. **Conflicts:** none.
+### S2. Daily book pages that fit
+**Pitch:** the Daily book entry pages (about 1000px tall at 1280) still scroll; split long entries across pages like the Shelf does.
+**Brief:** Goal: paginate `src/ui/dailyBook.js` entries so no page needs a bar. Done when: no scroll on any Daily spread at 1280x800 and 375x667.
+**Touches:** UI. **Conflicts:** #189.
+### S3. Short-window layouts
+**Pitch:** phone landscape (667x375) still scrolls on Shelf/Stats pages; give those a compact layout.
+**Brief:** Goal: a max-height:420px compact mode for menu book pages. Files: new css. Done when: no bar at 667x375.
+**Touches:** UI. **Conflicts:** none.
