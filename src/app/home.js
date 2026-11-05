@@ -1,6 +1,7 @@
 import * as core from '../core/index.js';
 import {Sfx} from '../feel.js';
 import {modelStatus} from '../scorer/index.js';
+import {judgeLabel} from '../ui/judgeLabel.js';
 import {homeHTML,bookify} from '../ui/home.js';
 import {setBookSfx} from '../ui/bookOpenFx.js';
 import {applyHomeTier} from '../ui/homeLayout.js';
@@ -38,5 +39,4 @@ export function showHome(){
 export async function leaveRun(){setRun(null);ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;await World.ascend();showHome();}
 /* ---------- judge status (model download) ---------- */
 export function paintJudge(st){const el=$('#jstat');if(!el)return;
- el.dataset.state=st.state;el.title=st.state==='error'?'Quick judge in use (the full judge could not load)':'';
- el.textContent=st.state==='loading'?`Preparing the judge${st.total?`, ${Math.round(st.progress*100)}%`:'\u2026'}`:st.state==='error'?'Quick judge in use (the full judge could not load)':'';}
+ const t=judgeLabel(st);el.dataset.state=st.state;el.title=st.state==='error'?t:'';el.textContent=t;}

@@ -1086,7 +1086,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: tighten the vertical rhythm (move the stacks up or give the gap a purpose: the streak candles, a hanging sign), keep dust away from text. Files: `src/styles/home-base.css`, `src/ui/mantel.css`. Done when: balanced at 1000x700, 1280x800, 1640x900 and nothing overlaps the cabinet or ledger.
 **Touches:** HOME. **Conflicts:** 94, 95, N16 to N18.
 
-### Q9. "Preparing the judge, 100%" lingers in the top bar
+### Q9. [x] "Preparing the judge, 100%" lingers in the top bar (PR pending)
 **Serves:** honest answers, integrated.
 **Pitch:** The status shows "Preparing the judge, 100%" on home even when nothing is loading; at 375 it also squeezes the bar.
 **Brief:** Goal: when the model is ready show nothing (or a small brass "Judge ready" lamp that fades after 3 s); when it fails say so plainly and that the simpler judge is in use. Files: `src/ui/topbar.js`. Done when: tests pin the three states, no layout shift on phone.
