@@ -44,6 +44,7 @@ function stemSyn(st, rel) {
   }
   return s;
 }
+export const stemOf = w => stem(w.toLowerCase());
 export const relOf = (w, rel = REL) => rel?.[w] || null;
 
 const contentStems = def => [...new Set(def.toLowerCase().split(/[^a-z]+/).filter(t => t.length >= 3 && !STOP.has(t) && !FILL.has(t)).map(stem))];
