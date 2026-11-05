@@ -22,7 +22,7 @@ export function showHome(){
  setRun(null);ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;ui.gauge.classList.remove('on');clearInterval(cdTimer);
  const d=S.daily[utc()],st=computeStats(S,utc());World.setShelf(S.shelf);
  ui.home.hidden=false;ui.home.className='center fadein';
- ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:'',lexicon:core.lexicon});
+ ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:'',floorKey:S.bestFloor?FLOORS[S.bestFloor].key:'',tierInk:(()=>{const t=S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1);return t>=0?core.TIERS?.[t]?.ink||'':''})(),lexicon:core.lexicon});
  paintJudge(modelStatus());
  World.clearNiches();World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
