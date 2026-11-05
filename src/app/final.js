@@ -8,7 +8,10 @@ import {$,$$} from './util.js';
 import {spineImg} from '../world/bookArt.js';
 import {openCard} from './card.js';
 import {showHome} from './home.js';
-import {setRun} from './run.js';
+import {setRun,startDaily,startUnlimited} from './run.js';
+import {nextSteps,missedWords} from '../core/nextStep.js';
+import {mountNextStep,showReread} from '../ui/nextStep.js';
+import {utc} from './state.js';
 
 import {dailyNumber} from '../core/daily.js';
 import {riddleDayShare} from '../core/riddleDaily.js';
@@ -24,8 +27,11 @@ export async function showFinal(d,fromHome){
  const txt=shareText(d);const el=ui.final;el.hidden=false;el.className='center fadein';
  el.innerHTML=finalHTML(d,S,{txt,rarest:TIERS[d.best].name,no:dailyNo(),dayNo:d.day?dailyNumber(d.day):0,floorName:d.floor?FLOORS[d.floor].name:'',levelTitle,spines:d.books.map((b,i)=>spineImg(b,i,'final',132)).join('')});
  countUp($('#cnt'),d.depth,1200);
- bindRecap(el,d.books,openCard);
+ const bindR=()=>bindRecap(el,d.books,openCard);el._rebind=bindR;bindR();
  $$('#sp img').forEach(im=>{im.onclick=()=>openCard(d.books[+im.dataset.i],{fresh:false});});
  $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(txt);$('#cp').textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents($('#shr'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('#cp').textContent='Selected — copy it';}};
+ const leave=async go=>{ui.final.hidden=true;ui.hud.hidden=true;setRun(null);go();};
+ const missed=missedWords(d);
+ mountNextStep(el,nextSteps(S,d,utc()),{daily:()=>leave(()=>startDaily(false)),unlimited:()=>leave(startUnlimited),reread:()=>showReread(el,missed,i=>openCard(d.books[i],{fresh:false}))});
  $('#up').onclick=async()=>{ui.final.hidden=true;ui.hud.hidden=true;setRun(null);await World.ascend();showHome();};
 }
