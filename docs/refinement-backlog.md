@@ -1440,7 +1440,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The Unlimited page now leads with a big Descend button (Find my rank the first time), the rank above it, and "Place me again" as a quiet second choice.
 **Brief:** Goal: keep the main action visible on every sectioned page at 1280, 1640 and 375. Files: `src/ui/home.js`, `src/ui/lexiconRank.css`. Done when: no `.bs-start` sits below `.pg-in`. **Touches:** UI. **Conflicts:** none.
 
-### UB2. Unlimited book: show the Lexicon climbing
+### UB2. [x] Unlimited book: show the Lexicon climbing (PR pending; `src/ui/lexiconTrend.js`, pen line under the rank, last 12 runs)
 **Pitch:** The right-hand page of the Unlimited book could draw the last few runs as a small pen line so the rank feels earned.
 **Brief:** Goal: sparkline from `S.rating.hist` on a notebook page, no new numbers. Files: new `src/ui/lexiconTrend.js`. Done when: it reads at 375. **Touches:** UI. **Conflicts:** none.
 
@@ -1481,3 +1481,11 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** `words.json` is 2.2 MB (691 KB gzip) and loads on every visit before the Daily can start. A compact columnar format, or dropping fields the game never reads, would cut it a lot.
 **Brief:** Goal: shrink the file (see backlog item 80) and keep `loadWords()` output identical; the service worker (#243) then caches it. Done when: tests pass unchanged and gzip size drops. **Touches:** Performance, data. **Conflicts:** `scripts/build-words.mjs`.
 
+
+### UB4. Mark the rank bands on the Lexicon pen line
+**Pitch:** The pen line under the rank shows direction but not what a rise means; faint ticks where Bookworm, Wordsmith and so on begin would let a player see the next rank approaching.
+**Brief:** Goal: up to two faint hand-lettered band ticks on `lexiconTrend.js`, no new numbers. Files: `src/ui/lexiconTrend.js`, `lexiconTrend.css`. Done when: still reads at 375. **Touches:** UI. **Conflicts:** none.
+
+### UB5. Tap the pen line to see a run
+**Pitch:** Let each dot on the Lexicon line open the run it came from (date, words, books), so the climb is a trail back through the shelf.
+**Brief:** Goal: tappable points showing date and Lexicon, link to Almanac page. Files: `lexiconTrend.js`, `statsPages.js`. **Touches:** UI. **Conflicts:** Almanac tap-through (B).

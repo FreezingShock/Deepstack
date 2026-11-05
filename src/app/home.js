@@ -16,6 +16,7 @@ import {startRiddle,startTodayRiddle} from './riddle.js';
 import {bindAtticHome} from '../ui/atticHome.js';
 import {bindDeskProps} from '../ui/deskProps.js';
 import {rankHTML} from '../ui/lexiconRank.js';
+import {trendHTML} from '../ui/lexiconTrend.js';
 import {mountHearth} from '../ui/hearth.js';
 
 /* ---------- home ---------- */
@@ -30,7 +31,7 @@ export function showHome(){
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
- BOOK_INTROS.bUnl.extra=()=>rankHTML(S.rating,core.lexicon);
+ BOOK_INTROS.bUnl.extra=()=>rankHTML(S.rating,core.lexicon)+trendHTML(S.rating&&S.rating.hist);
  /* the main action is always a run: Descend once placed, "Find my rank" (the placement words) the first time; re-placing is the quiet second choice */
  BOOK_INTROS.bUnl.btn=()=>S.rating.placed?'Descend':'Find my rank';
  BOOK_INTROS.bUnl.second=()=>S.rating.placed?`<button class="bs-again pen-ink" data-act="replace">Place me again</button>`:'';
