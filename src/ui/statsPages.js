@@ -1,6 +1,7 @@
 /* Stats as an almanac: four hand-kept pages built from saves that already exist (dailies, S.rating.hist, the shelf).
    Pure string builders so they test without a DOM; styles live in statsPages.css under .alm inside the menu book. */
 import {esc} from './bookpages.js';
+import {emptyBlock} from './emptyPages.js';
 
 const fmtDay=k=>new Date(k+'T00:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric',timeZone:'UTC'});
 /* tiny deterministic wobble so every line looks drawn, never ruled */
@@ -65,7 +66,8 @@ export function crossSection(FLOORS,floorStartFt,deepest,reached){
 
 export function statsLeaves(st,S,{TIERS,FLOORS,floorStartFt}){
  const hist=(S&&S.rating&&S.rating.hist)||[],shelf=(S&&S.shelf)||[];
- if(!st.runs&&!hist.length&&!shelf.length)return [`<div class="alm"><h1>The Almanac</h1><p class="empty hand">Nothing shelved yet.</p><p class="note">Finish your first Daily and the almanac fills in: streak, deepest dive and every tier you have shelved.</p></div>`];
+ if(!st.runs&&!hist.length&&!shelf.length)return [`<div class="alm"><h1>The Almanac</h1><div class="kicker">Not yet opened</div>${emptyBlock('ledger','Finish your first Daily and the almanac fills in.')}</div>`,
+  `<div class="alm"><h1>The Depths</h1><div class="kicker">A cross-section, down to 0 ft</div>${crossSection(FLOORS,floorStartFt,0,(S&&S.bestFloor)||0)}</div>`];
  const tally=tallyMarks(st.streak||0);
  const line=(l,v,sub)=>`<li><span>${l}</span><b>${v}</b>${sub?`<em>${sub}</em>`:''}</li>`;
  const counts=shelf.length?TIERS.map(t=>shelf.filter(b=>b.tier===t.id).length):(st.tiers||[]);

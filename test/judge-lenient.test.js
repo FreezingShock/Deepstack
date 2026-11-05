@@ -64,3 +64,17 @@ test('the shipped senses.json is well formed', () => {
     for (const [a, g] of [...(v.alt || []), ...(v.syn || [])]) assert.ok(a && g.length >= 10 && g.length <= 121, k + a);
   }
 });
+
+import {answerSynonyms, setRelations} from '../src/scorer/relations.js';
+test('a one-word answer the model knows poorly gets a second chance through its own synonyms', () => {
+  setRelations({convince: {s: ['persuade', 'convict', 'draw', 'convincer']}});
+  const tempt = {w: 'tempt', def: 'To provoke someone to do wrong; to entice.'};
+  assert.deepEqual(answerSynonyms('convince', tempt), ['persuade', 'draw']);
+  assert.deepEqual(answerSynonyms('convince them gently', tempt), []);
+  assert.deepEqual(answerSynonyms('tempt', tempt), []);
+  setRelations(null);
+  const via = (viaSim) => scoreFromSims([.2], {text: 'convince', content: 1, usedWord: false, tokens: ['convince']}, 'convince', {word: tempt, viaSim}).score;
+  assert.ok(via(null) < 10);
+  assert.ok(via(.47) >= 20 && via(.47) < 40, 'close concept lands in Paperback');
+  assert.ok(via(.99) < 40, 'a synonym of the answer never counts as the real thing');
+});
