@@ -1,4 +1,4 @@
-/* Menu-book pages (Shelf, Sets, Stats, Daily): when a page is only a little too tall for the window, shrink its
+/* Menu-book pages (Shelf, Sets, Stats, Daily) and the Settings, Credits and keys panels: when one is only a little too tall for the window, shrink its
    contents to fit rather than growing a scrollbar. A page that is a lot too tall is genuinely long and keeps its
    (slim, dark) scrollbar; see styles/scrollbars.css. */
 const MIN = .5; // below this a page is genuinely too long and keeps the slim scrollbar
@@ -29,7 +29,7 @@ function fitPage(pg) {
 }
 function run() {
   queued = false;
-  document.querySelectorAll('.bk-spread.menu .pg-in').forEach(fitPage);
+  document.querySelectorAll('.bk-spread.menu .pg-in, .tpbox, .khbox').forEach(fitPage);
 }
 const queue = () => { if (!queued) { queued = true; setTimeout(run, 120); } };
 new MutationObserver(queue).observe(document.body, {childList: true, subtree: true});
