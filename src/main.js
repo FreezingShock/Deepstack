@@ -39,6 +39,7 @@ initRulesCard();
 import './ui/bookOpenFx.js';
 import './ui/bookOpenFx.css';
 import './ui/pageFlip.css';
+import './ui/bookRibbon.css';
 import {watchHomeLayout} from './ui/homeLayout.js';
 import './ui/descend.js';
 import './ui/camMotion.js';
