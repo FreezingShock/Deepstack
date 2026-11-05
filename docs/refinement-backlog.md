@@ -1396,6 +1396,8 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The spines in the run row are only for show; tapping one could peek its answer, like the alcove ledge does.
 **Brief:** Goal: make `.runledge .spine` focusable with the same tip as `ledgeTip`. Files: `src/ui/runLedge.js`. Done when: keyboard and hover show word, tier and score.
 **Touches:** RUN. **Conflicts:** G4, G5.
+### G5. Time you can feel at a glance [x] (candle is the one run clock, PR pending)
+**Follow-ups:** G5a. Let the candle's wax drip a bead at each 10 s ring so crossing a ring is a small physical event (reduced motion: no bead). Conflicts: `src/ui/candle.css`. G5b. A "show the seconds" toggle in Settings for people who want the numeral back (the screen-reader text is already there). Conflicts: settings, `src/ui/candle.js`.
 ### R6. Cover sounds per closure
 **Serves:** rarity is the hero, sound lines up with motion.
 **Pitch:** each cover now comes undone its own way (tape, twine, strap, clasp, seal, chain, seam) but the audio is still one paper sound.
