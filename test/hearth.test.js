@@ -19,6 +19,7 @@ test('wide rooms: the fire stands between the stacks, inside the niche, on its f
 
 test('narrow rooms: no fireplace when there is no room, otherwise centred under the mantel beam', () => {
   assert.equal(planFlow({W: 351, beam: {x: 20, y: 200, w: 300, h: 9}, h: 40}), null);
+  assert.ok(planFlow({W: 351, beam: {x: 20, y: 200, w: 300, h: 9}, h: 60}), 'short phones still get a small fireplace');
   assert.equal(planFlow({W: 351, beam: null, h: 140}), null);
   const p = planFlow({W: 351, beam: {x: 20, y: 200, w: 300, h: 9}, h: 140});
   assert.ok(Math.abs(p.SR.x + p.SR.w / 2 - 351 / 2) < 1e-6);
