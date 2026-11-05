@@ -32,6 +32,7 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 - Alcove vs level effects (2026-11-04): the water and other floor effects should be drawn separately from the alcove so the alcove stays a clean reading nook; "physical sanity audit" confirmed as a wanted pass.
 
 - 2026-11-04 Judge: "be more forgiving based on the words, try to find relations from the input words to the definition, if so then its close" (synonym, related or definition-linked words count as close). Asked for rigorous work with before/after numbers.
+- 2026-11-05 daily fairness: on the quick-judge fallback ("I dont understand G3 but it shouldnt be unfair") -> never explain judge internals; guarantee fairness silently, Daily scores only from the full judge.
 - 2026-11-04 reveal recipes: "One recipe per tier reveal" -> every part of a tier's reveal (rays, rune, flash, cover, sound) should come from one table, like the particles.
 
 - 2026-11-05 home books: items behind an opening menu book (other books, desk props) must never show through mid-animation; the alcove behind it stays empty at every frame.
