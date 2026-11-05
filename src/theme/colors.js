@@ -185,6 +185,8 @@ export const COLORS={
  'bronze-38':'#8a6a3a',
  'ash-55':'#8a8296',
  'bronze-45':'#8b7a5c',
+ 'fine-locked':'#b3a37f',
+ 'fine-locked-dim':'#a8997a',
  'bronze-40':'#8d6f3f',
  'bronze-9a169a':'#9a169a',
  'bronze-46':'#9a7a52',

@@ -1122,7 +1122,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: a clear hand-drawn previous and next arrow pair, the underline kept inside the text block, the corner dashes removed or made a real page-curl. Files: `src/ui/dailyBook.js`, its css. Done when: screenshot at 1280 and 375, arrows hit 44 px.
 **Touches:** Daily book. **Conflicts:** 13, 62, 63.
 
-### Q15. Fine print is too dim on dark
+### [x] Q15. (PR pending) Fine print is too dim on dark
 **Serves:** words fully readable.
 **Pitch:** Floor ranges in the depth rail ("101 to 252 ft"), locked floor names, the key hints under the slip ("Enter to submit, Alt+H hint") and the share note are small grey on dark and hard to read.
 **Brief:** Goal: audit every small label on dark surfaces for 4.5:1 contrast and 12 px minimum, lift values in tokens. Files: `src/theme/colors.js`, `src/ui/depthRail.css`, `src/styles/run.css`. Done when: a test lists the pairs and passes, no screenshot differences beyond text.
