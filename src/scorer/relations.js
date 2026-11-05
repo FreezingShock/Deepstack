@@ -44,6 +44,7 @@ function stemSyn(st, rel) {
   }
   return s;
 }
+export const stemOf = w => stem(w.toLowerCase());
 export const relOf = (w, rel = REL) => rel?.[w] || null;
 
 const contentStems = def => [...new Set(def.toLowerCase().split(/[^a-z]+/).filter(t => t.length >= 3 && !STOP.has(t) && !FILL.has(t)).map(stem))];
@@ -80,6 +81,13 @@ export function relate(text, word, rel = REL) {
   const hitStems = new Set([...out.syn, ...out.hyp, ...out.rel, ...out.near, ...out.ant, ...out.flip].flatMap(t => t.split(' ')));
   out.extra = [...A.pos, ...A.neg].filter(o => !FILL.has(o.raw) && !GENERIC.has(o.s) && !hitStems.has(o.s)).length; // content words besides the related term
   const D = contentStems(word.def).filter(d => !GENERIC.has(d));
+  // Broad ideas: answer words that repeat a content word of the definition, or are tied to one (or to the target) by any relation list.
+  const ans = [...new Set(A.pos.filter(o => !FILL.has(o.raw) && !GENERIC.has(o.s) && o.s.length >= 3).map(o => o.s))];
+  out.echo = ans.filter(a => D.includes(a)).length;
+  const tieT = [S, H, R, Nr].map(x => ans.filter(a => x.has(a) && !kin(a))), tied = new Set(tieT.flat());
+  const tieD = new Set();
+  for (const d of D) { const r = rel[d]; if (!r) continue; for (const f of ['s', 'c', 'h', 'r', 'n']) for (const x of r[f] || []) { const k = keyOf(x); if (ans.includes(k) && !D.includes(k)) tieD.add(k); } }
+  out.broad = tied.size; out.broadDef = tieD.size;
   if (D.length) {
     const have = new Set(A.pos.map(o => o.s));
     let hit = 0;
@@ -97,4 +105,16 @@ export function relate(text, word, rel = REL) {
 export function relationTexts(word, rel = REL) {
   const s = (rel?.[word.w]?.s || []).filter(x => !x.includes(' ') || x.split(' ').length <= 2).slice(0, 8);
   return {group: s.length >= 2 ? s.slice(0, 6).join(', ') : null, singles: s};
+}
+
+/** Single-word synonyms of what the player wrote, for a short answer ("convince" -> persuade, draw, push): a second chance when
+ *  the answer itself is a word the embedding knows poorly. The judge embeds these and credits the closest, at a discount. */
+export function answerSynonyms(text, word, rel = REL, max = 6) {
+  if (!rel) return [];
+  const A = analyze(text, word), toks = A.pos.filter(o => !FILL.has(o.raw) && !GENERIC.has(o.s));
+  if (toks.length !== 1 || A.usedWord) return []; // naming the word itself earns nothing, so no second chance either // only a one-word answer; longer ones are phrases the embedding handles
+  const raw = toks[0].raw, r = rel[raw] || rel[[...(byStem?.get(toks[0].s) || [])][0]] || null;
+  if (!r) return [];
+  const w = word.w.toLowerCase();
+  return [...new Set([...(r.s || []), ...(r.c || [])])].filter(x => /^[a-z]{4,}$/.test(x) && x.slice(0, 4) !== raw.slice(0, 4) && x.slice(0, 4) !== w.slice(0, 4)).slice(0, max);
 }

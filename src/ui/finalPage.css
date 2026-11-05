@@ -1,0 +1,31 @@
+/* Q5: the Descent complete screen as the closing page of a ledger.
+   No outlined boxes: tallies are written in ink, books stand on a ledge, buttons are handwritten words. */
+.fin{--fhand:'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive}
+.fin .bigd{font-size:clamp(calc(64px*var(--ts)),11vw,calc(84px*var(--ts)))}
+.fin .bigd small{font-family:var(--fhand);text-transform:none;letter-spacing:0;font-size:calc(20px*var(--ts));font-weight:500;color:var(--ink)}
+/* tallies: one handwritten line, no tiles */
+.fin .rtiles{flex-wrap:wrap;justify-content:center;gap:2px 18px;margin:0 0 4px}
+.fin .rtile{border:0;background:none;padding:0;flex-direction:row;align-items:baseline;gap:6px}
+.fin .rtile small{font:500 calc(17px*var(--ts)) var(--fhand);letter-spacing:0;text-transform:none;color:var(--mute)}
+.fin .rtile b{font:500 calc(20px*var(--ts)) var(--fhand);overflow:visible;white-space:nowrap}
+.fin .rtile i{display:none}
+/* books on a wooden ledge instead of a boxed strip */
+.fin .spineimgs{background:none;border:0;border-bottom:7px solid var(--c-oak-4a3a22);box-shadow:0 8px 12px -6px var(--c-black-alpha-99);padding-top:8px}
+.fin .spineimgs img{max-height:132px}
+/* ledger rules: keep the ruled rows, drop the top rule so it reads as a page */
+.fin .rbooks{border-top:0}
+/* handwritten buttons with a pen underline */
+.fin .row{gap:14px 30px;flex-wrap:wrap}
+.fin .row .btn,.sheet.fin .row .btn.pri,.sheet.fin .row .btn{background:none;border:0;box-shadow:none;border-radius:0;padding:4px 6px;font:500 calc(24px*var(--ts))/1.2 var(--fhand);letter-spacing:0;color:var(--ink);text-transform:none}
+.fin .row .btn.pri{text-decoration:underline wavy;text-decoration-thickness:1px;text-underline-offset:6px}
+.sheet.fin .row .btn:not(.pri){color:var(--mute)}
+.fin .row .btn:hover,.fin .row .btn:focus-visible{background:none;outline:0;color:var(--ink);text-decoration:underline wavy;text-decoration-thickness:1px;text-underline-offset:6px}
+@media (min-width:761px){
+ .fin .fright{align-self:center}
+ .fin .rtiles{display:flex}
+ .fin .spineimgs img{max-height:150px}
+}
+@media (max-width:760px){
+ .fin .row{flex-wrap:nowrap;gap:8px 14px;margin-top:2px}
+ .sheet.fin .row .btn{font-size:calc(17px*var(--ts));padding:2px 4px;white-space:nowrap}
+}

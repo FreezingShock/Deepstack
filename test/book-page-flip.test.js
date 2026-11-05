@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const js=readFileSync('src/ui/home.js','utf8'),css=readFileSync('src/ui/home.css','utf8');
 test('books turn with page-corner zones, not round arrow buttons',()=>{
- assert.ok(js.includes('bs-corner prev')&&js.includes('bs-corner next'));
+ const pf=readFileSync('src/ui/pageFlip.js','utf8');assert.ok(pf.includes('bs-corner prev')&&pf.includes('bs-corner next'));
  assert.ok(!js.includes('bs-turn'));
 });
 test('the flip animates transform/opacity only and honours reduced motion',()=>{

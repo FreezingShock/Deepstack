@@ -3,9 +3,11 @@
    your results on the right (once played). Today's words stay sealed until you have played, so the book never
    spoils the puzzle. */
 import {esc,chunk,toSpreads} from './bookpages.js';
+import {BOOK_ACTS} from './home.js';
 import {dailyKeys,dailyNumber,dailyWords} from '../core/daily.js';
 import {TIERS} from '../core/tiers.js';
 import {calendarLeaf,monthOf} from './dailyCalendar.js';
+import {riddleDay,riddleDayStreak} from '../core/riddleDaily.js';
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -32,7 +34,7 @@ export function dayEntry(S,key,today,wordsFor=d=>dailyWords(d,7)){
  let words=null;
  if(played)words=rec.books.map(b=>({w:b.w,pos:b.pos,def:b.def,score:b.score,tier:b.tier,answer:b.answer||'',skipped:!b.answer}));
  else if(!isToday)words=wordsFor(key).map(w=>({w:w.w,pos:w.pos,def:w.def}));
- return {key,no:dailyNumber(key),isToday,played,rec,words};
+ return {key,no:dailyNumber(key),isToday,played,rec,words,riddle:riddleDay(S,key)};
 }
 export function dailyEntries(S,today,wordsFor){return dailyKeys(today).map(k=>dayEntry(S,k,today,wordsFor)).reverse();}
 
@@ -40,12 +42,16 @@ const status=e=>e.played?'Played':e.isToday?'Open today':'Missed';
 
 const coverLeaf=(S,today,entries,streak)=>{
  const e=entries[0],played=entries.filter(x=>x.played).length;
- return `<div class="dly"><div class="kicker">Ledger of descents</div><h1>The Daily</h1>
-  <div class="dly-date">${esc(longDate(today))}</div>
-  <div class="dly-no">Daily No. ${e.no}</div>
-  <p class="dly-line">${e.played?`Played today: ${e.rec.depth} ft down, average ${e.rec.avg}.`:'Today’s seven words are sealed until you have descended.'}</p>
-  <ul class="dly-tally"><li><b>${entries.length}</b> ${entries.length===1?'day':'days'} recorded</li><li><b>${played}</b> played</li><li><b>${streak}</b> day streak</li></ul>
-  <p class="note">The same seven words for everyone each day, from No. 1 on 3 November 2026. A day’s words open here once the day has passed, or as soon as you have played it.</p></div>`;
+ const rid=riddleDay(S,today),rs=riddleDayStreak(S&&S.riddle,today);
+ return `<div class="dly"><div class="kicker">Ledger of descents · ${esc(longDate(today))}</div><h1>The Daily</h1>
+  <section class="dly-sec" aria-label="Daily"><h2>Daily No. ${e.no}</h2>
+   <p class="dly-line">${e.played?`Played today: ${e.rec.depth} ft down, average ${e.rec.avg}.`:'Explain seven words, sealed until you descend.'}</p>
+   <p class="dly-tally"><span><b>${played}</b> of ${entries.length} played</span><span><b>${streak}</b> day streak</span></p>
+   <button class="dly-act pen-ink" data-act="daily">${e.played?'See today’s result':'Descend'}</button></section>
+  <section class="dly-sec" aria-label="Daily Riddle"><h2>Daily Riddle</h2>
+   <p class="dly-line">${rid?`Solved ${rid.solved} of ${rid.of} today.`:'Seven definitions: write the word. One try a day.'}</p>
+   <p class="dly-tally"><span><b>${rs}</b> day streak</span></p>
+   <button class="dly-act pen-ink" data-act="dailyRiddle">${rid?'See today’s riddle result':'Open today’s riddle'}</button></section></div>`;
 };
 
 /* Contents leaves: days newest first, under a heading for each month. startSpread is the spread of the first day. */
@@ -62,6 +68,11 @@ const tierColor=t=>(TIERS[t]||TIERS[0]).spine;
 
 /* The two leaves of a day: words and definitions, then results. */
 export function dayLeaves(e){
+ const [l,r]=baseDayLeaves(e);
+ if(!e.riddle)return [l,r];
+ return [l,r.replace(/<\/div>$/,`<section class="dly-sec" aria-label="Daily Riddle"><h2>Daily Riddle</h2><div class="dly-sum"><span><b>${e.riddle.solved}</b> of ${e.riddle.of} solved</span><span><b>${e.riddle.depth}</b> ft</span></div></section></div>`)];
+}
+function baseDayLeaves(e){
  const head=`<div class="kicker">${esc(monthLabel(e.key))} · ${esc(status(e))}</div><h1>No. ${e.no}</h1><div class="dly-date">${esc(longDate(e.key))}</div>`;
  if(!e.words){
   const left=`<div class="dly">${head}<ol class="dly-words sealed">${Array.from({length:7},(_,i)=>`<li><span class="w">· · · · ·</span><span class="d">sealed</span></li>`).join('')}</ol></div>`;
@@ -97,6 +108,7 @@ export function dailyBook({S,today,streak=()=>0,wordsReady=null,wordsLoaded=()=>
  const build=()=>toSpreads(dailyLeaves(S,today(),{streak:streak(),month:month||monthOf(today())}).leaves);
  let waiting=false;
  return {label:'The Daily',spreads:()=>{month=null;return build();},onPaint:(sp,ctl)=>{
+  sp.querySelectorAll('.dly-act[data-act]').forEach(b=>b.onclick=()=>{const a=BOOK_ACTS[b.dataset.act];a&&a();ctl.close();});
   sp.querySelectorAll('.dly-go,.cal-d[data-spread]').forEach(b=>b.onclick=()=>ctl.setSpreads(build(),+b.dataset.spread));
   sp.querySelectorAll('.cal-nav[data-month]').forEach(b=>b.onclick=()=>{month=b.dataset.month;ctl.setSpreads(build(),ctl.index);});
   if(wordsReady&&!wordsLoaded()&&!waiting){waiting=true;wordsReady.catch(()=>{}).then(()=>{waiting=false;ctl.setSpreads(build(),ctl.index);});}
