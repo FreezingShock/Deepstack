@@ -84,12 +84,12 @@ export async function submit(skipped){
  if(!run||run.busy)return;const w=run.words[run.i];let text=$('#ans').value.trim();
  if(!skipped&&!text){const f=$('#fld');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');return;}
  run.busy=true;clearInterval(timerId);Sfx.candle(1);
- const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w);
+ const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w,run.practice||run.mode?undefined:{strict:true,onWait:()=>{const h=$('#hl');if(h)h.insertAdjacentHTML('beforeend','<div class="hslip" style="--tilt:-.6deg">The librarian is still arriving. Your answer is safe and will be read in a moment.</div>');}});
  const t=tierOf(j.score);
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
  const base=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
  const cb=applyCombo(run.combo,t,base,skipped);run.combo=cb.chain;const rows=cb.rows;
- const book={fl:floorAtRow(World.restRow+rows).id,wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,fb:feedbackData(j,w),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
+ const book={fl:floorAtRow(World.restRow+rows).id,wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,rough:j.engine==='lexical'||undefined,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,fb:feedbackData(j,w),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');Sfx.seal();const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}FX.warm(t);}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
