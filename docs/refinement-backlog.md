@@ -1290,10 +1290,17 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: a live sample line in the Settings panel that grows with `--ts`. Files: `src/ui/topbar.js`, `src/ui/textScale.css`. Done when: the sample matches the real text at each size, tested at 375 and 1280.
 **Touches:** UI. **Conflicts:** `src/ui/topbar.js`.
 
-### T2. Text-size screenshot sweep in CI
+### T2. [x] Text-size sweep in CI (PR pending)
 **Pitch:** catch overlaps and clipped text at every size before nate does.
 **Brief:** Goal: a smoke step that opens home, run, Shelf and Settings at normal/large/xlarge in 375 and 1280 and fails on text overflowing its box. Files: `scripts/`, `test/`. Done when: it fails on a deliberately broken label.
 **Touches:** HEALTH. **Conflicts:** `scripts/smoke.mjs`.
+**Shipped:** `scripts/text-fit.mjs` (+ `scripts/lib/textFit.mjs`) runs beside smoke in CI: home, Settings, Shelf and run at normal/large/xlarge in 375 and 1280, failing on clipped or off-screen text; `--selftest` proves it fires on a broken label (`test/text-fit.test.js`).
+### T3. Sweep more screens for text fit
+**Pitch:** extend the text-fit sweep to the result card, Stats, Sets, Daily book, Credits and the attic.
+**Brief:** Goal: add scenes to `scripts/text-fit.mjs`. Done when: each fails on a broken label. **Touches:** HEALTH. **Conflicts:** none.
+### T4. Text-fit sweep also catches overlapping text
+**Pitch:** flag two text boxes that overlap, not just clipped text.
+**Brief:** Goal: pairwise rect overlap check in `scripts/lib/textFit.mjs`. **Touches:** HEALTH. **Conflicts:** none.
 
 ### FH1. Fireside home [x] (PR pending)
 **Done:** nate picked "B with a C background": stone fireplace between the stacks with grate, logs, live flames (lean from the cursor, click to stoke), book piles, streak candles on its mantel, brick back wall, firelit room light on the shelves (`src/ui/hearth.{js,css}`). Mockups: `screenshots/fireplace-home/`.
