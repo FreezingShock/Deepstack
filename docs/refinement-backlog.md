@@ -1451,14 +1451,21 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Centred trapdoor with a pull cord; the brass tag carries the book count.
 **Brief:** Done in `src/ui/atticHome.js` + `attic.css`.
 
-### AE2. The hatch creaks open and the room lights up as you climb
+### AE2. [x] (PR pending) The hatch creaks open and the room lights up as you climb
 **Pitch:** On click the lid swings down, a shaft of warm light falls onto the home panel and the cord is pulled for real, then the climb starts.
 **Brief:** Goal: sequence lid, light shaft and cord tug (motion tokens) before `World.setAttic(true)`. Files: `atticHome.js`, `attic.css`, a short sound hook. Done when: reduced motion skips straight to the climb. **Touches:** UI. **Conflicts:** attic climb threads.
 
-### AE3. A matching way down: the ladder drops from the same hatch
+### AE3. [x] (PR pending) A matching way down: the ladder drops from the same hatch
 **Pitch:** Replace the "Down the ladder ↓" plaque with a rope ladder hanging from the hatch you came up through, so exit and entrance are one object.
 **Brief:** Goal: draw the ladder at top centre while up there, click or Escape to descend. Files: `atticHome.js`, `attic.css`. Done when: keyboard and swipe paths unchanged. **Touches:** UI. **Conflicts:** attic floor/rows thread.
 
+
+
+### AE4. The hatch closes behind you and the cord settles
+**Pitch:** Coming back down, the lid swings shut on its hinge and the cord swings to rest as the home panel returns. **Files:** `atticHome.js`, `attic.css`. **Conflicts:** attic climb threads.
+
+### AE5. Creak and rope sounds for the hatch and ladder
+**Pitch:** A soft wood creak as the lid opens and a rope rustle as the ladder drops, on the shared sound bus. **Files:** new `src/sound/atticSounds.js`, hook in `atticHome.js`. **Conflicts:** sound threads.
 
 ### BS1. Page-turn sound and paper shadow that follow the leaf
 **Pitch:** The leaf already flips smoothly; make it feel like paper by shading the page beneath as it lifts and adding a soft rustle that follows the turn speed.
