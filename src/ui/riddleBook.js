@@ -6,7 +6,7 @@ const utc=()=>new Date().toISOString().slice(0,10);
 const at=HOME_LINKS.findIndex(l=>l.id==='bUnl')+1;
 if(!HOME_LINKS.some(l=>l.id==='bRid'))HOME_LINKS.splice(at||HOME_LINKS.length,0,
  {id:'bRid',stack:0,tex:'vellum',color:'purple',label:'Riddle Shelf',note:'You get the definition, write the word',badge:s=>s.riddle&&s.riddle.solved?s.riddle.solved+' solved':''});
-BOOK_INTROS.bRid={h:'Riddle Shelf',kicker:'The word is the answer',p:'The other way round: a slip shows only what a word means, and you write the word. The exact word reaches the deepest shelves. A word that means the same still earns a good book.',pts:['Seven riddles, forty seconds each','Hints give a sentence or a neighbour, never the spelling','Counts toward your shelf, not the Daily'],btn:'Start the Riddle Shelf'};
+BOOK_INTROS.bRid={h:'Riddle Shelf',kicker:'The word is the answer',p:'The other way round: a slip shows only what a word means, and you write the word. The exact word reaches the deepest shelves. A word that means the same still earns a good book.',pts:['Seven riddles, forty seconds each','Hints give a sentence or a neighbour, never the spelling','Counts toward your shelf, not the Daily'],btn:'Start the Riddles'};
 
 /* Today's riddle: a second, slimmer book right after the Riddle Shelf. Same seven definitions for everyone, one attempt a day. */
 const atD=HOME_LINKS.findIndex(l=>l.id==='bRid')+1;
