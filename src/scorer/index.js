@@ -4,7 +4,7 @@ import {judge as lexicalJudge} from './lexical.js';
 import {cosine, referenceTexts, prepareAnswer, scoreFromSims} from './embedding.js';
 import {embed, whenReady, modelStatus} from './model.js';
 import {hubTexts, hubSim} from './hubness.js';
-import {relate, relationTexts, loadRelations} from './relations.js';
+import {relate, relationTexts, loadRelations, answerSynonyms} from './relations.js';
 import {senseTexts, loadSenses} from './senses.js';
 export {loadSenses} from './senses.js';
 export {loadRelations} from './relations.js';
@@ -47,9 +47,11 @@ export async function judgeAnswer(text, word) {
   try {
     const prep = prepareAnswer(text, word);
     await Promise.all([loadRelations(), loadSenses()]);
-    const [{vecs, grp, singles, alt, gloss, wordVec}, [a], hv] = await Promise.all([refsFor(word), embed([prep.text || text]), hubFor()]);
+    const via = answerSynonyms(text, word);
+    const [{vecs, grp, singles, alt, gloss, wordVec}, [a, ...vv], hv] = await Promise.all([refsFor(word), embed([prep.text || text, ...via]), hubFor()]);
+    const viaSim = vv.length ? Math.max(...vv.flatMap(v => [...vecs, ...singles].map(r => cosine(v, r)))) : null;
     const r = scoreFromSims(vecs.map(v => cosine(a, v)), prep, text, {word, wordSim: cosine(a, wordVec), hub: hubSim(a, hv, word),
-      rel: relate(text, word), altSim: alt.length ? Math.max(...alt.map(v => cosine(a, v))) : null, glossSim: gloss.length ? Math.max(...gloss.map(v => cosine(a, v))) : null, synSim: singles.length ? Math.max(...singles.map(v => cosine(a, v))) : null, grpSim: grp ? cosine(a, grp) : null});
+      rel: relate(text, word), viaSim, altSim: alt.length ? Math.max(...alt.map(v => cosine(a, v))) : null, glossSim: gloss.length ? Math.max(...gloss.map(v => cosine(a, v))) : null, synSim: singles.length ? Math.max(...singles.map(v => cosine(a, v))) : null, grpSim: grp ? cosine(a, grp) : null});
     return {score: r.score, sim: r.sim, caught: lex.caught, missed: lex.missed, opposite: r.opposite || lex.opposite,
       usedWord: lex.usedWord, empty: false, words: lex.words, engine: 'embedding'};
   } catch (err) {
