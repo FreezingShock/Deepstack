@@ -2,10 +2,10 @@
    Selectors are #stage.center-qualified because src/ui/runScreen.css loads after this file. */
 @media(max-width:640px){
  #stage.center{padding:8px 14px 4px 40px}
- #stage.center .slip textarea{height:clamp(84px,calc(100vh - 545px),150px);padding-left:46px;font-size:25px}
+ #stage.center .slip textarea{height:clamp(84px,calc(100vh - 545px),150px);padding-left:46px;font-size:calc(25px*var(--ts))}
  #stage.center.riddle .slip textarea.rans{height:48px}
  #stage.center .row{flex-wrap:nowrap;justify-content:center;gap:8px;width:100%}
- #stage.center .row #hint,#stage.center .row #skip{min-width:0;white-space:normal;line-height:1.25;font-size:12px;padding:6px 10px}
+ #stage.center .row #hint,#stage.center .row #skip{min-width:0;white-space:normal;line-height:1.25;font-size:calc(12px*var(--ts));padding:6px 10px}
  #stage.center .row #hint{flex:1 1 auto}
  #stage.center .row #skip{flex:none}
 }

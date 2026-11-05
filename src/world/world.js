@@ -22,12 +22,14 @@ import {lowQuality,updateAmbient,drawAmbient,resetAmbient} from '../ui/ambient.j
 import {createPass,passCam} from '../ui/thresholdPass.js';
 import {doorSpan,drawWallMaterial,drawThreshold,drawThresholdLive,drawThresholdSign} from '../ui/thresholds.js';
 import {drawFloorAtmosphere} from '../ui/floorAtmosphere.js';
-import {drawLighting,addLight} from '../ui/lighting.js';
+import {drawLighting,addLight,reach} from '../ui/lighting.js';
+import {drawEyes} from '../ui/eyes.js';
+import {litProp,brazierProps,isLit} from '../ui/litProps.js';
 import {nookMetrics,drawNook,paintAroundAlcoves,alcoveRects} from '../ui/alcoveArt.js';
 import {$,RM,clamp} from '../app/util.js';
 import {FT,TIERS,atmosphereAt,floorAtRow,hashStr,mulberry,tierOf} from '../app/state.js';
 import {bookDims,seedOf,shelfDims} from './bookArt.js';
-import {buildRoom,drawAttic} from './atticRoom.js';
+import {buildRoom,drawAttic,sectionCount,sectionTitle} from './atticRoom.js';
 import {drawLadder,climbLight} from './atticClimb.js';
 import {drawBackStacks,resetBackStacks} from './backStacks.js';
 
@@ -35,7 +37,7 @@ import {drawBackStacks,resetBackStacks} from './backStacks.js';
 export const World=(()=>{
  const cv=$('#world');let ctx=cv.getContext('2d');const ctx0=ctx;let building=false;const bmpPool=[];
  let W=0,H=0,DPR=1,RH=150,BM=20,rows=new Map(),taken=new Set(),cam=0,restRow=0,st=null,dust=[],vt=0,last=performance.now();
- let atticMove=null,atticYLast=0,atticT=0,atticGoal=0,atticCb=null,atticItems=[],room=null,roomKey='';
+ let eyeCam=0,atticMove=null,atticYLast=0,atticT=0,atticGoal=0,atticCb=null,atticItems=[],room=null,roomKey='',atticS=0,atticSGoal=0,atticSAt=0,atticSCb=null,atticSecI=-1,atticA=0;
  let shelf=[],hits=[],ledgeCb=null,onDepth=null,gaugeCb=null,niches=new Map(),boff=0,btgt=0,wasB=false,browseCb=null;
  const ZS=[0,.14,.3,.46,.62,.78,.92];
  const restCam=r=>r*RH-(H-RH-BM);
@@ -69,7 +71,7 @@ export const World=(()=>{
    if(fl.motif==='stacks'){for(let x2=60+rng()*80;x2<W-30;x2+=130+rng()*220){props.push(rng()<.5?{k:'plate',x:x2,n:1+((rng()*98)|0)}:{k:'papers',x:x2,n:2+((rng()*3)|0),w:24+rng()*26,tw:rng()-.5});}}
    else if(fl.motif==='archive'){for(let x2=40+rng()*60;x2<W-30;x2+=90+rng()*150){props.push(rng()<.55?{k:'plate',x:x2,n:100+((rng()*899)|0)}:{k:'papers',x:x2,n:2+((rng()*4)|0),w:26+rng()*30,tw:rng()-.5});}}
    else if(fl.motif==='crypt'){for(let x2=30+rng()*60;x2<W-30;x2+=70+rng()*140){props.push(rng()<.5?{k:'skull',x:x2,s:.8+rng()*.5,tilt:(rng()-.5)*.5}:{k:'bones',x:x2,s:.8+rng()*.6,seed:(rng()*999)|0});}}
-   else props.push(...deepProps(fl,W,rng));}
+   else{props.push(...deepProps(fl,W,rng));props.push(...brazierProps(fl,W,rng));}}
   const data={bs,webs,props,fl,crack:rng()<.5*a?{x:rng()*W,w:30+rng()*90}:null};
   for(const pr of props)if(pr.x!=null)pr.x=placeProp(pr.x,propHalf(pr),W,data.crack); // nothing stands on a pillar or over a cracked plank
   if(layer===0&&r>0)data.fallen=placeFallen(bs,{W,RH,a,r,crack:data.crack,avoid:[[pullX(r)-40,pullX(r)+40]],paint:g=>{const t=g()<.05?Math.floor(g()*g()*7):-1;return{tier:t,col:t>=0?tierBase(t):mixc(mixc(LEATHER[(g()*LEATHER.length)|0],fl.books[0],fl.books[1]),[110,100,86],a*.5)};}}); // books that came down in front of the gaps
@@ -90,7 +92,7 @@ export const World=(()=>{
   if(pr.k==='plate'){ctx.fillStyle=PALETTE.bronze54;ctx.fillRect(-14,-4,28,9);ctx.fillStyle=PALETTE.oak2a2410;ctx.font='400 8px "Special Elite",monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(pr.n,0,.5);}
   else if(pr.k==='papers'){ctx.rotate(pr.tw*.06);for(let i=0;i<pr.n;i++){ctx.fillStyle=i%2?PALETTE.brass71:PALETTE.brass77;ctx.fillRect(-pr.w/2+(i%2)*2,-(i+1)*5,pr.w,4);ctx.fillStyle=PALETTE.blackAlpha30;ctx.fillRect(-pr.w/2,-(i+1)*5+3,pr.w,1);}ctx.fillStyle=PALETTE.blood34;ctx.fillRect(-2,-pr.n*5-1,4,pr.n*5+1);}
   else if(pr.k==='skull'){ctx.rotate(pr.tilt);ctx.scale(pr.s,pr.s);ctx.fillStyle=PALETTE.brassCfc6ad;ctx.beginPath();ctx.arc(0,-14,11,Math.PI,0);ctx.lineTo(8,-5);ctx.lineTo(5,-2);ctx.lineTo(-5,-2);ctx.lineTo(-8,-5);ctx.closePath();ctx.fill();ctx.fillStyle=PALETTE.oak120d0a;ctx.beginPath();ctx.arc(-4,-13,3,0,6.3);ctx.arc(4,-13,3,0,6.3);ctx.fill();ctx.fillRect(-1,-9,2,3);}
-  else if(pr.k==='candle'||pr.k==='urn'||pr.k==='tendril'){ctx.restore();deepProp(ctx,pr,base);return;}
+  else if(pr.k==='candle'||pr.k==='urn'||pr.k==='tendril'||pr.k==='brazier'){ctx.restore();if(!isLit(pr))deepProp(ctx,pr,base);return;} // lit ones burn live (drawRow), not in the cached bitmap
   else if(pr.k==='bones'){ctx.scale(pr.s,pr.s);const g=mulberry(pr.seed);ctx.strokeStyle=PALETTE.brassCfc6ad;ctx.lineWidth=3;ctx.lineCap='round';for(let i=0;i<3;i++){const x=-14+i*14+g()*6,l=10+g()*10,a=(g()-.5)*1.6;ctx.beginPath();ctx.moveTo(x,-2);ctx.lineTo(x+Math.sin(a)*l,-2-Math.cos(a)*Math.min(l,8)*.4);ctx.stroke();}}
   ctx.restore();}
  function floodOverlay(fl,bx0,bx1,y,rh,r){
@@ -156,6 +158,7 @@ export const World=(()=>{
   const a=abn(r),fl=d.fl;
   for(const wb of d.webs)if(wb.k==='strand')drawWeb(wb,y,a,fl.web);
   if(fl.motif==='flood')floodOverlay(fl,0,W,y,rh,r);
+  for(const pr of d.props)if(isLit(pr)){ctx.save();ctx.translate(pr.x,base);litProp(ctx,pr,DPR,vt,RM,H);ctx.restore();} // candles and braziers: live flame, glow and a registered light
   if(r===fl.row)drawThresholdLive(ctx,fl,W,y,rh,vt,RM);
   if(r===fl.row&&r>0)drawThresholdSign(ctx,fl,W,y,rh,RM?0:pass.angle(r,performance.now())); // live so it can swing when you pass
   return {base,d};}
@@ -248,6 +251,13 @@ export const World=(()=>{
   if(st||rest){atticGoal=0;if(atticT){atticT=0;atticCb&&atticCb(false);}}
   const aFloor=-5*RH,aMax=restCam(0)-(aFloor-(H-40)); // camera climb that puts the attic floor just above the bottom edge
   if(atticT!==atticGoal){atticT=RM?atticGoal:clamp(atticT+(atticGoal>atticT?1:-1)*rdt/.95,0,1);if(Math.abs(atticT-atticGoal)<1e-4)atticT=atticGoal;}
+  if(atticGoal===0)atticSGoal=0;
+  atticA=Math.round(H-40);
+  { /* climbing on through the sections: eased toward the goal; a pause settles it on the nearest section */
+   if(!RM&&atticSGoal!==atticS&&atticSAt&&now-atticSAt>260&&atticGoal===1&&atticA>0){const g=clamp(Math.round(atticSGoal/atticA)*atticA,0,Math.max(0,(sectionCount(atticItems,W)-1)*atticA));if(g!==atticSGoal)atticSGoal=g;}
+   if(atticS!==atticSGoal){atticS=RM?atticSGoal:atticS+(atticSGoal-atticS)*(1-Math.exp(-rdt*5));if(Math.abs(atticSGoal-atticS)<.4)atticS=atticSGoal;}
+   const si=atticA>0?Math.round(atticS/atticA):0;if(si!==atticSecI){atticSecI=si;atticSCb&&atticSCb(si,sectionCount(atticItems,W),sectionTitle(atticItems,W,si));}
+  }
   const atticY=atticT>0?ease(atticT)*aMax:0;camNow-=atticY;
   if(atticMove&&(atticY!==atticYLast)){atticYLast=atticY;atticMove(atticY,ease(atticT));}
   lastCam=camNow;
@@ -263,7 +273,7 @@ export const World=(()=>{
   if(Quality.params().backStacks){for(let r=top;r<=bot;r++){if(r===0)continue;const f=floorAtRow(r);let r2=r;while(r2+1<=bot&&r2+1!==0&&floorAtRow(r2+1)===f)r2++;drawBackStacks(ctx,f,{W,RH,DPR,cam:camNow,y0:r*RH-camNow-1,y1:(r2+1)*RH-camNow+1});r=r2;}} // dim far row of shelves behind the walls, slower than the camera
   for(let r=top;r<=bot;r++){const o=drawRow(r,0,camNow,1,1);if(st&&r===st.row)tgt=o;}
   if(atticT>0){const A=Math.round(H-40),k=W+'x'+A+'x'+DPR;if(!room||roomKey!==k){room=buildRoom(W,A,DPR);roomKey=k;}
-   hits=drawAttic(ctx,room,{W,A,ry:aFloor-camNow-A,items:atticItems,TIERS,vt,RM,lit:climbLight(atticT)});drawLadder(ctx,{W,H,fy:aFloor-camNow,t:ease(atticT)});}
+   hits=drawAttic(ctx,room,{W,A,ry:aFloor-camNow-A,items:atticItems,TIERS,vt,RM,lit:climbLight(atticT),H,scroll:atticS});if(atticS<atticA*.6){ctx.save();ctx.globalAlpha=1-atticS/(atticA*.6);drawLadder(ctx,{W,H,fy:aFloor-camNow,t:ease(atticT)});ctx.restore();}}
   for(const [nr,nv] of niches)drawNiche(nr,nv,camNow,now);
   drawLoreGlows(top,bot,camNow);
   if(ledgeCb){const cn=niches.get(restRow);ledgeCb(!st&&!rest&&cn&&cn.hit&&cn.books?cn.hit:null,cn&&cn.books);}
@@ -292,6 +302,7 @@ export const World=(()=>{
   });
   ambItems=updateAmbient(dt,ambEnv(camNow,top,bot));drawAmbient(ctx,ambItems,vt,'body',atm.lamp);
   drawLighting(ctx,{W,H,atm,t:vt,lx,ly,rects:arects,still:RM,tier:Quality.params().name}); // deeper floors: only lit pools stay readable
+  drawEyes(ctx,{W,H,atm,sc:reach(atm),rects:arects,top:barPx()+40,bottom:RH+BM+60,still:RM,ambient:Quality.params().ambient,t:vt,dt,camDy:camNow-eyeCam});eyeCam=camNow; // something in the dark (ui/eyes.js)
   ctx.globalCompositeOperation='lighter';
   if(!RM){flickT-=dt;if(flickT<=0){flickT=.06+Math.random()*.3;flickV=(Math.random()-.5)*(Math.random()<.12?2.2:1);}flick+=(flickV-flick)*Math.min(1,dt*9);}
   const fl=(.1-.03*a)+.02*Math.sin(vt*13)+.012*Math.sin(vt*31)+.03*flick*atm.flick;
@@ -323,7 +334,18 @@ export const World=(()=>{
  return{
   setShelf(b){shelf=b;},hits:()=>hits,
   /* the attic: a room above the top shelves. setAttic(true) climbs into it from home. */
-  setAtticItems(l){atticItems=l||[];},
+  setAtticItems(l){atticItems=l||[];atticSGoal=clamp(atticSGoal,0,Math.max(0,(sectionCount(atticItems,W)-1)*atticA));},
+  /* how many sections the attic has (one per month found, plus the recent guesses), and where you are among them */
+  get atticSections(){return sectionCount(atticItems,W);},
+  get atticSection(){return atticA>0?Math.round(atticSGoal/atticA):0;},
+  atticSectionTitle(i){return sectionTitle(atticItems,W,i);},
+  onAtticSection(f){atticSCb=f;},
+  /* climb on (+px) or come back (-px). A step of +-A moves one whole section. Returns false when already at the first
+     section and settled, so the caller can leave the attic. */
+  atticGo(px){if(atticGoal!==1)return false;const mx=Math.max(0,(sectionCount(atticItems,W)-1)*atticA),g=clamp(atticSGoal+px,0,mx),now2=performance.now();
+   if(g===atticSGoal){const hold=px<0&&atticSGoal===0&&now2-atticSAt<450;if(hold)atticSAt=now2;return hold;}
+   atticSGoal=g;atticSAt=now2;return true;},
+  atticStep(n){return World.atticGo(n*atticA);},
   get canAttic(){return !st&&!rest&&restRow===0;},
   get atticOpen(){return atticGoal===1;},
   onAttic(f){atticCb=f;},

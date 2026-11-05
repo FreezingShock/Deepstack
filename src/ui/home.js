@@ -23,27 +23,36 @@ export const HOME_BOOK_COLORS={
  aqua:[PALETTE.bookAqua,PALETTE.bookAquaDk,PALETTE.brass62],
  purple:[PALETTE.bookPurple,PALETTE.bookPurpleDk,PALETTE.brass65],
  brown:[PALETTE.bookBrown,PALETTE.bookBrownDk,PALETTE.brass65],
+ /* menu spines: muted antique book-cloth and leather (navy buckram, oxblood, bottle green, tan calf...) */
+ navy:[PALETTE.spineNavy,PALETTE.spineNavyDk,PALETTE.brass62],
+ oxblood:[PALETTE.spineOxblood,PALETTE.spineOxbloodDk,PALETTE.brass62],
+ aubergine:[PALETTE.spineAubergine,PALETTE.spineAubergineDk,PALETTE.brass65],
+ verdigris:[PALETTE.spineVerdigris,PALETTE.spineVerdigrisDk,PALETTE.brass65],
+ bottle:[PALETTE.spineBottle,PALETTE.spineBottleDk,PALETTE.brass62],
+ calf:[PALETTE.spineCalf,PALETTE.spineCalfDk,PALETTE.spineGiltCream],
+ ochre:[PALETTE.spineOchre,PALETTE.spineOchreDk,PALETTE.spineGiltCream],
+ slate:[PALETTE.spineSlate,PALETTE.spineSlateDk,PALETTE.brass65],
 };
 /* stack: which pile the book lies in (0 = play modes, 1 = collection). */
 export const HOME_LINKS=[
- {id:'bDaily',stack:0,tex:'grain',color:'blue',label:'Daily',note:'Every Daily, word by word',badge:(s,x)=>x.dailyNo?'No. '+x.dailyNo:''},
- {id:'bUnl',stack:0,color:'red',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>s.rating&&s.rating.placed?'Lexicon '+x.lexicon(s.rating.L):'placement'},
- {id:'bPrac',stack:0,tex:'cloth',color:'green',label:'Practice',note:'Same words, no pressure'},
- {id:'bAll',stack:1,tex:'worn',color:'aqua',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
- {id:'bSets',stack:1,tex:'vellum',color:'purple',label:'Sets',note:'Themed collections'},
- {id:'bStats',stack:1,tex:'grain',color:'brown',label:'Stats',note:'Streaks, depth and tiers'},
+ {id:'bDaily',stack:0,tex:'grain',color:'navy',label:'Daily',note:'Every Daily, word by word',badge:(s,x)=>x.dailyNo?'No. '+x.dailyNo:''},
+ {id:'bUnl',stack:0,color:'oxblood',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>s.rating&&s.rating.placed?'Lexicon '+x.lexicon(s.rating.L):'placement'},
+ {id:'bPrac',stack:0,tex:'cloth',color:'bottle',label:'Practice',note:'Same words, no pressure'},
+ {id:'bAll',stack:1,tex:'worn',color:'calf',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
+ {id:'bSets',stack:1,tex:'vellum',color:'ochre',label:'Sets',note:'Themed collections'},
+ {id:'bStats',stack:1,tex:'grain',color:'slate',label:'Stats',note:'Streaks, depth and tiers'},
 ];
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 import {rulesCardHTML,ledgerHTML} from './welcome.js';
 import {mantelHTML} from './mantel.js';
-export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
+export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>''}){
  const ctx={lexicon,dailyNo:no};
  const steps=HOME_STEPS.map(s=>`<li class="step"><span class="hn" aria-hidden="true">${s.n}</span><b>${esc(s.h)}</b><span>${esc(s.p)}</span></li>`).join('');
  /* library furniture built into the niche walls: a card-catalogue cabinet (rules) and the borrower's ledger (welcome.css) */
  const rules=rulesCardHTML(steps);
- const slip=ledgerHTML({streak:st.streak,deepest:st.deepest,books:S.shelf.length,floor:floorName||''});
+ const slip=ledgerHTML({streak:st.streak,deepest:st.deepest,books:S.shelf.length,floor:floorName||'',floorKey:floorKey||'',tierInk:tierInk||''});
  const book=l=>{const b=l.badge?l.badge(S,ctx):'';const c=HOME_BOOK_COLORS[l.color]||HOME_BOOK_COLORS.brown;
   return `<li><button class="hbook" data-tex="${l.tex||'leather'}" id="${l.id}"${l.note?` title="${esc(l.note)}"`:''} style="--bk:${c[0]};--bk2:${c[1]};--bk-gild:${c[2]}"><span class="hb-pages" aria-hidden="true"></span><span class="hb-spine"><i class="hb-band" aria-hidden="true"></i><span class="hb-t">${esc(l.label)}${b?` <small>${esc(b)}</small>`:''}</span><i class="hb-band" aria-hidden="true"></i></span></button></li>`;};
  const stacks=[...new Set(HOME_LINKS.map(l=>l.stack||0))].sort((a,b)=>a-b);
@@ -59,7 +68,9 @@ export function homeHTML({S,st,d,no,floorName,lexicon=()=>''}){
 
 /* Books that open onto intro pages with a Start button instead of a menu. */
 export const BOOK_INTROS={
- bUnl:{h:'Unlimited',kicker:'Rated descent',p:'Words keep coming, matched to your level. Your answers are rated, and your Lexicon rating rises and falls with how closely you explain each one.',pts:['No daily limit','Adaptive difficulty','Rated against the real definition'],btn:'Start Unlimited'},
+ bUnl:{h:'Unlimited',kicker:'Explain the word',p:'Words keep coming, matched to your level. Your answers are rated, and your Lexicon rating rises and falls with how closely you explain each one.',pts:['No daily limit','Adaptive difficulty','Rated against the real definition'],btn:'Start Unlimited',
+  /* two sections on the same two pages: the left page explains the word, the right page is the riddle (you get the definition) */
+  riddle:{h:'Riddle',kicker:'The word is the answer',p:'The other way round: a slip shows what a word means and you write the word. The exact word sinks deepest.',pts:['Seven riddles, forty seconds each','Hints never reveal the spelling','Counts toward your shelf, not the Daily'],btn:'Start the Riddles',act:'riddle'}},
  bPrac:{h:'Practice',kicker:'No pressure',p:'The same seven words as today’s Daily, with no pressure: your answers are not recorded to your streak or your records.',pts:['Seven words, forty-five seconds each','Hints available','Does not count toward the Daily'],btn:'Start Practice'},
 };
 
@@ -72,7 +83,14 @@ export const pg={
  list:items=>`<ol class="pg-list">${items.map(t=>`<li>${t}</li>`).join('')}</ol>`,
  label:t=>`<div class="pg-label">${esc(t)}</div>`,
 };
+/* Click handlers for extra Start buttons inside a book (a section's data-act). app/home.js fills it. */
+export const BOOK_ACTS={};
+const introPage=(i,btn,close)=>pg.head(i.kicker,i.h)+pg.body(i.p)+(i.extra?i.extra():'')+pg.label('In this book')+pg.list(i.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest"${i.act?` data-act="${i.act}"`:''}>${esc(i.btn)}</button>${close?`<button class="bs-back-btn pen-ink">Close the book</button>`:''}</div>`;
 export function introSpreads(intro){
+ if(intro.riddle){/* sectioned book: left page the book's own mode, right page its riddle; phones step left then right */
+  const a=introPage(intro,0,false),b=introPage(intro.riddle,0,true);
+  return [{l:`<section class="pg-sec" aria-label="${esc(intro.h)}">${a}</section>`,r:`<section class="pg-sec" aria-label="${esc(intro.riddle.h)}">${b}</section>`}];
+ }
  const narrow=typeof matchMedia==='function'&&matchMedia('(max-width:560px)').matches;
  /* phones show one page at a time: keep the Start button on the first page */
  if(narrow)return [{l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button><button class="bs-back-btn pen-ink">Close the book</button></div>`,r:''}];
@@ -206,7 +224,7 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
   el.onclick=e=>{
    if(root.classList.contains('book-opening'))return;
    const pages=BOOK_PAGES[el.id];
-   if(reduce&&!pages){go.call(el,e);return;}
+   if(reduce&&!pages&&!BOOK_INTROS[el.id]?.riddle){go.call(el,e);return;}
    const cs=getComputedStyle(el),intro=BOOK_INTROS[el.id];
    const title=el.querySelector('.hb-t')?.firstChild?.textContent?.trim()||'';
    root.classList.add('book-opening');el.classList.add('opening');
@@ -215,8 +233,8 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
     colors:{bk:cs.getPropertyValue('--bk'),bk2:cs.getPropertyValue('--bk2'),gild:cs.getPropertyValue('--bk-gild'),tex:cs.getPropertyValue('--tex')}});
    if(pages){bk.onPaint=(sp,idx)=>{inkPage(sp,pages.label);pages.onPaint&&pages.onPaint(sp,bk,idx);};}
    else if(intro){
-    bk.onPaint=sp=>{const st=sp.querySelector('.bs-start'),bb=sp.querySelector('.bs-back-btn');
-     if(st)st.onclick=()=>{go.call(el,e);bk.close();};if(bb)bb.onclick=bk.close;};
+    bk.onPaint=sp=>{const bb=sp.querySelector('.bs-back-btn');
+     sp.querySelectorAll('.bs-start').forEach(b=>{b.onclick=()=>{const a=b.dataset.act&&BOOK_ACTS[b.dataset.act];(a||(()=>go.call(el,e)))();bk.close();};});if(bb)bb.onclick=bk.close;};
    }else setTimeout(()=>{go.call(el,e);bk.close();},wait);
   };
  });

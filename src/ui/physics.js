@@ -61,6 +61,7 @@ export function propHalf(pr) {
     case 'bones': return 22 * (pr.s || 1);
     case 'urn': return 12;
     case 'tendril': return 18;
+    case 'brazier': return 12;
     default: return 5;
   }
 }

@@ -55,6 +55,14 @@ function sprite() {
   g.putImageData(d, 0, 0); return c;
 }
 
+let lastCount = 0, lamp = {x: 0, y: 0, r: 0};
+/** How lit a screen point was in the last composited frame, 0 (dark) .. 1 (lit): the lamp and every registered light. Things that live in the dark (eyes.js) ask this. */
+export function lightLevel(x, y, sc = 1) {
+  let rem = 1 - falloff(Math.hypot(x - lamp.x, y - lamp.y) / Math.max(1, lamp.r));
+  for (let i = 0; i < lastCount; i++) { const l = lights[i]; rem *= 1 - l.k * falloff(Math.hypot(x - l.x, y - l.y) / (l.r * sc)); }
+  return 1 - rem;
+}
+
 let spr = null, map = null, mctx = null, mw = 0, mh = 0, ms = 4;
 
 function roundRect(g, x, y, w, h, r) {
@@ -67,6 +75,7 @@ function roundRect(g, x, y, w, h, r) {
 export function drawLighting(ctx, o) {
   const count = n; n = 0; // the registry is per frame
   const {W, H, atm} = o, dk = darkness(atm);
+  lastCount = dk < .03 ? 0 : count;
   if (dk < .03) return;
   const step = mapStep(o.tier), w = Math.ceil(W / step), h = Math.ceil(H / step);
   if (!map) { map = document.createElement('canvas'); spr = sprite(); }
@@ -80,7 +89,8 @@ export function drawLighting(ctx, o) {
   g.globalCompositeOperation = 'destination-out';
   const punch = (x, y, r, k) => { g.globalAlpha = k; const d = 2 * r / step; g.drawImage(spr, x / step - d / 2, y / step - d / 2, d, d); };
   // the player's lamp: the middle of the screen
-  punch(o.lx, o.ly, Math.max(W, H) * .5 * sc * flickerAt(atm, t, 0, still), 1);
+  lamp = {x: o.lx, y: o.ly, r: Math.max(W, H) * .5 * sc};
+  punch(o.lx, o.ly, lamp.r * flickerAt(atm, t, 0, still), 1);
   for (let i = 0; i < count; i++) { const l = lights[i]; punch(l.x, l.y, l.r * sc * flickerAt(atm, t, i * 1.7, still), l.k); }
   if (pointerLightState.on) punch(pointerLightState.x, pointerLightState.y, 130 + 60 * dk, .85); // the cursor's light reveals what is under it
   // alcoves stay fully readable: cleared with a soft shoulder so the edge is not a hard cut

@@ -20,7 +20,7 @@
 @keyframes tfFoil{0%{background-position:130% 0}60%,100%{background-position:-30% 0}}
 /* 5 Grimoire: a line of runes glowing along the top edge, a red breathing frame */
 .book.t5 .page::before{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tc) 70%,transparent),inset 0 0 18px color-mix(in srgb,var(--tc) 35%,transparent)}
-.book.t5 .page::after{inset:12px 0 auto;height:14px;opacity:.85;content:"\16A0  \16A2  \16A6  \16A8  \16B1  \16B2  \16B7  \16B9  \16BA";font:12px/14px serif;letter-spacing:.9em;text-align:center;white-space:nowrap;overflow:hidden;color:var(--th);text-shadow:0 0 8px var(--tc);animation:tfRune 3.6s ease-in-out infinite}
+.book.t5 .page::after{inset:12px 0 auto;height:14px;opacity:.85;content:"\16A0  \16A2  \16A6  \16A8  \16B1  \16B2  \16B7  \16B9  \16BA";font:calc(12px*var(--ts))/calc(14px*var(--ts)) serif;letter-spacing:.9em;text-align:center;white-space:nowrap;overflow:hidden;color:var(--th);text-shadow:0 0 8px var(--tc);animation:tfRune 3.6s ease-in-out infinite}
 @keyframes tfRune{0%,100%{opacity:.45}50%{opacity:1}}
 /* 6 Apocrypha: a cold shimmer drifts through the frame */
 .book.t6 .page::before{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tc) 85%,transparent),inset 0 0 0 5px var(--c-black-alpha-66),inset 0 0 0 6px color-mix(in srgb,var(--tc) 50%,transparent),inset 0 0 22px color-mix(in srgb,var(--tc) 28%,transparent)}
