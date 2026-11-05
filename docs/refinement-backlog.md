@@ -1262,7 +1262,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 ### R2. Stamps on the Librarian's Card
 **Pitch:** a milestone stamp (e.g. "100 BOOKS", "7-DAY STREAK") thumps onto the card the first time you pass it, in the row's own ink.
 **Brief:** Goal: tiny rotated ink stamps layered on `.lg-page`, saved additively. Files: `src/ui/welcome.js`, `welcome.css`. **Conflicts:** home stamp prop.
-### R3. Card ink follows the lamp
+### R3. [x] Card ink follows the lamp (PR pending)
 **Pitch:** the card's ink and parchment warm or cool with the time-of-day light in the nook, so the card reads as part of the room.
 **Brief:** Goal: tint `--lg-ink` mixes by the existing time-of-day variable. Files: `welcome.css`. **Conflicts:** none.
 ### S1. Scrollbars gone (done, PR pending)
@@ -1323,7 +1323,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: surface the judge's matched concepts/relations in the card, no scoring change. Files: `src/ui/alsoAccepted.js`, `src/app/card.js`, judge result already carries hits. Done when: matched words are underlined, caption is under 12 words, "You wrote" wraps fully or scrolls under a fade (never ellipsis), rarity stays the hero.
 **Touches:** RESULT, JUDGE. **Conflicts:** N20 follow-ups, 104.
 
-### G3. The judge never decides your Daily unfairly
+### G3. [x] The judge never decides your Daily unfairly (done, PR pending)
 **Serves:** honest answers, lenient judging, Daily is its own thing.
 **Pitch:** When the full judge cannot load the "quick judge" quietly scores sensible answers 0 and those scores still write to the Daily, the streak and the Shelf. A bad connection should not cost a streak or a permanent Pamphlet.
 **Brief:** Goal: decide and pin one policy (recommend: Daily waits for the full judge with a written "the librarian is still arriving" line and Unlimited/Practice may use the quick judge, marked in the book as rough). Also the first-visit download (about 23 MB) should read as part of the world, not a grey status line, and never block typing. Files: `src/ui/judgeLabel.js`, `src/scorer/*` facade, `src/app/daily.js`. Done when: tests pin the policy, Daily cannot be scored by the fallback.
