@@ -19,7 +19,7 @@
 .bk-spread.one .bs-corner:hover i,.bk-spread.one .bs-corner:focus-visible i{transform:scale(.95)}
 @media(prefers-reduced-motion:reduce){.bs-corner i{transition:none}.bs-corner.tug i{animation:none}}
 /* --- handwritten cue on the first page --- */
-.bs-cue{position:absolute;right:46px;bottom:38px;display:none;align-items:flex-end;gap:4px;white-space:nowrap;pointer-events:none;color:var(--c-bronze-33);font:400 15px/1 var(--bs-hand,'Fuzzy Bubbles',cursive);opacity:.8;transform:rotate(-3deg)}
+.bs-cue{position:absolute;right:46px;bottom:38px;display:none;align-items:flex-end;gap:4px;white-space:nowrap;pointer-events:none;color:var(--c-bronze-33);font:400 calc(15px*var(--ts))/1 var(--bs-hand,'Fuzzy Bubbles',cursive);opacity:.8;transform:rotate(-3deg)}
 .bk-spread.can-cue .bs-cue{display:flex;animation:cue-in var(--m-smooth) var(--e-settle) .6s both}
 .bs-corner:hover .bs-cue,.bs-corner:focus-visible .bs-cue{opacity:0;transition:opacity var(--m-quick)}
 @keyframes cue-in{from{opacity:0;transform:translateX(8px) rotate(-3deg)}}

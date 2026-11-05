@@ -1,7 +1,7 @@
 /* ---- home ---- */
-.eyebrow{font:600 11px var(--label);letter-spacing:.28em;text-transform:uppercase;color:var(--mute);margin:0 0 8px}
+.eyebrow{font:600 calc(11px*var(--ts)) var(--label);letter-spacing:.28em;text-transform:uppercase;color:var(--mute);margin:0 0 8px}
 .home .stats{margin:14px 0 18px}
-.next{font:italic 400 15px var(--serif);color:var(--mute);margin:12px 0 0;min-height:22px;font-variant-numeric:tabular-nums}
+.next{font:italic 400 calc(15px*var(--ts)) var(--serif);color:var(--mute);margin:12px 0 0;min-height:22px;font-variant-numeric:tabular-nums}
 .links{display:flex;gap:4px 26px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-.links .lnk{font:400 17px var(--serif);padding:6px 2px;display:inline-flex;align-items:baseline;gap:6px;color:var(--link)}
-.links .lnk small{font:600 11px var(--sans);letter-spacing:.08em;color:var(--mute)}
+.links .lnk{font:400 calc(17px*var(--ts)) var(--serif);padding:6px 2px;display:inline-flex;align-items:baseline;gap:6px;color:var(--link)}
+.links .lnk small{font:600 calc(11px*var(--ts)) var(--sans);letter-spacing:.08em;color:var(--mute)}

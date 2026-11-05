@@ -102,6 +102,7 @@ import './core/feedback.js';
 import './ui/feedback.css';
 import './ui/alsoAccepted.css';
 import './ui/alsoMeans.css';
+import './ui/textScale.css';
 import {deferAfterPaint} from './core/boot.js';
 import {$,$$,RM,clamp} from './app/util.js';
 import {FLOORS,FT,S,TIERS,WORDS,computeStats,dailyWords,floorAtFt,floorStartFt,hashStr,save,utc,wordsLoaded,wordsReady} from './app/state.js';

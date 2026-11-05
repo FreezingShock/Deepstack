@@ -3,8 +3,8 @@
 .bk-spread.menu .chipgroup{display:grid;grid-template-columns:3.4em 1fr;align-items:baseline;gap:0 8px;margin-top:6px}
 .bk-spread.menu .chipgroup>.kicker{margin:0}
 .bk-spread.menu .chipgroup .chips{gap:0 11px}
-.bk-spread.menu .chipgroup .fchip{font-size:20px;padding-bottom:5px}
-.bk-spread.menu .chipgroup .fchip small{font-size:14px}
+.bk-spread.menu .chipgroup .fchip{font-size:calc(20px*var(--ts));padding-bottom:5px}
+.bk-spread.menu .chipgroup .fchip small{font-size:calc(14px*var(--ts))}
 .bk-spread.menu .pg-in:has(.chipgroup){-webkit-mask-image:linear-gradient(#000 calc(100% - 18px),transparent);mask-image:linear-gradient(#000 calc(100% - 18px),transparent);padding-bottom:18px}
 /* Empty shelf: the facing page shows a sketched shelf awaiting the first book. */
 .bk-spread.menu .empty-shelf{text-align:center;margin-top:14%}
