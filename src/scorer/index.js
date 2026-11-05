@@ -2,7 +2,7 @@
 // and the lexical stand-in otherwise (see docs/PLAN.md).
 import {judge as lexicalJudge} from './lexical.js';
 import {cosine, referenceTexts, prepareAnswer, scoreFromSims} from './embedding.js';
-import {embed, whenReady, modelStatus} from './model.js';
+import {embed, whenReady, modelStatus, retryModelLoad} from './model.js';
 import {hubTexts, hubSim} from './hubness.js';
 import {relate, relationTexts, loadRelations, answerSynonyms} from './relations.js';
 import {senseTexts, loadSenses} from './senses.js';
@@ -39,22 +39,43 @@ function fallback(text, word) {
   return {...j, engine: 'lexical'};
 }
 
-/** @returns {Promise<{score:number,caught:string[],missed:string[],opposite:boolean,usedWord:boolean,empty:boolean,words:number,engine:string}>} */
-export async function judgeAnswer(text, word) {
+/** Daily is the one place a score is permanent (streak, shelf), so it never gets the quick judge. */
+export const mayUseQuickJudge = opts => !opts?.strict;
+
+async function fullJudge(text, word, lex) {
+  const prep = prepareAnswer(text, word);
+  await Promise.all([loadRelations(), loadSenses()]);
+  const via = answerSynonyms(text, word);
+  const [{vecs, grp, singles, alt, gloss, wordVec}, [a, ...vv], hv] = await Promise.all([refsFor(word), embed([prep.text || text, ...via]), hubFor()]);
+  const viaSim = vv.length ? Math.max(...vv.flatMap(v => [...vecs, ...singles].map(r => cosine(v, r)))) : null;
+  const r = scoreFromSims(vecs.map(v => cosine(a, v)), prep, text, {word, wordSim: cosine(a, wordVec), hub: hubSim(a, hv, word),
+    rel: relate(text, word), viaSim, altSim: alt.length ? Math.max(...alt.map(v => cosine(a, v))) : null, glossSim: gloss.length ? Math.max(...gloss.map(v => cosine(a, v))) : null, synSim: singles.length ? Math.max(...singles.map(v => cosine(a, v))) : null, grpSim: grp ? cosine(a, grp) : null});
+  return {score: r.score, sim: r.sim, caught: lex.caught, missed: lex.missed, opposite: r.opposite || lex.opposite,
+    usedWord: lex.usedWord, empty: false, words: lex.words, engine: 'embedding'};
+}
+
+const pause = ms => new Promise(r => setTimeout(r, ms));
+
+/**
+ * @param {{strict?:boolean,onWait?:()=>void}} [opts] strict (Daily): never score with the quick judge; wait for the full one, retrying a failed load, and call onWait once if that takes a moment.
+ * @returns {Promise<{score:number,caught:string[],missed:string[],opposite:boolean,usedWord:boolean,empty:boolean,words:number,engine:string}>}
+ */
+export async function judgeAnswer(text, word, opts) {
   const lex = lexicalJudge(text, word);
   if (lex.empty) return {...lex, engine: 'embedding'};
+  if (!mayUseQuickJudge(opts)) {
+    let told = false, delay = 1500;
+    for (;;) {
+      if (await whenReady(6000)) {
+        try { return await fullJudge(text, word, lex); } catch (err) { console.warn('Embedding judge failed, retrying (Daily never uses the quick judge):', err); }
+      }
+      if (!told) { told = true; opts.onWait?.(); }
+      if (modelStatus().state !== 'loading') { await pause(delay); delay = Math.min(delay * 2, 15000); retryModelLoad().catch(() => {}); }
+    }
+  }
   if (!(await whenReady(6000))) return fallback(text, word);
-  try {
-    const prep = prepareAnswer(text, word);
-    await Promise.all([loadRelations(), loadSenses()]);
-    const via = answerSynonyms(text, word);
-    const [{vecs, grp, singles, alt, gloss, wordVec}, [a, ...vv], hv] = await Promise.all([refsFor(word), embed([prep.text || text, ...via]), hubFor()]);
-    const viaSim = vv.length ? Math.max(...vv.flatMap(v => [...vecs, ...singles].map(r => cosine(v, r)))) : null;
-    const r = scoreFromSims(vecs.map(v => cosine(a, v)), prep, text, {word, wordSim: cosine(a, wordVec), hub: hubSim(a, hv, word),
-      rel: relate(text, word), viaSim, altSim: alt.length ? Math.max(...alt.map(v => cosine(a, v))) : null, glossSim: gloss.length ? Math.max(...gloss.map(v => cosine(a, v))) : null, synSim: singles.length ? Math.max(...singles.map(v => cosine(a, v))) : null, grpSim: grp ? cosine(a, grp) : null});
-    return {score: r.score, sim: r.sim, caught: lex.caught, missed: lex.missed, opposite: r.opposite || lex.opposite,
-      usedWord: lex.usedWord, empty: false, words: lex.words, engine: 'embedding'};
-  } catch (err) {
+  try { return await fullJudge(text, word, lex); }
+  catch (err) {
     console.warn('Embedding judge failed, using fallback:', err);
     return fallback(text, word);
   }

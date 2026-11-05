@@ -1323,7 +1323,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: surface the judge's matched concepts/relations in the card, no scoring change. Files: `src/ui/alsoAccepted.js`, `src/app/card.js`, judge result already carries hits. Done when: matched words are underlined, caption is under 12 words, "You wrote" wraps fully or scrolls under a fade (never ellipsis), rarity stays the hero.
 **Touches:** RESULT, JUDGE. **Conflicts:** N20 follow-ups, 104.
 
-### G3. The judge never decides your Daily unfairly
+### G3. [x] The judge never decides your Daily unfairly (done, PR pending)
 **Serves:** honest answers, lenient judging, Daily is its own thing.
 **Pitch:** When the full judge cannot load the "quick judge" quietly scores sensible answers 0 and those scores still write to the Daily, the streak and the Shelf. A bad connection should not cost a streak or a permanent Pamphlet.
 **Brief:** Goal: decide and pin one policy (recommend: Daily waits for the full judge with a written "the librarian is still arriving" line and Unlimited/Practice may use the quick judge, marked in the book as rough). Also the first-visit download (about 23 MB) should read as part of the world, not a grey status line, and never block typing. Files: `src/ui/judgeLabel.js`, `src/scorer/*` facade, `src/app/daily.js`. Done when: tests pin the policy, Daily cannot be scored by the fallback.
