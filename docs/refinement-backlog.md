@@ -1128,7 +1128,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: audit every small label on dark surfaces for 4.5:1 contrast and 12 px minimum, lift values in tokens. Files: `src/theme/colors.js`, `src/ui/depthRail.css`, `src/styles/run.css`. Done when: a test lists the pairs and passes, no screenshot differences beyond text.
 **Touches:** RUN, tokens. **Conflicts:** Keyboard controls and accessibility.
 
-### Q16. Share note wraps in an awkward place
+### Q16. [x] Share note wraps in an awkward place (done: tier pairs and bar line never break; copied text unchanged)
 **Serves:** words fully readable, handwritten.
 **Pitch:** The pinned note on the final screen ends lines with a dot ("Pamphlet · Pamphlet · Paperback ·") and shows a stray dash under line two.
 **Brief:** Goal: lay out the tier row as seven small stamps or break after the fourth, remove the dash, keep the plain text copy exactly as is. Files: `src/app/final.js`, `src/styles/result.css`. Done when: row never wraps mid-pair at 375 and 1280.
