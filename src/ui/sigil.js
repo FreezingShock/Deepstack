@@ -50,6 +50,7 @@ function paths(c, s, R) {
   if (s.ring2 && s.ring !== 'double') arc(R * .72);
   c.stroke();
   const r0 = R * .62;
+  if (s.core === 'none') return;   // ring-only crest (set pages)
   c.beginPath();
   if (s.core === 'star') {
     for (let i = 0; i <= s.n; i++) { const a = (i * s.skip % s.n) * TAU / s.n - Math.PI / 2; i ? c.lineTo(Math.cos(a) * r0, Math.sin(a) * r0) : c.moveTo(Math.cos(a) * r0, Math.sin(a) * r0); }
@@ -106,4 +107,21 @@ export function drawSigil(c, word, tier, x, y, r, alpha = .85, size = BMP) {
   const b = sigilBitmap(word, tier, size); if (!b) return false;
   c.save(); c.globalAlpha = alpha; c.drawImage(b, x - r, y - r, r * 2, r * 2); c.restore();
   return true;
+}
+
+/** Ring-only crest of set number i (no core, no pip): the family mark every member of the set wears. Cached; null without a DOM. */
+export const setCrestSpec = i => ({...setRing(i), core: 'none', pip: 'none', n: 6, skip: 2, arm: [], mirror: false, rot: 0});
+const crests = new Map();
+export function setCrest(i, tier = 3, size = 96) {
+  const k = i + '|' + tier + '|' + size;
+  if (crests.has(k)) return crests.get(k);
+  if (typeof document === 'undefined') return null;
+  const cv = document.createElement('canvas'); cv.width = cv.height = size;
+  const c = cv.getContext('2d'); if (!c) return null;
+  const col = sigilColor(tier), k2 = size / BMP, R = size / 2 - 4 * k2;
+  c.translate(size / 2, size / 2); c.lineCap = c.lineJoin = 'round';
+  const s = setCrestSpec(i);
+  c.translate(1.2 * k2, 1.4 * k2); c.strokeStyle = c.fillStyle = 'rgba(0,0,0,.65)'; c.lineWidth = 3.2 * k2; paths(c, s, R);
+  c.translate(-1.2 * k2, -1.4 * k2); c.strokeStyle = c.fillStyle = `rgb(${col[0]},${col[1]},${col[2]})`; c.lineWidth = 2.6 * k2; paths(c, s, R);
+  crests.set(k, cv); return cv;
 }
