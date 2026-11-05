@@ -1033,6 +1033,9 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 
 - [x] N8. A sigil for every book (sigils thread): `src/ui/sigil.js`, one call in `bookArt.js`.
 
+### S1b+S1c. [x] Menu spine wear and muted plaque/mantel oak (this PR)
+- Follow-ups: S1d chip and stain marks that persist per save (a book you open often looks more thumbed); S1e dust on top edge of the stack that wipes on hover.
+
 ### S1. Sigils on the book cover and the result card
 **Pitch:** stamp the sigil big on the opened/DOM book covers too.
 **Brief:** Goal: reuse `drawSigil`. Files: `src/ui/bookOpenFx.js`, `src/ui/bookCard.css`. Done when: same word, same sigil everywhere.
