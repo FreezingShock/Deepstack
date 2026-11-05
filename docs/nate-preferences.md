@@ -95,3 +95,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-05 calls to action: a handwritten button label must fit on one line; shorten the words rather than let one wrap ("Start the Riddles").
 - 2026-11-05: phone run screen: words fully readable, controls must never sit under the depth rail (Q2).
 - 2026-11-05 riddle hints: "it just gives the word" -> a riddle hint must never contain the answer, another form of it, or a spelling clue; sideways clues only (blanked sentence, kin, kind, opposite, near synonym). Syllable count not added: it is a length clue (#18).
+- 2026-11-05 spine labels: clipped words on Shelf spines ("CONDOMI...", "ADMINISTRA...") -> no clipped or ellipsized words anywhere; shrink the type or wrap, and keep the ×N count off the label (thread: spine labels).
