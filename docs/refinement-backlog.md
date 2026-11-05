@@ -1358,8 +1358,21 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: show the Lexicon as one hand-lettered rank, explain placement in one line before it starts, add a re-placement option, and a quiet level-change line on the final page. Files: `src/core/unlimited.js` (read only), `src/ui/home.js`, final page. Done when: rank text is tested for each band, no new numbers beyond the existing Lexicon.
 **Touches:** HOME, RESULT, MECHANICS. **Conflicts:** difficulty thread, G7, G8.
 
-### G10. Leave a door for zones and topic rooms
+### [x] G10. Leave a door for zones and topic rooms
 **Serves:** planned zones, topics and levels; integrated not bolted on.
 **Pitch:** Floors, decks and rooms will all be "a place with its own words". Give them one registry now so a new zone is data, not code, and decide where its door lives (a doorway in the niche, a section of the Unlimited book) so nothing is retrofitted. Content is out of scope.
 **Brief:** Goal: a single `places` registry (id, name, floor art key, word filter, unlock rule) read by the picker, floors, shelf bays and Almanac; default place unchanged. Files: new `src/core/places.js`, picker and floors read it. Done when: output with only the default place is byte-identical in tests, saves untouched, one test adds a fake place and sees it in picker and bays.
 **Touches:** CORE, WORLD. **Conflicts:** 35 topic decks (do together), word pool thread.
+
+**Done (PR pending):** `src/core/places.js` registry (default place `deepstack` owns the six floors; `registerPlace` appends a place's floors to FLOORS so bays, Almanac, tracker and ambience see them; word filter and unlock rule fields; door location not yet decided, see G11). Test `test/places.test.js`. Nothing visible changes.
+
+### G11. Pick where a zone's door lives
+**Serves:** planned zones; integrated not bolted on.
+**Pitch:** G10 left the registry; now choose and build the door: a doorway in the niche or a Zones page in the Unlimited book listing `unlockedPlaces`, with locked ones shown as unlit.
+**Brief:** Goal: UI for `places()` with unlock hints. Files: new `src/ui/zonesDoor.js` plus css, one hook in home. Done when: only the default place shows no door.
+**Touches:** HOME. **Conflicts:** 35 topic decks, home threads.
+
+### G12. Run words from a place's filter
+**Pitch:** Make Unlimited and Practice draw from `placeWords(place, WORDS)` so a topic room is only data.
+**Brief:** Goal: pass the active place into `pickWord` callers; default unchanged. Files: `src/core/level.js`, `unlimited.js`. Done when: tests prove the default pool is untouched.
+**Touches:** CORE. **Conflicts:** word pool thread.
