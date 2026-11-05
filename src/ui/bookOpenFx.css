@@ -30,6 +30,10 @@
 .bk-spread.rm .bs-cover,.bk-spread.rm .bs-leaf,.bk-spread.rm .bs-ribbon{display:none}
 .bk-spread.rm .bs-board.l,.bk-spread.rm .bs-page.l,.bk-spread.rm .bs-blk.l{opacity:1;transition:none}
 @media(prefers-reduced-motion:reduce){.bk-spread.shut{animation:none}.bk-spread .bs-ribbon{transition:none}}
+/* phones: keep the open book below the top bar (Q12) */
+@media(max-width:560px){
+ body .bk-spread{--bkTop:calc(var(--barH) + env(safe-area-inset-top,0px));--H:min(640px,calc(100dvh - var(--bkTop) - 28px));top:calc(50% + var(--bkTop) / 2 - 4px)}
+}
 
 /* Q1: while a menu book is open, the wordmark and Descend plaque fade out so they don't peek above its top edge. */
 .hz-title,.hz-plaque{transition:opacity var(--m-base)}

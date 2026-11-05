@@ -1154,7 +1154,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: pick one (needs nate): a 0 becomes a "damp, unreadable" pamphlet that stays off the shelf, or the descent stalls at the same depth, or leave as is. Files: `src/core/scoring.js`, `src/app/card.js`. Done when: Daily score rules unchanged, test pins the choice.
 **Touches:** CORE, RESULT. **Conflicts:** Judge accuracy, Daily fairness.
 
-### Q12. Open books on a phone cover the top bar and clip the ribbon
+### [x] Q12. Open books on a phone cover the top bar and clip the ribbon (fixed, PR pending: book sits below the bar at 375 and 360)
 **Serves:** integrated not bolted on, spacing.
 **Pitch:** At 375 the open Shelf and Almanac books slide over the Sound, Credits and Settings buttons and the bookmark ribbon is cut off at the right edge as an unreadable stub.
 **Brief:** Goal: start the book below the top bar, keep the ribbon fully inside the cover, keep Close reachable without scrolling. Files: `src/ui/bookOpen.css`. Done when: all six menu books screenshot clean at 375x667 and 360x640.
@@ -1165,6 +1165,12 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** "Start the Riddle Shelf" wraps to "Shelf" alone on its own line while "Start Unlimited" fits; Close the book sits tight beneath it.
 **Brief:** Goal: shorten or scale the handwritten CTA so it stays on one line ("Start the Riddles"), give the pen underline and Close a consistent gap. Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: all six books' CTAs on one line at 1280 and 375.
 **Touches:** books. **Conflicts:** Q7.
+
+### Q12b. Daily page date is clipped at the right edge on phones
+**Serves:** words fully readable, spacing.
+**Pitch:** On the open Daily book at 375, "Thursday, 5 November 2026" runs past the page and the last digit of the year is cut off.
+**Brief:** Goal: let the date wrap or scale to fit inside the page margin. Files: `src/ui/dailyBook.css`. Done when: full date visible at 375x667 and 360x640.
+**Touches:** Daily book, phone. **Conflicts:** Q14.
 
 ### Q14. [x] Daily calendar header has stray marks (done in this PR: hand-drawn SVG prev/next arrows, 44 px, no text-decoration underline)
 **Serves:** spacing and polish, handwritten.
