@@ -1092,7 +1092,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: when the model is ready show nothing (or a small brass "Judge ready" lamp that fades after 3 s); when it fails say so plainly and that the simpler judge is in use. Files: `src/ui/topbar.js`. Done when: tests pin the three states, no layout shift on phone.
 **Touches:** top bar, JUDGE. **Conflicts:** none.
 
-### Q10. The quill sits on the first letter of the placeholder
+### Q10. The quill sits on the first letter of the placeholder  [x] (this PR)
 **Serves:** words fully readable, handwritten.
 **Pitch:** In the answer slip the quill icon overlaps "your own words…" (it reads "I your") and on the Riddle slip it covers the "T" of "The word…".
 **Brief:** Goal: indent the placeholder and text start past the quill, or draw the quill in the margin beside the red rule. Files: `src/ui/quill.css`. Done when: placeholder and typed text start clear of the quill at 375 and 1640.

@@ -33,3 +33,7 @@ test('hooked into the run screen without replacing input handlers; reduced motio
  assert.doesNotMatch(css,/#[0-9a-fA-F]{3,8}\b/);
  assert.match(read('src/ui/inkInput.js'),/aria-hidden/);
 });
+test('empty slip rests the quill in the margin, clear of the placeholder',()=>{
+ assert.match(read('src/ui/inkInput.js'),/classList\.toggle\('is-empty',!v\)/);
+ assert.match(read('src/ui/inkInput.css'),/\.ink-mirror\.is-empty \.ink-nib svg\{left:-\d+px\}/);
+});
