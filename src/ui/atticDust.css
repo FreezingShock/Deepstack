@@ -1,17 +1,10 @@
-/* The dust-off slip: a scrap of paper pinned over the attic. The chosen floor is written in with the shared pen stroke. */
-.dust-slip{position:fixed;z-index:60;width:min(280px,calc(100vw - 16px));box-sizing:border-box;padding:12px 14px 10px;border-radius:4px;background:#ece0bd;color:#2a1c0e;box-shadow:0 8px 24px var(--c-black-alpha-88),inset 0 0 0 1px #b79b63;
- transition:opacity var(--m-smooth) var(--e-settle),transform var(--m-smooth) var(--e-settle)}
-.dust-slip h3{margin:0;font:600 22px/1.1 var(--serif);border-left:4px solid var(--tc);padding-left:8px}
-.dust-slip p{margin:0}
-.dust-k{font:500 11px/1 Cinzel,Georgia,serif;letter-spacing:.14em;text-transform:uppercase;color:#6b5230;margin-bottom:6px!important}
-.dust-t{font:500 15px/1.2 var(--pen-hand,var(--serif));margin:6px 0 8px!important}
-.dust-floors{display:grid;gap:2px}
-.dust-floors button{position:relative;display:flex;justify-content:space-between;align-items:baseline;margin:0;padding:5px 6px;border:0;background:none;color:inherit;font:500 17px/1.1 var(--pen-hand,var(--serif));cursor:pointer;text-align:left;border-radius:3px}
-.dust-floors button small{font:12px 'Special Elite',monospace;color:#6b5230}
-.dust-floors button:hover,.dust-floors button:focus-visible{background:#d9c895;outline:none}
-.dust-floors button::after{content:"";position:absolute;left:4px;right:4px;bottom:1px;height:7px;background:#2a1c0e;-webkit-mask:var(--pen-stroke) center/100% 100% no-repeat;mask:var(--pen-stroke) center/100% 100% no-repeat;clip-path:inset(0 100% 0 0);transition:clip-path var(--m-smooth) var(--e-settle)}
-.dust-floors button.pen::after{clip-path:inset(0 0 0 0)}
-.dust-x{margin:8px 0 0;padding:2px 0;border:0;background:none;color:#6b5230;font:italic 14px var(--serif);cursor:pointer;text-decoration:underline}
-.dust-slip.away{opacity:0;transform:translateY(60px)}
-.dust-slip.writing{pointer-events:none}
-@media(prefers-reduced-motion:reduce){.dust-slip,.dust-floors button::after{transition:none}}
+/* "Shelve it on": a row of floor chips on the book's own page when a floorless attic book is opened. */
+.book .page .shelve{margin:10px 0 0;text-align:center}
+.shelve-k{display:block;margin-bottom:6px;font:600 calc(11px*var(--ts)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--tm)}
+.shelve-f{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.shelve-f button{display:flex;flex-direction:column;align-items:center;margin:0;padding:5px 10px 4px;border:1px solid var(--c-white-alpha-22);border-radius:6px;background:none;color:var(--tx);cursor:pointer;
+ transition:background var(--m-smooth) var(--e-settle),border-color var(--m-smooth) var(--e-settle)}
+.shelve-f button b{font:600 calc(13px*var(--ts))/1.1 var(--serif)}
+.shelve-f button small{font:calc(11px*var(--ts))/1.2 "Special Elite",monospace;color:var(--tm)}
+.shelve-f button:hover,.shelve-f button:focus-visible{background:var(--c-white-alpha-22);border-color:var(--tc);outline:none}
+@media(prefers-reduced-motion:reduce){.shelve-f button{transition:none}}

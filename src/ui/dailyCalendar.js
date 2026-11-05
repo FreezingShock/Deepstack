@@ -4,6 +4,7 @@
 import {esc} from './bookpages.js';
 import {dailyNumber,DAILY_EPOCH} from '../core/daily.js';
 import {TIERS} from '../core/tiers.js';
+import {riddleDay,riddleDayStreak} from '../core/riddleDaily.js';
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const pad=n=>String(n).padStart(2,'0');
@@ -49,7 +50,7 @@ function cell(S,key,today,spreadOf,order=0){
  const rec=(S.daily||{})[key];
  const ink=st==='played'?` style="--ink-tier:${tierInk(rec.best)};--i:${order}"`:'';
  const lbl=`No. ${dailyNumber(key)}, ${key}${st==='played'?`, played, average ${rec.avg}`:st==='today'?', today':', not played'}`;
- return `<button class="cal-d ${st}" data-spread="${spreadOf(key)}" aria-label="${esc(lbl)}"${ink}>${st==='played'?RING:''}${n}</button>`;
+ return `<button class="cal-d ${st}" data-spread="${spreadOf(key)}" aria-label="${esc(lbl)}"${ink}>${st==='played'?RING:''}${n}${riddleDay(S,key)?'<i class="cal-rid" title="Daily Riddle played that day"></i>':''}</button>`;
 }
 
 /* The seven days ending today, as a strip: letter, number, and the day's average if played. */
@@ -69,6 +70,13 @@ export function streakNote(streak){
  return streak===1?'1 day in a row. Keep it going.':`${streak} days in a row. Don’t break the chain.`;
 }
 
+/* The riddle book's line under the Daily margin note: its own streak, in the same hand. */
+export function riddleNote(S,today){
+ const n=riddleDayStreak(S&&S.riddle,today);
+ if(!n)return `<p class="cal-margin cal-rid-note"><i class="cal-rid"></i> A dot under a day marks a Daily Riddle played.</p>`;
+ return `<p class="cal-margin cal-rid-note"><i class="cal-rid"></i> Daily Riddle: ${n===1?'1 day':n+' days'} in a row.</p>`;
+}
+
 /* The calendar leaf for month ym. spreadOf(key) gives the book spread of a day; canPrev/canNext bound the paging. */
 export function calendarLeaf(S,today,ym,{spreadOf,streak=0}={}){
  const first=monthOf(DAILY_EPOCH),last=monthOf(today);
@@ -76,8 +84,8 @@ export function calendarLeaf(S,today,ym,{spreadOf,streak=0}={}){
  const weeks=monthGrid(ym);
  const week=weekStrip(S,today);
  return `<div class="dly cal"><div class="kicker">Calendar · tap a day to turn to it</div>
-  <div class="cal-head"><button class="cal-nav" data-month="${shiftMonth(ym,-1)}" aria-label="Previous month"${prev?'':' disabled'}>‹</button><h1>${esc(monthTitle(ym))}</h1><button class="cal-nav" data-month="${shiftMonth(ym,1)}" aria-label="Next month"${next?'':' disabled'}>›</button></div>
+  <div class="cal-head"><button class="cal-nav" data-month="${shiftMonth(ym,-1)}" aria-label="Previous month"${prev?'':' disabled'}><svg viewBox="0 0 28 20" aria-hidden="true"><path d="M20 3 C 14 6, 9 8, 5 10 C 9 12, 14 14, 20 17 M5 10 C 11 9.6, 17 10.4, 24 10"/></svg></button><h1>${esc(monthTitle(ym))}</h1><button class="cal-nav" data-month="${shiftMonth(ym,1)}" aria-label="Next month"${next?'':' disabled'}><svg viewBox="0 0 28 20" aria-hidden="true"><path d="M8 3 C 14 6, 19 8, 23 10 C 19 12, 14 14, 8 17 M23 10 C 17 9.6, 11 10.4, 4 10"/></svg></button></div>
   <div class="cal-grid" role="group" aria-label="${esc(monthTitle(ym))}">${DOW_LETTERS.map(d=>`<span class="cal-dow">${d}</span>`).join('')}${(()=>{let o=0;return weeks.flat().map(k=>cell(S,k,today,spreadOf,k&&dayState(S,k,today)==='played'?o++:0)).join('');})()}</div>
   <div class="cal-week"><h2>This week</h2><div class="cal-strip">${week.map(d=>`<span class="cal-w ${d.st}"><i>${d.dow}</i><b>${d.n}</b><small>${d.avg==null?'':d.avg}</small></span>`).join('')}</div></div>
-  <p class="cal-margin">${esc(streakNote(streak))}</p></div>`;
+  <p class="cal-margin">${esc(streakNote(streak))}</p>${riddleNote(S,today)}</div>`;
 }

@@ -51,6 +51,7 @@ export function attachInk(ta){
   const caret=Math.min(v.length,ta.selectionEnd??v.length),focus=document.activeElement===ta;
   const html=(i,j)=>runsHtml(inkRuns(v.slice(i,j),births.slice(i,j),now));
   mir.innerHTML=html(0,caret)+(focus?NIB:'')+html(caret,v.length)+'​';
+  mir.classList.toggle('is-empty',!v);
   mir.scrollTop=ta.scrollTop;
   if(births.some(b=>now-b<DRY_MS)&&!reduced())timer=setTimeout(paint,DRY_MS);
  };

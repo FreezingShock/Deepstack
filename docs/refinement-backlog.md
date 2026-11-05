@@ -3,9 +3,18 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Pick from the new G1 to G10 goal-level menu (section G near the end of this file). (polish menu thread)
+- Pull `main` and look at the home screen: a stone fireplace now burns between the book stacks on a brick back wall, and the fire lights the room (lamps down). Move the cursor near it (flames lean away) and click it to stoke. Check your window size and phone, and say if the room is too dark. On a short phone (667 tall) and on tablets in portrait there is no room for it yet. (fireside home, FH1)
+- Open the Unlimited book: the left page is Unlimited, the right page is Riddle, each with its own Start link. Open the Daily book: its first page now has Daily and Daily Riddle with Descend / Open today's riddle. Say if the sections read clearly or if the Riddle half needs more weight. (merged modes)
+- Play a run and answer with general ideas, close concepts and words that relate to the definition ("money" for frugal, "related to time" for ephemeral): they should now earn a small score (Pamphlet to Paperback), never as much as a precise answer. Open any book: other meanings and the meanings of close synonyms appear under "Also means". Tell me any wrong answer that scores well or any book that looks too tall. (judge leniency, backlog J1)
+- Pick from the Q1 to Q16 audit menu (end of this file). Q11 is decided (a 0 keeps its book and 13 ft).
+- Descend past a floor door (Archive 101 ft, Catacombs 252 ft and deeper) and say if the half-speed hold at the door, the one-time swing of the sign and the quiet floor sound feel right or too subtle; also check Settings reduced motion removes the hold and swing. (door walk-through thread)
+- Play a run and answer with plain synonyms of rare words ("curt" for laconic, "blunt" or "forthright" for candid, "conscientious" for diligent): they should now land in Paperback or better. Tell me any everyday word that still scores 0 or any wrong word that scores well. (judge thesaurus, backlog 90)
 - Open `?perf` on your own machine at home, mid-run and during a descent and tell me the p95 and whether it feels smoother or the same: the headless box can only see JS cost, and your GPU is the real test for the glow-cache change (item 38).
 - Scroll up into the attic and tap an earlier find that has no floor: a slip asks which floor it was found on, the pen underlines your pick and the book leaves the attic for that floor's bay on the Shelf. Check the slip reads at your screen size. (dust-off thread, PR #156)
 - Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Borrower's ledger on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
+- Scroll up into the attic, then keep scrolling up (or ArrowUp / swipe down): you should climb through separate sections (recent guesses, then each month) with no doorway or parallax. (superseded wording follows) you should move back through a doorway into further rooms with parallax, and the books should look as detailed as on the Shelf. Check it at your screen size, and say if the fade between rooms feels too long. (attic layers thread)
+- Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Librarian’s Card on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
 - Scroll up into the attic and back a few times (also Escape, swipe, with reduced motion): a ladder now slides in from the left and its rungs pass you as you rise, and the room brightens as the skylight comes overhead. Say if it is too long or too dark at the start. (attic climb thread)
 - Play a few books at every tier and say if the ceremony feels right: Codex gets a faint flash, Grimoire a rune and sting, Apocrypha waits for its implosion, then flash and cover swing. Also try Settings > Graphics low (no rune, fewer rays). (reveal recipes)
 - Play down to 252 ft (Catacombs), 454 ft (Sunken Vault), 706 ft (Hollow) and 1008 ft (Abyss) and say which door still feels like "just a tint": each floor's first row now has a sign, a doorway scene and its own wall (item 1).
@@ -29,11 +38,13 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - If the look is new, ask nate at most 3-5 styling questions with a recommended default, then start on the default.
 
 ## In progress (do not start)
+- [x] S1 + S2. Big sigils on result-card covers, set books share a ring (`src/ui/coverSigil.js`, PR #174)
 - [x] F / 102. Fallen books in front of shelf gaps (toppled, stacked, open face-down; `src/ui/fallenBooks.js`, PR #140)
 - [x] C. Attic for earlier Shelf finds (backfill floors from Daily history, scroll-up attic)
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
 - [~] Spacing and type pass on every screen
 - [~] Run screen overhaul (alcove, wall lettering, candle timer, input)
+- [x] Text size applies to all text and keeps layouts intact (`--ts` on every font size, `src/ui/textScale.css`, PR #206)
 - [~] Floors: distinct look per floor (#81)
 - [~] Tactile hover/press/focus everywhere (#82)
 - [x] Rare tier reveals: particle overhaul (pooled sprite engine, prewarmed, per-tier recipes; this PR)
@@ -69,17 +80,28 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: a lighting pass where lit radius shrinks with depth and unlit shelves fade to silhouette; lantern/alcove light cast on nearby books. Files: new `src/ui/lighting.js`; hook in `World`. Done when: Abyss is legible only near lights but the word and alcove stay readable (contrast test on the alcove), cached offscreen light map, reduced motion removes flicker.
 **Touches:** WORLD. **Conflicts:** 1, 3, 33, floors thread.
 
-### LM1. Candles and braziers cast light on the shelves
+### LM1. [x] (this PR) Candles and braziers cast light on the shelves
 **Serves:** dark and mysterious, physical.
 **Pitch:** Wall mounts, candle stubs on ledges and the odd brazier become real light sources, so the Abyss has a few warm islands to head for and the Hollow has cold ones.
 **Brief:** Goal: any new lit prop calls `addLight(x, y, r, k)` from `src/ui/lighting.js` and gets a pool in the dark for free. Files: the prop's own file. Done when: it stays lit at Abyss depth, 375 and 1280 screenshots.
 **Touches:** WORLD. **Conflicts:** E (wall mounts), 3.
 
-### LM2. The dark has something in it
+### LM2. [x] (this PR) The dark has something in it
 **Serves:** immersion, rarity.
 **Pitch:** Out past the lantern pools a pair of eyes or a moving shape shows only while the cursor light is nowhere near, and flees when it arrives.
 **Brief:** Goal: one rare silhouette per deep floor, driven by `pointerLightState` in `cursorLight.js`. Done when: never over the alcove or HUD, off in reduced motion and saver mode.
 **Touches:** WORLD. **Conflicts:** 3.
+
+
+### LM3. Embers that warm what they light
+**Serves:** physical, dark and mysterious.
+**Pitch:** Braziers throw a few drifting sparks, and books in a brazier's pool show their real colours instead of grey silhouette.
+**Brief:** Goal: tint the pool by the light's colour and add 6 to 10 sparks per brazier. Files: `litProps.js`, `lighting.js`. Done when: no extra cost on Low. **Touches:** WORLD. **Conflicts:** LM1.
+
+### LM4. Something that follows at a distance
+**Serves:** immersion, rarity.
+**Pitch:** The eyes sometimes drift a shelf closer between sightings, and a very rare second pair opens beside the first.
+**Brief:** Goal: persist a small tension counter per run so sightings escalate. Files: `eyes.js`. Done when: still rare, never in reduced motion. **Touches:** WORLD. **Conflicts:** none.
 
 ### 3. [x] Things that live down here (this PR)
 **Serves:** immersion, physical realism.
@@ -231,6 +253,19 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Touches:** `ledge.js`. **Conflicts:** 5.
 
 ## D. Motion, sound and feel (smooth, physical)
+
+### 22a. [x] Run screen writes in smoothly (this PR)
+Coming back from looking up the descent no longer snaps: the candle, pips, word, part of speech, clock, answer slip and hint row now rise in staggered on the motion language, for new words and for "Back to N ft". Reduced motion shows it at once, low graphics fades the stage once. `src/ui/runWriteIn.js`.
+
+### 22b. Candle and alcove light up with the write-in
+**Pitch:** as the word writes in, the candle flame should catch and the alcove glow rise with it, so the room wakes up too.
+**Brief:** Goal: ease the candle flame and alcove lamp in alongside `writeInRun`. Files: `src/ui/runWriteIn.js`, `src/ui/candle.css`. Done when: no light pops on at full strength.
+**Touches:** UI. **Conflicts:** `src/ui/runWriteIn.js`.
+
+### 22c. The same write-in for the result card and riddle
+**Pitch:** the riddle screen and result card should arrive with the same staggered write-in.
+**Brief:** Goal: reuse `writeInRun` (or a sibling) for `src/app/riddle.js` and the card. Done when: no screen pops in whole.
+**Touches:** UI. **Conflicts:** `src/app/riddle.js`.
 
 ### 22. [x] Motion language (#127)
 **Serves:** smooth motion.
@@ -387,10 +422,25 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 ### 45. [x] Judge v2: Wiktionary relations (this PR)
 _Shipped as word relations (synonyms, near synonyms, related, antonyms, definition links in `public/data/relations.json`) instead of paraphrase vectors; see PLAN.md. Follow-ups: 90, 91, 92._
 
-### 90. Judge knows common synonyms of rare words
+### 90. [x] Judge knows common synonyms of rare words (PR pending)
 **Pitch:** Bare synonyms still miss when Wiktionary has no list ("curt" for laconic, "friction" for discord). Add a small frequency-filtered thesaurus of everyday words and score answers against it.
 **Brief:** Files: `scripts/build-relations.mjs`, `public/data/relations.json`. Done when: `npm run judge:eval` good/synonym in band beats 79% on `relation-answers.json` without wrong answers rising.
 **Touches:** JUDGE. **Conflicts:** none.
+
+### J1. [x] Judge accepts other meanings and broad ideas, books show them (PR #214)
+**Pitch:** A word's other senses and its synonyms' senses count as targets; general ideas and words related to the definition earn a low score; the book lists the other meanings.
+**Brief:** Files: `scripts/build-senses.mjs`, `public/data/senses.json`, `src/scorer/senses.js`, `src/ui/alsoMeans.{js,css}`. Done: `npm run judge:eval` good 79% to 85%, AUC 0.899 to 0.916.
+**Touches:** JUDGE, card hook. **Conflicts:** none.
+
+### J2. Judge explains broad matches
+**Pitch:** When an answer scored on a general idea or another meaning, the card says so in one handwritten line ("that is another meaning of frugal").
+**Brief:** Files: new `src/ui/judgeNote.js`; `judgeAnswer` returns `rel` hits and which reference won. Done when: line shows for lenient hits only, never clips at 375px.
+**Touches:** JUDGE return shape, card. **Conflicts:** 91, 93.
+
+### J3. Tune leniency from real play
+**Pitch:** Log (locally, never sent) answers that scored 10 to 30 and let nate mark them fair or too generous, then refit the floors in `RELATION`.
+**Brief:** Files: new `src/core/judgeLog.js`, Settings export. Done when: export file feeds `scripts/judge-eval.mjs` as a fixture.
+**Touches:** Settings, JUDGE. **Conflicts:** J1.
 
 ### 91. Why this score (judge explains itself)
 **Pitch:** The result card says in one handwritten line what the judge noticed: "Reticent is a synonym of taciturn", "you reached the idea through 'miserly'".
@@ -806,11 +856,21 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: run `scripts/perf.mjs` with Apocrypha reveals on a real GPU (or nate's machine) and record the frame time per tier in `docs/perf-baseline.md`. Done when: numbers per tier at high, medium and low are in the doc.
 **Touches:** TOOLING. **Conflicts:** none.
 
-### D1. Walk through the door
+### D1. [x] Walk through the door (PR pending)
 **Serves:** immersion, motion.
 **Pitch:** Descending past a floor door should feel like passing through it: a short slow-down at the threshold, the sign swinging a little, a one-line floor sound.
 **Brief:** Goal: a threshold moment while the camera crosses a floor start (sign sway, brief ease, optional room-tone sting). Files: new `src/ui/thresholdPass.js`, hook in `World` camera. Done when: uses the shared motion presets, off in reduced motion.
 **Touches:** WORLD, FEEL. **Conflicts:** 2, 38.
+
+### D1a. Doors you can feel on the way back up
+**Serves:** immersion, motion.
+**Pitch:** The threshold slow-down and sign swing now work in both directions; add a faint draught of the floor above on the way up (dust motes or a cold puff drifting through the doorway) so leaving a floor reads as clearly as entering one.
+**Brief:** Goal: a short particle drift at the doorway when the camera crosses a floor start going up, using the pooled sprite engine. Files: `src/ui/thresholdPass.js`, hook in `src/world/world.js`. Done when: 1280 and 375 screenshots, off in reduced motion. **Touches:** WORLD, FEEL. **Conflicts:** 2, 38.
+
+### D1b. Each floor's door sting you can set apart by ear
+**Serves:** immersion, sound.
+**Pitch:** The one-line door sound is quiet on purpose; give each floor a second, slightly different voice (card flutter, stone knock, drips, root creak, abyss swell) tuned by a listening pass.
+**Brief:** Goal: audition and tune `STINGS` in `src/sound/thresholdSting.js` with nate listening. Done when: nate picks levels he likes. **Touches:** SOUND. **Conflicts:** 24.
 
 ### D2. Floor doors in the almanac and on the tracker
 **Serves:** integrated, sections for each floor.
@@ -989,6 +1049,341 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** a new book re-chunks the piles so shapes shuffle; each pile should keep its look as books are added.
 **Brief:** Goal: derive pile kind from the oldest book in it, not its order. Files: `src/world/atticRoom.js` layoutPiles + test. Done when: adding a book changes at most the newest pile.
 **Touches:** WORLD. **Conflicts:** none.
+
+- [x] N8. A sigil for every book (sigils thread): `src/ui/sigil.js`, one call in `bookArt.js`.
+
+### S1b+S1c. [x] Menu spine wear and muted plaque/mantel oak (this PR)
+- Follow-ups: S1d chip and stain marks that persist per save (a book you open often looks more thumbed); S1e dust on top edge of the stack that wipes on hover.
+
+### S1. Sigils on the book cover and the result card
+**Pitch:** stamp the sigil big on the opened/DOM book covers too.
+**Brief:** Goal: reuse `drawSigil`. Files: `src/ui/bookOpenFx.js`, `src/ui/bookCard.css`. Done when: same word, same sigil everywhere.
+**Touches:** BOOK. **Conflicts:** 7a.
+### 93. Judge says what it noticed in the thesaurus
+**Pitch:** The `c` lists are separate, so the result card can name where a hit came from ("curt is an everyday word for laconic").
+**Brief:** Goal: expose which list matched in `relate()` so item 91's handwritten line can phrase it. Files: `src/scorer/relations.js`, `src/ui/judgeNote.js`. Done when: test pins wording per list.
+**Touches:** JUDGE. **Conflicts:** 91, 93.
+
+### 94. Phrases and two-word synonyms
+**Pitch:** "show-off", "drive away" and "cast out" still miss because the frequency filter and the matcher stay with single words.
+**Brief:** Goal: admit common two-word synonyms from WordNet into `c`, match them in `terms()`. Files: `scripts/lib/wordnet.mjs`, `src/scorer/relations.js`. Done when: judge:eval good/synonym passes 88% with wrong answers not rising.
+**Touches:** JUDGE. **Conflicts:** none.
+- [x] N11. Streak candles on the mantel (`src/ui/mantel.js`, this PR). New ideas: N16 candles burn down through the day, N17 hover a candle for its day and word, N18 milestone candlesticks at 7/30/100 (briefs in the project notes).
+### N13a. Back stacks catch the lamp
+**Pitch:** the far shelves should pick up a faint glow when a lantern or the candle is near, so the depth reads even on dark floors.
+**Brief:** Goal: tint back-stack bands near `addLight()` sources. Files: `src/world/backStacks.js`, `src/ui/lighting.js` hook. Done when: within 1 ms of the N13 baseline, off on low quality.
+**Touches:** WORLD. **Conflicts:** 2 (lighting).
+
+### N13b. Things in the far stacks
+**Pitch:** a ladder, a hanging lamp or a distant reader's lit window now and then in the back row, never in the way.
+**Brief:** Goal: seeded rare props baked into the per-floor back tile. Files: `src/world/backStacks.js`. Done when: at most one per floor tile, none on the Hollow and Abyss except a single faint light.
+**Touches:** WORLD. **Conflicts:** none.
+
+### S3. Stamp the sigil into the open pages
+**Pitch:** the sigil is on every cover but the opened card still shows only words; press a faint watermark of it into the vellum behind the definition so the mark follows the book inside.
+**Brief:** Goal: draw `drawSigil` at ~6% alpha large behind `.book .page .inner`. Files: `src/ui/coverSigil.js`, `src/ui/bookCard.css`. Done when: text stays fully readable at 14 letters, reduced motion unchanged. **Touches:** BOOK. **Conflicts:** none.
+
+### S4. A set's ring on its Sets page and complete-set seal
+**Pitch:** the Sets book should show each set's ring as its crest, and completing a set stamps the ring in wax.
+**Brief:** Goal: render `setRing(i)` via a ring-only sigil on each set leaf; wax-seal state when `done`. Files: `src/sets/ui.js`, `src/ui/sigil.js`. Done when: six distinct crests, a test pins set to crest. **Touches:** SETS. **Conflicts:** none.
+
+## Q. Audit 2026-11-04 (fresh walk of main at 1640, 1280 and 375; screenshots in `screenshots/audit/`)
+
+### Q1. [x] Open books hide the home scene behind them (this PR: wordmark and plaque fade out while a book is open)
+**Serves:** integrated not bolted on, dark and mysterious.
+**Pitch:** Every menu book opens over the home screen but the gilt "Deepstack" wordmark, chains and plaque still peek out above its top edge, half-cut, which reads as a glitch.
+**Brief:** Goal: while a book is open, dim and lower the home hero (wordmark, lanterns, No. plaque, mantel) so only shelves show behind the book. Files: `src/ui/bookOpen.css` (or a new `bookBackdrop.css`), hook where `#home.book-opening` is set. Done when: no wordmark pixels above the book at 1280 and 1640, close restores it with the existing motion language, reduced motion has no fade.
+**Touches:** HOME, books. **Conflicts:** 104, N-series home threads.
+
+### Q2. [x] Phone run screen: the answer slip is a sliver (this PR)
+**Serves:** words fully readable, overhaul not tweak.
+**Pitch:** At 375x667 the pinned slip shows two lines ("your / own / wor…" is cut off), the Hint button runs under the depth rail, and the bottom third of the screen is empty shelf.
+**Brief:** Goal: give the slip the free space (taller, text starts level with the quill), move the depth rail to a slim strip that never overlaps controls, keep Hint and Skip inside the alcove. Files: `src/styles/responsive.css` or new `src/styles/phone-run.css`. Done when: a 14-letter word, the longest hint label and the on-screen keyboard open all fit at 375x667 and 360x640, Riddle Shelf included.
+**Touches:** RUN, phone. **Conflicts:** Spacing and type pass, 95.
+**Done:** `src/styles/phone-run.css`: slip height scales with the viewport (135px at 375x667, 107px at 360x640, was 97/80), text indents 46px; hint and skip share one row inside the alcove, clear of the 32px rail (hint label wraps). Not yet verified: on-screen keyboard open, Riddle shelf.
+
+### Q3. [x] Settings: Graphics "Low" clipped on phones (this PR)
+**Pitch:** The four Graphics choices ran past the panel at 375 so Low was half off-screen. Now the legend takes its own line and the buttons share the width (test pins the rule).
+**Touches:** settings. **Conflicts:** 55 (written settings).
+
+### Q4. [x] Filter page overflows the book page with no way to tell
+**Serves:** words fully readable, everything is a page.
+**Pitch:** On the Shelf book the Sort, Bay, Show and Rarity lists run past the bottom of page 1 ("Hardbound / Folio" cut mid-line at 1640, "Paperback" cut at 375) and the right page is empty for a new player.
+**Brief:** Goal: fit the filters (two rows of handwritten words, rarity as one row of tier-coloured ticks) or let the page scroll under a deckled fade, and use the empty right page for something useful (the first tier shelf, or a hand-drawn "your first answer goes here"). Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: nothing is clipped at 375x667 or 1280x720 with 0 and 60 books.
+**Touches:** SHELF book. **Conflicts:** 11, 82. Done: filters in a compact two-column written layout with a foot fade (`src/ui/shelfFilters.css`); empty Shelf shows a sketched empty shelf on the right page.
+
+### Q5. Descent complete is still boxes and a half-empty alcove
+**Serves:** everything is a book/page, no outlined rectangles, rarity is the hero.
+**Pitch:** The final screen has outlined stat tiles (Answered / Best book / Combo), outlined Copy and Back buttons, and a small column of text in the upper half with the lower 40% of the alcove empty.
+**Brief:** Goal: rebuild as the closing page of a ledger: tallies written in ink, the seven books lined on the ledge as the hero, Copy and Back as handwritten words with the pen underline, depth numeral large. Files: `src/app/final.js`, `src/styles/result.css` or new `src/ui/finalPage.css`. Done when: fits one view at 1280x720 and 375x667, 14-letter word does not clip, share note unchanged.
+**Touches:** RESULT. **Conflicts:** 16, 70, Q16.
+
+### Q6. [x] "Next word" ribbon takes the tier material (PR pending)
+**Serves:** rarity is the hero, tier material.
+**Pitch:** The ribbon button under the result card stays plain grey whether the book is a Pamphlet or an Apocrypha, and the frame around the card is grey too, so the card looks the same dull colour for every tier; "0 /100" also has a stray space.
+**Brief:** Goal: tint ribbon, frame and Enter key from the tier's own material (silk for Folio, wax red for Grimoire, aqua thread for Apocrypha), keep Pamphlet grey. Fix the "0 /100" spacing. Files: `src/ui/tierFrames.css`, `src/app/card.js`. Done when: seven tiers screenshot side by side, contrast of the label passes on each.
+**Touches:** RESULT. **Conflicts:** 17, 64, R4.
+
+### Q7. Empty pages for a new player
+**Serves:** persistent world, handwritten.
+**Pitch:** A fresh save shows an Almanac that is two-thirds blank, a Shelf with an empty right page, the Riddle book with half a page of nothing, and "one at a time" written twice on the Sets spread.
+**Brief:** Goal: one empty-state pass: a hand-drawn faint outline or sketch per book (an empty shelf, a sealed ledger, a riddle slip), one line of written invitation, no repeated notes. Files: `src/ui/bookPages.js` and the almanac/sets files, new `src/ui/emptyPages.css`. Done when: every menu book at 0 played looks finished at 1280 and 375.
+**Touches:** books. **Conflicts:** 54, 55, 56.
+
+### Q8. [x] Home: loose air between Descend and the book stacks (PR pending)
+**Serves:** spacing and polish, dark and mysterious.
+**Pitch:** At 1280 and 1640 there is about 100 px of dead space between "Daily No. 2" and the first book, the mantel shelf holds one candle, and floating dust specks sit on the caption like stray marks.
+**Brief:** Goal: tighten the vertical rhythm (move the stacks up or give the gap a purpose: the streak candles, a hanging sign), keep dust away from text. Files: `src/styles/home-base.css`, `src/ui/mantel.css`. Done when: balanced at 1000x700, 1280x800, 1640x900 and nothing overlaps the cabinet or ledger.
+**Touches:** HOME. **Conflicts:** 94, 95, N16 to N18.
+
+### Q9. [x] "Preparing the judge, 100%" lingers in the top bar (PR pending)
+**Serves:** honest answers, integrated.
+**Pitch:** The status shows "Preparing the judge, 100%" on home even when nothing is loading; at 375 it also squeezes the bar.
+**Brief:** Goal: when the model is ready show nothing (or a small brass "Judge ready" lamp that fades after 3 s); when it fails say so plainly and that the simpler judge is in use. Files: `src/ui/topbar.js`. Done when: tests pin the three states, no layout shift on phone.
+**Touches:** top bar, JUDGE. **Conflicts:** none.
+
+### Q10. The quill sits on the first letter of the placeholder  [x] (this PR)
+**Serves:** words fully readable, handwritten.
+**Pitch:** In the answer slip the quill icon overlaps "your own words…" (it reads "I your") and on the Riddle slip it covers the "T" of "The word…".
+**Brief:** Goal: indent the placeholder and text start past the quill, or draw the quill in the margin beside the red rule. Files: `src/ui/quill.css`. Done when: placeholder and typed text start clear of the quill at 375 and 1640.
+**Touches:** RUN. **Conflicts:** 20, 67.
+
+### Q11. [x] Decided: a 0/100 answer keeps its book and 13 ft (nate, 2026-11-05)
+**Serves:** rarity is the hero, variety over repetition.
+**Pitch:** Typing something unrelated gives a Pamphlet and +13 ft just like an honest try, so rarity at the bottom means nothing; nate decides whether a miss should cost something.
+**Brief:** Goal: pick one (needs nate): a 0 becomes a "damp, unreadable" pamphlet that stays off the shelf, or the descent stalls at the same depth, or leave as is. Files: `src/core/scoring.js`, `src/app/card.js`. Done when: Daily score rules unchanged, test pins the choice.
+**Touches:** CORE, RESULT. **Conflicts:** Judge accuracy, Daily fairness.
+
+### Q12. Open books on a phone cover the top bar and clip the ribbon
+**Serves:** integrated not bolted on, spacing.
+**Pitch:** At 375 the open Shelf and Almanac books slide over the Sound, Credits and Settings buttons and the bookmark ribbon is cut off at the right edge as an unreadable stub.
+**Brief:** Goal: start the book below the top bar, keep the ribbon fully inside the cover, keep Close reachable without scrolling. Files: `src/ui/bookOpen.css`. Done when: all six menu books screenshot clean at 375x667 and 360x640.
+**Touches:** books, phone. **Conflicts:** 104, 95.
+
+### Q13. Written calls to action never wrap [x] (Riddle Shelf CTA shortened to "Start the Riddles")
+**Serves:** words fully readable, handwritten.
+**Pitch:** "Start the Riddle Shelf" wraps to "Shelf" alone on its own line while "Start Unlimited" fits; Close the book sits tight beneath it.
+**Brief:** Goal: shorten or scale the handwritten CTA so it stays on one line ("Start the Riddles"), give the pen underline and Close a consistent gap. Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: all six books' CTAs on one line at 1280 and 375.
+**Touches:** books. **Conflicts:** Q7.
+
+### Q14. [x] Daily calendar header has stray marks (done in this PR: hand-drawn SVG prev/next arrows, 44 px, no text-decoration underline)
+**Serves:** spacing and polish, handwritten.
+**Pitch:** The "‹ November 2026" header has a tiny back arrow, a blue underline that runs off the right edge of the page, and small dash ornaments on the margin of page 1.
+**Brief:** Goal: a clear hand-drawn previous and next arrow pair, the underline kept inside the text block, the corner dashes removed or made a real page-curl. Files: `src/ui/dailyBook.js`, its css. Done when: screenshot at 1280 and 375, arrows hit 44 px.
+**Touches:** Daily book. **Conflicts:** 13, 62, 63.
+
+### [x] Q15. (PR #187) Fine print is too dim on dark
+**Serves:** words fully readable.
+**Pitch:** Floor ranges in the depth rail ("101 to 252 ft"), locked floor names, the key hints under the slip ("Enter to submit, Alt+H hint") and the share note are small grey on dark and hard to read.
+**Brief:** Goal: audit every small label on dark surfaces for 4.5:1 contrast and 12 px minimum, lift values in tokens. Files: `src/theme/colors.js`, `src/ui/depthRail.css`, `src/styles/run.css`. Done when: a test lists the pairs and passes, no screenshot differences beyond text.
+**Touches:** RUN, tokens. **Conflicts:** Keyboard controls and accessibility.
+
+### Q16. [x] Share note wraps in an awkward place (done: tier pairs and bar line never break; copied text unchanged)
+**Serves:** words fully readable, handwritten.
+**Pitch:** The pinned note on the final screen ends lines with a dot ("Pamphlet · Pamphlet · Paperback ·") and shows a stray dash under line two.
+**Brief:** Goal: lay out the tier row as seven small stamps or break after the fourth, remove the dash, keep the plain text copy exactly as is. Files: `src/app/final.js`, `src/styles/result.css`. Done when: row never wraps mid-pair at 375 and 1280.
+**Touches:** RESULT. **Conflicts:** Q5.
+
+- [x] N9. A score that follows the descent (`src/sound/score.js`, this PR)
+
+### N9b. A music slider of its own
+**Pitch:** let me turn the score up or down apart from the room tone and effects, or off while keeping the room tone.
+**Brief:** Goal: a `Music` slider/toggle in Settings feeding `score.setLevel`. Files: new `src/ui/musicSetting.js`, one hook in `topbar.js`, `score.js` level multiplier. Done when: saved additively, 0 equals off, test with a fake context.
+**Touches:** SETTINGS, FEEL. **Conflicts:** F1, F2.
+
+### N9c. The score answers the reveal
+**Pitch:** each book tier gets its own two-bar cadence in the floor's key, so a Codex found in the Vault sounds different from one in the Stacks.
+**Brief:** Goal: tier-specific motifs transposed to the current floor mood, replacing the generic swell. Files: `src/sound/score.js` (`swell`). Done when: a test pins each tier's motif in the floor scale, voices stay capped.
+**Touches:** FEEL. **Conflicts:** reveal recipes.
+
+### N9d. Silence in the Hollow
+**Pitch:** let the score drop out entirely for a few seconds when you cross into the Hollow or Abyss, so the first notes back feel like a held breath.
+**Brief:** Goal: a door hook that mutes the score for 6 to 10 s then fades it in on the new mood. Files: `src/sound/score.js`, hook in `thresholdPass.js`. Done when: reduced-motion and sound-off unaffected, tested with a fake clock.
+**Touches:** FEEL. **Conflicts:** none.
+
+### R2. Etymology and era clue for riddles
+**Pitch:** a last-resort riddle hint that says where the word comes from ("from Latin", "old sailor slang") without spelling it.
+**Brief:** Goal: an optional `origin` hint after the synonym, from Wiktionary etymology language only (never the etymon). Files: `scripts/build-words.mjs`, `src/core/riddleHints.js`. Done when: the no-leak test covers it and words without data simply skip it.
+**Touches:** CORE, DATA. **Conflicts:** none.
+
+### R3. [x] Hints that fade in on the slip (PR pending)
+**Pitch:** riddle hints pin onto the slip one at a time with the blank in the sentence slowly pulsing like a held breath.
+**Brief:** Goal: polish the gap mark and slip entrance using the shared motion tokens. Files: `src/ui/hintSlips.css`. Done when: reduced-motion shows no animation.
+**Touches:** UI. **Conflicts:** none.
+- [x] Shelf spine labels never clipped: type shrinks to fit, ×N/star hang off the spine as tags, other one-line words wrap (spine-labels thread).
+- [ ] Sweep the remaining ellipsis uses (plaques, daily-book titles) for words that can clip. Pitch: nate wants no clipped words anywhere. Conflicts: shelfBays.css, home.css.
+- [ ] Attic and ledge spine labels: apply the same fit helper. Conflicts: src/world/bookArt.js.
+
+
+- [x] Page flip overhaul (PR #199; curl, page-edge thickness, handwritten cue, tug hint, lifted leaf)
+
+### P1. Ribbon markers that jump pages
+**Pitch:** each menu book has a ribbon; tug it to jump to the contents page, and let a pen-ink bookmark remember where you stopped.
+**Brief:** Goal: a clickable ribbon on open books that returns to page 1, plus the last page remembered per book for the session. Files: new `src/ui/bookRibbon.js`, hook in `home.js` paint. Done when: keys and swipe unaffected, tested with a fake spread. **Touches:** BOOKS. **Conflicts:** page flip.
+
+### P2. Drag the corner to turn
+**Pitch:** grab the curled corner and drag it across the page; letting go early lays it back, past halfway it turns.
+**Brief:** Goal: pointer-drag on `.bs-corner` drives the leaf's rotate with spring settle. Files: `src/ui/pageFlip.js`, `pageFlip.css`. Done when: click still turns, reduced motion falls back to a click. **Touches:** BOOKS. **Conflicts:** none.
+
+### P3. Paper sound that follows the hand
+**Pitch:** a soft rustle as the corner lifts and a different settle when the page lands, quieter for short flips.
+**Brief:** Goal: two synthesised paper cues in `feel.js` tied to hover-lift and turn end. Files: `src/feel.js`, `pageFlip.js`. Done when: off with sound off. **Touches:** FEEL. **Conflicts:** F1.
+
+### M1. [x] Merge riddle modes into Unlimited and Daily (this PR)
+**Pitch:** "combine riddle shelf into Unlimited, making it sectioned off but still on the same two pages, it should also be Daily and Daily Riddle".
+**Done:** the Riddle Shelf and Today's Riddle menu books are removed; Unlimited's spread holds Unlimited and Riddle, the Daily cover holds Daily and Daily Riddle; renamed everywhere; saves untouched.
+**Touches:** UI. **Conflicts:** `src/ui/home.js`, `src/ui/dailyBook.js`.
+
+### M2. Riddle history inside the Daily book
+**Pitch:** each Daily day spread should show that day's seven riddle definitions and your answers, like the words, not just a solved count.
+**Brief:** Goal: a "Daily Riddle" block on every day's pages (sealed until played, open once the day passes). Files: `src/ui/dailyBook.js`, `src/core/riddleDaily.js`. Done when: today's riddle stays sealed until played and tests cover it.
+**Touches:** UI. **Conflicts:** `src/ui/dailyBook.js`.
+
+### M3. Unlimited stats that count both halves
+**Pitch:** the Unlimited book should show your Lexicon and your riddle solved count side by side, since they share a book now.
+**Brief:** Goal: a one-line tally under each section's Start link. Files: `src/ui/home.js`. Done when: fresh saves show a written empty line, not zeros.
+**Touches:** UI. **Conflicts:** `src/ui/home.js`.
+
+### M4. Fewer books on the home stack, audit the rest
+**Pitch:** same idea again: could Practice live inside the Daily book as a third section, and Shelf/Sets/Stats share one book?
+**Brief:** Goal: audit which home books are related modes and propose merges before building. Files: `src/ui/home.js`. Done when: a short plan in this file.
+**Touches:** UI. **Conflicts:** `src/ui/home.js`.
+### S1. [x] Menu spines in real book-cloth colours (done: navy, oxblood, bottle green, tan calf, ochre, slate; muted, tier colours untouched)
+- Follow-ups: S1a recolour the Riddle/merged-riddle spines once the riddle-merge thread lands (muted aubergine/verdigris from `HOME_BOOK_COLORS`); S1b per-book spine wear (rubbed corners, faded titles) so the stack reads as old; S1c let the Descend plaque and mantel wood take a matching muted tone.
+### R1. Librarian's Card colour hierarchy (done, thread "Restyle the Librarian's Card")
+- [x] Renamed Borrower's record to Librarian's Card; per-row ink (ember streak, deep ink depth, best-tier Books, floor-coloured Floor), quiet labels, underlines.
+### R2. Stamps on the Librarian's Card
+**Pitch:** a milestone stamp (e.g. "100 BOOKS", "7-DAY STREAK") thumps onto the card the first time you pass it, in the row's own ink.
+**Brief:** Goal: tiny rotated ink stamps layered on `.lg-page`, saved additively. Files: `src/ui/welcome.js`, `welcome.css`. **Conflicts:** home stamp prop.
+### R3. Card ink follows the lamp
+**Pitch:** the card's ink and parchment warm or cool with the time-of-day light in the nook, so the card reads as part of the room.
+**Brief:** Goal: tint `--lg-ink` mixes by the existing time-of-day variable. Files: `welcome.css`. **Conflicts:** none.
+### S1. Scrollbars gone (done, PR pending)
+**Pitch:** no default browser scrollbars anywhere; surfaces fit, long pages use a slim dark bar. Shipped: cardFit.js, pageFit.js, scrollbars.css.
+**Brief:** Goal: audit the remaining panels (Settings, Credits, keys help, topbar panel, final-screen ledger) for scrollbars once #189/#191/#193 land. Files: `src/styles/scrollbars.css`. Done when: `node /tmp` style audit shows none at 1640, 1280, 375.
+**Touches:** UI. **Conflicts:** none.
+### S2. Daily book pages that fit
+**Pitch:** the Daily book entry pages (about 1000px tall at 1280) still scroll; split long entries across pages like the Shelf does.
+**Brief:** Goal: paginate `src/ui/dailyBook.js` entries so no page needs a bar. Done when: no scroll on any Daily spread at 1280x800 and 375x667.
+**Touches:** UI. **Conflicts:** #189.
+### S3. Short-window layouts
+**Pitch:** phone landscape (667x375) still scrolls on Shelf/Stats pages; give those a compact layout.
+**Brief:** Goal: a max-height:420px compact mode for menu book pages. Files: new css. Done when: no bar at 667x375.
+**Touches:** UI. **Conflicts:** none.
+
+### T1. Text size preview
+**Pitch:** show the real library change as nate taps A, A+, A++ in Settings, with a one-line sample under the buttons, so he can see a size before leaving the panel.
+**Brief:** Goal: a live sample line in the Settings panel that grows with `--ts`. Files: `src/ui/topbar.js`, `src/ui/textScale.css`. Done when: the sample matches the real text at each size, tested at 375 and 1280.
+**Touches:** UI. **Conflicts:** `src/ui/topbar.js`.
+
+### T2. Text-size screenshot sweep in CI
+**Pitch:** catch overlaps and clipped text at every size before nate does.
+**Brief:** Goal: a smoke step that opens home, run, Shelf and Settings at normal/large/xlarge in 375 and 1280 and fails on text overflowing its box. Files: `scripts/`, `test/`. Done when: it fails on a deliberately broken label.
+**Touches:** HEALTH. **Conflicts:** `scripts/smoke.mjs`.
+
+### FH1. Fireside home [x] (PR pending)
+**Done:** nate picked "B with a C background": stone fireplace between the stacks with grate, logs, live flames (lean from the cursor, click to stoke), book piles, streak candles on its mantel, brick back wall, firelit room light on the shelves (`src/ui/hearth.{js,css}`). Mockups: `screenshots/fireplace-home/`.
+**Follow-ups:** FH2 fire sounds, FH3 a fire that remembers you, FH4 room for the hearth on short phones and portrait tablets. **Conflicts:** `src/ui/home.css`, `mantel.css`.
+
+### FH2. Fire sounds
+**Pitch:** a soft crackle loop that swells when you stoke the fire, an ember pop now and then, silent when sound is off or the tab is hidden.
+**Brief:** Goal: `src/sound/hearth.js` on the existing sound bus, gain tied to the fire's intensity (`fireIntensity`). Done when: stoke is audible, the loop is seamless, mute works.
+**Touches:** FEEL. **Conflicts:** `src/ui/hearth.js` (one hook).
+
+### FH3. A fire that remembers you
+**Pitch:** the hearth reflects your play: it burns higher with your streak, and the sparks take your last book's tier colour (aqua after an Apocrypha).
+**Brief:** Goal: read streak and last tier from the save (no new fields), map them to flame height and spark tint. Done when: a 0 streak shows a low fire, a long streak a roaring one.
+**Touches:** MECHANICS, UI. **Conflicts:** `src/ui/hearth.js`.
+
+### FH4. Hearth on short phones and portrait tablets
+**Pitch:** at 375x667 and around 800 wide the home has no spare height, so the fireplace is skipped; give it a compact form there (a low fire under the mantel, stacks a size down).
+**Brief:** Goal: a compact `planFlow` that fits 80-100 px by shrinking the mantel's headroom and the stack books. Done when: a fire shows at 375x667 and 800x900 with nothing overlapping or sinking behind the ledge.
+**Touches:** UI. **Conflicts:** `src/ui/hearth.js`, `homeLayout.js`.
+
+
+## G. Goal-level polish menu (2026-11-05, from a play-through at 1280 and 375 plus nate's repeated asks)
+Broader than pixel fixes: each item is a goal to make the base game clearer, more fun and more finished. Nothing here builds zones or topic rooms; G10 only leaves a door for them. Play-through note: the sandbox could not download the full judge, so scores seen were the quick judge's (a decent answer for "tempt" scored 0).
+
+### G1. A first run that explains itself
+**Serves:** easy to understand, concise and mysterious copy, integrated not bolted on.
+**Pitch:** A new player meets the timer, Enter, hints, skip and tiers with no word of explanation; Descend, Daily, Unlimited and Practice all look like "play". Teach inside the world, once: a single handwritten margin line appears the first time each thing matters (the candle the first time it burns low, "Enter" under the slip, the hint slip the first time you tap it), then never again.
+**Brief:** Goal: contextual first-time notes, not a tutorial screen or pop-up. Flag each in additive `S.seen.*`. Files: new `src/ui/firstNotes.js` plus css, one hook in `showWord`. Done when: each note shows once, reduced motion shows it static, Daily timing is not changed by it, 14-letter word and 375 checked.
+**Touches:** RUN, HOME. **Conflicts:** run screen thread, 29 (welcome).
+
+### G2. A score that explains itself
+**Serves:** scoring clarity, rarity is the hero, words fully readable, lenient judging.
+**Pitch:** The card says "Pamphlet, 0/100" and a vague line like "Nothing here points at the meaning yet", but not why. Show it: in "You wrote" underline the words the judge counted, and add one quiet handwritten caption saying what a stronger answer would have named. A long answer must never be cut with an ellipsis ("somethin…" today).
+**Brief:** Goal: surface the judge's matched concepts/relations in the card, no scoring change. Files: `src/ui/alsoAccepted.js`, `src/app/card.js`, judge result already carries hits. Done when: matched words are underlined, caption is under 12 words, "You wrote" wraps fully or scrolls under a fade (never ellipsis), rarity stays the hero.
+**Touches:** RESULT, JUDGE. **Conflicts:** N20 follow-ups, 104.
+
+### G3. The judge never decides your Daily unfairly
+**Serves:** honest answers, lenient judging, Daily is its own thing.
+**Pitch:** When the full judge cannot load the "quick judge" quietly scores sensible answers 0 and those scores still write to the Daily, the streak and the Shelf. A bad connection should not cost a streak or a permanent Pamphlet.
+**Brief:** Goal: decide and pin one policy (recommend: Daily waits for the full judge with a written "the librarian is still arriving" line and Unlimited/Practice may use the quick judge, marked in the book as rough). Also the first-visit download (about 23 MB) should read as part of the world, not a grey status line, and never block typing. Files: `src/ui/judgeLabel.js`, `src/scorer/*` facade, `src/app/daily.js`. Done when: tests pin the policy, Daily cannot be scored by the fallback.
+**Touches:** JUDGE, DAILY. **Conflicts:** Daily fairness, judge accuracy threads.
+
+### G4. Hints and skip as one understandable object
+**Serves:** easy to understand, handwritten, integrated.
+**Pitch:** The button reads "HINT: IN A SENTENCE (FREE, ONCE PER RUN) · 3 LEFT", then "NO MORE HINTS" and "SKIP (HINTS WASTED)", and the hint slip ends with "keep (something, such as…". Too many rules in capitals. Make it one thing: a written "Hint" word with three small pips for what is left, the free one drawn differently, skip as a written word whose cost is shown by the object, and hint text never ellipsized.
+**Brief:** Goal: collapse hint/skip labelling into a pips-and-handwriting control; the rules live in the Library Rules card. Files: `src/ui/hintSlips.js/.css`, run hooks. Done when: no label over 3 words, hint slip fits its full text at 375 and 1280, keyboard hints unchanged.
+**Touches:** RUN. **Conflicts:** hints thread, Q2 phone run.
+
+### G5. Time you can feel at a glance
+**Serves:** objects not numbers, spacing, smooth and physical.
+**Pitch:** Time is shown three ways: a small "0:43" under the word, the candle far left, and the candle's flicker. Pick the object. Keep the candle as the clock, put it where the eye already is (beside the slip), and keep the numeral only when text size or accessibility needs it.
+**Brief:** Goal: one time source with a clear read from 2 m away. Files: `src/ui/candle.js`, run css. Done when: seconds are readable without the numeral, last 10 s unmistakable without red, phone layout keeps the candle beside the slip.
+**Touches:** RUN. **Conflicts:** run screen thread, candle timer.
+
+### G6. A run that builds a story
+**Serves:** persistent world, rarity is the hero, fun.
+**Pitch:** Seven words are seven separate events, and the progress diamonds are plain. Let each finished word leave its book as a spine on a small ledge in the alcove (its tier colour) so by word 7 you can see how the run went, and so the final ledger already has its cast. The combo chain sits on the same ledge.
+**Brief:** Goal: replace the diamonds with a growing row of earned spines; no new numbers. Files: new `src/ui/runLedge.js`, hooks in `showWord`/`finishRun`. Done when: row matches the finished books, skipped words show a gap, reduced motion drops the slide-in, no overlap with the depth rail on phones.
+**Touches:** RUN, RESULT. **Conflicts:** 32 chain, Q5 final ledger.
+
+### G7. The way on after a run
+**Serves:** fun, easy to understand, fewer menu books.
+**Pitch:** After a descent the player lands on a ledger and a Back word. The next step (one more run, today's Daily, or look at the books I missed) should be one written choice on the page, not a trip home. Missed words become a short "to read again" page with their definitions.
+**Brief:** Goal: two or three handwritten next-step words on the final page, chosen by state (Daily unplayed, Daily played, streak at risk). Files: `src/app/final.js`, `src/ui/finalPage.css`. Done when: each state is tested, nothing outlined, Copy and Back unchanged.
+**Touches:** RESULT, HOME. **Conflicts:** Q5, 28.
+
+### G8. Home knows what you should do next
+**Serves:** easy to understand, fewer menu books, spacing.
+**Pitch:** Descend always means today's Daily, even after it is played, and "Unlimited Placement" on a spine is unexplained. Make the plaque honest: unplayed Daily says so, played Daily turns Descend into your Unlimited level. Fold Practice into the Daily book as a section on the same two pages, as the riddle already was.
+**Brief:** Goal: contextual plaque and spine text (backlog 28 covers resume), and one fewer menu book (Practice as a Daily section, same pages). Files: `src/ui/home.js`, `src/ui/dailyBook.js`, `src/app/home.js`. Done when: five books on the stacks, plaque tested in unplayed/played/mid-run states, no spine text clipped at 375.
+**Touches:** HOME. **Conflicts:** 28, merged-modes follow-ups, any home thread.
+
+### G9. [x] A level you can see and trust (PR pending)
+**Serves:** objects not numbers, mechanics clarity.
+**Pitch:** Unlimited promises words "matched to your level" but the 8-word placement feels abrupt and the Lexicon number is hidden. Make the level an object (a rank on the Librarian's Card, a bookmark that moves) and the placement a short interview at the desk, with a visible "your level changed" moment after a run.
+**Brief:** Goal: show the Lexicon as one hand-lettered rank, explain placement in one line before it starts, add a re-placement option, and a quiet level-change line on the final page. Files: `src/core/unlimited.js` (read only), `src/ui/home.js`, final page. Done when: rank text is tested for each band, no new numbers beyond the existing Lexicon.
+**Touches:** HOME, RESULT, MECHANICS. **Conflicts:** difficulty thread, G7, G8.
+
+### [x] G10. Leave a door for zones and topic rooms
+**Serves:** planned zones, topics and levels; integrated not bolted on.
+**Pitch:** Floors, decks and rooms will all be "a place with its own words". Give them one registry now so a new zone is data, not code, and decide where its door lives (a doorway in the niche, a section of the Unlimited book) so nothing is retrofitted. Content is out of scope.
+**Brief:** Goal: a single `places` registry (id, name, floor art key, word filter, unlock rule) read by the picker, floors, shelf bays and Almanac; default place unchanged. Files: new `src/core/places.js`, picker and floors read it. Done when: output with only the default place is byte-identical in tests, saves untouched, one test adds a fake place and sees it in picker and bays.
+**Touches:** CORE, WORLD. **Conflicts:** 35 topic decks (do together), word pool thread.
+
+**Done (PR pending):** `src/core/places.js` registry (default place `deepstack` owns the six floors; `registerPlace` appends a place's floors to FLOORS so bays, Almanac, tracker and ambience see them; word filter and unlock rule fields; door location not yet decided, see G11). Test `test/places.test.js`. Nothing visible changes.
+
+### G11. Pick where a zone's door lives
+**Serves:** planned zones; integrated not bolted on.
+**Pitch:** G10 left the registry; now choose and build the door: a doorway in the niche or a Zones page in the Unlimited book listing `unlockedPlaces`, with locked ones shown as unlit.
+**Brief:** Goal: UI for `places()` with unlock hints. Files: new `src/ui/zonesDoor.js` plus css, one hook in home. Done when: only the default place shows no door.
+**Touches:** HOME. **Conflicts:** 35 topic decks, home threads.
+
+### G12. Run words from a place's filter
+**Pitch:** Make Unlimited and Practice draw from `placeWords(place, WORDS)` so a topic room is only data.
+**Brief:** Goal: pass the active place into `pickWord` callers; default unchanged. Files: `src/core/level.js`, `unlimited.js`. Done when: tests prove the default pool is untouched.
+**Touches:** CORE. **Conflicts:** word pool thread.
+
+### G9a. Rank on the Librarian's Card
+**Pitch:** The rank now lives in the Unlimited book; put the same hand-lettered rank on the Librarian's Card so it follows you home.
+**Brief:** Goal: show `rankFor(lexicon)` on the card via `src/ui/lexiconRank.js`. Done when: tested per band. **Conflicts:** welcome.js, G7.
+
+### G9b. Rank-up moment
+**Pitch:** When a run crosses a band, give the final page one small ink-stamp beat instead of only a line.
+**Brief:** Goal: stamp animation on `.lx-change` when `rankIndex` rises, reduced-motion safe. **Conflicts:** results.js.
 ### R6. Cover sounds per closure
 **Serves:** rarity is the hero, sound lines up with motion.
 **Pitch:** each cover now comes undone its own way (tape, twine, strap, clasp, seal, chain, seam) but the audio is still one paper sound.

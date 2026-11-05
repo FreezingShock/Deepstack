@@ -14,7 +14,7 @@
 /* bookmark ribbon hanging from the top edge */
 .bookbox::before{content:"";position:absolute;top:-8px;right:68px;width:14px;height:46px;background:linear-gradient(90deg,var(--c-black-alpha-33),transparent 30%,var(--c-black-alpha-33)),var(--bs-ribbon);
  clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);box-shadow:0 3px 4px var(--c-black-alpha-88);pointer-events:none}
-.bookbox h2{margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bs-rule);font:500 clamp(24px,3.4vw,30px)/1.1 var(--serif);letter-spacing:.04em;text-transform:uppercase;color:var(--bk)}
+.bookbox h2{margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bs-rule);font:500 clamp(calc(24px*var(--ts)),3.4vw,calc(30px*var(--ts)))/1.1 var(--serif);letter-spacing:.04em;text-transform:uppercase;color:var(--bk)}
 .bookbox p,.bookbox dd,.bookbox .tprow{color:var(--bs-ink)}
 .bookbox a{color:var(--bk)}
 .bookbox kbd{border-color:var(--bs-rule);background:var(--c-white-alpha-44);color:var(--bs-ink)}

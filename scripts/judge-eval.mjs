@@ -10,7 +10,8 @@ import {WORDS} from '../src/core/words.js';
 import {hubTexts, hubSim} from '../src/scorer/hubness.js';
 import {buildPool} from '../src/core/wordPool.js';
 import {cosine, referenceTexts, prepareAnswer, scoreFromSims} from '../src/scorer/embedding.js';
-import {setRelations, relate, relationTexts} from '../src/scorer/relations.js';
+import {setRelations, relate, relationTexts, answerSynonyms} from '../src/scorer/relations.js';
+import {setSenses, senseTexts} from '../src/scorer/senses.js';
 
 const arg = n => { const i = process.argv.indexOf(n); return i < 0 ? null : (process.argv[i + 1] ?? true); };
 const read = p => JSON.parse(readFileSync(new URL(p, import.meta.url)));
@@ -18,6 +19,8 @@ WORDS.push(...buildPool(read('../public/data/words.json')).filter(p => !WORDS.so
 const noRel = process.argv.includes('--no-rel');
 const REL = noRel || !existsSync(new URL('../public/data/relations.json', import.meta.url)) ? null : read('../public/data/relations.json').rel;
 setRelations(REL);
+const SEN = process.argv.includes('--no-senses') || !existsSync(new URL('../public/data/senses.json', import.meta.url)) ? null : read('../public/data/senses.json').words;
+setSenses(SEN);
 const fixtures = ['answers', 'tricky-answers', 'relation-answers'].filter(f => existsSync(new URL(`../test/fixtures/${f}.json`, import.meta.url)));
 const rows = fixtures.flatMap(f => read(`../test/fixtures/${f}.json`).map(r => ({...r, set: f})));
 const wordOf = n => WORDS.find(x => x.w === n);
@@ -38,13 +41,15 @@ async function rawSims() {
     const w = wordOf(r.word);
     if (!refs.has(w.w)) {
       const {group, singles} = relationTexts(w, REL), extra = [...(group ? [group] : []), ...singles];
-      const all = await emb([...referenceTexts(w), ...extra]), n = referenceTexts(w).length;
-      refs.set(w.w, {defs: all.slice(0, n), grp: group ? all[n] : null, singles: all.slice(n + (group ? 1 : 0))}); wvec.set(w.w, (await emb([w.w]))[0]);
+      const {alt, syn} = senseTexts(w, SEN), all = await emb([...referenceTexts(w), ...extra, ...alt, ...syn]), n = referenceTexts(w).length, m = n + (group ? 1 : 0) + (relationTexts(w, REL).singles.length);
+      refs.set(w.w, {defs: all.slice(0, n), grp: group ? all[n] : null, singles: all.slice(n + (group ? 1 : 0), m), alt: all.slice(m, m + alt.length), gloss: all.slice(m + alt.length)}); wvec.set(w.w, (await emb([w.w]))[0]);
     }
     const prep = prepareAnswer(r.answer, w), R = refs.get(w.w);
-    const [a] = await emb([prep.text || r.answer]);
-    out.push({sims: R.defs.map(v => cosine(a, v)), wordSim: cosine(a, wvec.get(w.w)), hub: hubSim(a, hubVecs, w),
-      synSim: R.singles.length ? Math.max(...R.singles.map(v => cosine(a, v))) : null, grpSim: R.grp ? cosine(a, R.grp) : null});
+    const via = answerSynonyms(r.answer, w, REL), [a, ...vv] = await emb([prep.text || r.answer, ...via]);
+    const viaSim = vv.length ? Math.max(...vv.flatMap(v => [...R.defs, ...R.singles].map(x => cosine(v, x)))) : null;
+    out.push({viaSim, sims: R.defs.map(v => cosine(a, v)), wordSim: cosine(a, wvec.get(w.w)), hub: hubSim(a, hubVecs, w),
+      synSim: R.singles.length ? Math.max(...R.singles.map(v => cosine(a, v))) : null, grpSim: R.grp ? cosine(a, R.grp) : null,
+      altSim: R.alt.length ? Math.max(...R.alt.map(v => cosine(a, v))) : null, glossSim: R.gloss.length ? Math.max(...R.gloss.map(v => cosine(a, v))) : null});
   }
   if (cache) writeFileSync(cache, JSON.stringify(out));
   return out;
@@ -53,7 +58,7 @@ async function rawSims() {
 const raw = await rawSims();
 const scored = rows.map((r, i) => {
   const w = wordOf(r.word), prep = prepareAnswer(r.answer, w);
-  const s = scoreFromSims(raw[i].sims, prep, r.answer, {word: w, wordSim: raw[i].wordSim, hub: raw[i].hub, synSim: raw[i].synSim, grpSim: raw[i].grpSim, rel: REL ? relate(r.answer, w, REL) : null});
+  const s = scoreFromSims(raw[i].sims, prep, r.answer, {word: w, wordSim: raw[i].wordSim, hub: raw[i].hub, synSim: raw[i].synSim, grpSim: raw[i].grpSim, viaSim: raw[i].viaSim, altSim: raw[i].altSim, glossSim: raw[i].glossSim, rel: REL ? relate(r.answer, w, REL) : null});
   return {...r, score: s.score};
 });
 

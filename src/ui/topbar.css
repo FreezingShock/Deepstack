@@ -13,14 +13,14 @@
 }
 #bar::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,transparent,rgba(var(--glow),.35) 15%,rgba(var(--glow),.12) 50%,rgba(var(--glow),.35) 85%,transparent)}
 #mark{padding:0;margin:0}
-.plq{position:relative;display:block;font:500 22px/1 var(--fell);letter-spacing:.06em;color:var(--c-oak-1c1209);padding:8px 22px;border-radius:3px;
+.plq{position:relative;display:block;font:500 calc(22px*var(--ts))/1 var(--fell);letter-spacing:.06em;color:var(--c-oak-1c1209);padding:8px 22px;border-radius:3px;
  background:linear-gradient(180deg,var(--c-bronze-56),var(--c-bronze-40) 55%,var(--c-bronze-31));
  box-shadow:inset 0 1px 0 rgba(255,240,200,.45),inset 0 -2px 3px rgba(0,0,0,.35),0 2px 6px var(--c-black-alpha-bb);text-shadow:0 1px 0 rgba(255,235,190,.35)}
 .plq::before,.plq::after{content:"";position:absolute;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--c-brass-d8c08c),var(--c-oak-4a361c));box-shadow:0 1px 1px var(--c-black-alpha-aa)}
 .plq::before{left:7px}.plq::after{right:7px}
 #mark:hover .plq{filter:brightness(1.12)}
 #barNav{display:flex;align-items:center;gap:6px}
-.bbtn{position:relative;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 12px;border-radius:6px;color:var(--c-parchment-79);font:600 13px/1 var(--sans);letter-spacing:.04em;
+.bbtn{position:relative;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 12px;border-radius:6px;color:var(--c-parchment-79);font:600 calc(13px*var(--ts))/1 var(--sans);letter-spacing:.04em;
  background:linear-gradient(180deg,var(--c-oak-15),var(--c-oak-9));border:1px solid var(--c-oak);box-shadow:inset 0 1px 0 rgba(255,214,160,.14),0 2px 3px var(--c-black-alpha-99);text-decoration:none;transition:background var(--m-base),box-shadow var(--m-base),color var(--m-base),transform var(--m-quick)}
 .bbtn:hover{color:var(--c-amber-92);background:linear-gradient(180deg,var(--c-oak-20),var(--c-oak-2d1d0d));box-shadow:inset 0 1px 0 rgba(255,214,160,.2),0 0 14px rgba(var(--glow),.35),0 2px 3px var(--c-black-alpha-99)}
 .bbtn:active{transform:translateY(1px)}
@@ -32,28 +32,28 @@
 .snd .mu{display:none}.snd[aria-pressed="false"] .sw{display:none}.snd[aria-pressed="false"] .mu{display:inline}
 .snd[aria-pressed="false"] svg{color:var(--c-bronze-43)}
 @media(max-width:860px){.bbtn .bl{display:none}.bbtn{width:40px;padding:0;justify-content:center}}
-@media(max-width:470px){#barNav{gap:5px}.plq{font-size:18px;padding:7px 16px}}
+@media(max-width:470px){#barNav{gap:5px}.plq{font-size:calc(18px*var(--ts));padding:7px 16px}}
 /* depth readout on small screens drops under the lintel so it never collides with the buttons */
 @media(max-width:700px){#depthHud{top:calc(100% + 6px);left:50%;padding:3px 12px;border-radius:3px;background:rgba(18,12,7,.82);border:1px solid var(--c-oak)}
- #depthHud b{font-size:20px}}
+ #depthHud b{font-size:calc(20px*var(--ts))}}
 
 /* panels */
 #topPanel{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(6,4,2,.72);backdrop-filter:blur(2px);animation:tpin var(--m-base) var(--e-cruise) both}
 @keyframes tpin{from{opacity:0}}
-.tpbox{position:relative;box-sizing:border-box;width:min(100%,460px);max-height:calc(100dvh - 32px);overflow:auto;padding:26px 28px 24px;border-radius:6px;color:var(--c-parchment-82);font:400 16px/1.55 var(--serif);
+.tpbox{position:relative;box-sizing:border-box;width:min(100%,460px);max-height:calc(100dvh - 32px);overflow:auto;padding:26px 28px 24px;border-radius:6px;color:var(--c-parchment-82);font:400 calc(16px*var(--ts))/1.55 var(--serif);
  background:repeating-linear-gradient(180deg,rgba(255,220,170,.03) 0 1px,transparent 1px 5px),linear-gradient(180deg,var(--c-oak-2d1d10),var(--c-oak-1b1109));border:1px solid var(--c-oak);
  box-shadow:inset 0 1px 0 rgba(255,214,160,.16),0 0 0 4px var(--c-oak-5),0 0 0 5px var(--c-oak-5a3d22),0 24px 60px var(--c-black)}
-.tpbox h2{margin:0 0 12px;font:400 26px/1.1 var(--fell);letter-spacing:.03em;color:var(--c-parchment-86);padding-bottom:10px;border-bottom:1px solid var(--c-oak)}
+.tpbox h2{margin:0 0 12px;font:400 calc(26px*var(--ts))/1.1 var(--fell);letter-spacing:.03em;color:var(--c-parchment-86);padding-bottom:10px;border-bottom:1px solid var(--c-oak)}
 .tpbox p{margin:0 0 10px}.tpbox a{color:var(--c-lamplight);text-decoration:underline;text-underline-offset:2px}
-.tpbox kbd{font:400 12px var(--mono);border:1px solid var(--c-oak);border-radius:3px;padding:1px 5px;background:var(--c-oak-5)}
-.tpx{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;font:400 24px/1 var(--sans);color:var(--c-brass-75);border:1px solid var(--c-oak);background:var(--c-oak-9)}
+.tpbox kbd{font:400 calc(12px*var(--ts)) var(--mono);border:1px solid var(--c-oak);border-radius:3px;padding:1px 5px;background:var(--c-oak-5)}
+.tpx{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;font:400 calc(24px*var(--ts))/1 var(--sans);color:var(--c-brass-75);border:1px solid var(--c-oak);background:var(--c-oak-9)}
 .tpx:hover{color:var(--c-white);box-shadow:0 0 12px rgba(255,176,77,.35)}
 .tpsteps{margin:0 0 12px;padding-left:20px}.tpsteps li{margin-bottom:6px}
-.tpcred dt{font:600 11px var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--c-parchment-dim);margin-top:14px}
+.tpcred dt{font:600 calc(11px*var(--ts)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--c-parchment-dim);margin-top:14px}
 .tpcred dd{margin:3px 0 0}
-.tprow{display:flex;align-items:center;gap:14px;justify-content:space-between;margin:0;padding:11px 0;border:0;border-bottom:1px dotted var(--c-oak-alpha-66);font-family:var(--sans);font-size:15px}
+.tprow{display:flex;align-items:center;gap:14px;justify-content:space-between;margin:0;padding:11px 0;border:0;border-bottom:1px dotted var(--c-oak-alpha-66);font-family:var(--sans);font-size:calc(15px*var(--ts))}
 .tprow label,.tprow>span{flex:1}
-.tphint{font:italic 13px/1.4 var(--serif)!important;color:var(--c-parchment-dim);margin:-4px 0 0!important;padding-bottom:8px;border-bottom:1px dotted var(--c-oak-alpha-66)}
+.tphint{font:italic calc(13px*var(--ts))/1.4 var(--serif)!important;color:var(--c-parchment-dim);margin:-4px 0 0!important;padding-bottom:8px;border-bottom:1px dotted var(--c-oak-alpha-66)}
 .tpsw{flex:none;position:relative;width:46px;height:26px;border-radius:13px;background:var(--c-oak-5);border:1px solid var(--c-oak)}
 .tpsw i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--c-bronze-43);transition:transform var(--m-base),background var(--m-base)}
 .tpsw[aria-checked="true"]{background:var(--c-oak-20);border-color:var(--c-bronze-44)}
@@ -67,9 +67,10 @@
 #topPanel :focus-visible,#bar :focus-visible{outline:3px solid var(--c-lamplight);outline-offset:2px}
 
 /* user settings */
-html[data-text="large"] .center,html[data-text="large"] #all,html[data-text="large"] #stats,html[data-text="large"] #cardlayer,html[data-text="large"] .tpbox{zoom:1.15}
-html[data-text="xlarge"] .center,html[data-text="xlarge"] #all,html[data-text="xlarge"] #stats,html[data-text="xlarge"] #cardlayer,html[data-text="xlarge"] .tpbox{zoom:1.3}
-html[data-text="large"] #bar,html[data-text="xlarge"] #bar{font-size:calc(1em)}
+/* text size: every font size is calc(Npx*var(--ts)), so the setting reaches all text (bar, panels, books, cards, tips) while boxes keep their geometry */
+:root{--ts:1}
+html[data-text="large"]{--ts:1.15}
+html[data-text="xlarge"]{--ts:1.3}
 html[data-contrast="high"]{--mute:var(--c-parchment)}
 html[data-contrast="high"] .sheet{--mute:var(--c-parchment)}
 html[data-contrast="high"] .keys,html[data-contrast="high"] .hatnote,html[data-contrast="high"] .stats,html[data-contrast="high"] .skiphint{color:var(--c-white)}
@@ -78,3 +79,5 @@ html[data-contrast="high"] .tpbox,html[data-contrast="high"] .tpbox p{color:var(
 html[data-contrast="high"] #gauge,html[data-contrast="high"] #shelfcap{text-shadow:0 0 3px var(--c-black),0 0 8px var(--c-black)}
 html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-motion="reduce"] *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-iteration-count:1!important}
 html[data-motion="reduce"] .word span{opacity:1;transform:none}
+/* Graphics has four choices (Auto, High, Medium, Low): on a phone the row wrapped past the panel and clipped Low. Legend gets its own line, buttons share the width. */
+@media (max-width:480px){#sQual{flex-wrap:wrap;row-gap:6px}#sQual legend{flex:0 0 100%}#sQual button{flex:1 1 0;min-width:0;margin-left:0;padding:0 4px}#sQual button+button{margin-left:6px}}

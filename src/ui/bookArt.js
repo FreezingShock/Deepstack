@@ -9,6 +9,8 @@ import {PALETTE} from '../theme/colors.js';
 import {TIERS} from '../core/tiers.js';
 import {mulberry} from '../core/daily.js';
 import {spineFont} from './spineLabel.js';
+import {drawSigil} from './sigil.js';
+import {Quality} from './quality.js';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 export const hex = h => { const n = parseInt(h.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]; };
@@ -158,6 +160,8 @@ export function bookArt(c, o, t = 0) {
     } else c.fillStyle = PALETTE.ink;
     c.fillText(o.word, 0, 0); c.restore();
   }
+  // the word's own sigil, stamped low on the cover (spines drop it in low graphics mode; the held book always keeps it)
+  if (o.word && w >= 14 && (o.held || Quality.tier() !== 'low')) drawSigil(c, o.word, T, 0, y0 + h * .925, Math.min(w * .36, h * .07, o.held ? 40 : 9));
   // gems / seals
   if (T === 5) { c.fillStyle = PALETTE.blood40; c.beginPath(); c.arc(0, y0 + h * .14, Math.min(5, w * .2), 0, 6.3); c.fill(); c.fillStyle = PALETTE.blood78; c.fillRect(-1, y0 + h * .14 - 2, 1.5, 1.5); }
   if (T === 6) { c.save(); c.translate(0, y0 + h * .14); c.rotate(.785); const r = Math.min(5.5, w * .2); const gg = c.createLinearGradient(-r, -r, r, r); gg.addColorStop(0, PALETTE.teal96); gg.addColorStop(.55, PALETTE.aqua); gg.addColorStop(1, PALETTE.teal40); c.fillStyle = gg; c.shadowColor = PALETTE.aqua; c.shadowBlur = 10; c.fillRect(-r, -r, r * 2, r * 2); c.restore(); }

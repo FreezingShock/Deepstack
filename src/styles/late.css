@@ -8,7 +8,7 @@
 /* phones: fit the word stage above the shelf without clipping the hint and skip buttons */
 @media(max-width:640px){
  .slip textarea{height:104px}
- .word{font-size:clamp(40px,11vw,60px)}
+ .word{font-size:calc(clamp(40px,11vw,60px)*var(--ts))}
  .pos{margin:2px 0 6px}
  .hintline{min-height:22px;margin-top:6px}
  .stage-row,#stage .row{margin-top:4px}
@@ -17,4 +17,8 @@
 /* phones: the "quick judge" notice is quiet (still on hover/long-press via title); loading progress stays */
 @media(max-width:560px){#jstat[data-state=error]{display:none}}
 /* short viewports (landscape, or the on-screen keyboard open): give the word stage the room the shelf was using */
-@media(max-height:480px){:root{--nb:10px;--nt:60px}.center{padding-top:6px}.slip textarea{height:68px}.word{font-size:clamp(32px,9vw,44px)}.hintline{min-height:0}.wlabel,.pos,#depthHud{display:none}}
+@media(max-height:480px){:root{--nb:10px;--nt:60px}.center{padding-top:6px}.slip textarea{height:68px}.word{font-size:calc(clamp(32px,9vw,44px)*var(--ts))}.hintline{min-height:0}.wlabel,.pos,#depthHud{display:none}}
+/* Q8: stacks stand closer under the plaque; dust never reads as marks on the caption */
+[data-room=roomy] .home .hsecs{padding-top:calc(var(--hz-g,16px)*.4)}
+.home .hz-plaque .next{position:relative;isolation:isolate}
+.home .hz-plaque .next::before{content:"";position:absolute;inset:-10px -40px;z-index:-1;background:radial-gradient(ellipse at center,var(--c-black-alpha-66),transparent 72%);pointer-events:none}

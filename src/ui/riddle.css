@@ -1,0 +1,17 @@
+/* Riddle Shelf: the slip is the definition, lettered into the stone like a Daily word; the answer is one short line. */
+#stage.riddle .rdef{margin:10px auto 0;max-width:min(30ch,92vw);text-align:center;font:italic 400 clamp(calc(24px*var(--ts)),3.4vw,calc(38px*var(--ts)))/1.22 var(--serif);color:var(--c-parchment-88);letter-spacing:.005em;text-wrap:balance;
+ text-shadow:0 -1px 0 color-mix(in srgb,var(--c-white) 20%,transparent),0 2px 0 var(--c-black),0 0 34px color-mix(in srgb,var(--c-amber-ffb84d-alpha-88) calc(8% + 26% * var(--fr)),transparent),0 6px 22px var(--c-black-alpha-aa);
+ animation:rise var(--m-page) var(--e-settle) both}
+#stage.riddle .rdef::before{content:"\201C"}
+#stage.riddle .rdef::after{content:"\201D"}
+#stage.riddle .pos{margin:10px 0 8px}
+#stage.riddle .slip textarea.rans{height:58px;min-height:0;padding:12px 20px 0 70px;font-size:calc(30px*var(--ts));line-height:40px;overflow:hidden;white-space:nowrap}
+#stage.riddle .slip{background-position:0 0,0 14px,0 0}
+@media(max-height:780px){#stage.riddle .rdef{font-size:calc(clamp(21px,3vw,30px)*var(--ts))}#stage.riddle .slip textarea.rans{height:52px}}
+@media(max-width:640px){
+ #stage.riddle .rdef{font-size:calc(clamp(19px,5.6vw,24px)*var(--ts));line-height:1.2;max-width:94vw;margin-top:6px}
+ #stage.riddle .slip textarea.rans{height:48px;font-size:calc(26px*var(--ts));line-height:34px;padding:8px 14px 0 58px}
+ #stage.riddle .pos{margin:6px 0 4px;font-size:calc(16px*var(--ts))}
+}
+@media(max-width:640px) and (max-height:700px){#stage.riddle .rdef{font-size:calc(clamp(17px,5vw,21px)*var(--ts))}#stage.riddle .wlabel{display:none}#stage.riddle .clock{margin-bottom:4px}#stage.riddle .hintline{margin-top:2px}}
+@media(prefers-reduced-motion:reduce){#stage.riddle .rdef{animation:none}}
