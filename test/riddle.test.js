@@ -52,11 +52,11 @@ test('verdicts exist for every kind and never contain the word', () => {
     const v=riddleVerdict({kind:k},frugal);assert.ok(v&&!v.toLowerCase().includes('frugal'),k);
   }
 });
-test('riddle hints are only the sentence and neighbour clues, and never spell the word', () => {
+test('riddle hints are sideways clues only, and never spell the word', () => {
   const data=JSON.parse(readFileSync(new URL('../public/data/words.json',import.meta.url),'utf8'));
   let n=0,withHint=0;const pool=buildPool(data);
   for (const w of [...WORDS,...pool]) { const l=riddleLadder(w,rel[w.w]);n++;if(l.length)withHint++; for (const h of l) {
-    assert.ok(['sentence','synonym'].includes(h.kind));assert.ok(!h.text.toLowerCase().includes(w.w.toLowerCase()));
+    assert.ok(['sentence','kin','kind','opposite','synonym'].includes(h.kind));assert.ok(!h.text.toLowerCase().includes(w.w.toLowerCase()));
   } }
   assert.ok(withHint/n>.6,'most riddles get a hint: '+withHint/n);
 });

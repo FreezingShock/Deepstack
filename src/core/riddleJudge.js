@@ -3,7 +3,6 @@
    a broader or related word is a little less. Relations come from public/data/relations.json (see src/scorer/relations.js);
    curated words also bring their hand-written concept terms. */
 import {stem} from '../scorer/lexical.js';
-import {hintLadder, HINT_COST} from './hints.js';
 
 export const RIDDLE_SCORES = {exact: 100, form: 96, typo: 93, synonym: 58, concept: 52, broader: 40, near: 30, related: 24, defWord: 18, family: 6, none: 0};
 
@@ -90,14 +89,5 @@ export function riddleVerdict(j, word) {
   return l[word.id % l.length];
 }
 
-/** Hints for a riddle: the sentence and neighbour clues from the Daily ladder, minus "the definition begins" (the slip already
- *  is the definition). Words without a neighbour clue borrow one synonym from the relations, so most riddles get some help.
- *  Never spells the word. */
-export function riddleLadder(word, rel = null) {
-  const out = hintLadder(word).filter(h => h.kind !== 'opening');
-  if (!out.some(h => h.kind === 'synonym')) {
-    const t = (rel?.s || []).map(x => x.trim()).find(x => /^[a-z]{3,14}$/.test(x) && x.slice(0, 4) !== word.w.slice(0, 4) && !x.includes(word.w) && !word.w.includes(x));
-    if (t) out.push({kind: 'synonym', cost: HINT_COST.synonym, text: t});
-  }
-  return out;
-}
+/** Hints for a riddle live in riddleHints.js: blanked sentence, kin, kind, opposite, near synonym; never the word. */
+export {riddleHintLadder as riddleLadder} from './riddleHints.js';
