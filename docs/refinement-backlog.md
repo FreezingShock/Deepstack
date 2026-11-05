@@ -1040,7 +1040,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 
 ## Q. Audit 2026-11-04 (fresh walk of main at 1640, 1280 and 375; screenshots in `screenshots/audit/`)
 
-### Q1. Open books hide the home scene behind them
+### Q1. [x] Open books hide the home scene behind them (this PR: wordmark and plaque fade out while a book is open)
 **Serves:** integrated not bolted on, dark and mysterious.
 **Pitch:** Every menu book opens over the home screen but the gilt "Deepstack" wordmark, chains and plaque still peek out above its top edge, half-cut, which reads as a glitch.
 **Brief:** Goal: while a book is open, dim and lower the home hero (wordmark, lanterns, No. plaque, mantel) so only shelves show behind the book. Files: `src/ui/bookOpen.css` (or a new `bookBackdrop.css`), hook where `#home.book-opening` is set. Done when: no wordmark pixels above the book at 1280 and 1640, close restores it with the existing motion language, reduced motion has no fade.
