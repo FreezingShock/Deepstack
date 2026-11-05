@@ -1,17 +1,17 @@
 /* The attic is a room in the world canvas (world/atticRoom.js). These are the DOM controls around it:
    the ladder cue on home, "Down the ladder" while up there, and the home panel sliding away. */
 .attic-cue-home{position:fixed;z-index:6;right:18px;top:78px;margin:0;padding:5px 14px 7px;border:0;border-radius:6px;background:linear-gradient(180deg,var(--c-oak-2b1b10),var(--c-oak-1a110a));
- color:var(--c-brass-d8c08c);font:500 20px/1.1 var(--bs-hand,var(--serif));cursor:pointer;box-shadow:0 2px 8px var(--c-black-alpha-88),inset 0 0 0 1px var(--c-oak-5a3d22);transition:color .2s,transform .25s}
+ color:var(--c-brass-d8c08c);font:500 calc(20px*var(--ts))/1.1 var(--bs-hand,var(--serif));cursor:pointer;box-shadow:0 2px 8px var(--c-black-alpha-88),inset 0 0 0 1px var(--c-oak-5a3d22);transition:color .2s,transform .25s}
 .attic-cue-home:hover,.attic-cue-home:focus-visible{color:var(--c-brass-f6d98a);transform:translateY(-2px)}
 .attic-cue-home[hidden],.attic-down[hidden],#home[hidden]~.attic-cue-home,#home[hidden]~.attic-down{display:none}
 .attic-down{position:fixed;z-index:6;left:50%;top:64px;transform:translateX(-50%);margin:0;padding:4px 16px 6px;border:0;border-bottom:2px solid var(--c-brass-67-alpha-88);background:var(--c-black-alpha-88);border-radius:0 0 6px 6px;white-space:nowrap;
- color:var(--c-brass-d8c08c);font:500 24px/1.1 var(--bs-hand,var(--serif));cursor:pointer}
+ color:var(--c-brass-d8c08c);font:500 calc(24px*var(--ts))/1.1 var(--bs-hand,var(--serif));cursor:pointer}
 .attic-down:hover,.attic-down:focus-visible{color:var(--c-brass-f6d98a)}
 /* the panel rides with the world camera (atticHome.js sets its transform and opacity every frame), so no transition */
 #home.attic-away{pointer-events:none}
-@media(max-width:560px){.attic-down{font-size:20px;top:58px}.attic-cue-home{right:10px;top:64px;font-size:17px;padding:4px 10px 6px}}
+@media(max-width:560px){.attic-down{font-size:calc(20px*var(--ts));top:58px}.attic-cue-home{right:10px;top:64px;font-size:calc(17px*var(--ts));padding:4px 10px 6px}}
 @media(prefers-reduced-motion:reduce){.attic-cue-home{transition:none}}
 /* which room of the attic you are in; a quiet line low in the shelf strip, hidden unless there is more than one room */
 .attic-depth{position:fixed;z-index:6;left:50%;bottom:8px;transform:translateX(-50%);margin:0;padding:2px 12px;border-radius:4px;background:var(--c-black-alpha-88);pointer-events:none;white-space:nowrap;
- color:var(--c-brass-d8c08c);font:12px/1.3 "Special Elite",var(--serif);letter-spacing:.04em}
+ color:var(--c-brass-d8c08c);font:calc(12px*var(--ts))/1.3 "Special Elite",var(--serif);letter-spacing:.04em}
 .attic-depth[hidden],#home[hidden]~.attic-depth{display:none}

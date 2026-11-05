@@ -1,8 +1,8 @@
 /* Shelf bays: brass labels with a count, a leaning library ladder with a rail, piled copies, and a book that is
    pulled out of its stack before the detail card opens. Colors come from tokens only. */
 .bk-spread.menu .splaque{flex-direction:column;align-items:center}
-.bk-spread.menu .splaque span b{margin-left:10px;padding-left:10px;border-left:1px solid color-mix(in srgb,var(--c-oak-1c1209) 45%,transparent);font:600 13px/1 var(--sans);letter-spacing:.06em;font-variant-numeric:tabular-nums}
-.bk-spread.menu .splaque em{position:relative;z-index:0;margin-top:-2px;padding:6px 14px 3px;max-width:92%;border-radius:0 0 3px 3px;font:italic 400 13px/1.2 var(--serif);text-align:center;color:var(--c-oak-1c1209);
+.bk-spread.menu .splaque span b{margin-left:10px;padding-left:10px;border-left:1px solid color-mix(in srgb,var(--c-oak-1c1209) 45%,transparent);font:600 calc(13px*var(--ts))/1 var(--sans);letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.bk-spread.menu .splaque em{position:relative;z-index:0;margin-top:-2px;padding:6px 14px 3px;max-width:92%;border-radius:0 0 3px 3px;font:italic 400 calc(13px*var(--ts))/1.2 var(--serif);text-align:center;color:var(--c-oak-1c1209);
  background:linear-gradient(180deg,var(--c-bronze-40),var(--c-bronze-31));box-shadow:inset 0 -2px 3px rgba(0,0,0,.3),0 2px 5px var(--c-black-alpha-bb);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .bk-spread.menu .splaque+.scase{margin-top:0}
 .bk-spread.menu .splaque:has(em){margin-bottom:-4px}
@@ -28,5 +28,5 @@
  .bk-spread.menu .scase[data-lad=r] .sshelf{padding-right:30px}.bk-spread.menu .scase[data-lad=l] .sshelf{padding-left:30px}
  .bk-spread.menu .sb-spine{gap:3px;padding:0 3px 0 2px}
  .bk-spread.menu .sb-band:last-child{display:none}
- .bk-spread.menu .sb-t{font-size:10.5px;letter-spacing:.02em;padding:3px 1px}
+ .bk-spread.menu .sb-t{font-size:calc(10.5px*var(--ts));letter-spacing:.02em;padding:3px 1px}
 }

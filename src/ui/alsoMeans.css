@@ -1,8 +1,8 @@
 /* "Also means": other meanings under the definition. Quiet and compact so the card does not grow much taller. */
-.means{margin:4px 0 0;font-family:var(--font-hand,inherit);font-size:15px;line-height:1.3;opacity:.8}
-.means small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+.means{margin:4px 0 0;font-family:var(--font-hand,inherit);font-size:calc(15px*var(--ts));line-height:1.3;opacity:.8}
+.means small{display:block;font-size:calc(11px*var(--ts));letter-spacing:.14em;text-transform:uppercase;opacity:.7}
 .means ul{margin:2px 0 0;padding:0;list-style:none}
 .means li{margin:0;padding:0 0 0 2px;overflow-wrap:anywhere}
-.means em{font-style:normal;font-size:12px;opacity:.7;margin-right:2px}
+.means em{font-style:normal;font-size:calc(12px*var(--ts));opacity:.7;margin-right:2px}
 .means i{font-style:normal;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-@media (max-width:420px){.means{font-size:14px}}
+@media (max-width:420px){.means{font-size:calc(14px*var(--ts))}}
