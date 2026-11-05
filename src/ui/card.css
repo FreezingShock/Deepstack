@@ -17,7 +17,7 @@
 .book .page .chips span{font:600 11px var(--label);letter-spacing:.12em;text-transform:uppercase;color:var(--tm);border:1px solid var(--c-white-alpha-22);border-radius:99px;padding:3px 11px}
 .book .page .chips b{color:var(--tx)}
 .book .page .chips .cb{color:var(--th);border-color:color-mix(in srgb,var(--tc) 60%,var(--c-black))}
-.book .page .chips .cs{display:inline-flex;align-items:baseline;gap:5px}
+.book .page .chips .cs{display:inline-flex;align-items:baseline;gap:0}
 .book .page .chips .cs b{font-weight:600;color:var(--tm)}
 .book .page .meter{width:56px;height:3px;background:var(--c-white-alpha-1c);align-self:center;display:inline-block}
 .book .page .depthgain{font:600 11px var(--label);letter-spacing:.12em;text-transform:uppercase;color:var(--tm)}
