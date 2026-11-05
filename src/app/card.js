@@ -9,6 +9,7 @@ import {$,RM,esc,sleep} from './util.js';
 import {stampCover} from '../ui/coverSigil.js';
 import {FX} from './fx.js';
 import {countUp} from './chrome.js';
+import {alsoAcceptedHTML} from '../ui/alsoAccepted.js';
 
 /* ---------- result card ---------- */
 export let cardOpts=null;
@@ -22,6 +23,7 @@ export function openCard(b,opts={}){
    <h2>${esc(b.w)}<small>${esc(b.pos)}</small></h2>
    <p class="verdict ${opts.fresh?'':'on'}" id="vd">${esc(b.verdict)}</p>
    <p class="def">${esc(b.def)}</p>
+   ${alsoAcceptedHTML(b)}
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
    ${feedbackHTML(b)}
    <div class="chips">
