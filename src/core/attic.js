@@ -64,3 +64,27 @@ export function dustOff(book,floorId,floorCount=6){
  if(!book||hasFloor(book)||!Number.isInteger(floorId)||floorId<0||floorId>=floorCount)return false;
  book.fl=floorId;book.fld=1;return true;
 }
+
+/* One book per word: the same word found again and again would only repeat on the floor, so the newest copy stands
+   in for them all and carries how many there are (`n`). Order is kept (recent guesses first, then earlier finds), and
+   a word already shown among the recent guesses is not repeated among the earlier finds. Pure; items are not mutated. */
+export function atticTidy(items){
+ const at=new Map(),out=[];
+ for(const x of items||[]){
+  const k=String(x.b&&x.b.w||'').toLowerCase();
+  const seen=at.get(k);
+  if(seen){seen.n=(seen.n||1)+1;continue;}
+  const y={...x,n:1};at.set(k,y);out.push(y);
+ }
+ return out;
+}
+
+/* The attic's sections, in the order you climb through them: first the recent guesses, then the earlier finds, one
+   section per month they were found (newest month first; books with no date go in an undated section last).
+   Each is {key,title,items}; layout splits a crowded section into "continued" sections. Pure. */
+export function atticSections(items){
+ const recent=(items||[]).filter(x=>x.recent),rest=(items||[]).filter(x=>!x.recent),out=[];
+ if(recent.length)out.push({key:'recent',title:'Recent guesses',items:recent});
+ for(const c of atticCrates(rest,{perCrate:1e9}))out.push({key:c.key,title:c.key==='none'?'Undated finds':`Found in ${c.label}`,items:c.items});
+ return out;
+}

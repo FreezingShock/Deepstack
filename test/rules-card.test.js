@@ -38,7 +38,7 @@ test('cabinet: three drawers (only the top is a control), a veil that closes the
  assert.equal((h.match(/class="cc-fake" aria-hidden="true"/g)||[]).length,2);
  assert.match(h,/class="cc-scrim" aria-hidden="true"/);
  const l=ledgerHTML({streak:3,deepest:844,books:7,floor:'The Hollow'});
- for(const t of ['Streak','Deepest','844 ft','Books','The Hollow','Borrower’s record'])assert.ok(l.includes(t),t);
+ for(const t of ['Streak','Deepest','844 ft','Books','The Hollow','Librarian’s Card'])assert.ok(l.includes(t),t);
  assert.match(l,/aria-label="Your records"/);
  assert.ok(!ledgerHTML({streak:0,deepest:0,books:0,floor:''}).includes('Floor'));
 });

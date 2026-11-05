@@ -22,7 +22,7 @@
 
 /* the due-date stamp on the ledger page */
 .home .ledger .dp-mark{position:absolute;right:20px;bottom:18px;display:none;padding:2px 8px;border:2px solid var(--c-book-red);border-radius:3px;
- font:700 14px/1.1 var(--mono);letter-spacing:.1em;color:var(--c-book-red);opacity:.82;transform:rotate(-7deg);mix-blend-mode:multiply;pointer-events:none}
+ font:700 calc(14px*var(--ts))/1.1 var(--mono);letter-spacing:.1em;color:var(--c-book-red);opacity:.82;transform:rotate(-7deg);mix-blend-mode:multiply;pointer-events:none}
 .home .ledger .dp-mark.on{display:block}
 .home .ledger .dp-mark.thump{animation:dp-thump var(--m-quick) var(--e-settle) 1}
 @keyframes dp-thump{0%{transform:rotate(-7deg) scale(1.7);opacity:0}60%{transform:rotate(-7deg) scale(.94);opacity:.95}100%{transform:rotate(-7deg) scale(1);opacity:.82}}

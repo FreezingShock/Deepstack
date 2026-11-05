@@ -1,0 +1,6 @@
+/* One scrollbar for the whole site: slim, no track, a dim brass thumb. Most surfaces should not scroll at all;
+   this is only what shows when one genuinely has to (long book pages on phones, short windows). */
+*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--c-brass-70) 38%,transparent) transparent}
+/* the home and run screens scroll on short windows but never show a bar (base.css hid it the webkit way, which
+   the standard property above would otherwise override) */
+.center,.panel .filters{scrollbar-width:none}

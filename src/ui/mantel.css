@@ -6,7 +6,7 @@
 .home .mantel-beam{position:relative;height:9px;margin:0 -6px;border-radius:2px 2px 1px 1px;
  background:linear-gradient(180deg,var(--c-oak-24),var(--c-oak-21) 55%,var(--c-oak-12));
  box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 0 0 1px var(--c-black),0 10px 14px -8px var(--c-black)}
-.home .mantel-plate{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:0 7px;white-space:nowrap;font:600 7.5px/10px var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--c-oak-1a1208);
+.home .mantel-plate{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:0 7px;white-space:nowrap;font:600 calc(7.5px*var(--ts))/calc(10px*var(--ts)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--c-oak-1a1208);
  border:1px solid var(--c-bronze-51);border-radius:2px;background:linear-gradient(180deg,var(--c-parchment-85),var(--c-parchment-dim))}
 /* ---- one candle ---- */
 .home .mc{position:relative;flex:0 0 auto;display:block;width:calc(11px*var(--mc-s));height:calc(var(--h,28px)*var(--mc-s))}

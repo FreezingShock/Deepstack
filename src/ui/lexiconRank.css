@@ -1,0 +1,9 @@
+/* Lexicon rank in the Unlimited book and the level-change line on the final page. */
+.pg-sec .lx-rank{display:flex;flex-direction:column;gap:2px;margin:14px 0 6px}
+.lx-rank .lx-lbl{font:600 calc(11px*var(--ts)) var(--label);letter-spacing:.3em;text-transform:uppercase;color:var(--c-bronze-33)}
+.lx-rank .lx-name{font:700 clamp(calc(24px*var(--ts)),3vw,calc(32px*var(--ts)))/1.15 var(--pen-hand,'Fuzzy Bubbles',cursive);transform:rotate(-1.2deg);transform-origin:left center}
+.lx-rank.unplaced .lx-name{opacity:.75}
+.lx-rank .lx-note{font:italic 400 calc(14px*var(--ts))/1.4 var(--serif)}
+.lx-again{margin:2px 0 8px}
+.lx-again .bs-start{font:600 calc(14px*var(--ts)) var(--pen-hand,'Fuzzy Bubbles',cursive)}
+.fin .lx-change{margin:6px 0 0;font:italic 400 calc(15px*var(--ts))/1.4 var(--serif);opacity:.85}

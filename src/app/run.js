@@ -9,7 +9,8 @@ import {replayLayout,ROMAN} from '../core/replay.js';
 import {resumable,snapshotRun} from '../core/dailyRun.js';
 import {attachInk} from '../ui/inkInput.js';
 import {paintRun} from '../ui/runScreen.js';
-import {hintButtonLabel,skipButtonLabel,hintSlipHtml} from '../ui/hintSlips.js';
+import {writeInRun} from '../ui/runWriteIn.js';
+import {paintHintControls,hintSlipHtml} from '../ui/hintSlips.js';
 import {feedbackData} from '../core/feedback.js';
 import {FT,S,TIERS,dailyNo,dailyWords,floorAtFt,floorAtRow,save,tierOf,utc,wordsReady} from './state.js';
 import {World} from '../world/world.js';
@@ -38,9 +39,10 @@ export async function startDaily(practice){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
-export async function startUnlimited(){
+export async function startUnlimited(replace=false){
  await wordsReady;
  if(modelStatus().state==='loading')await whenReady(8000);
+ if(replace&&S.rating.placed){S.rating={...S.rating,placed:false};save();}
  const placing=!S.rating.placed,n=placing?core.PLACEMENT_WORDS:core.RUN_WORDS;
  const first=core.nextWord(S.rating,0,n,[]);
  prepareWords([first]).catch(()=>{});
@@ -52,7 +54,7 @@ export async function startUnlimited(){
 export function pipsHTML(){return `<div class="pips" aria-label="word ${run.i+1} of 7">${run.words.map((_,i)=>{const r=run.results[i];const T=r?TIERS[r.tier]:null;return `<i class="pip ${i===run.i?'now':''} ${r?'done':''}" style="${T?`background:${T.spine};box-shadow:0 0 8px ${T.spine}99`:''}"></i>`;}).join('')}</div>`;}
 export function showWord(){
  if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();run.limit=45000;
- const el=ui.stage;el.hidden=false;el.className='center fadein';
+ const el=ui.stage;el.hidden=false;el.className='center';
  el.innerHTML=`<div class="candle" id="candle" aria-hidden="true"><div class="wax" id="wax"><i class="flame"></i><i class="wick"></i></div><div class="plate"></div></div><div class="sheet">${pipsHTML()}
   <div class="wlabel">Word ${run.i+1} of ${run.words.length}</div>${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
   <div class="word" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
@@ -62,6 +64,7 @@ export function showWord(){
   <div class="hintline" id="hl" aria-live="polite"></div>
   <div class="row" style="margin-top:6px"><button class="btn" id="hint"></button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
  World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});
+ writeInRun(el);
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
  attachInk(ta);
@@ -71,10 +74,10 @@ export function showWord(){
  clearInterval(timerId);
  timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;Sfx.candle(fr);f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);paintRun(left,run.limit);if(left<=0)submit(!$('#ans').value.trim());},100);
 }
-export function paintHintBtn(){const b=$('#hint');if(!b)return;const n=run.ladder[run.hintN];b.disabled=!n;b.textContent=hintButtonLabel(n,n?(run.freeHint?0:n.cost*FT|0):0,run.ladder.length-run.hintN);const k=$('#skip');if(k)k.textContent=skipButtonLabel(run.combo,run.hintN);}
+export function paintHintBtn(spent){paintHintControls(document,run,FT,spent);}
 export function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;const free=!!run.freeHint;run.freeHint=false;if(!free)run.hintSpent=(run.hintSpent||0)+n.cost;
  const hl=$('#hl');
- hl.insertAdjacentHTML('beforeend',hintSlipHtml(n,run.words[run.i].w,free?0:n.cost*FT|0,run.hintN));Sfx.flip&&Sfx.flip();requestAnimationFrame(()=>hl.classList.add('on'));paintHintBtn();$('#ans').focus({preventScroll:true});}
+ hl.insertAdjacentHTML('beforeend',hintSlipHtml(n,run.words[run.i].w,free?0:n.cost*FT|0,run.hintN));Sfx.flip&&Sfx.flip();requestAnimationFrame(()=>hl.classList.add('on'));paintHintBtn(true);$('#ans').focus({preventScroll:true});}
 export async function submit(skipped){
  if(!run||run.busy)return;const w=run.words[run.i];let text=$('#ans').value.trim();
  if(!skipped&&!text){const f=$('#fld');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');return;}
