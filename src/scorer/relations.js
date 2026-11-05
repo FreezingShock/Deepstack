@@ -106,3 +106,15 @@ export function relationTexts(word, rel = REL) {
   const s = (rel?.[word.w]?.s || []).filter(x => !x.includes(' ') || x.split(' ').length <= 2).slice(0, 8);
   return {group: s.length >= 2 ? s.slice(0, 6).join(', ') : null, singles: s};
 }
+
+/** Single-word synonyms of what the player wrote, for a short answer ("convince" -> persuade, draw, push): a second chance when
+ *  the answer itself is a word the embedding knows poorly. The judge embeds these and credits the closest, at a discount. */
+export function answerSynonyms(text, word, rel = REL, max = 6) {
+  if (!rel) return [];
+  const A = analyze(text, word), toks = A.pos.filter(o => !FILL.has(o.raw) && !GENERIC.has(o.s));
+  if (toks.length !== 1 || A.usedWord) return []; // naming the word itself earns nothing, so no second chance either // only a one-word answer; longer ones are phrases the embedding handles
+  const raw = toks[0].raw, r = rel[raw] || rel[[...(byStem?.get(toks[0].s) || [])][0]] || null;
+  if (!r) return [];
+  const w = word.w.toLowerCase();
+  return [...new Set([...(r.s || []), ...(r.c || [])])].filter(x => /^[a-z]{4,}$/.test(x) && x.slice(0, 4) !== raw.slice(0, 4) && x.slice(0, 4) !== w.slice(0, 4)).slice(0, max);
+}
