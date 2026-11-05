@@ -29,10 +29,10 @@
  color:var(--c-parchment-f3e3bd);background:linear-gradient(var(--c-bronze-35),var(--c-oak-3d2916));border:1px solid var(--c-brass);box-shadow:0 2px 4px var(--c-black-alpha-aa),inset 0 1px 0 var(--c-white-alpha-26);transition:filter var(--m-base),box-shadow var(--m-base)}
 #tracker li button::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:3px 0 0 3px;background:var(--fc)}
 #tracker li button b{font:600 13px/1.2 var(--serif);color:var(--c-parchment-f3e3bd);letter-spacing:.01em;text-shadow:0 1px 0 var(--c-oak-1b110a)}
-#tracker li button small{font:600 9px var(--label);letter-spacing:.12em;text-transform:uppercase;color:var(--c-brass-72);font-variant-numeric:tabular-nums;text-shadow:0 1px 0 var(--c-oak-1b110a)}
+#tracker li button small{font:600 12px var(--label);letter-spacing:.06em;text-transform:uppercase;color:var(--c-parchment-f3e3bd);font-variant-numeric:tabular-nums;text-shadow:0 1px 0 var(--c-oak-1b110a)}
 #tracker li:not(.reached) button{background:linear-gradient(var(--c-oak-13),var(--c-oak-1a110a));border-color:var(--c-oak-21);box-shadow:inset 0 0 8px var(--c-black-alpha-aa);cursor:default}
-#tracker li:not(.reached) button b{color:var(--c-bronze-45);text-shadow:none}
-#tracker li:not(.reached) button small{color:var(--c-bronze-34);text-shadow:none}
+#tracker li:not(.reached) button b{color:var(--c-fine-locked);text-shadow:none}
+#tracker li:not(.reached) button small{color:var(--c-fine-locked-dim);text-shadow:none}
 #tracker li:not(.reached) button::before{opacity:.35}
 #tracker li:not(.reached)::before{opacity:.4}
 #tracker li.cur button{box-shadow:0 0 14px color-mix(in srgb,var(--fc) 70%,transparent),0 2px 4px var(--c-black-alpha-aa),inset 0 1px 0 var(--c-white-alpha-33);filter:brightness(1.15)}
