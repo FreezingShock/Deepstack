@@ -40,6 +40,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 ## In progress (do not start)
 - [x] S1 + S2. Big sigils on result-card covers, set books share a ring (`src/ui/coverSigil.js`, PR #174)
 - [x] F / 102. Fallen books in front of shelf gaps (toppled, stacked, open face-down; `src/ui/fallenBooks.js`, PR #140)
+- [x] Q7. Empty pages for a new player: Almanac, Sets and Riddle books get a faint pen sketch plus one written line (`src/ui/emptyPages.js`); Shelf left to Q4 (#181); margin notes no longer repeat on a spread (PR TBD)
 - [x] C. Attic for earlier Shelf finds (backfill floors from Daily history, scroll-up attic)
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
 - [~] Spacing and type pass on every screen
@@ -1340,7 +1341,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: one time source with a clear read from 2 m away. Files: `src/ui/candle.js`, run css. Done when: seconds are readable without the numeral, last 10 s unmistakable without red, phone layout keeps the candle beside the slip.
 **Touches:** RUN. **Conflicts:** run screen thread, candle timer.
 
-### G6. A run that builds a story
+### G6. A run that builds a story (DONE, see PR)
 **Serves:** persistent world, rarity is the hero, fun.
 **Pitch:** Seven words are seven separate events, and the progress diamonds are plain. Let each finished word leave its book as a spine on a small ledge in the alcove (its tier colour) so by word 7 you can see how the run went, and so the final ledger already has its cast. The combo chain sits on the same ledge.
 **Brief:** Goal: replace the diamonds with a growing row of earned spines; no new numbers. Files: new `src/ui/runLedge.js`, hooks in `showWord`/`finishRun`. Done when: row matches the finished books, skipped words show a gap, reduced motion drops the slide-in, no overlap with the depth rail on phones.
@@ -1390,3 +1391,8 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### G9b. Rank-up moment
 **Pitch:** When a run crosses a band, give the final page one small ink-stamp beat instead of only a line.
 **Brief:** Goal: stamp animation on `.lx-change` when `rankIndex` rises, reduced-motion safe. **Conflicts:** results.js.
+
+### G6a. Ledge spines open the book
+**Pitch:** The spines in the run row are only for show; tapping one could peek its answer, like the alcove ledge does.
+**Brief:** Goal: make `.runledge .spine` focusable with the same tip as `ledgeTip`. Files: `src/ui/runLedge.js`. Done when: keyboard and hover show word, tier and score.
+**Touches:** RUN. **Conflicts:** G4, G5.
