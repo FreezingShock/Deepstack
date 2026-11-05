@@ -55,6 +55,6 @@
 /* a day's seven words and results are one page each: keep them compact so the fit-to-page shrink stays mild */
 .bk-spread.menu .dly .dly-words{margin-top:8px;gap:4px}
 .bk-spread.menu .dly .dly-words li{padding-bottom:4px}
-.bk-spread.menu .dly .dly-words .w{font-size:22px}
-.bk-spread.menu .dly .dly-words .d{font-size:17px;line-height:1.15}
+.bk-spread.menu .dly .dly-words .w{font-size:calc(22px*var(--ts))}
+.bk-spread.menu .dly .dly-words .d{font-size:calc(17px*var(--ts));line-height:1.15}
 .bk-spread.menu .dly .dly-res{gap:4px}
