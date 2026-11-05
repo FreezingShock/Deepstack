@@ -143,3 +143,12 @@ html[data-motion="reduce"] .home .cc-fake,html[data-motion="reduce"] .home .lg-r
 html[data-motion="reduce"] .home .cc-flip,html[data-motion="reduce"] .home .cc-face,html[data-motion="reduce"] .home .cc-drawer,html[data-motion="reduce"] .home .cc-slot,html[data-motion="reduce"] .home .cc-scrim{transition:none;transform:none!important}
 html[data-motion="reduce"] .home .cc-slot{transform:translate(-50%,-50%)!important}
 html[data-motion="reduce"] .home .cat-card[data-open="0"] .cc-slot{display:none}
+
+/* Card ink follows the lamp: the ink and parchment warm at dawn and dusk, cool at night, by the attic window's time-of-day band */
+.home .ledger{--lg-lamp:transparent;--lg-lamp-ink:0%;--lg-lamp-paper:0%}
+.home .ledger[data-lamp="dawn"]{--lg-lamp:#ffb080;--lg-lamp-ink:18%;--lg-lamp-paper:16%}
+.home .ledger[data-lamp="dusk"]{--lg-lamp:#ff7646;--lg-lamp-ink:22%;--lg-lamp-paper:20%}
+.home .ledger[data-lamp="night"]{--lg-lamp:#7896e6;--lg-lamp-ink:24%;--lg-lamp-paper:14%}
+.home .ledger .lg-page{background:repeating-linear-gradient(180deg,transparent 0 25px,color-mix(in srgb,var(--c-oak-4a3a22) 30%,transparent) 25px 26px),radial-gradient(120% 90% at 30% 10%,color-mix(in srgb,var(--lg-lamp) var(--lg-lamp-paper),var(--c-parchment-85)),color-mix(in srgb,var(--lg-lamp) var(--lg-lamp-paper),var(--c-parchment-dim)))}
+.home .ledger .lg-row dd{color:color-mix(in srgb,var(--lg-lamp) var(--lg-lamp-ink),var(--lg-ink))}
+.home .ledger .lg-row dt{color:color-mix(in srgb,var(--lg-lamp) var(--lg-lamp-ink),color-mix(in srgb,var(--lg-ink) 50%,var(--c-oak-1a1208) 50%))}

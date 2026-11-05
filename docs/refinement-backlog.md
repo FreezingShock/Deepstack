@@ -1262,7 +1262,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 ### R2. Stamps on the Librarian's Card
 **Pitch:** a milestone stamp (e.g. "100 BOOKS", "7-DAY STREAK") thumps onto the card the first time you pass it, in the row's own ink.
 **Brief:** Goal: tiny rotated ink stamps layered on `.lg-page`, saved additively. Files: `src/ui/welcome.js`, `welcome.css`. **Conflicts:** home stamp prop.
-### R3. Card ink follows the lamp
+### R3. [x] Card ink follows the lamp (PR pending)
 **Pitch:** the card's ink and parchment warm or cool with the time-of-day light in the nook, so the card reads as part of the room.
 **Brief:** Goal: tint `--lg-ink` mixes by the existing time-of-day variable. Files: `welcome.css`. **Conflicts:** none.
 ### S1. Scrollbars gone (done, PR pending)

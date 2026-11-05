@@ -2,6 +2,7 @@
    the card flips to a second card with the combo and tier rules. Pure markup builder + one delegated
    controller, so it survives showHome() re-rendering. Motion lives in welcome.css (static when reduced). */
 import {TIERS} from '../core/tiers.js';
+import {bandAt} from '../world/sky.js';
 import {COMBO_MAX,COMBO_STEP,COMBO_TIER} from '../core/combo.js';
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -32,10 +33,12 @@ export function rulesCardHTML(stepsHTML){
 
 /** The ledger: the Librarian's Card, a framed board bolted to the right wall, with a shelf for the stamp.
  *  Each row is inked in its own colour: ember for the streak, ink for depth, the best tier's colour for books, the floor's colour for the floor. */
-export function ledgerHTML({streak,deepest,books,floor,floorKey='',tierInk=''}){
+/** Which lamp the card is read by: the same local-hour band the attic window uses (dawn, day, dusk, night). */
+export const lampAt=(date=new Date())=>bandAt(date.getHours());
+export function ledgerHTML({streak,deepest,books,floor,floorKey='',tierInk='',lamp=lampAt()}){
  const row=(k,v,cls,style='')=>`<div class="lg-row ${cls}"${style?` style="${style}"`:''}><dt>${k}</dt><dd>${esc(v)}</dd></div>`;
  const fk=/^[a-z]+$/.test(floorKey)?floorKey:'';
- return `<aside class="ledger" aria-label="Your records"><div class="cc-top" data-prop-slot="stamp"></div><div class="lg-frame"><div class="lg-plate">Librarian’s Card</div>
+ return `<aside class="ledger" data-lamp="${lamp}" aria-label="Your records"><div class="cc-top" data-prop-slot="stamp"></div><div class="lg-frame"><div class="lg-plate">Librarian’s Card</div>
  <dl class="lg-page">${row('Streak',streak,'lg-streak')}${row('Deepest',deepest+' ft','lg-deep')}${row('Books',books,'lg-books',/^#[0-9a-f]{3,8}$/i.test(tierInk)?`--lg-ink:${tierInk}`:'')}${floor?row('Floor',floor,'lg-floor',fk?`--lg-ink:var(--floor-${fk}-ledge-hi)`:''):''}</dl></div></aside>`;
 }
 
