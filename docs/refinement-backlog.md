@@ -1193,7 +1193,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 - [ ] Attic and ledge spine labels: apply the same fit helper. Conflicts: src/world/bookArt.js.
 
 
-- [x] Page flip overhaul (PR pending; curl, page-edge thickness, handwritten cue, tug hint, lifted leaf)
+- [x] Page flip overhaul (PR #199; curl, page-edge thickness, handwritten cue, tug hint, lifted leaf)
 
 ### P1. Ribbon markers that jump pages
 **Pitch:** each menu book has a ribbon; tug it to jump to the contents page, and let a pen-ink bookmark remember where you stopped.
