@@ -12,8 +12,15 @@ export function glowSprite(key, stops) {
   const g = c.getContext('2d'), h = SIZE / 2, gr = g.createRadialGradient(h, h, 0, h, h, h);
   for (const [o, col] of stops) gr.addColorStop(o, col);
   g.fillStyle = gr; g.fillRect(0, 0, SIZE, SIZE);
-  if (cache.size > 64) cache.clear(); // colours are quantised by callers; this is only a safety net
+  if (cache.size > 160) cache.clear(); // colours are quantised by callers; this is only a safety net
   cache.set(key, c); return c;
+}
+
+/** Build a glow into the cache ahead of its first frame and push it through a scratch canvas once (near-zero alpha), so the first real stamp has nothing left to rasterize or upload. */
+export function warmGlow(key, stops, scratch) {
+  const s = glowSprite(key, stops);
+  if (scratch) { scratch.globalAlpha = .004; scratch.drawImage(s, 0, 0, 2, 2); }
+  return s;
 }
 
 /** Stamp a glow centred on (cx, cy) with radius r, clipped to the W x H canvas. Pixels beyond r take the edge colour, as a padded gradient would. */

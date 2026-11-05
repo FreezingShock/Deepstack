@@ -55,6 +55,9 @@ function sprite() {
   g.putImageData(d, 0, 0); return c;
 }
 
+/** Build the light-map canvas and its falloff sprite ahead of the first dark frame (the sprite is a 64x64 per-pixel fill). Idempotent. */
+export function warmLighting() { if (!map) { map = document.createElement('canvas'); spr = sprite(); } }
+
 let lastCount = 0, lamp = {x: 0, y: 0, r: 0};
 /** How lit a screen point was in the last composited frame, 0 (dark) .. 1 (lit): the lamp and every registered light. Things that live in the dark (eyes.js) ask this. */
 export function lightLevel(x, y, sc = 1) {

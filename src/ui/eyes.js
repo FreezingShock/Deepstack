@@ -6,6 +6,7 @@
 import {pointerLightState} from './cursorLight.js';
 import {lightLevel} from './lighting.js';
 import {glowSprite, stampGlow} from './glowSprite.js';
+import {eyeGlow} from './glowDefs.js';
 
 export const FLEE_R = 210;      // pointer light this close sends them away
 export const SPAWN_FAR = 380;   // they only open when the pointer is at least this far
@@ -74,7 +75,7 @@ export function drawEyes(ctx, o) {
   const ey = blinking ? .12 : 1, gap = 9;
   ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = eyes.a * .9;
   for (const sx of [-gap, gap]) {
-    stampGlow(ctx, glowSprite('eye' + col, [[0, `rgba(${col},.9)`], [.25, `rgba(${col},.35)`], [1, `rgba(${col},0)`]]), eyes.x + sx, eyes.y, 9, 1);
+    stampGlow(ctx, glowSprite(...eyeGlow(col)), eyes.x + sx, eyes.y, 9, 1);
     ctx.fillStyle = `rgb(${col})`; ctx.beginPath(); ctx.ellipse(eyes.x + sx, eyes.y, 2.6, 1.7 * ey, 0, 0, 6.3); ctx.fill();
   }
   ctx.restore();

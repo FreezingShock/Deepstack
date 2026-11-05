@@ -1,5 +1,6 @@
 import './ui/bookArt.js';
 import './ui/perf.js';
+import './ui/prewarm.js'; // idle prewarm of glow sprites, lighting and serif fonts (PF2)
 import './core/swRegister.js';
 import './theme/colors.js';
 import './core/hints.js';

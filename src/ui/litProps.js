@@ -4,6 +4,7 @@
    brazier, so there are islands to head for. Pure placement is tested; drawing is one cached glow + a few fills. */
 import {addLight} from './lighting.js';
 import {glowSprite, stampGlow} from './glowSprite.js';
+import {litGlow} from './glowDefs.js';
 
 const TAU = Math.PI * 2;
 
@@ -50,7 +51,7 @@ export function litProp(ctx, pr, dpr, t, still, H) {
   if (pr.k === 'brazier') drawBrazier(ctx, t, still, ph); else drawFlame(ctx, t, still, ph);
   ctx.restore();
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  stampGlow(ctx, glowSprite('lit' + p.col, [[0, `rgba(${p.col},.8)`], [.4, `rgba(${p.col},.22)`], [1, `rgba(${p.col},0)`]]), 0, -p.h, p.glow * fl, 1);
+  stampGlow(ctx, glowSprite(...litGlow(p.col)), 0, -p.h, p.glow * fl, 1);
   ctx.restore();
   return true;
 }

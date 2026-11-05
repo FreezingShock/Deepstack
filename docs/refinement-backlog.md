@@ -1473,9 +1473,17 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Home loads 248 KB of CSS (49 KB gzip) of which only about a fifth is used on the first screen, plus the whole app JS (407 KB). Load attic, sets, almanac and book-page styles and code only when you first go there, so the first paint arrives sooner.
 **Brief:** Goal: dynamic-import per-screen modules and their CSS from a thin hook, keeping cascade order (append, do not reorder `src/styles/index.css`); prewarm in idle after first paint so opening never waits. Files: new `src/ui/lazyScreens.js`, small hooks in `src/main.js`. Done when: `scripts/loadpath.mjs` shows fewer bytes before first paint and every screen still opens instantly. **Touches:** Performance. **Conflicts:** `main.js` imports (do when few threads are in flight).
 
-### PF2. Pre-draw particles, sprites and fonts before first use
+### [x] PF2. Pre-draw particles, sprites and fonts before first use (PR TBD: `src/ui/prewarm.js`, glow defs shared in `glowDefs.js`)
 **Pitch:** The first time a candle, dust or reveal burst appears it builds its sprites then. Draw them into small offscreen bitmaps during idle after first paint so the first burst is as smooth as the hundredth.
 **Brief:** Goal: audit sprite and gradient creation inside frame callbacks (`world.js`, `revealFx.js`, `ambient.js`, `lanterns.js`) and move it to a one-time idle prewarm; also `document.fonts.load` for the Anthropic Serif weights the alcove uses. Done when: `?perf` shows no long frame in the first 3 s after Descend. **Touches:** Performance. **Conflicts:** `world.js` owners.
+
+### PF2b. Prewarm the per-frame gradients that are not sprites
+**Pitch:** The wall, row and settle-glow gradients in `world.js` are still rebuilt every frame; PF2 only covered the cached glow sprites, lighting map and fonts.
+**Brief:** Goal: cache the remaining per-frame `createRadialGradient`/`createLinearGradient` calls (world.js settle glow, floorAtmosphere, thresholds) as small sprites, prewarmed in `prewarm.js`. Done when: `?perf` p95 drops on a real GPU. **Touches:** Performance. **Conflicts:** `world.js` owners.
+
+### PF2c. First-descent frame report
+**Pitch:** Nobody can see whether the first 3 s after Descend are smooth without a trace; add a tiny `?perf` line that reports the longest frame in the first 3 s.
+**Brief:** Goal: extend `src/ui/perfStats.js` to track max frame time for 3 s after Descend and show it in the `?perf` panel. Done when: panel shows it and a test pins the maths. **Touches:** Performance. **Conflicts:** `perf.js`.
 
 ### PF3. Smaller word list
 **Pitch:** `words.json` is 2.2 MB (691 KB gzip) and loads on every visit before the Daily can start. A compact columnar format, or dropping fields the game never reads, would cut it a lot.

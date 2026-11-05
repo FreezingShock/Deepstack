@@ -9,6 +9,7 @@
    Reduced motion: no cage, rope or pulley, only a brass latch on the shelf lip that clunks open. */
 import {PALETTE} from '../theme/colors.js';
 import {glowSprite, stampGlow} from '../ui/glowSprite.js';
+import {liftGlow} from '../ui/glowDefs.js';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
@@ -165,7 +166,7 @@ export function drawLift(ctx, o) {
   ctx.strokeStyle = P.brass; ctx.lineWidth = 1.4; ctx.strokeRect(-6.5, -11, 13, 21);
   ctx.restore();
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  stampGlow(ctx, glowSprite('lift-lantern', [[0, 'rgba(255,200,110,.55)'], [1, 'rgba(255,200,110,0)']]), lx + sw * .5, ly, 90, .6 + .1 * Math.sin(o.vt * 9));
+  stampGlow(ctx, glowSprite(...liftGlow()), lx + sw * .5, ly, 90, .6 + .1 * Math.sin(o.vt * 9));
   ctx.restore();
   // the latch on the right post
   drawLatch(ctx, x1 + 10, bot - 30, env.latch, -1);
