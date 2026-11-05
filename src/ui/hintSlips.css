@@ -9,3 +9,4 @@
 .hslip mark{background:none;color:#8a3a22;font-style:normal;font-weight:700;border-bottom:1px dashed #8a3a22}
 @keyframes hslip-in{from{opacity:0;transform:translateY(-10px) rotate(calc(var(--tilt,0deg) * 3))}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.hslip{animation:none}}
+.hslip mark.gap{display:inline-block;min-width:4.5em;height:1em;vertical-align:-.15em}

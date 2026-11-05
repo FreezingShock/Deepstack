@@ -94,3 +94,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-05 zero answers: a 0/100 answer keeps its book and 13 ft, "just because of the spacing the alcove" -> depth gain is alcove spacing, not a reward; do not punish misses (thread: audit Q11)
 - 2026-11-05 calls to action: a handwritten button label must fit on one line; shorten the words rather than let one wrap ("Start the Riddles").
 - 2026-11-05: phone run screen: words fully readable, controls must never sit under the depth rail (Q2).
+- 2026-11-05 riddle hints: "it just gives the word" -> a riddle hint must never contain the answer, another form of it, or a spelling clue; sideways clues only (blanked sentence, kin, kind, opposite, near synonym). Syllable count not added: it is a length clue (#18).

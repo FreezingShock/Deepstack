@@ -1151,3 +1151,13 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** let the score drop out entirely for a few seconds when you cross into the Hollow or Abyss, so the first notes back feel like a held breath.
 **Brief:** Goal: a door hook that mutes the score for 6 to 10 s then fades it in on the new mood. Files: `src/sound/score.js`, hook in `thresholdPass.js`. Done when: reduced-motion and sound-off unaffected, tested with a fake clock.
 **Touches:** FEEL. **Conflicts:** none.
+
+### R2. Etymology and era clue for riddles
+**Pitch:** a last-resort riddle hint that says where the word comes from ("from Latin", "old sailor slang") without spelling it.
+**Brief:** Goal: an optional `origin` hint after the synonym, from Wiktionary etymology language only (never the etymon). Files: `scripts/build-words.mjs`, `src/core/riddleHints.js`. Done when: the no-leak test covers it and words without data simply skip it.
+**Touches:** CORE, DATA. **Conflicts:** none.
+
+### R3. Hints that fade in on the slip
+**Pitch:** riddle hints pin onto the slip one at a time with the blank in the sentence slowly pulsing like a held breath.
+**Brief:** Goal: polish the gap mark and slip entrance using the shared motion tokens. Files: `src/ui/hintSlips.css`. Done when: reduced-motion shows no animation.
+**Touches:** UI. **Conflicts:** none.
