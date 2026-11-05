@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Open the Unlimited book: the left page is Unlimited, the right page is Riddle, each with its own Start link. Open the Daily book: its first page now has Daily and Daily Riddle with Descend / Open today's riddle. Say if the sections read clearly or if the Riddle half needs more weight. (merged modes)
+- Play a run and answer with general ideas, close concepts and words that relate to the definition ("money" for frugal, "related to time" for ephemeral): they should now earn a small score (Pamphlet to Paperback), never as much as a precise answer. Open any book: other meanings and the meanings of close synonyms appear under "Also means". Tell me any wrong answer that scores well or any book that looks too tall. (judge leniency, backlog 92)
 - Pick from the Q1 to Q16 audit menu (end of this file). Q11 is decided (a 0 keeps its book and 13 ft).
 - Descend past a floor door (Archive 101 ft, Catacombs 252 ft and deeper) and say if the half-speed hold at the door, the one-time swing of the sign and the quiet floor sound feel right or too subtle; also check Settings reduced motion removes the hold and swing. (door walk-through thread)
 - Play a run and answer with plain synonyms of rare words ("curt" for laconic, "blunt" or "forthright" for candid, "conscientious" for diligent): they should now land in Paperback or better. Tell me any everyday word that still scores 0 or any wrong word that scores well. (judge thesaurus, backlog 90)
@@ -422,6 +423,21 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** Bare synonyms still miss when Wiktionary has no list ("curt" for laconic, "friction" for discord). Add a small frequency-filtered thesaurus of everyday words and score answers against it.
 **Brief:** Files: `scripts/build-relations.mjs`, `public/data/relations.json`. Done when: `npm run judge:eval` good/synonym in band beats 79% on `relation-answers.json` without wrong answers rising.
 **Touches:** JUDGE. **Conflicts:** none.
+
+### 92. [x] Judge accepts other meanings and broad ideas, books show them (PR pending)
+**Pitch:** A word's other senses and its synonyms' senses count as targets; general ideas and words related to the definition earn a low score; the book lists the other meanings.
+**Brief:** Files: `scripts/build-senses.mjs`, `public/data/senses.json`, `src/scorer/senses.js`, `src/ui/alsoMeans.{js,css}`. Done: `npm run judge:eval` good 79% to 85%, AUC 0.899 to 0.916.
+**Touches:** JUDGE, card hook. **Conflicts:** none.
+
+### 93. Judge explains broad matches
+**Pitch:** When an answer scored on a general idea or another meaning, the card says so in one handwritten line ("that is another meaning of frugal").
+**Brief:** Files: new `src/ui/judgeNote.js`; `judgeAnswer` returns `rel` hits and which reference won. Done when: line shows for lenient hits only, never clips at 375px.
+**Touches:** JUDGE return shape, card. **Conflicts:** 91.
+
+### 94. Tune leniency from real play
+**Pitch:** Log (locally, never sent) answers that scored 10 to 30 and let nate mark them fair or too generous, then refit the floors in `RELATION`.
+**Brief:** Files: new `src/core/judgeLog.js`, Settings export. Done when: export file feeds `scripts/judge-eval.mjs` as a fixture.
+**Touches:** Settings, JUDGE. **Conflicts:** 92.
 
 ### 91. Why this score (judge explains itself)
 **Pitch:** The result card says in one handwritten line what the judge noticed: "Reticent is a synonym of taciturn", "you reached the idea through 'miserly'".

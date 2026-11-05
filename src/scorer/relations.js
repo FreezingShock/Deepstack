@@ -81,6 +81,13 @@ export function relate(text, word, rel = REL) {
   const hitStems = new Set([...out.syn, ...out.hyp, ...out.rel, ...out.near, ...out.ant, ...out.flip].flatMap(t => t.split(' ')));
   out.extra = [...A.pos, ...A.neg].filter(o => !FILL.has(o.raw) && !GENERIC.has(o.s) && !hitStems.has(o.s)).length; // content words besides the related term
   const D = contentStems(word.def).filter(d => !GENERIC.has(d));
+  // Broad ideas: answer words that repeat a content word of the definition, or are tied to one (or to the target) by any relation list.
+  const ans = [...new Set(A.pos.filter(o => !FILL.has(o.raw) && !GENERIC.has(o.s) && o.s.length >= 3).map(o => o.s))];
+  out.echo = ans.filter(a => D.includes(a)).length;
+  const tieT = [S, H, R, Nr].map(x => ans.filter(a => x.has(a) && !kin(a))), tied = new Set(tieT.flat());
+  const tieD = new Set();
+  for (const d of D) { const r = rel[d]; if (!r) continue; for (const f of ['s', 'c', 'h', 'r', 'n']) for (const x of r[f] || []) { const k = keyOf(x); if (ans.includes(k) && !D.includes(k)) tieD.add(k); } }
+  out.broad = tied.size; out.broadDef = tieD.size;
   if (D.length) {
     const have = new Set(A.pos.map(o => o.s));
     let hit = 0;
