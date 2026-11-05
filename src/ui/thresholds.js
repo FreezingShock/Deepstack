@@ -379,14 +379,21 @@ const WALLS = {
     c.fillStyle = 'rgba(0,0,0,.33)'; c.fillRect(x0, y + rh * .16, x1 - x0, 3);
     c.restore();
   },
-  drawers(c, fl, x0, x1, y, base, rh, r) { // card-catalogue drawers with brass pulls and index cards
-    c.save(); const cw = 46, ch = 30, rg = mulberry(r * 19 + 7);
-    for (let yy = y + 8; yy < base - ch; yy += ch + 6) for (let xx = x0 + ((r * 13) % cw); xx < x1; xx += cw + 6) {
-      c.fillStyle = 'rgba(8,16,10,.5)'; c.fillRect(xx, yy, cw, ch);
-      c.strokeStyle = PALETTE.bronze28Alpha88; c.lineWidth = 1; c.strokeRect(xx + .5, yy + .5, cw, ch);
-      c.fillStyle = rgb(fl.lamp, .26); c.fillRect(xx + cw / 2 - 8, yy + 6, 16, 8); // card holder
-      c.fillStyle = PALETTE.bronze54Alpha33; c.fillRect(xx + cw / 2 - 5, yy + ch - 10, 10, 3);
-      if (rg() < .15) { c.fillStyle = 'rgba(225,210,170,.25)'; c.fillRect(xx + cw - 12, yy + 4, 9, 22); } // drawer left ajar with a card sticking out
+  drawers(c, fl, x0, x1, y, base, rh, r) { // plain back-board; now and then one solid card-catalogue cabinet stands built into the shelving
+    c.save(); const rg = mulberry(r * 19 + 7);
+    c.fillStyle = 'rgba(0,0,0,.22)'; for (let xx = x0 + ((r * 29) % 90); xx < x1; xx += 90) c.fillRect(xx, y, 2, base - y); // board seams
+    if (r % 6 === 3) { // rare: one opaque cabinet, 3 columns x 4 drawers, a fixed part of the structure
+      const cols = 3, rows = 4, dw = 40, dh = 26, pad = 6, cw = cols * dw + pad * 2, chh = rows * dh + pad * 2;
+      const cx = x0 + 120 + rg() * Math.max(0, x1 - x0 - cw - 240), cy = Math.max(y + 8, base - chh);
+      c.fillStyle = PALETTE.oak1; c.fillRect(cx, cy, cw, chh);
+      c.strokeStyle = PALETTE.bronze28Alpha88; c.lineWidth = 2; c.strokeRect(cx + 1, cy + 1, cw - 2, chh - 2);
+      for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+        const dx = cx + pad + i * dw, dy = cy + pad + j * dh;
+        c.fillStyle = 'rgb(30,24,16)'; c.fillRect(dx + 1, dy + 1, dw - 2, dh - 2);
+        c.strokeStyle = 'rgb(70,52,30)'; c.lineWidth = 1; c.strokeRect(dx + 1.5, dy + 1.5, dw - 3, dh - 3);
+        c.fillStyle = rgb(fl.lamp, .5); c.fillRect(dx + dw / 2 - 7, dy + 5, 14, 7); // label holder
+        c.fillStyle = 'rgb(120,92,46)'; c.fillRect(dx + dw / 2 - 4, dy + dh - 9, 8, 3); // brass pull
+      }
     }
     c.restore();
   },
