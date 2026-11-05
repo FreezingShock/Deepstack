@@ -96,6 +96,7 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-04 sigils: picked S1 + S2 -> the mark should be big on covers and a set should read as a family (shared ring, unique centre); same word, same mark everywhere.
 - 2026-11-05 zero answers: a 0/100 answer keeps its book and 13 ft, "just because of the spacing the alcove" -> depth gain is alcove spacing, not a reward; do not punish misses (thread: audit Q11)
 - 2026-11-05 calls to action: a handwritten button label must fit on one line; shorten the words rather than let one wrap ("Start the Riddles").
+- 2026-11-04 final screen: "no outlined boxes, no empty lower half" -> results are a ledger page: tallies in ink, books on a ledge, Copy/Back as handwritten words with a pen underline (thread: Q5).
 - 2026-11-05: phone run screen: words fully readable, controls must never sit under the depth rail (Q2).
 - 2026-11-05 riddle hints: "it just gives the word" -> a riddle hint must never contain the answer, another form of it, or a spelling clue; sideways clues only (blanked sentence, kin, kind, opposite, near synonym). Syllable count not added: it is a length clue (#18).
 - 2026-11-05 spine labels: clipped words on Shelf spines ("CONDOMI...", "ADMINISTRA...") -> no clipped or ellipsized words anywhere; shrink the type or wrap, and keep the ×N count off the label (thread: spine labels).
@@ -111,4 +112,6 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-05 menu spines: "make the stack read as old" -> wear (rubbed corners, faded gilt) is painted per book and static, never animated; plaque and mantel oak should match the muted cloth tones.
 - 2026-11-05 polish menu: "more vague", "polished, fun, and easy to understand", "new things will be added soon, like zones and rooms with specific topics" -> prefer goal-level items (a first run that explains itself, a score that explains itself) over pixel fixes, and leave a registry/door for zones and topic rooms without building them (thread: polish refinements)
 - 2026-11-05 judge leniency: "is convince really just 10 points" for tempt -> close concepts of a word (persuade-like verbs for entice-like words) must not land in Pamphlet; check these by hand after judge changes.
+- 2026-11-05 hints and skip (G4): "make them much more on theme and satisfying to press", "maybe they should be notes on the notecard" -> controls are objects (pressable tabs with pips, not capital-letter sentences); hints are handwriting on the card itself, not floating popups.
+- 2026-11-05 empty pages (Q7, from the audit): a new player's books should look finished, not blank: one hand-drawn sketch and one written line per book, never the same note twice.
 - 2026-11-04 reveal: picked 'cover materials' with 15, 18, 14 and asked for 'more polished recommendations': each tier's cover must open in its own physical way, rarity is the hero (thread: reveal cover openings)

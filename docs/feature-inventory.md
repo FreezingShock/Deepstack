@@ -14,8 +14,8 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Difficulty: Elo-style Lexicon (0-100) with 8-word placement, ramp across a run | `src/core/unlimited.js`, `level.js` | B | Titles Casual Reader to Grand Logophile. Unlimited book shows the Lexicon as one hand-lettered rank with a placement line and a "Place me again" link; final page has a quiet rank-change line (`src/ui/lexiconRank.js`, tested). |
 | Daily: seeded by UTC date, one attempt, streak, share text, Daily No. 1 = 2026-11-03 | `src/core/daily.js`, `stats.js`, `src/ui/dailyBook.js`, `dailyCalendar.js` | B | Calendar page (month grid, played days circled in tier ink that draw themselves on open, today underlined in pen, tap a day to open it, this-week strip, streak margin note; month header has hand-drawn 44 px prev/next arrows). Combo and set bonuses count in Daily (fairness question open). Same words for everyone, but embedding scores are local. |
 | Answer slip as quill and ink: real textarea kept, mirror draws wet-to-dry letters, quill at the caret, blotter on Enter | `src/ui/inkInput.js`, `inkInput.css` | B | Hooked with one line in `showWord`. Reduced motion: no animation, no blotter. Empty slip: quill rests in the margin so the placeholder is fully readable. |
-| Hints: sentence (1 row), related word (2), definition start (3); never reveal spelling | `src/core/hints.js`, `main.js` (`useHint`) | B+ | Only ~31% of words have a real example sentence; fallback ladder exists. Hints show as pinned slips; first hint per run is free (#86). Skip lives in the run UI and says what it costs. |
-| Tiers: Pamphlet, Paperback, Hardbound, Folio, Codex, Grimoire, Apocrypha (min 0/14/30/46/62/78/92) | `src/core/tiers.js`, `src/theme/colors.js` | B | Thresholds are shared with the judge calibration. Reveal is one table per tier: particles (`revealRecipe`) plus rays, rune, flash, cover timing and closure style (tape, twine, strap, clasp, wax seal, chains, light seam: `src/ui/coverLock.js/.css`), sting, shake (`revealCeremony`); low quality drops rune and softens rays. |
+| Hints: sentence (1 row), related word (2), definition start (3); never reveal spelling | `src/core/hints.js`, `main.js` (`useHint`) | B+ | Only ~31% of words have a real example sentence; fallback ladder exists. Hints show as pinned slips; first hint per run is free (#86). Skip lives in the run UI and says what it costs. G4: hint and skip are one pair of handwritten tabs (word plus a pip per clue, the free one ringed, a small strike on Skip when it breaks a chain or wastes hints; full rules in aria-label), hints are pencilled notes on a strip of the answer card with full text and no ellipsis (`src/ui/hintSlips.js/.css`). |
+| Tiers: Pamphlet, Paperback, Hardbound, Folio, Codex, Grimoire, Apocrypha (min 0/14/30/46/62/78/92) | `src/core/tiers.js`, `src/theme/colors.js` | B | Thresholds are shared with the judge calibration. Reveal is one table per tier: particles (`revealRecipe`) plus rays, rune, flash, cover timing, sting, shake (`revealCeremony`); low quality drops rune and softens rays. |
 | Combo chain (Folio+, x0.25 per link, cap x2) | `src/core/combo.js` | A | Pure, tested. Surfaced in result card and results screen. |
 | Depth and floors: Stacks 0, Archive 101, Catacombs 252, Sunken Vault 454, Hollow 706, Abyss 1008 ft; 4.2 ft per row | `src/core/floors.js`, `src/ui/floorArt.js`, `#floorBanner` | B | Palette, shelf dressing, lamp colour, decay per floor. Floors thread (#81) in flight. |
 | Floor doors and wall materials: first row of each floor has a doorway scene (drawer wall, skull pile, flooded arch, void, cracked black glass), a hanging sign with numeral, props; walls are paper, drawers, ossuary, wet stone, hollow wood, black glass | `src/ui/thresholds.js`, hooks in `src/world/world.js` | B | The doorway bay holds no books. Drips and candle flames are live and off in reduced motion. Stacks has no door (the Descend plaque is its door). Walking through a door: the camera eases to about half speed at each door it crosses, the sign (drawn live from a cached sprite) swings once on its chains, and a quiet per-floor sound plays; all off in reduced motion (`src/ui/thresholdPass.js`, `src/sound/thresholdSting.js`). |
@@ -41,13 +41,14 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Book spreads: Shelf, Sets, Stats, Daily | `src/ui/bookpages.js`, `browse.js`, `sets/ui.js` | B | Shelf collapses duplicates per tier (#70). Search and tier filters exist. Stats is a four-page almanac (`statsPages.js`): streak tally marks, Lexicon line, tier spine stacks, floor cross-section. |
 | Book art: one `bookArt` for canvas world, ledge and DOM spine images | `src/ui/bookArt.js` | B | Seven tier materials from the tier colour; lettering never squeezed. DOM card/menu books still CSS (backlog 7a). |
 | Book sigils: deterministic emblem per word (rings, runes, knots) in the tier hue, cached 64px bitmaps; off on spines in low graphics | `src/ui/sigil.js` (hook in `src/ui/bookArt.js`) | B | Spines, shelf bays, held book, and big on the result-card cover (`coverSigil.js`, #174). Set words share their set's ring (S2). |
-| Book spreads: Shelf, Sets, Stats, Daily | `src/ui/bookpages.js`, `browse.js`, `sets/ui.js` | B | Shelf is a library section: bays by rarity, floor found, set or Daily date, brass labels, ladder, piled copies, pull-a-book (`shelfBays.js`); new books save `fl` (floor). Stats is a four-page almanac (`statsPages.js`): streak tally marks, Lexicon line, tier spine stacks, floor cross-section. |
+| Book spreads: Shelf, Sets, Stats, Daily | `src/ui/bookpages.js`, `browse.js`, `sets/ui.js` | B | Shelf is a library section: bays by rarity, floor found, set or Daily date, brass labels, ladder, piled copies, pull-a-book (`shelfBays.js`); new books save `fl` (floor). Stats is a four-page almanac (`statsPages.js`): streak tally marks, Lexicon line, tier spine stacks, floor cross-section. | At 0 played, Almanac, Sets and the Riddle intros show a pen sketch and one written line (`emptyPages.js`).
 | Ledge run story: brass chain (a link per Folio+ in a row, glows at the x2 cap, falls with a clunk when it breaks), crimson ribbon for a close call (3 points or less short), dashed slot for a skip | `src/ui/chain.js`, `ledge.js`, `feel.js` | B | Reads existing run data only; no combo rule changes. Link count equals `applyCombo` (#127). |
-| Result card (alcove) and results screen (stats cards, word list, share note) | `src/ui/results.js`, `card.css`, `results.css`, `main.js` (`openCard`, `showFinal`) | B | Card is a mini open book (`bookCard.css`: tier leather boards, deckled page, ribbon button; #107). Each tier dresses the book differently (`tierFrames.css`: staples, spine crack, embossed rule, gilt frame, sweeping foil, rune line, cold shimmer; static under reduced motion). The Next word ribbon is dressed per tier (paper, cloth, linen, silk, gilt edge, wax, aqua thread) and the boards are richer for Paperback, Hardbound and Grimoire (Q6). Tier is the hero, closeness de-emphasised. Share text has no emojis. Results screen fits one view: two columns on desktop, one on phones (spines, tiles, note hidden there). |
+| Result card (alcove) and results screen (stats cards, word list, share note) | `src/ui/results.js`, `card.css`, `results.css`, `main.js` (`openCard`, `showFinal`) | B | Card is a mini open book (`bookCard.css`: tier leather boards, deckled page, ribbon button; #107). Each tier dresses the book differently (`tierFrames.css`: staples, spine crack, embossed rule, gilt frame, sweeping foil, rune line, cold shimmer; static under reduced motion). The Next word ribbon is dressed per tier (paper, cloth, linen, silk, gilt edge, wax, aqua thread) and the boards are richer for Paperback, Hardbound and Grimoire (Q6). Tier is the hero, closeness de-emphasised. Share text has no emojis. Results screen is a ledger page (`finalPage.css`, Q5): inked tallies, books on a ledge, handwritten Copy/Back with pen underline; fits one view: two columns on desktop, one on phones (spines, tiles, note hidden there). |
 | Depth tracker rail (oak upright, brass plaques, lantern; tap to jump) | `src/ui/tracker.js` | B | Scroll-back works. |
 | Transitions (Descend, leave run, return home) | `src/ui/transitions.js`, `descend.js` | B | Transitions thread in flight. |
 | Shared book style (`.bookbox`, `--bs-*` tokens) for Settings and Credits; spreads share the page token | `src/ui/bookStyle.css` | B | Foundation only: Sets overlay and Daily book still to adopt it. |
 | Top bar: Sound, Credits, Settings, judge status | `src/ui/topbar.js`, `topbar.css` | B | Credits cover Wiktionary CC BY-SA. |
+| Run progress ledge: each finished word leaves a muted tier-coloured spine in the row above the word, skipped words leave a dashed gap, chained words get a brass link, newest spine slides in (none under reduced motion); replaces the diamonds | `src/ui/runLedge.js`, `src/ui/runLedge.css`, `pipsHTML` in `src/app/run.js` | B | Spines not yet interactive (G6a). |
 | Run screen write-in: candle, pips, word, clock, slip and hints rise in staggered for each new word and when the camera snaps back from browsing; reduced motion instant, low graphics one fade | `src/ui/runWriteIn.js`, hook in `src/app/run.js`, `src/ui/browse.js` | B | Riddle screen and result card not yet staggered (backlog 22c). |
 | Motion language: named durations/easings as CSS tokens + JS helpers, reduced motion in one place | `src/ui/motion.js`, `motion.css` | B | Raw easings banned by test. JS waits and delay literals not yet migrated (backlog 66, 68). |
 | Settings: volume, reduced motion, text size, high contrast | `src/ui/settings.js` | B | Own key `deepstack.settings.v1`. Text size sets `--ts` (1 / 1.15 / 1.3); every font size is `calc(Npx*var(--ts))` so it reaches all screens, and fixed-size furniture (Descend, cabinet, ledger, spines) uses the gentler `--tsf` cap (`src/ui/textScale.css`). Home tier counts big text as a shorter room. No keybinding or colour-blind options. |
@@ -98,7 +99,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-05. Do not edit by hand._
 | `src/app/fx.js` | 21 |  | - |
 | `src/app/home.js` | 49 |  | book-open-fx, book-page-flip, book-style, home-book-stacks, home-books, home-layout, home-niche, home, mantel, page-flip-affordances, pen-ink, phone-book-pages |
 | `src/app/riddle.js` | 105 | Riddle Shelf: the reverse of the Daily. A slip shows a definition and you write the word. | - |
-| `src/app/run.js` | 118 |  | ink-input |
+| `src/app/run.js` | 119 |  | ink-input |
 | `src/app/state.js` | 19 |  | lit-props-eyes |
 | `src/app/util.js` | 8 |  | - |
 | `src/core/attic.js` | 91 | The attic: where books with no known floor live. New books save the floor they were found  | attic-dust-off, attic-layers, attic |
@@ -128,7 +129,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-05. Do not edit by hand._
 | `src/core/wordPool.js` | 101 | Builds the playable word pool from public/data/words.json (see scripts/build-words.mjs). | difficulty-ramp, embedding, hints-no-spelling, hints, riddle-hints, riddle, sets |
 | `src/core/words.js` | 47 | [word,pos,difficulty,definition,hintSentence,[[label,weight,"term, term, multi word"]...], | difficulty-ramp, embedding, feedback, hints-no-spelling, hints, riddle-hints, riddle, scorer, sets, unlimited |
 | `src/feel.js` | 184 | Sound, ambience and "juice". Everything is synthesized with WebAudio (no assets). | - |
-| `src/main.js` | 166 |  | book-style, buttons, mantel, menu-wear, shelf-filters |
+| `src/main.js` | 169 |  | book-style, buttons, mantel, menu-wear, shelf-filters |
 | `src/scorer/antonyms.js` | 74 | Embeddings place antonyms close together ("lasting forever" ~ "lasting briefly"), so the e | embedding |
 | `src/scorer/embedding.js` | 88 | Pure scoring math for the embedding judge (no model code, so it runs in Node tests). | embedding, judge-lenient, judge-relations |
 | `src/scorer/engine.js` | 49 | The actual model loader/runner. Runs inside the judge worker (worker.js) or, as a fallback | - |
@@ -141,7 +142,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-05. Do not edit by hand._
 | `src/scorer/worker.js` | 25 | Judge worker: loads the embedding model and runs inference off the main thread so the canv | - |
 | `src/sets/sets.css` | 12 |  | pen-ink, sets, sigil-set-ring |
 | `src/sets/sets.js` | 69 | Collectible book sets: themed groups of words. Answer every word in a set (at least a Pape | pen-ink, sets, sigil-set-ring |
-| `src/sets/ui.js` | 38 |  | css-sanity, load-path |
+| `src/sets/ui.js` | 39 |  | css-sanity, load-path |
 | `src/sound/ambience.js` | 93 | Per-floor room tone. Five always-running layers (paper hush, stone, water, hollow wind, ab | floor-ambience |
 | `src/sound/score.js` | 121 | A slow score that follows the descent: soft strings and a low piano, a different scale and | score |
 | `src/sound/scribe.js` | 66 | Tactile desk sounds: quill scratch, paper, wax-seal press, heavy book landing. | sfx |
@@ -177,7 +178,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-05. Do not edit by hand._
 | `src/ui/bookArt.js` | 173 | The one way to draw a book spine. Used by the canvas world (shelves, ledge, held book) and | book-art, sigil |
 | `src/ui/bookCard.css` | 46 | Result card as a small open book (loaded after card.css, same selectors, so it wins). | css-sanity |
 | `src/ui/bookMenus.js` | 94 | Shelf and Stats as pages of an open book. Pure leaf builders are exported for tests; the o | book-pages, pen-ink, shelf-bays, shelf-filters |
-| `src/ui/bookOpenFx.css` | 43 | Book opening and closing v3: timings come from --o- | book-hides-home-hero, book-open-fx, hearth |
+| `src/ui/bookOpenFx.css` | 47 | Book opening and closing v3: timings come from --o- | book-hides-home-hero, book-open-fx, hearth |
 | `src/ui/bookOpenFx.js` | 34 | Book opening and closing choreography (v3). Pure timing plus small DOM helpers used by ope | book-hides-home-hero, book-open-fx, hearth |
 | `src/ui/bookStyle.css` | 32 | Shared book style. One set of tokens and one single-page container so every panel (Setting | book-style |
 | `src/ui/bookpages.css` | 113 | Content styles for the menu books (Shelf, Sets, Stats) shown on openBook pages (.bk-spread | book-pages, book-style, daily-book, daily-calendar, pen-ink |
@@ -211,10 +212,13 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-05. Do not edit by hand._
 | `src/ui/deskProps.css` | 31 | Brass props on the wall furniture (deskProps.js): a bell on the cabinet's top slab and a d | desk-props |
 | `src/ui/deskProps.js` | 60 | Two brass props, one on each piece of wall furniture: a bell on the cabinet's shelf and a  | desk-props |
 | `src/ui/dprCap.js` | 8 | Backing-store scale for the world canvas: device ratio, never above 2, and capped so | dpr-cap |
+| `src/ui/emptyPages.css` | 11 | Empty-state sketches (src/ui/emptyPages.js): faint pen drawing and one handwritten line. | css-sanity |
+| `src/ui/emptyPages.js` | 14 | Empty-state pages for the menu books when the player has nothing yet: one faint pen sketch | - |
 | `src/ui/eyes.js` | 85 | Something in the dark (backlog LM2). On the deep floors, rarely, a pair of eyes opens out  | lit-props-eyes |
 | `src/ui/fallenBooks.js` | 90 | Fallen books: where the shelf has a gap, a book or two that came down lie on the plank in  | fallen-books |
 | `src/ui/feedback.css` | 14 | "What it caught": a quiet handwritten fold on the result book, closed by default. | feedback |
 | `src/ui/feedback.js` | 15 | Collapsed "What it caught" page on the result book. Closed by default so the card stays qu | feedback |
+| `src/ui/finalPage.css` | 32 | Q5: the Descent complete screen as the closing page of a ledger. | css-sanity |
 | `src/ui/floorArt.js` | 69 |  | - |
 | `src/ui/floorAtmosphere.js` | 40 | Per-floor air and light, drawn over the world but under the lamp glow and HUD. | - |
 | `src/ui/fonts.css` | 35 | Anthropic Serif. Font files live in public/fonts/anthropic-serif/ (gitignored, see README  | load-path |
@@ -222,13 +226,13 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-05. Do not edit by hand._
 | `src/ui/googleFonts.css` | 11 | Generated by scripts/fetch-fonts.mjs. Latin subsets of the Google fonts, self-hosted from  | load-path |
 | `src/ui/hearth.css` | 29 | The hearth (hearth.js). The layer sits under every home element; the room light sits betwe | hearth |
 | `src/ui/hearth.js` | 540 | The hearth: a stone fireplace at the back of the home niche, on a brick back wall, lit lik | hearth |
-| `src/ui/hintSlips.css` | 17 |  | hint-slips-motion, hint-slips, riddle-hints |
-| `src/ui/hintSlips.js` | 32 | Hint and skip presentation. Hints arrive as small pinned slips beside the answer, each lab | hint-slips-motion, hint-slips, riddle-hints |
+| `src/ui/hintSlips.css` | 67 | hints are pencilled notes on a strip of the same card, tucked under the answer slip | hint-controls, hint-slips-motion, hint-slips, riddle-hints |
+| `src/ui/hintSlips.js` | 66 | Hint and skip presentation. Hints arrive as small pinned slips beside the answer, each lab | hint-controls, hint-slips-motion, hint-slips, riddle-hints |
 | `src/ui/home.css` | 279 | Home screen: hierarchy = title > Descend plaque > records > sections. | book-open-fx, book-page-flip, book-style, home-book-stacks, home-books, home-layout, home-niche, home, mantel, page-flip-affordances, pen-ink, phone-book-pages |
 | `src/ui/home.js` | 238 |  | book-open-fx, book-page-flip, book-style, home-book-stacks, home-books, home-layout, home-niche, home, mantel, page-flip-affordances, pen-ink, phone-book-pages |
 | `src/ui/homeLayout.js` | 30 | Home composition: one lit reading room in three zones (title, plaque, stacks) with a fixed | home-layout |
 | `src/ui/ink.css` | 20 | Hand-drawn page furniture (src/ui/ink.js). Pure decoration: pointer-events off, text colou | ink |
-| `src/ui/ink.js` | 62 | Hand-drawn page furniture for the menu books: a pen divider under each page title, a wobbl | ink |
+| `src/ui/ink.js` | 64 | Hand-drawn page furniture for the menu books: a pen divider under each page title, a wobbl | ink |
 | `src/ui/inkInput.css` | 26 | Quill and ink: the mirror draws the letters, the textarea only takes input. | ink-input |
 | `src/ui/inkInput.js` | 71 | Quill and ink for the answer slip. The real <textarea> stays (IME, mobile keyboards, selec | ink-input |
 | `src/ui/judgeLabel.js` | 11 | Top-bar judge status text. Only shown while something visible is happening: | judge-label |
@@ -270,6 +274,8 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-05. Do not edit by hand._
 | `src/ui/revealFx.js` | 191 | Pooled, prewarmed particle engine for the book reveal (and the small bursts around it). | - |
 | `src/ui/revealRecipes.js` | 91 | Pure data for the book-reveal particles: what each tier throws, in what shapes. No DOM her | cover-lock, reveal-ceremony, reveal-recipes |
 | `src/ui/riddle.css` | 18 | Riddle Shelf: the slip is the definition, lettered into the stone like a Daily word; the a | css-sanity |
+| `src/ui/runLedge.css` | 15 | Run ledge of spines (replaces the progress diamonds). Appended last so it wins over .pip r | run-ledge |
+| `src/ui/runLedge.js` | 38 | The run's progress row: each finished word leaves its book as a spine in its (muted) tier  | run-ledge |
 | `src/ui/runScreen.css` | 55 | Run screen: the word cut into the wall, a candle that melts and lights the slip, a slip th | css-sanity |
 | `src/ui/runScreen.js` | 13 | Run screen helpers: the candle's melt, the light it throws, and the clock under the word. | - |
 | `src/ui/runWriteIn.js` | 35 | The run screen writes itself in: candle first, then pips, label, word, part of speech, clo | run-write-in |
@@ -284,7 +290,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-05. Do not edit by hand._
 | `src/ui/sigil.js` | 110 | A sigil for every book: a small emblem (rings, runes, knots) drawn deterministically from  | sigil-set-ring, sigil |
 | `src/ui/spineLabel.js` | 35 | Spine lettering for the books standing on the home shelf. The old spines had a fixed label | book-art, spine-label |
 | `src/ui/statsPages.css` | 56 | The Almanac: hand-kept stats pages inside the menu book. Scoped to .alm. Colours via token | places, stats-almanac |
-| `src/ui/statsPages.js` | 94 | Stats as an almanac: four hand-kept pages built from saves that already exist (dailies, S. | places, stats-almanac |
+| `src/ui/statsPages.js` | 96 | Stats as an almanac: four hand-kept pages built from saves that already exist (dailies, S. | places, stats-almanac |
 | `src/ui/tactile.css` | 50 | Tactile feel: one shared set of hover / press / focus behaviors, loaded last. | css-sanity |
 | `src/ui/textScale.css` | 16 | Text size follow-through (loaded last). Every font size already multiplies by --ts (topbar | css-sanity |
 | `src/ui/thresholdPass.js` | 71 | Walking through a floor door. While the camera travels, a gentle slow-down hugs each door  | threshold-pass |

@@ -40,6 +40,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 ## In progress (do not start)
 - [x] S1 + S2. Big sigils on result-card covers, set books share a ring (`src/ui/coverSigil.js`, PR #174)
 - [x] F / 102. Fallen books in front of shelf gaps (toppled, stacked, open face-down; `src/ui/fallenBooks.js`, PR #140)
+- [x] Q7. Empty pages for a new player: Almanac, Sets and Riddle books get a faint pen sketch plus one written line (`src/ui/emptyPages.js`); Shelf left to Q4 (#181); margin notes no longer repeat on a spread (PR TBD)
 - [x] C. Attic for earlier Shelf finds (backfill floors from Daily history, scroll-up attic)
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
 - [~] Spacing and type pass on every screen
@@ -1112,7 +1113,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: fit the filters (two rows of handwritten words, rarity as one row of tier-coloured ticks) or let the page scroll under a deckled fade, and use the empty right page for something useful (the first tier shelf, or a hand-drawn "your first answer goes here"). Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: nothing is clipped at 375x667 or 1280x720 with 0 and 60 books.
 **Touches:** SHELF book. **Conflicts:** 11, 82. Done: filters in a compact two-column written layout with a foot fade (`src/ui/shelfFilters.css`); empty Shelf shows a sketched empty shelf on the right page.
 
-### Q5. Descent complete is still boxes and a half-empty alcove
+### Q5. [x] (PR: Q5 final ledger) Descent complete is still boxes and a half-empty alcove
 **Serves:** everything is a book/page, no outlined rectangles, rarity is the hero.
 **Pitch:** The final screen has outlined stat tiles (Answered / Best book / Combo), outlined Copy and Back buttons, and a small column of text in the upper half with the lower 40% of the alcove empty.
 **Brief:** Goal: rebuild as the closing page of a ledger: tallies written in ink, the seven books lined on the ledge as the hero, Copy and Back as handwritten words with the pen underline, depth numeral large. Files: `src/app/final.js`, `src/styles/result.css` or new `src/ui/finalPage.css`. Done when: fits one view at 1280x720 and 375x667, 14-letter word does not clip, share note unchanged.
@@ -1154,7 +1155,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: pick one (needs nate): a 0 becomes a "damp, unreadable" pamphlet that stays off the shelf, or the descent stalls at the same depth, or leave as is. Files: `src/core/scoring.js`, `src/app/card.js`. Done when: Daily score rules unchanged, test pins the choice.
 **Touches:** CORE, RESULT. **Conflicts:** Judge accuracy, Daily fairness.
 
-### Q12. Open books on a phone cover the top bar and clip the ribbon
+### [x] Q12. Open books on a phone cover the top bar and clip the ribbon (fixed, PR pending: book sits below the bar at 375 and 360)
 **Serves:** integrated not bolted on, spacing.
 **Pitch:** At 375 the open Shelf and Almanac books slide over the Sound, Credits and Settings buttons and the bookmark ribbon is cut off at the right edge as an unreadable stub.
 **Brief:** Goal: start the book below the top bar, keep the ribbon fully inside the cover, keep Close reachable without scrolling. Files: `src/ui/bookOpen.css`. Done when: all six menu books screenshot clean at 375x667 and 360x640.
@@ -1165,6 +1166,12 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** "Start the Riddle Shelf" wraps to "Shelf" alone on its own line while "Start Unlimited" fits; Close the book sits tight beneath it.
 **Brief:** Goal: shorten or scale the handwritten CTA so it stays on one line ("Start the Riddles"), give the pen underline and Close a consistent gap. Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: all six books' CTAs on one line at 1280 and 375.
 **Touches:** books. **Conflicts:** Q7.
+
+### Q12b. Daily page date is clipped at the right edge on phones
+**Serves:** words fully readable, spacing.
+**Pitch:** On the open Daily book at 375, "Thursday, 5 November 2026" runs past the page and the last digit of the year is cut off.
+**Brief:** Goal: let the date wrap or scale to fit inside the page margin. Files: `src/ui/dailyBook.css`. Done when: full date visible at 375x667 and 360x640.
+**Touches:** Daily book, phone. **Conflicts:** Q14.
 
 ### Q14. [x] Daily calendar header has stray marks (done in this PR: hand-drawn SVG prev/next arrows, 44 px, no text-decoration underline)
 **Serves:** spacing and polish, handwritten.
@@ -1334,7 +1341,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: one time source with a clear read from 2 m away. Files: `src/ui/candle.js`, run css. Done when: seconds are readable without the numeral, last 10 s unmistakable without red, phone layout keeps the candle beside the slip.
 **Touches:** RUN. **Conflicts:** run screen thread, candle timer.
 
-### G6. A run that builds a story
+### G6. A run that builds a story (DONE, see PR)
 **Serves:** persistent world, rarity is the hero, fun.
 **Pitch:** Seven words are seven separate events, and the progress diamonds are plain. Let each finished word leave its book as a spine on a small ledge in the alcove (its tier colour) so by word 7 you can see how the run went, and so the final ledger already has its cast. The combo chain sits on the same ledge.
 **Brief:** Goal: replace the diamonds with a growing row of earned spines; no new numbers. Files: new `src/ui/runLedge.js`, hooks in `showWord`/`finishRun`. Done when: row matches the finished books, skipped words show a gap, reduced motion drops the slide-in, no overlap with the depth rail on phones.
@@ -1384,6 +1391,11 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### G9b. Rank-up moment
 **Pitch:** When a run crosses a band, give the final page one small ink-stamp beat instead of only a line.
 **Brief:** Goal: stamp animation on `.lx-change` when `rankIndex` rises, reduced-motion safe. **Conflicts:** results.js.
+
+### G6a. Ledge spines open the book
+**Pitch:** The spines in the run row are only for show; tapping one could peek its answer, like the alcove ledge does.
+**Brief:** Goal: make `.runledge .spine` focusable with the same tip as `ledgeTip`. Files: `src/ui/runLedge.js`. Done when: keyboard and hover show word, tier and score.
+**Touches:** RUN. **Conflicts:** G4, G5.
 ### R6. Cover sounds per closure
 **Serves:** rarity is the hero, sound lines up with motion.
 **Pitch:** each cover now comes undone its own way (tape, twine, strap, clasp, seal, chain, seam) but the audio is still one paper sound.
