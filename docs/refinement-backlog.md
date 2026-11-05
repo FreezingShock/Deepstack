@@ -1352,7 +1352,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: contextual plaque and spine text (backlog 28 covers resume), and one fewer menu book (Practice as a Daily section, same pages). Files: `src/ui/home.js`, `src/ui/dailyBook.js`, `src/app/home.js`. Done when: five books on the stacks, plaque tested in unplayed/played/mid-run states, no spine text clipped at 375.
 **Touches:** HOME. **Conflicts:** 28, merged-modes follow-ups, any home thread.
 
-### G9. A level you can see and trust
+### G9. [x] A level you can see and trust (PR pending)
 **Serves:** objects not numbers, mechanics clarity.
 **Pitch:** Unlimited promises words "matched to your level" but the 8-word placement feels abrupt and the Lexicon number is hidden. Make the level an object (a rank on the Librarian's Card, a bookmark that moves) and the placement a short interview at the desk, with a visible "your level changed" moment after a run.
 **Brief:** Goal: show the Lexicon as one hand-lettered rank, explain placement in one line before it starts, add a re-placement option, and a quiet level-change line on the final page. Files: `src/core/unlimited.js` (read only), `src/ui/home.js`, final page. Done when: rank text is tested for each band, no new numbers beyond the existing Lexicon.
@@ -1376,3 +1376,11 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Make Unlimited and Practice draw from `placeWords(place, WORDS)` so a topic room is only data.
 **Brief:** Goal: pass the active place into `pickWord` callers; default unchanged. Files: `src/core/level.js`, `unlimited.js`. Done when: tests prove the default pool is untouched.
 **Touches:** CORE. **Conflicts:** word pool thread.
+
+### G9a. Rank on the Librarian's Card
+**Pitch:** The rank now lives in the Unlimited book; put the same hand-lettered rank on the Librarian's Card so it follows you home.
+**Brief:** Goal: show `rankFor(lexicon)` on the card via `src/ui/lexiconRank.js`. Done when: tested per band. **Conflicts:** welcome.js, G7.
+
+### G9b. Rank-up moment
+**Pitch:** When a run crosses a band, give the final page one small ink-stamp beat instead of only a line.
+**Brief:** Goal: stamp animation on `.lx-change` when `rankIndex` rises, reduced-motion safe. **Conflicts:** results.js.
