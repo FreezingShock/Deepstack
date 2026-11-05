@@ -40,7 +40,7 @@ export function planWide({W, H, taglineBottom, descendTop, tagBottom}) {
 }
 /** Narrow rooms: the fireplace hangs under the streak mantel's beam (home-local box) and is `h` tall. */
 export function planFlow({W, beam, h}) {
-  if (!beam || h < 80) return null;
+  if (!beam || h < 56) return null;
   const FW = Math.min(W * .66, h * 1.55, 340);
   const mantel = {x: W / 2 - FW * .57, y: beam.y, w: FW * 1.14, h: Math.max(9, beam.h)};
   return {mode: 'flow', mantel, SR: {x: W / 2 - FW / 2, y: mantel.y + mantel.h - 1, w: FW, h}};
@@ -126,7 +126,7 @@ function createHearth(home, sfx) {
     if (home.hidden || W < 200 || H < 260) { layer.hidden = true; return; }
     const loc = el => { const r = el.getBoundingClientRect(); return {x: r.left - hr.left, y: r.top - hr.top, w: r.width, h: r.height, b: r.bottom - hr.top, r: r.right - hr.left}; };
     const q = s => home.querySelector(s);
-    const tagline = q('.tagline'), descend = q('#bPlay'), row = q('.hz-plaque .row'), tag = q('.hz-plaque .next'), mantelEl = q('.mantel');
+    const tagline = q('.tagline'), descend = q('#bPlay') || q('#bRes') || q('.hz-plaque .row button'), row = q('.hz-plaque .row'), tag = q('.hz-plaque .next'), mantelEl = q('.mantel');
     const beamEl = q('.mantel-beam'), shelves = [...home.querySelectorAll('.hshelf')];
     if (!tagline || !descend || !mantelEl || !beamEl) { layer.hidden = true; return; }
     const wide = innerWidth >= WIDE_MIN && getComputedStyle(mantelEl).position === 'absolute';
@@ -145,21 +145,32 @@ function createHearth(home, sfx) {
       const beam = loc(beamEl);
       setStyle(mantelEl, 'translate', `0 ${plan.mantel.y - beam.y}px`);
     } else {
-      if (getComputedStyle(mantelEl).display === 'none') { layer.hidden = true; return; }
+      // short rooms hide the streak mantel (data-room=tight); the fireplace still gets its beam, just without candles
+      const candles = q('.mantel-row');
+      if (getComputedStyle(mantelEl).display === 'none') { setStyle(mantelEl, 'display', 'block'); setStyle(candles, 'display', 'none'); }
       home.classList.add('hearth-flow');
       // room under the mantel: the mantel's own headroom plus whatever is left above the stacks, at most 170
       const stacksTop = () => shelves.length ? Math.min(...shelves.map(s => loc(s).y)) : H;
-      const bottom = () => loc(tag || descend).b;
+      const bottom = () => loc(tag && tag.style.display !== 'none' ? tag : descend).b;
       const stacksBottom = () => shelves.length ? Math.max(...shelves.map(s => loc(s).b)) : 0;
       const sink0 = Math.max(0, stacksBottom() - H); // how far the stacks already ran past the floor before the hearth
-      const pad = parseFloat(getComputedStyle(mantelEl).paddingTop) || 0;
-      const column = bottom() - loc(mantelEl).y - pad; // candles, beam, Descend and caption
-      setStyle(mantelEl, 'paddingTop', '6px');
-      let h = clamp(stacksTop() - 14 - (loc(tagline).b + 8) - column - 16, 0, Math.min(170, W * .5));
-      setStyle(mantelEl, 'marginBottom', (h + 10) + 'px');
-      // the column is centred in its zone, so check both ends and give back what overlaps
-      const over = Math.max(bottom() + 10 - stacksTop(), loc(tagline).b + 4 - loc(mantelEl).y, stacksBottom() - H - sink0);
-      if (over > 0) { h -= over; setStyle(mantelEl, 'marginBottom', Math.max(0, h + 10) + 'px'); }
+      const solve = () => {
+        setStyle(mantelEl, 'marginBottom', '0px');
+        const pad = parseFloat(getComputedStyle(mantelEl).paddingTop) || 0;
+        const column = bottom() - loc(mantelEl).y - pad; // candles, beam, Descend and caption
+        setStyle(mantelEl, 'paddingTop', '6px');
+        let h = clamp(stacksTop() - 14 - (loc(tagline).b + 8) - column - 16, 0, Math.min(170, W * .5));
+        setStyle(mantelEl, 'marginBottom', (h + 10) + 'px');
+        // the column is centred in its zone, so check both ends and give back what overlaps
+        const over = Math.max(bottom() + 10 - stacksTop(), loc(tagline).b + 4 - loc(mantelEl).y, stacksBottom() - H - sink0);
+        if (over > 0) { h -= over; setStyle(mantelEl, 'marginBottom', Math.max(0, h + 10) + 'px'); }
+        return h;
+      };
+      let h = solve();
+      // not enough room for a fireplace worth seeing: give up the candles (the streak stays on the plaque) for height
+      if (h < 100 && getComputedStyle(candles).display !== 'none') { setStyle(candles, 'display', 'none'); h = solve(); }
+      // very short: the "Daily No. N" caption under Descend repeats the book titles, so it gives way too
+      if (h < 76 && tag) { setStyle(tag, 'display', 'none'); h = solve(); }
       plan = planFlow({W, beam: loc(beamEl), h});
       if (!plan) { undo(); layer.hidden = true; return; }
     }
