@@ -1378,7 +1378,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: two or three handwritten next-step words on the final page, chosen by state (Daily unplayed, Daily played, streak at risk). Files: `src/app/final.js`, `src/ui/finalPage.css`. Done when: each state is tested, nothing outlined, Copy and Back unchanged.
 **Touches:** RESULT, HOME. **Conflicts:** Q5, 28.
 
-### G8. Home knows what you should do next
+### G8. [x] Home knows what you should do next (this PR)
 **Serves:** easy to understand, fewer menu books, spacing.
 **Pitch:** Descend always means today's Daily, even after it is played, and "Unlimited Placement" on a spine is unexplained. Make the plaque honest: unplayed Daily says so, played Daily turns Descend into your Unlimited level. Fold Practice into the Daily book as a section on the same two pages, as the riddle already was.
 **Brief:** Goal: contextual plaque and spine text (backlog 28 covers resume), and one fewer menu book (Practice as a Daily section, same pages). Files: `src/ui/home.js`, `src/ui/dailyBook.js`, `src/app/home.js`. Done when: five books on the stacks, plaque tested in unplayed/played/mid-run states, no spine text clipped at 375.
@@ -1534,3 +1534,10 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The keyboard-help panel (and any future confirm dialogs) should also grow out of a book, not a bare box.
 **Brief:** Goal: reuse `openPanelBook` for the keys panel and the Export/Reset dialogs. Files: `panelBook.js`. Done when: no panel fades in bare. **Conflicts:** 104 follow-ups, save-manager threads.
 
+### G8a. Mid-run Continue shows the word on the plaque
+**Pitch:** Home now says "Continue · word 4 of 7" on the Descend plaque when a Daily is in progress; the answer you already wrote could show too, as a faint pen line, so resuming feels like picking up a pen.
+**Brief:** Goal: after backlog 28, show your last written answer under the Continue plaque. Files: `src/ui/homePlaque.js`, `src/app/home.js`. Done when: tested for 0, 3 and 6 results. **Touches:** HOME. **Conflicts:** 28, home threads.
+
+### G8b. Phones show the menu books
+**Pitch:** At 375x667 the hearth plus plaque push the Daily/Unlimited spines below the fold; only Shelf peeks in, so the Practice section and the spine badges (done / resume / Lexicon) are easy to miss on a phone.
+**Brief:** Goal: a phone layout that keeps the two play spines visible under the plaque. Files: `src/ui/hearth.js`, `src/styles/home-plaque.css`. Done when: 375x667 screenshot shows Daily and Unlimited spines. **Touches:** HOME. **Conflicts:** FH4 (no hearth at small sizes), any home thread.

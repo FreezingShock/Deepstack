@@ -26,18 +26,19 @@ export function showHome(){
  setRun(null);ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;ui.gauge.classList.remove('on');clearInterval(cdTimer);
  const d=S.daily[utc()],st=computeStats(S,utc());World.setShelf(S.shelf);
  ui.home.hidden=false;ui.home.className='center fadein';
- ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:'',floorKey:S.bestFloor?FLOORS[S.bestFloor].key:'',tierInk:(()=>{const t=S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1);return t>=0?core.TIERS?.[t]?.ink||'':''})(),lexicon:core.lexicon});
+ ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),today:utc(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:'',floorKey:S.bestFloor?FLOORS[S.bestFloor].key:'',tierInk:(()=>{const t=S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1);return t>=0?core.TIERS?.[t]?.ink||'':''})(),lexicon:core.lexicon});
  paintJudge(modelStatus());
  World.clearNiches();World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
- $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
+ $('#bNext')&&($('#bNext').onclick=e=>descendInto(e.currentTarget,()=>startUnlimited()));
+ $('#bUnl').onclick=()=>startUnlimited();
  BOOK_INTROS.bUnl.extra=()=>rankHTML(S.rating,core.lexicon)+trendHTML(S.rating&&S.rating.hist);
  /* the main action is always a run: Descend once placed, "Find my rank" (the placement words) the first time; re-placing is the quiet second choice */
  BOOK_INTROS.bUnl.btn=()=>S.rating.placed?'Descend':'Find my rank';
  BOOK_INTROS.bUnl.second=()=>S.rating.placed?`<button class="bs-again pen-ink" data-act="replace">Place me again</button>`:'';
  BOOK_ACTS.replace=()=>startUnlimited(true);
- BOOK_ACTS.riddle=startRiddle;BOOK_ACTS.dailyRiddle=startTodayRiddle;BOOK_ACTS.daily=()=>d?showFinal(d,true):startDaily(false);
+ BOOK_ACTS.practice=()=>startDaily(true);BOOK_ACTS.riddle=startRiddle;BOOK_ACTS.dailyRiddle=startTodayRiddle;BOOK_ACTS.daily=()=>d?showFinal(d,true):startDaily(false);
  
  bookify(ui.home);applyHomeTier(ui.home);
  bindAtticHome(ui.home,{shelf:S.shelf});

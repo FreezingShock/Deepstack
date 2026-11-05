@@ -1,0 +1,6 @@
+/* Home plaque, played-Daily state: Descend now leads to Unlimited, and today's result is a quiet second button. */
+.home .plaque-second{margin-top:10px}
+.home .plaque-second #bRes{font-size:calc(13px*var(--ts));letter-spacing:.2em;padding:9px 22px;min-width:0}
+.home .descend .d-col{display:flex;flex-direction:column;align-items:center;gap:7px}
+.home .descend .d-sub{font:600 calc(11px*var(--ts)) var(--label);letter-spacing:.24em;text-transform:uppercase;color:var(--c-brass-65);text-shadow:none;white-space:nowrap}
+@media(max-width:420px){.home .descend .d-sub{letter-spacing:.14em;font-size:calc(10px*var(--ts))}}
