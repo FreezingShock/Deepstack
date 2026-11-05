@@ -20,7 +20,7 @@ import {TIERS as TIER_DEFS} from '../core/tiers.js';
 const rgb=(r,g,b,a=1)=>`rgba(${r|0},${g|0},${b|0},${a})`;
 const hexRgb=h=>{const n=parseInt(String(h).slice(1,7),16);return[n>>16&255,n>>8&255,n&255];};
 const rng=seed=>{let s=seed>>>0||1;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};};
-export const EAVE=.38;
+export const EAVE=.38,LEAD=.7;
 
 /* ---- layout (pure) ---- */
 export const SIZES=[4,2,5,3,5,3,4];
@@ -71,6 +71,29 @@ function web(c,x,y,sx,sy,r,a=.26){
  c.restore();
 }
 
+/* One fixed floorboard pattern (baked once, never moves): planks run toward the vanishing point, each a different
+   width and tone, with butt joints at staggered depths, a little grain and a nail at every joint. */
+function floorBoards(c,W,vp,yF,R){
+ const X=(x,s)=>vp.x+(x-vp.x)*s,Y=s=>vp.y+(yF-vp.y)*s;
+ let x=-W*.02;
+ while(x<W*1.02){
+  const w=W*(.028+R()*.034),x2=x+w,tone=.8+R()*.4;
+  let s=1;
+  while(s>FARS){
+   const len=(.16+R()*.3)*(1-FARS),s2=Math.max(FARS,s-len),t=tone*(.86+R()*.28);
+   c.fillStyle=rgb(58*t,40*t,22*t);
+   c.beginPath();c.moveTo(X(x,s),Y(s));c.lineTo(X(x2,s),Y(s));c.lineTo(X(x2,s2),Y(s2));c.lineTo(X(x,s2),Y(s2));c.closePath();c.fill();
+   c.strokeStyle=rgb(30*t,20*t,10*t,.5);c.lineWidth=.7;
+   for(let g=0;g<3;g++){const u=.15+R()*.7,gx=x+w*u;c.beginPath();c.moveTo(X(gx,s),Y(s));c.lineTo(X(gx+(R()-.5)*w*.1,s2),Y(s2));c.stroke();}
+   c.strokeStyle=rgb(8,5,2,.85);c.lineWidth=1.2;c.beginPath();c.moveTo(X(x,s2),Y(s2));c.lineTo(X(x2,s2),Y(s2));c.stroke();
+   if(s2>FARS){c.fillStyle=rgb(14,9,4,.8);for(const nx of[x+w*.2,x+w*.8]){c.beginPath();c.arc(X(nx,s2),Y(s2)+2*s2,Math.max(.6,1.1*s2),0,6.3);c.fill();}}
+   s=s2;
+  }
+  c.strokeStyle=rgb(8,5,2,.85);c.lineWidth=1.4;c.beginPath();c.moveTo(X(x2,1),Y(1));c.lineTo(X(x2,FARS),Y(FARS));c.stroke();
+  x=x2;
+ }
+}
+
 export function buildHall(W,A,DPR=1,seed=7){
  const cv=document.createElement('canvas');cv.width=Math.ceil(W*DPR);cv.height=Math.ceil(A*DPR);
  const c=cv.getContext('2d');c.scale(DPR,DPR);
@@ -90,10 +113,11 @@ export function buildHall(W,A,DPR=1,seed=7){
  const edges=[[0,1,rgb(16,11,6),'roof'],[1,2,rgb(14,10,6),'roof'],[2,3,rgb(30,21,12),'wall'],[3,4,rgb(54,37,20),'floor'],[4,0,rgb(30,21,12),'wall']];
  for(const [i,j,fill,kind] of edges){
   poly([near[i],near[j],far[j],far[i]],fill);
-  const n=kind==='floor'?Math.round(W/46):kind==='roof'?12:7;
-  c.lineWidth=kind==='floor'?1.4:kind==='roof'?3:1.3;
+  if(kind==='floor'){floorBoards(c,W,vp,yF,R);continue;}
+  const n=kind==='roof'?12:7;
+  c.lineWidth=kind==='roof'?3:1.3;
   for(let k=0;k<=n;k++){const t=k/n,a=near[i],b=near[j],fa=far[i],fb=far[j];
-   c.strokeStyle=kind==='roof'?rgb(70,48,26,.5):kind==='floor'?rgb(12,8,4,.8):rgb(10,7,4,.6);
+   c.strokeStyle=kind==='roof'?rgb(70,48,26,.5):rgb(10,7,4,.6);
    c.beginPath();c.moveTo(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t);c.lineTo(fa.x+(fb.x-fa.x)*t,fa.y+(fb.y-fa.y)*t);c.stroke();}
  }
  /* the two long walls are bookcases: shelves running back toward the vanishing point, packed with upright spines */
@@ -336,12 +360,6 @@ export function drawAttic(ctx,room,o){
  if(!room.plan||room.plan.items!==items||room.plan.W!==W)room.plan={items,W,...planRows(items,W)};
  const {rows,hidden}=room.plan,fg=floorGeom(W,A),now=Date.now(),rank=new Map(items.map((x,k)=>[x,k])),{win}=room;
  ctx.drawImage(room.cv,0,ry,W,A);
- /* the floor boards slide with the rows, so scrolling is felt even between piles */
- ctx.save();ctx.lineWidth=1;
- const frac=scroll-Math.floor(scroll);
- for(let k=-1;k<=DMAX+1;k++){const zz=k-frac+.5,y=ry+fg.rowY(zz),s=rowScale(zz);if(y>ry+A||y<ry+fg.rowY(DMAX))continue;
-  ctx.strokeStyle=rgb(8,5,2,.5);ctx.beginPath();ctx.moveTo(W/2-W/2*s,y);ctx.lineTo(W/2+W/2*s,y);ctx.stroke();}
- ctx.restore();
  ctx.save();ctx.globalCompositeOperation='lighter';
  if(!RM)for(let k=0;k<18;k++){const ph=k*1.7,u=((vt*.02+k*.137)%1),x=win.x+Math.sin(vt*.3+ph)*win.r*(1+u*4)+(k%2?1:-1)*u*W*.05,y=ry+win.y+u*(ry+A-(ry+win.y)),al=Math.sin(u*Math.PI)*.5*lit;
   ctx.fillStyle=rgb(255,236,190,al);ctx.beginPath();ctx.arc(x,y,1+(k%3)*.5,0,6.3);ctx.fill();}
@@ -354,7 +372,7 @@ export function drawAttic(ctx,room,o){
  const iMax=Math.min(rows.length-1,Math.ceil(scroll+DMAX+.6)),iMin=Math.max(0,Math.floor(scroll-1));
  for(let i=iMax;i>=iMin;i--){
   const d=i-scroll;if(d<-.95||d>DMAX+.6)continue;
-  const s=rowScale(d),y0=ry+fg.rowY(d),alpha=d<0?1+d/.95:d>DMAX-.4?Math.max(0,DMAX+.6-d):1,dim=Math.min(.6,Math.max(0,d)/DMAX*.6);
+  const z=d+LEAD,s=rowScale(z),y0=ry+fg.rowY(z),alpha=d<0?1+d/.95:d>DMAX-.4?Math.max(0,DMAX+.6-d):1,dim=Math.min(.6,Math.max(0,d)/DMAX*.6);
   const row=rows[i];
   ctx.save();ctx.globalAlpha=alpha;ctx.translate(W/2,y0);ctx.scale(s,s);
   if(row.sign)standSign(ctx,row.sign.x-W/2,row.sign.w,row.title,row.count);

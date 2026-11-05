@@ -1310,6 +1310,8 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 
 
 ## G. Goal-level polish menu (2026-11-05, from a play-through at 1280 and 375 plus nate's repeated asks)
+
+- [x] Attic floorboards and first-row room (nate 2026-11-05): fixed floorboard pattern, row 0 pulled back, one-row-per-step settle. Conflicts: atticRoom.js, world.js.
 Broader than pixel fixes: each item is a goal to make the base game clearer, more fun and more finished. Nothing here builds zones or topic rooms; G10 only leaves a door for them. Play-through note: the sandbox could not download the full judge, so scores seen were the quick judge's (a decent answer for "tempt" scored 0).
 
 ### G1. A first run that explains itself

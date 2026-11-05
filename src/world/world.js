@@ -347,7 +347,8 @@ export const World=(()=>{
   onAtticRow(f){atticSCb=f;},
   /* move along the room by `n` rows (fractions from a wheel). Returns false when already at the first row and settled,
      so the caller can leave the attic. */
-  atticGo(n){if(atticGoal!==1)return false;const mx=Math.max(0,rowsN()-1),g=clamp(atticSGoal+n,0,mx),now2=performance.now();
+  atticGo(n){if(atticGoal!==1)return false;const mx=Math.max(0,rowsN()-1),g=clamp(atticSGoal+clamp(n,-1,1),0,mx),now2=performance.now();
+   if(Math.abs(g-atticSGoal)>=.5&&now2-atticSAt<260)return true;
    if(g===atticSGoal){const hold=n<0&&atticSGoal===0&&now2-atticSAt<450;if(hold)atticSAt=now2;return hold;}
    atticSGoal=g;atticSAt=now2;return true;},
   atticStep(n){return World.atticGo(n);},
