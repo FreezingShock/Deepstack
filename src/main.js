@@ -22,6 +22,7 @@ import './ui/pageFit.js';
 import './ui/coverSigil.css';
 import './ui/tierFrames.css';
 import './ui/reveal.css';
+import './ui/coverLock.css';
 import './ui/reveal.js';
 import * as core from './core/index.js';
 import {Sfx} from './feel.js';
