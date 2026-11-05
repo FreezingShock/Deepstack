@@ -3,8 +3,6 @@
 #home>.hearth{position:absolute;inset:0;z-index:-1;pointer-events:none;transition:opacity var(--m-base) var(--e-cruise)}
 #home>.hearth[hidden]{display:none}
 #home>.hearth canvas{position:absolute;left:0;top:0}
-/* nothing behind an opening menu book */
-#home.book-opening>.hearth{opacity:0}
 html.hearth-hover,html.hearth-hover #world{cursor:pointer}
 
 .hearth-light{position:fixed;inset:0;display:block;pointer-events:none;opacity:0;transition:opacity var(--m-smooth) var(--e-cruise)}

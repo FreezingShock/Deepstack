@@ -35,6 +35,7 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 - 2026-11-04 reveal recipes: "One recipe per tier reveal" -> every part of a tier's reveal (rays, rune, flash, cover, sound) should come from one table, like the particles.
 
 - 2026-11-05 home books: items behind an opening menu book (other books, desk props) must never show through mid-animation; the alcove behind it stays empty at every frame.
+- 2026-11-05 open menu book: "why is there a black box for the alcove when a book is open?" -> behind an open book the room stays lit (fire, brick, shelves); only items that would overlap the book hide, never a solid veil.
 
 ## 3. How he works
 
