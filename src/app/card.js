@@ -1,6 +1,7 @@
 import {PALETTE} from '../theme/colors.js';
 import {comboLabel} from '../core/combo.js';
 import {playReveal,revealPlan} from '../ui/reveal.js';
+import {coverLockHTML,coverLockVars} from '../ui/coverLock.js';
 import * as core from '../core/index.js';
 import {Sfx,Feel} from '../feel.js';
 import {feedbackHTML} from '../ui/feedback.js';
@@ -40,11 +41,12 @@ export function openCard(b,opts={}){
    </div>
   </div>
   <div class="cover"><span class="ct">${T.rar}</span><div class="orn"></div><div class="cw">${esc(b.w)}</div><div class="orn"></div><span class="ct">${T.name}</span></div>
+  ${opts.fresh?coverLockHTML(revealPlan(b.tier).cover.style):''}
  </div>`;
  L.hidden=false;requestAnimationFrame(()=>L.classList.add('on'));
  fillMeans(L,b);
  const bk=$('#bk');stampCover(bk.querySelector('.cover'),b.w,b.tier);
- if(opts.fresh){const pl0=revealPlan(b.tier);bk.classList.add('rvc');bk.style.setProperty('--cv-ms',pl0.cover.ms+'ms');bk.style.setProperty('--cv-delay',pl0.cover.delay+'ms');setTimeout(async()=>{Sfx.paper();if(pl0.sound.sting)Sfx.sting(b.tier);if(pl0.shake)Feel.shake(pl0.shake.amp,pl0.shake.ms);if(pl0.slow)Feel.slowmo(pl0.slow.scale,pl0.slow.ms);bk.classList.add('open');{const pl=playReveal(L,b.tier,T.spine,RM);if(pl.ink)bk.classList.add('rv-ink');if(pl.pulse)bk.classList.add('rv-pulse');}{const rc=bk.getBoundingClientRect();FX.reveal(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier);const hh=$('#halo');if(hh)hh.classList.add('go');}await sleep(380+pl0.cover.delay);if(cardOpts!==opts)return;Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);if(cardOpts!==opts)return;$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.settle(rc.left+rc.width/2,rc.top+80,b.tier);}$('#go').focus();},220);}
+ if(opts.fresh){const pl0=revealPlan(b.tier);bk.classList.add('rvc');const cvv=coverLockVars(pl0.cover,RM),dl=RM?0:pl0.cover.delay;for(const k in cvv)bk.style.setProperty(k,cvv[k]);setTimeout(async()=>{Sfx.paper();/* the closure comes undone first; the sting, shake and burst land when the cover starts to swing (Apocrypha's burst starts at once: it implodes first) */const at=(fn,ms)=>ms>0?setTimeout(()=>{if(cardOpts===opts)fn();},ms):fn();if(pl0.sound.sting)at(()=>Sfx.sting(b.tier),dl);if(pl0.shake)at(()=>Feel.shake(pl0.shake.amp,pl0.shake.ms),dl);if(pl0.slow)at(()=>Feel.slowmo(pl0.slow.scale,pl0.slow.ms),dl);bk.classList.add('open');{const pl=playReveal(L,b.tier,T.spine,RM);if(pl.ink)bk.classList.add('rv-ink');if(pl.pulse)bk.classList.add('rv-pulse');}at(()=>{const rc=bk.getBoundingClientRect();FX.reveal(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier);const hh=$('#halo');if(hh)hh.classList.add('go');},b.tier>=6?0:dl);await sleep(380+pl0.cover.delay);if(cardOpts!==opts)return;Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);if(cardOpts!==opts)return;$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.settle(rc.left+rc.width/2,rc.top+80,b.tier);}$('#go').focus();},220);}
  else{bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
  $('#go').onclick=closeCard;
  if(opts.shelve)opts.shelve.wire(bk);
