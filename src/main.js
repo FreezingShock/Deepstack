@@ -15,6 +15,7 @@ import {setsBook} from './sets/ui.js';
 import './ui/results.js';
 import './ui/results.css';
 import './ui/finalPage.css';
+import './ui/nextStep.css';
 import './ui/card.css';
 import './ui/bookCard.css';
 import './ui/cardFit.js';

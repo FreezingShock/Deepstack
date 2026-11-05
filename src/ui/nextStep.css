@@ -1,0 +1,18 @@
+/* The way on: handwritten choices on the final page, no boxes or outlines. */
+.fin .fway{grid-area:row;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px}
+.fin .fway .row{grid-area:auto;margin-top:2px}
+.fnext{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 20px}
+.fnx{background:none;border:0;padding:4px 2px 6px;cursor:pointer;color:var(--ink,inherit);font:500 calc(18px*var(--ts,1))/1.2 var(--fhand,var(--pen-hand,'Fuzzy Bubbles',cursive));
+ background-image:var(--pen-stroke,none);background-repeat:no-repeat;background-position:0 100%;background-size:100% 5px;opacity:.9;transition:opacity var(--m-base,.2s),transform var(--m-quick,.12s)}
+.fnx:hover,.fnx:focus-visible{opacity:1;transform:translateY(-1px)}
+.fnx:focus-visible{outline:2px solid var(--b-brass-hi,#d9b86a);outline-offset:3px}
+.fnx:active{transform:translateY(1px)}
+.fin .fright.reading{display:flex}
+.freread{width:100%;text-align:left;font-family:var(--serif)}
+.frhead{margin:0 0 6px;font:700 calc(22px*var(--ts,1))/1.2 var(--pen-hand,'Fuzzy Bubbles',cursive)}
+.freread ul{list-style:none;margin:0 0 8px;padding:0}
+.frw{display:block;width:100%;text-align:left;background:none;border:0;padding:6px 2px;cursor:pointer;color:inherit;font:400 calc(14px*var(--ts,1))/1.35 var(--serif)}
+.frw b{font:700 calc(17px*var(--ts,1)) var(--serif)}.frw i{opacity:.6;font-size:.9em}
+.frw span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;opacity:.85}
+.frback{display:block;margin:0 auto}
+@media (max-width:560px),(max-height:700px){.fnx{font-size:calc(16px*var(--ts,1))}.fnext{gap:0 14px}.frw span{-webkit-line-clamp:1}}

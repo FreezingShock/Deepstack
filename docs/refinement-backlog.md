@@ -1347,7 +1347,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: replace the diamonds with a growing row of earned spines; no new numbers. Files: new `src/ui/runLedge.js`, hooks in `showWord`/`finishRun`. Done when: row matches the finished books, skipped words show a gap, reduced motion drops the slide-in, no overlap with the depth rail on phones.
 **Touches:** RUN, RESULT. **Conflicts:** 32 chain, Q5 final ledger.
 
-### G7. The way on after a run
+### G7. The way on after a run  [x] done (this PR)
 **Serves:** fun, easy to understand, fewer menu books.
 **Pitch:** After a descent the player lands on a ledger and a Back word. The next step (one more run, today's Daily, or look at the books I missed) should be one written choice on the page, not a trip home. Missed words become a short "to read again" page with their definitions.
 **Brief:** Goal: two or three handwritten next-step words on the final page, chosen by state (Daily unplayed, Daily played, streak at risk). Files: `src/app/final.js`, `src/ui/finalPage.css`. Done when: each state is tested, nothing outlined, Copy and Back unchanged.
@@ -1396,3 +1396,15 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The spines in the run row are only for show; tapping one could peek its answer, like the alcove ledge does.
 **Brief:** Goal: make `.runledge .spine` focusable with the same tip as `ledgeTip`. Files: `src/ui/runLedge.js`. Done when: keyboard and hover show word, tier and score.
 **Touches:** RUN. **Conflicts:** G4, G5.
+
+### G7a. Review a missed word from its own page
+**Serves:** easy to understand, learning.
+**Pitch:** "To read again" lists missed words with a clamped definition; tapping one opens its book. Let the page also show what the player wrote beside the real meaning, so it teaches, not just lists.
+**Brief:** Goal: show the player's own answer under each missed definition and add a "keep for later" mark that carries to the Shelf. Files: `src/ui/nextStep.js`, `src/core/nextStep.js`. Done when: tested, still no scrollbar at 375x667.
+**Touches:** RESULT. **Conflicts:** G7 follow-ups, Q5.
+
+### G7b. Next step after the Daily book and riddle runs
+**Serves:** fewer menu books, easy to understand.
+**Pitch:** The way on is only on the Descent complete page. Riddle runs and a Daily opened from the book should offer the same written choices, including a riddle choice when the Daily Riddle is unplayed.
+**Brief:** Goal: add a `riddle` step to `nextSteps` and use it from the riddle result. Files: `src/core/nextStep.js`, `src/app/riddle.js`. Done when: each state tested.
+**Touches:** RESULT, HOME. **Conflicts:** G8, riddle threads.
