@@ -26,10 +26,19 @@ export function recapHTML(d, S) {
   </div>`;
 }
 
+// Display-only share note: keeps the bar line and each "Tier \u00b7" pair unbroken. Text content is identical to the copied text.
+function shareHTML(txt) {
+  const L = txt.split('\n'), n = L.length;
+  if (n < 2) return esc(txt);
+  L[n - 2] = `<span class="nb">${esc(L[n - 2])}</span>`;
+  L[n - 1] = L[n - 1].split(' \u00b7 ').map((t, i, a) => `<span class="nb">${esc(t)}${i < a.length - 1 ? ' \u00b7' : ''}</span>`).join(' ');
+  return L.slice(0, n - 2).map(esc).concat(L.slice(n - 2)).join('\n');
+}
+
 // The whole results sheet. Hierarchy: kicker, title, depth (the hero), one line of run facts,
 // the shelf of books, stat cards, the word list, the torn share note, then the buttons.
 export function finalHTML(d, S, o) {
-  const kicker = d.mode === 'riddle' ? (d.day ? 'Riddle No. ' + o.dayNo : 'Riddle Shelf') : d.mode === 'unlimited' ? (d.placing ? 'Placement' : 'Unlimited') : d.practice ? 'Practice run' : 'Daily No. ' + o.no;
+  const kicker = d.mode === 'riddle' ? (d.day ? 'Daily Riddle No. ' + o.dayNo : 'Riddle') : d.mode === 'unlimited' ? (d.placing ? 'Placement' : 'Unlimited') : d.practice ? 'Practice run' : 'Daily No. ' + o.no;
   const lex = d.mode === 'riddle' ? `<span>Solved <b>${d.solved}</b> of ${d.of}</span>` : d.mode === 'unlimited' ? `<span>Lexicon <b>${d.lex}</b>${d.placing ? '' : ` (${d.lex >= d.lex0 ? '+' : '\u2212'}${Math.abs(d.lex - d.lex0)})`} \u00b7 ${esc(o.levelTitle(d.lex / 10))}</span>` : '';
   return `<div class="sheet fin">
   <div class="fhead"><p class="fkick">${kicker}</p>
@@ -38,7 +47,7 @@ export function finalHTML(d, S, o) {
   <p class="fsub">${o.floorName ? `<span>Reached <b>${esc(o.floorName)}</b></span>` : ''}<span>Average <b>${d.avg}</b></span><span>Rarest <b>${esc(o.rarest)}</b></span>${lex}</p>
   <div class="spineimgs" id="sp">${o.spines}</div></div>
   <div class="fright">${recapHTML(d, S)}
-  <div class="slipwrap fslip"><i class="pin"></i><div class="slip"><pre class="share pe" id="shr">${esc(o.txt)}</pre></div></div></div>
+  <div class="slipwrap fslip"><i class="pin"></i><div class="slip"><pre class="share pe" id="shr">${shareHTML(o.txt)}</pre></div></div></div>
   <div class="row"><button class="btn pri" id="cp">Copy result</button><button class="btn" id="up">Back to the surface</button></div></div>`;
 }
 

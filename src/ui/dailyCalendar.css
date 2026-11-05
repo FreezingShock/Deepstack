@@ -1,12 +1,14 @@
 /* Daily book calendar page: handwritten month grid, played days circled in pen. */
 .bk-spread.menu .dly.cal .cal-head{display:flex;align-items:center;justify-content:space-between;gap:6px}
-.bk-spread.menu .dly.cal h1{font:600 clamp(22px,2.6vw,30px)/1.1 var(--hand);color:var(--bk);margin:0;text-align:center;flex:1;white-space:nowrap}
-.bk-spread.menu .dly.cal .cal-nav{width:44px;height:44px;border:0;background:none;cursor:pointer;font:600 34px/1 var(--hand);color:var(--bk)}
+.bk-spread.menu .dly.cal h1{font:600 clamp(calc(22px*var(--ts)),2.6vw,calc(30px*var(--ts)))/1.1 var(--hand);color:var(--bk);margin:0;text-align:center;flex:1;white-space:nowrap}
+.bk-spread.menu .dly.cal .cal-nav{width:44px;height:44px;padding:0;border:0;background:none;cursor:pointer;color:var(--bk);display:flex;align-items:center;justify-content:center;flex:none}
+.bk-spread.menu .dly.cal .cal-nav svg{width:28px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .bk-spread.menu .dly.cal .cal-nav:disabled{opacity:.25;cursor:default}
-.bk-spread.menu .dly.cal .cal-nav:not(:disabled):hover,.bk-spread.menu .dly.cal .cal-nav:focus-visible{outline:0;text-decoration:underline wavy;text-underline-offset:4px;text-decoration-thickness:1px}
+.bk-spread.menu .dly.cal .cal-nav:not(:disabled):hover svg,.bk-spread.menu .dly.cal .cal-nav:focus-visible svg{stroke-width:3.2}
+.bk-spread.menu .dly.cal .cal-nav:focus-visible{outline:0}
 .bk-spread.menu .dly.cal .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px 0;margin:6px 0 4px;justify-items:center}
-.bk-spread.menu .dly.cal .cal-dow{font:600 18px var(--hand);color:var(--mute)}
-.bk-spread.menu .dly.cal .cal-d{box-sizing:border-box;width:min(40px,100%);aspect-ratio:1;max-height:40px;display:flex;align-items:center;justify-content:center;border:2px solid transparent;border-radius:52% 48% 55% 45%/47% 55% 45% 53%;background:none;padding:0;font:500 22px/1 var(--hand);color:var(--c-oak-4a3a22)}
+.bk-spread.menu .dly.cal .cal-dow{font:600 calc(18px*var(--ts)) var(--hand);color:var(--mute)}
+.bk-spread.menu .dly.cal .cal-d{box-sizing:border-box;width:min(40px,100%);aspect-ratio:1;max-height:40px;display:flex;align-items:center;justify-content:center;border:2px solid transparent;border-radius:52% 48% 55% 45%/47% 55% 45% 53%;background:none;padding:0;font:500 calc(22px*var(--ts))/1 var(--hand);color:var(--c-oak-4a3a22)}
 .bk-spread.menu .dly.cal .cal-d.none{color:var(--mute);opacity:.4}
 .bk-spread.menu .dly.cal button.cal-d{cursor:pointer}
 .bk-spread.menu .dly.cal .cal-d.missed{color:var(--ink)}
@@ -31,16 +33,16 @@
 .bk-spread.menu .dly.cal .cal-week h2{margin-top:6px}
 .bk-spread.menu .dly.cal .cal-strip{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-family:var(--hand)}
 .bk-spread.menu .dly.cal .cal-w{display:flex;flex-direction:column;align-items:center;line-height:1.15}
-.bk-spread.menu .dly.cal .cal-w i{font:500 16px var(--hand);color:var(--mute);font-style:normal}
-.bk-spread.menu .dly.cal .cal-w b{font:600 22px var(--hand);color:var(--ink)}
-.bk-spread.menu .dly.cal .cal-w small{font:500 16px var(--hand);color:var(--bk);min-height:18px}
+.bk-spread.menu .dly.cal .cal-w i{font:500 calc(16px*var(--ts)) var(--hand);color:var(--mute);font-style:normal}
+.bk-spread.menu .dly.cal .cal-w b{font:600 calc(22px*var(--ts)) var(--hand);color:var(--ink)}
+.bk-spread.menu .dly.cal .cal-w small{font:500 calc(16px*var(--ts)) var(--hand);color:var(--bk);min-height:18px}
 .bk-spread.menu .dly.cal .cal-w.none b,.bk-spread.menu .dly.cal .cal-w.missed b{color:var(--mute)}
-.bk-spread.menu .dly.cal .cal-margin{font:italic 500 21px/1.25 var(--hand);color:var(--bk);margin:6px 0 0 8px;transform:rotate(-1.2deg);border-left:2px solid var(--rule);padding-left:10px}
+.bk-spread.menu .dly.cal .cal-margin{font:italic 500 calc(21px*var(--ts))/1.25 var(--hand);color:var(--bk);margin:6px 0 0 8px;transform:rotate(-1.2deg);border-left:2px solid var(--rule);padding-left:10px}
 @media(max-width:560px){
- .bk-spread.menu .dly.cal .cal-d{font-size:20px}
+ .bk-spread.menu .dly.cal .cal-d{font-size:calc(20px*var(--ts))}
 }
 /* Today's Riddle: a small ink dot under a day whose riddle was played, and its streak line */
 .bk-spread.menu .dly.cal .cal-d{position:relative}
 .bk-spread.menu .dly.cal .cal-rid{position:absolute;left:50%;bottom:0;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--bk);pointer-events:none}
-.bk-spread.menu .dly.cal .cal-rid-note{font-size:18px}
+.bk-spread.menu .dly.cal .cal-rid-note{font-size:calc(18px*var(--ts))}
 .bk-spread.menu .dly.cal .cal-rid-note .cal-rid{position:static;display:inline-block;margin:0 4px 1px 0;vertical-align:middle}

@@ -3,10 +3,10 @@
    swipe up, ArrowDown, Escape or "Down the ladder" to come back. One cue and one ladder button live on the page for
    the whole session; bindAtticHome only refreshes what they say. */
 import {World} from '../world/world.js';
-import {atticAll} from '../core/attic.js';
+import {atticAll,atticTidy} from '../core/attic.js';
 import './attic.css';
 
-let cue=null,down=null,home=null,count=0,wired=false;
+let cue=null,down=null,home=null,count=0,wired=false,depthEl=null;
 const ui=()=>({live:!!home&&!home.hidden&&home.isConnected&&World.canAttic&&!document.querySelector('.bk-spread,[role=dialog]:not([hidden]),#cardlayer.on')});
 function sync(open){
  if(home)home.classList.toggle('attic-away',open);
@@ -14,6 +14,15 @@ function sync(open){
  if(cue)cue.hidden=open||!count||!(home&&!home.hidden);
  if(down)down.hidden=!open;
  if(open&&down)down.focus({preventScroll:true});
+ if(depthEl)depthEl.hidden=!open||World.atticLayers<2;
+ if(open)showDepth(World.atticDepth,World.atticLayers);
+}
+/* A quiet line under the room: which room you are in, and that there is more behind. */
+function showDepth(g,n){
+ if(!depthEl)return;
+ depthEl.hidden=!World.atticOpen||n<2;
+ const k=Math.round(g)+1;
+ depthEl.textContent=k<n?`Room ${k} of ${n} · keep climbing back ↑`:`Room ${k} of ${n} · the back of the attic`;
 }
 /* The home panel sits in the alcove, which is part of the world. While the camera climbs, move the panel by exactly the
    same pixels as the world (same frame, same easing) so it stays inside the alcove instead of sliding on its own clock. */
@@ -25,13 +34,15 @@ function rideHome(px,t){
 }
 /* After a book is dusted off: re-list what the attic holds and refresh the ladder cue. */
 export function refreshAttic(shelf){
- const items=atticAll(shelf);count=items.length;World.setAtticItems(items);
+ const items=atticTidy(atticAll(shelf));count=items.length;World.setAtticItems(items);
  if(cue){cue.textContent=`↑ The attic · ${count}`;cue.setAttribute('aria-label',`Climb up to the attic: ${count} ${count===1?'book':'books'}`);}
 }
 export function bindAtticHome(homeEl,{shelf=[]}={}){
  home=homeEl;
- const items=atticAll(shelf);count=items.length;
+ const items=atticTidy(atticAll(shelf));count=items.length;
  World.setAtticItems(items);
+ if(!depthEl){depthEl=document.createElement('div');depthEl.className='attic-depth';depthEl.hidden=true;depthEl.setAttribute('aria-live','polite');homeEl.after(depthEl);}
+ World.onAtticDepth(showDepth);
  if(!cue){
   cue=document.createElement('button');cue.type='button';cue.className='attic-cue-home';
   down=document.createElement('button');down.type='button';down.className='attic-down';down.textContent='Down the ladder ↓';down.hidden=true;
@@ -43,14 +54,25 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
  World.setAttic(false,{instant:true});World.onAttic(sync);sync(false);
  World.onAtticMove(rideHome);
  if(!wired){wired=true;
-  addEventListener('wheel',e=>{if(World.atticOpen){if(e.deltaY>2)close();}else if(e.deltaY<-2&&count&&ui().live)open();},{passive:true});
+  addEventListener('wheel',e=>{
+   if(World.atticOpen){
+    /* scrolling up keeps going back through the rooms; scrolling down comes forward, and out of the attic from the first room */
+    const d=Math.max(-120,Math.min(120,e.deltaY));
+    if(d<-1)World.atticGo(-d/520);
+    else if(d>1&&!World.atticGo(-d/520)&&e.deltaY>2)close();
+   }else if(e.deltaY<-2&&count&&ui().live)open();},{passive:true});
+  addEventListener('pointermove',e=>{if(World.atticOpen&&e.pointerType==='mouse')World.atticLook((e.clientX/innerWidth-.5)*2);},{passive:true});
   addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input,textarea,select'))return;
-   if(World.atticOpen){if(e.key==='Escape'||e.key==='ArrowDown'){e.stopImmediatePropagation();close();}}
+   if(World.atticOpen){
+    if(e.key==='ArrowUp'){if(World.atticGo(1))e.stopImmediatePropagation();}
+    else if(e.key==='ArrowDown'){e.stopImmediatePropagation();if(!World.atticGo(-1))close();}
+    else if(e.key==='Escape'){e.stopImmediatePropagation();close();}
+   }
    else if(e.key==='ArrowUp'&&count&&ui().live)open();},true);
   let y0=null;
   addEventListener('pointerdown',e=>{y0=e.pointerType==='mouse'||e.target.closest('button,a,input,textarea,select')?null:e.clientY;});
   addEventListener('pointerup',e=>{if(y0==null)return;const dy=e.clientY-y0;y0=null;
-   if(World.atticOpen){if(dy<-60)close();}else if(dy>60&&count&&ui().live)open();});
+   if(World.atticOpen){if(dy>60)World.atticGo(1);else if(dy<-60&&!World.atticGo(-1))close();}else if(dy>60&&count&&ui().live)open();});
 }
 }
 function open(){if(count&&ui().live)World.setAttic(true);}

@@ -37,7 +37,7 @@ export function prepareAnswer(text, word) {
 
 const SYNONYM_MIN = .42, SYNONYM_CAP = .55;
 /** How much a Wiktionary relation is worth, as a floor on the similarity (see relations.js). Fitted with npm run judge:eval. */
-export const RELATION = {syn: .50, boost: .12, rel: .40, near: .36, link0: .28, linkSlope: .10, synSimMin: .55, synSimCap: .56, grpDiscount: .08};
+export const RELATION = {broad: .29, broadDef: .275, echo: .29, altDiscount: .06, glossDiscount: .08, senseCap: .40, syn: .50, boost: .12, rel: .40, near: .36, link0: .28, linkSlope: .10, synSimMin: .55, synSimCap: .56, grpDiscount: .08};
 
 /**
  * @param {number[]} sims cosine of the answer against each reference text
@@ -64,6 +64,12 @@ export function scoreFromSims(sims, prepared, rawText, ctx = {}) {
     if (rel?.syn.length) sim = Math.max(sim, bare ? T.syn : Math.min(T.syn - .05, sim + T.boost));
     else if (bare && (rel?.hyp.length || rel?.rel.length)) sim = Math.max(sim, T.rel);
     else if (bare && rel?.near.length) sim = Math.max(sim, T.near);
+    // Lenient tier: general ideas and close concepts earn a low floor (Pamphlet to Paperback), never more than a real match.
+    if (rel?.echo) sim = Math.max(sim, T.echo);
+    if (rel?.broad) sim = Math.max(sim, T.broad);
+    if (rel?.broadDef) sim = Math.max(sim, T.broadDef);
+    if (ctx.altSim != null) sim = Math.max(sim, Math.min(T.senseCap, ctx.altSim - T.altDiscount)); // other meanings count, but never as much as the main one
+    if (ctx.glossSim != null) sim = Math.max(sim, Math.min(T.senseCap, ctx.glossSim - T.glossDiscount));
     if (rel?.links.length) sim = Math.max(sim, T.link0 + T.linkSlope * rel.cover);
     if (ctx.synSim >= T.synSimMin && prepared.content <= 2 && !rel?.extra) sim = Math.max(sim, Math.min(T.synSimCap, ctx.synSim));
     if (ctx.grpSim != null) sim = Math.max(sim, ctx.grpSim - T.grpDiscount);

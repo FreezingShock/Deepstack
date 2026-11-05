@@ -4,13 +4,15 @@
    which optional strips (how-it-works steps, records) are shown; CSS reads data-room and --hz-*.
    The stacks zone always sits on the niche floor (the ledge), so nothing floats. */
 export const HOME_TIERS=[
- {name:'roomy',min:600,gap:20,bookH:40,steps:true,stats:true},
+ {name:'roomy',min:600,gap:20,bookH:46,steps:true,stats:true},
  {name:'cozy',min:460,gap:15,bookH:38,steps:true,stats:false},
  {name:'snug',min:380,gap:11,bookH:34,steps:false,stats:false},
  {name:'tight',min:0,gap:8,bookH:30,steps:false,stats:false},
 ];
 export function homeTier(h){return HOME_TIERS.find(t=>h>=t.min)||HOME_TIERS[HOME_TIERS.length-1];}
-export function applyHomeTier(el,h=el.clientHeight){
+/* bigger text counts as a shorter room, so the tier drops optional strips instead of overflowing */
+export const textScale=()=>parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ts'))||1;
+export function applyHomeTier(el,h=el.clientHeight/textScale()){
  const t=homeTier(h);
  el.dataset.room=t.name;
  el.style.setProperty('--hz-g',t.gap+'px');el.style.setProperty('--hz-book',t.bookH+'px');
@@ -19,6 +21,7 @@ export function applyHomeTier(el,h=el.clientHeight){
 /* Keeps #home tiered as the window or shelves resize. Call once. */
 export function watchHomeLayout(el){
  const go=()=>{if(!el.hidden)applyHomeTier(el);};
+ new MutationObserver(go).observe(document.documentElement,{attributes:true,attributeFilter:['data-text']});
  if(typeof ResizeObserver==='function')new ResizeObserver(go).observe(el);
  else addEventListener('resize',go);
  go();

@@ -13,9 +13,9 @@
 .bk-spread .pen-ink.rest::after{clip-path:inset(0 0 0 0);opacity:.35;transition:opacity var(--m-base)}
 .bk-spread .pen-ink.rest:hover::after,.bk-spread .pen-ink.rest:focus-visible::after{opacity:1}
 
-.bk-spread .bs-start,.bk-spread.one .bs-start{padding:6px 6px 13px;min-height:44px;font:600 clamp(28px,3.2vw,36px)/1.1 var(--pen-hand);letter-spacing:0;text-transform:none;color:var(--bk)}
+.bk-spread .bs-start,.bk-spread.one .bs-start{padding:6px 6px 13px;min-height:44px;font:600 clamp(calc(28px*var(--ts)),3.2vw,calc(36px*var(--ts)))/1.1 var(--pen-hand);letter-spacing:0;text-transform:none;color:var(--bk)}
 .bk-spread .bs-start:hover{filter:none;color:var(--bk)}
-.bk-spread .bs-back-btn,.bk-spread.one .bs-back-btn{padding:4px 6px 11px;min-height:44px;font:500 22px/1.1 var(--pen-hand);text-decoration:none;color:var(--c-oak-4a3a22)}
+.bk-spread .bs-back-btn,.bk-spread.one .bs-back-btn{padding:4px 6px 11px;min-height:44px;font:500 calc(22px*var(--ts))/1.1 var(--pen-hand);text-decoration:none;color:var(--c-oak-4a3a22)}
 .bk-spread .bs-back-btn:hover,.bk-spread .bs-back-btn:focus-visible{color:var(--bk)}
 .bk-spread.menu .dly .dly-go.pen-ink{padding-bottom:7px}
 .bk-spread.menu .dly .dly-go.pen-ink:hover,.bk-spread.menu .dly .dly-go.pen-ink:focus-visible{text-decoration:none}
