@@ -1538,6 +1538,6 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Home now says "Continue · word 4 of 7" on the Descend plaque when a Daily is in progress; the answer you already wrote could show too, as a faint pen line, so resuming feels like picking up a pen.
 **Brief:** Goal: after backlog 28, show your last written answer under the Continue plaque. Files: `src/ui/homePlaque.js`, `src/app/home.js`. Done when: tested for 0, 3 and 6 results. **Touches:** HOME. **Conflicts:** 28, home threads.
 
-### G8b. Phones show the menu books
+### G8b. Phones show the menu books [x] (PR #254)
 **Pitch:** At 375x667 the hearth plus plaque push the Daily/Unlimited spines below the fold; only Shelf peeks in, so the Practice section and the spine badges (done / resume / Lexicon) are easy to miss on a phone.
 **Brief:** Goal: a phone layout that keeps the two play spines visible under the plaque. Files: `src/ui/hearth.js`, `src/styles/home-plaque.css`. Done when: 375x667 screenshot shows Daily and Unlimited spines. **Touches:** HOME. **Conflicts:** FH4 (no hearth at small sizes), any home thread.
