@@ -32,3 +32,6 @@
 @media(max-width:640px){#stage.center .slipwrap{width:calc(100% - 38px);margin-left:0;margin-right:auto}#stage.center .slipwrap>.candle{margin-left:-1px;transform:scale(.7)}}
 /* reduced motion: still, but the ring marks and the shrinking wax carry the time on their own */
 @media(prefers-reduced-motion:reduce){#stage .slipwrap>.candle .wax{transition:none}}
+/* the candle's light now lives on the world canvas (ui/candleLight.js): the DOM halo was clipped by the answer box at the alcove edge */
+.candle::before{display:none}
+.candle .flame,.candle.low .flame{box-shadow:none}
