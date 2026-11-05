@@ -3,7 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
-- Pick from the Q1 to Q16 audit menu (end of this file). Q11 needs your call: should a 0/100 answer still earn a free book? (audit thread)
+- Pick from the Q1 to Q16 audit menu (end of this file). Q11 is decided (a 0 keeps its book and 13 ft).
 - Descend past a floor door (Archive 101 ft, Catacombs 252 ft and deeper) and say if the half-speed hold at the door, the one-time swing of the sign and the quiet floor sound feel right or too subtle; also check Settings reduced motion removes the hold and swing. (door walk-through thread)
 - Play a run and answer with plain synonyms of rare words ("curt" for laconic, "blunt" or "forthright" for candid, "conscientious" for diligent): they should now land in Paperback or better. Tell me any everyday word that still scores 0 or any wrong word that scores well. (judge thesaurus, backlog 90)
 - Open `?perf` on your own machine at home, mid-run and during a descent and tell me the p95 and whether it feels smoother or the same: the headless box can only see JS cost, and your GPU is the real test for the glow-cache change (item 38).
@@ -1098,7 +1098,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: indent the placeholder and text start past the quill, or draw the quill in the margin beside the red rule. Files: `src/ui/quill.css`. Done when: placeholder and typed text start clear of the quill at 375 and 1640.
 **Touches:** RUN. **Conflicts:** 20, 67.
 
-### Q11. A 0/100 answer still earns a free book and 13 ft
+### Q11. [x] Decided: a 0/100 answer keeps its book and 13 ft (nate, 2026-11-05)
 **Serves:** rarity is the hero, variety over repetition.
 **Pitch:** Typing something unrelated gives a Pamphlet and +13 ft just like an honest try, so rarity at the bottom means nothing; nate decides whether a miss should cost something.
 **Brief:** Goal: pick one (needs nate): a 0 becomes a "damp, unreadable" pamphlet that stays off the shelf, or the descent stalls at the same depth, or leave as is. Files: `src/core/scoring.js`, `src/app/card.js`. Done when: Daily score rules unchanged, test pins the choice.
