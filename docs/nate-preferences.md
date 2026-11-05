@@ -22,7 +22,7 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 - **Variety over repetition.** The pulled book should come from a random shelf spot (not always the bottom middle, not floating). He dislikes duplicate rows.
 - **Hints help meaning, never spelling.** "Why would it give me the first letter? I'm literally given the word." Sentence, related word, definition start.
 - **Shelves everywhere.** He asked three times why the top shelves were bare. Full shelves and wall detail from the very first screen, including behind the menu.
-- **Daily is its own thing.** Daily No. 1 = 2026-11-03, shown with today's date, one entry per day with 7 words, definitions and results. Reactive difficulty is Unlimited only.
+- **Daily is its own thing.** Daily No. 1 = 2026-11-03, shown with today's date, one entry per day with 7 words, definitions and results. Reactive difficulty is Unlimited only. (Local-midnight rollover: Daily, Riddle and the countdown follow the player's local date, not UTC; fixed 2026-11-05.)
 - **Performance is a feature.** "Performant" appears with lanterns and scrolling. He wants costs measured before building ("determine the performance cost").
   - 2026-11-04: asked for the canvas draw budget (38) to run last, after floors, lighting and fallen books. Report measured numbers honestly, including when a change is within noise.
 - **Honest answers.** He asks "is this on purpose?", "why does it look like this?", "should duplicates show?". Give the real cause and the fix, not a defence.

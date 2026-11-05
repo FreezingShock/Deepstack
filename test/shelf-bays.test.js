@@ -7,7 +7,7 @@ import {FLOORS,floorStartFt} from '../src/core/floors.js';
 import {TIERS,dailyNumber} from '../src/core/index.js';
 
 const ctx={TIERS,FLOORS,floorStartFt,dailyNumber};
-const day=(d,h=9)=>Date.UTC(2026,10,d,h);
+const day=(d,h=9)=>new Date(2026,10,d,h).getTime();
 const mk=(w,tier,o={})=>({w,tier,score:50,t:day(3),mode:'daily',ft:100,...o});
 const items=bs=>bs.map((b,i)=>({b,i,n:1}));
 

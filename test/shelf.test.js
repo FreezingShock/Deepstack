@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {filterShelf,groupShelf,EXTRA_FILTERS} from '../src/core/shelf.js';
 const shelf=[
-  {w:'zephyr',tier:1,score:40,t:Date.UTC(2026,0,1,5)},
-  {w:'apogee',tier:3,score:80,t:Date.UTC(2026,0,1,9),fav:true},
-  {w:'quixotic',tier:3,score:75,t:Date.UTC(2026,0,2,9)},
+  {w:'zephyr',tier:1,score:40,t:new Date(2026,0,1,5+3).getTime()},
+  {w:'apogee',tier:3,score:80,t:new Date(2026,0,1,9+3).getTime(),fav:true},
+  {w:'quixotic',tier:3,score:75,t:new Date(2026,0,2,9+3).getTime()},
 ];
 test('filters by tier and text, sorts',()=>{
   assert.deepEqual(filterShelf(shelf,{tier:3}).map(x=>x.b.w),['quixotic','apogee']);
