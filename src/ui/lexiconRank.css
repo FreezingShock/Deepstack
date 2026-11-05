@@ -4,6 +4,21 @@
 .lx-rank .lx-name{font:700 clamp(calc(24px*var(--ts)),3vw,calc(32px*var(--ts)))/1.15 var(--pen-hand,'Fuzzy Bubbles',cursive);transform:rotate(-1.2deg);transform-origin:left center}
 .lx-rank.unplaced .lx-name{opacity:.75}
 .lx-rank .lx-note{font:italic 400 calc(14px*var(--ts))/1.4 var(--serif)}
-.lx-again{margin:2px 0 8px}
-.lx-again .bs-start{font:600 calc(14px*var(--ts)) var(--pen-hand,'Fuzzy Bubbles',cursive)}
+
+
 .fin .lx-change{margin:6px 0 0;font:italic 400 calc(15px*var(--ts))/1.4 var(--serif);opacity:.85}
+
+/* Unlimited / sectioned intro pages: one clear main action under the intro, a quiet second choice, the list after */
+.pg-sec .pg-actions{margin-top:2px;padding-bottom:0;gap:4px}
+.pg-sec .lx-rank{margin:6px 0 2px}
+.pg-sec .pg-list{gap:6px}.pg-sec .pg-list li{padding-bottom:6px}
+.bk-spread .bs-start.bs-primary,.bk-spread.one .bs-start.bs-primary{align-self:stretch;display:flex;align-items:center;justify-content:center;padding:12px 24px;min-height:50px;border:1px solid var(--bk-gild);border-radius:3px;
+ background:linear-gradient(var(--bk),var(--bk2));color:var(--bk-gild);font:600 calc(15px*var(--ts)) var(--label);letter-spacing:.28em;padding-left:calc(24px + .28em);text-transform:uppercase;
+ box-shadow:0 0 0 3px color-mix(in srgb,var(--bk) 22%,transparent),0 5px 14px -5px var(--c-black-alpha-aa),inset 0 1px 0 color-mix(in srgb,var(--bk-gild) 35%,transparent)}
+.bk-spread .bs-start.bs-primary::after{display:none}
+.bk-spread .bs-start.bs-primary:hover,.bk-spread .bs-start.bs-primary:focus-visible{filter:brightness(1.25);color:var(--bk-gild)}
+.bk-spread .bs-start.bs-primary:active{transform:translateY(1px)}
+.bk-spread .bs-again{align-self:flex-start;padding:2px 4px 10px;min-height:36px;font:500 calc(18px*var(--ts))/1.1 var(--pen-hand);color:var(--c-oak-4a3a22)}
+.bk-spread .bs-again:hover,.bk-spread .bs-again:focus-visible{color:var(--bk)}
+@media(max-width:560px){.bk-spread.one .bs-again{min-height:44px;font-size:calc(17px*var(--ts))}}
+.pg-sec .pg-actions{margin-bottom:10px}.pg-sec .lx-rank{margin-bottom:8px}
