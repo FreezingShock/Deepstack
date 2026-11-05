@@ -1168,7 +1168,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 
 - [x] Page flip overhaul (PR pending; curl, page-edge thickness, handwritten cue, tug hint, lifted leaf)
 
-### P1. Ribbon markers that jump pages
+### P1. [x] Ribbon markers that jump pages (this PR)
 **Pitch:** each menu book has a ribbon; tug it to jump to the contents page, and let a pen-ink bookmark remember where you stopped.
 **Brief:** Goal: a clickable ribbon on open books that returns to page 1, plus the last page remembered per book for the session. Files: new `src/ui/bookRibbon.js`, hook in `home.js` paint. Done when: keys and swipe unaffected, tested with a fake spread. **Touches:** BOOKS. **Conflicts:** page flip.
 

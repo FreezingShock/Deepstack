@@ -1,6 +1,7 @@
 import {PALETTE} from '../theme/colors.js';
 import {BOOK_TIMING,bookTimings,dressBook,thud,bookSound} from './bookOpenFx.js';
 import {decorate as inkPage} from './ink.js';
+import {RIBBON_HTML,ribbonKey,remember,recall,ribbonTarget,paintRibbon} from './bookRibbon.js';
 import {cornersHTML,paintEdges,noteTurned,hintCurl} from './pageFlip.js';
 /* Home screen markup. Kept separate from main.js so other features can add
    entries (modes, links) by pushing onto HOME_LINKS / HOME_STEPS without
@@ -92,7 +93,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const r=from||{left:innerWidth/2,top:innerHeight/2,width:0,height:0};
  sp.style.cssText=`--bk:${colors.bk};--bk2:${colors.bk2};--bk-gild:${colors.gild};--tex:${colors.tex||'none'};--fx:${r.left+r.width/2-innerWidth/2}px;--fy:${r.top+r.height/2-innerHeight/2}px`;
  sp.innerHTML='<div class="bs-board l"></div><div class="bs-board r"></div><div class="bs-page l"></div><div class="bs-page r"></div><div class="bs-leaf"><i></i><i></i></div>'+
-  cornersHTML()+
+  cornersHTML()+RIBBON_HTML+
   '<div class="bs-cover"><div class="cv-front"><i class="cv-hinge"></i><div class="cv-frame"><span class="cv-orn" aria-hidden="true"></span><span class="cv-t"></span><span class="cv-orn" aria-hidden="true"></span></div></div><div class="cv-in"></div></div>';
  sp.querySelector('.cv-t').textContent=title;
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches,T=bookTimings(reduce);
@@ -120,7 +121,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  /* Page HTML for spread i side s2 ('l'|'r'); foot carries only the page number, turning is done by the corner zones. */
  const pageNum=(i,s2)=>i*2+(s2==='l'?1:2);
  const pageHTML=(i,s2,num)=>`<div class="pg-in">${spreads[i][s2]||''}</div><div class="pg-foot ${s2}"><span>${num}</span></div>`;
- const corners=[...sp.querySelectorAll('.bs-corner')];
+ const corners=[...sp.querySelectorAll('.bs-corner')],rkey=ribbonKey(label,title);
  const paint=(only)=>{
   const sd=spreads[idx],L=sp.querySelector('.bs-page.l'),R=sp.querySelector('.bs-page.r'),n=spreads.length;
   if(one&&side==='r'&&!sd.r)side='l';
@@ -132,6 +133,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   const m=one?fl.length:n,at=one?pos:idx;
   corners.forEach(c=>{const prev=c.classList.contains('prev');c.hidden=m<2;c.disabled=prev?at<=0:at>=m-1;});
   paintEdges(sp,at,m);
+  remember(rkey,idx);paintRibbon(sp,idx,recall(rkey),n);
   if(api.onPaint)api.onPaint(sp,idx);
  };
  /* Page turn: a leaf lifts from the corner and swings about the spine (two pages) or peels away (phones).
@@ -174,6 +176,8 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  sp.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'||e.target.closest('input,textarea,select,button,a,.bs-corner'))return;sw={x:e.clientX,y:e.clientY};});
  sp.addEventListener('pointerup',e=>{if(!sw)return;const dx=e.clientX-sw.x,dy=e.clientY-sw.y;sw=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)turn(dx<0?1:-1);});
  sp.addEventListener('pointercancel',()=>{sw=null;});
+ const rb=sp.querySelector('.bs-ribbon');
+ if(rb)rb.addEventListener('click',()=>{const j=ribbonTarget(idx,recall(rkey),spreads.length);if(j===idx)return;settle();queued=0;noteTurned(sp);bookSound('flip');idx=j;side='l';paint();});
  corners.forEach(c=>c.addEventListener('click',()=>turn(c.classList.contains('next')?1:-1)));
  const key=ev=>{if(ev.key==='Escape'){if(!(keepOnEsc&&keepOnEsc()))close();return;}if(ev.target.closest&&ev.target.closest('input,textarea,select'))return;if(ev.key==='ArrowRight')turn(1);else if(ev.key==='ArrowLeft')turn(-1);};
  /* swap the pages in place (filters, search); stays on spread i. only 'r' or 'l' repaints just that page, so an input on the other page keeps focus */
