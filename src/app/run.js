@@ -39,9 +39,10 @@ export async function startDaily(practice){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
-export async function startUnlimited(){
+export async function startUnlimited(replace=false){
  await wordsReady;
  if(modelStatus().state==='loading')await whenReady(8000);
+ if(replace&&S.rating.placed){S.rating={...S.rating,placed:false};save();}
  const placing=!S.rating.placed,n=placing?core.PLACEMENT_WORDS:core.RUN_WORDS;
  const first=core.nextWord(S.rating,0,n,[]);
  prepareWords([first]).catch(()=>{});

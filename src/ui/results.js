@@ -1,5 +1,6 @@
 /* Richer end-of-run recap, inserted into the final sheet by main.js. */
 import {TIERS} from '../core/index.js';
+import {levelChangeLine} from './lexiconRank.js';
 import {summarizeRun, setsTouched} from '../core/recap.js';
 import {setStatus} from '../sets/sets.js';
 
@@ -44,7 +45,7 @@ export function finalHTML(d, S, o) {
   <div class="fhead"><p class="fkick">${kicker}</p>
   <h1 class="title ftitle">Descent complete</h1></div>
   <div class="fleft"><div class="bigd"><span id="cnt">0</span><small>ft deep</small></div>
-  <p class="fsub">${o.floorName ? `<span>Reached <b>${esc(o.floorName)}</b></span>` : ''}<span>Average <b>${d.avg}</b></span><span>Rarest <b>${esc(o.rarest)}</b></span>${lex}</p>
+  <p class="fsub">${o.floorName ? `<span>Reached <b>${esc(o.floorName)}</b></span>` : ''}<span>Average <b>${d.avg}</b></span><span>Rarest <b>${esc(o.rarest)}</b></span>${lex}</p>${levelChangeLine(d)?`<p class="lx-change">${esc(levelChangeLine(d))}</p>`:''}
   <div class="spineimgs" id="sp">${o.spines}</div></div>
   <div class="fright">${recapHTML(d, S)}
   <div class="slipwrap fslip"><i class="pin"></i><div class="slip"><pre class="share pe" id="shr">${shareHTML(o.txt)}</pre></div></div></div>

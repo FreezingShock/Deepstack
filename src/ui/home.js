@@ -84,7 +84,7 @@ export const pg={
 };
 /* Click handlers for extra Start buttons inside a book (a section's data-act). app/home.js fills it. */
 export const BOOK_ACTS={};
-const introPage=(i,btn,close)=>pg.head(i.kicker,i.h)+pg.body(i.p)+pg.label('In this book')+pg.list(i.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest"${i.act?` data-act="${i.act}"`:''}>${esc(i.btn)}</button>${close?`<button class="bs-back-btn pen-ink">Close the book</button>`:''}</div>`;
+const introPage=(i,btn,close)=>pg.head(i.kicker,i.h)+pg.body(i.p)+(i.extra?i.extra():'')+pg.label('In this book')+pg.list(i.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest"${i.act?` data-act="${i.act}"`:''}>${esc(i.btn)}</button>${close?`<button class="bs-back-btn pen-ink">Close the book</button>`:''}</div>`;
 export function introSpreads(intro){
  if(intro.riddle){/* sectioned book: left page the book's own mode, right page its riddle; phones step left then right */
   const a=introPage(intro,0,false),b=introPage(intro.riddle,0,true);
