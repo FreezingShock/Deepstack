@@ -31,10 +31,18 @@ function rideHome(px,t){
  home.style.transform=`translate3d(0,${px.toFixed(1)}px,0)`;
  home.style.opacity=String(Math.max(0,1-t*1.7));
 }
-/* After a book is dusted off: re-list what the attic holds and refresh the ladder cue. */
+/* The entrance: a trapdoor set into the ceiling beam, centred, with a pull cord and a brass tag that carries the count.
+   It is a real <button> (focusable, Enter/Space) but nothing about it looks like one. */
+function paintCue(){
+ if(!cue)return;
+ if(!cue.firstChild)cue.innerHTML='<span class="ach-hatch" aria-hidden="true"><span class="ach-glow"></span><span class="ach-lid"><span class="ach-word">Attic</span></span></span>'
+  +'<span class="ach-cord" aria-hidden="true"><span class="ach-rope"></span><span class="ach-tag"><b></b></span></span>';
+ cue.querySelector('.ach-tag b').textContent=count;
+ cue.setAttribute('aria-label',`Pull the cord and climb up to the attic: ${count} ${count===1?'book':'books'}`);
+}
+/* After a book is dusted off: re-list what the attic holds and refresh the entrance. */
 export function refreshAttic(shelf){
- const items=atticTidy(atticAll(shelf));count=items.length;World.setAtticItems(items);
- if(cue){cue.textContent=`↑ The attic · ${count}`;cue.setAttribute('aria-label',`Climb up to the attic: ${count} ${count===1?'book':'books'}`);}
+ const items=atticTidy(atticAll(shelf));count=items.length;World.setAtticItems(items);paintCue();
 }
 export function bindAtticHome(homeEl,{shelf=[]}={}){
  home=homeEl;
@@ -48,8 +56,7 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
   homeEl.after(cue,down); // siblings of #home, so CSS hides them whenever home is hidden
   cue.onclick=()=>open();down.onclick=()=>close();
 }
- cue.textContent=`↑ The attic · ${count}`;
- cue.setAttribute('aria-label',`Climb up to the attic: ${count} ${count===1?'book':'books'}`);
+ paintCue();
  World.setAttic(false,{instant:true});World.onAttic(sync);sync(false);
  World.onAtticMove(rideHome);
  if(!wired){wired=true;
