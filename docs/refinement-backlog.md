@@ -1310,7 +1310,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: contextual first-time notes, not a tutorial screen or pop-up. Flag each in additive `S.seen.*`. Files: new `src/ui/firstNotes.js` plus css, one hook in `showWord`. Done when: each note shows once, reduced motion shows it static, Daily timing is not changed by it, 14-letter word and 375 checked.
 **Touches:** RUN, HOME. **Conflicts:** run screen thread, 29 (welcome).
 
-### [x] G2. A score that explains itself (PR #226)
+### [x] G2. A score that explains itself (PR #227)
 **Serves:** scoring clarity, rarity is the hero, words fully readable, lenient judging.
 **Pitch:** The card says "Pamphlet, 0/100" and a vague line like "Nothing here points at the meaning yet", but not why. Show it: in "You wrote" underline the words the judge counted, and add one quiet handwritten caption saying what a stronger answer would have named. A long answer must never be cut with an ellipsis ("somethin…" today).
 **Brief:** Goal: surface the judge's matched concepts/relations in the card, no scoring change. Files: `src/ui/alsoAccepted.js`, `src/app/card.js`, judge result already carries hits. Done when: matched words are underlined, caption is under 12 words, "You wrote" wraps fully or scrolls under a fade (never ellipsis), rarity stays the hero.
