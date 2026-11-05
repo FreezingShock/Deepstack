@@ -47,11 +47,17 @@ export function openCard(b,opts={}){
  fillMeans(L,b);
  const bk=$('#bk');stampCover(bk.querySelector('.cover'),b.w,b.tier);stampPage(bk.querySelector('.page'),b.w,b.tier);
  if(opts.fresh){const pl0=revealPlan(b.tier);bk.classList.add('rvc');const cvv=coverLockVars(pl0.cover,RM),dl=RM?0:pl0.cover.delay;for(const k in cvv)bk.style.setProperty(k,cvv[k]);setTimeout(async()=>{Sfx.paper();/* the closure comes undone first; the sting, shake and burst land when the cover starts to swing (Apocrypha's burst starts at once: it implodes first) */const at=(fn,ms)=>ms>0?setTimeout(()=>{if(cardOpts===opts)fn();},ms):fn();if(pl0.sound.sting)at(()=>Sfx.sting(b.tier),dl);if(pl0.shake)at(()=>Feel.shake(pl0.shake.amp,pl0.shake.ms),dl);if(pl0.slow)at(()=>Feel.slowmo(pl0.slow.scale,pl0.slow.ms),dl);bk.classList.add('open');{const pl=playReveal(L,b.tier,T.spine,RM);if(pl.ink)bk.classList.add('rv-ink');if(pl.pulse)bk.classList.add('rv-pulse');}at(()=>{const rc=bk.getBoundingClientRect();FX.reveal(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier);const hh=$('#halo');if(hh)hh.classList.add('go');},b.tier>=6?0:dl);await sleep(380+pl0.cover.delay);if(cardOpts!==opts)return;Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);if(cardOpts!==opts)return;$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.settle(rc.left+rc.width/2,rc.top+80,b.tier);}$('#go').focus();},220);}
- else{bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
+ else if(RM||opts.stepped){bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
+ else{/* a card from the shelf opens like a book: the cover swings over, then the page is read */requestAnimationFrame(()=>requestAnimationFrame(()=>{if(cardOpts===opts)bk.classList.add('open');}));setTimeout(()=>{if(cardOpts===opts)$('#go').focus();},360);}
  $('#go').onclick=closeCard;
  if(opts.shelve)opts.shelve.wire(bk);
  const fv=$('#cfav');if(fv)fv.onclick=()=>{b.fav=!b.fav;if(!b.fav)delete b.fav;save();fv.setAttribute('aria-pressed',!!b.fav);fv.textContent=b.fav?'★ Favourite':'☆ Mark as favourite';};
- if(opts.nav){const step=n=>openCard(opts.nav.items[opts.nav.i+n],{...opts,nav:{...opts.nav,i:opts.nav.i+n}});$('#cprev').onclick=()=>step(-1);$('#cnext').onclick=()=>step(1);}
+ if(opts.nav){const step=n=>openCard(opts.nav.items[opts.nav.i+n],{...opts,stepped:true,nav:{...opts.nav,i:opts.nav.i+n}});$('#cprev').onclick=()=>step(-1);$('#cnext').onclick=()=>step(1);}
  L.onclick=e=>{if(e.target===L&&!opts.onNext)closeCard();};
 }
-export function closeCard(){const L=$('#cardlayer');const o=cardOpts;cardOpts=null;L.classList.remove('on');setTimeout(()=>{L.hidden=true;L.innerHTML='';},250);if(o&&o.onNext)o.onNext();}
+export function closeCard(){const L=$('#cardlayer');const o=cardOpts;cardOpts=null;
+ /* a shelf card swings shut before the layer fades; fresh results and reduced motion fade as before */
+ const swing=!RM&&o&&!o.fresh&&!o.stepped&&!L.classList.contains('shutting')&&L.querySelector('#bk.open:not(.gone)');
+ if(swing){L.classList.add('shutting');L.querySelector('#bk').classList.remove('open');}
+ setTimeout(()=>{if(cardOpts)return;L.classList.remove('on');setTimeout(()=>{if(cardOpts)return;L.hidden=true;L.innerHTML='';L.classList.remove('shutting');},250);},swing?330:0);
+ if(o&&o.onNext)o.onNext();}

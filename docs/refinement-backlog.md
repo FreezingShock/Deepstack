@@ -175,7 +175,7 @@ Safest parallel batch: 4, 9, 15, 24, 33, 37, 48, 50.
 **Brief:** Goal: replace the borrowed `whoosh`/`flip`/`thud` in `bookSound` with dedicated Sfx voices, pitched by page count. Files: `feel.js` (additive), `bookOpenFx.js`. Done when: respects volume and mute.
 **Touches:** FEEL. **Conflicts:** audio threads.
 
-### 104. Every panel opens as a book
+### 104. Every panel opens as a book [x] (this PR)
 **Serves:** overhaul, integrated.
 **Pitch:** Card, Settings and Credits panels also grow out of a book on the shelf instead of fading in.
 **Brief:** Goal: reuse `openBook`/`dressBook` for the remaining panels. Files: `bookOpenFx.js`, panel openers. Done when: no panel fades in bare, close swings shut, reduced motion fades.
@@ -1525,3 +1525,12 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### PF4. Lazy attic, curios and lore code
 **Pitch:** PF1 moved the three menu books out of the first-paint bundle; the attic room, lore books and curios (and their CSS) are the next biggest chunks nobody needs before scrolling or opening a book.
 **Brief:** Goal: same pattern as `src/ui/lazyScreens.js` for the attic climb/room and `initLore`/`initCurios`, prewarmed in idle. Done when: `scripts/loadpath.mjs` shows fewer bytes before first paint and the attic still opens without a wait. **Touches:** Performance. **Conflicts:** `main.js` imports, attic threads.
+
+### P1. Settings book gets a page of its own for each topic
+**Pitch:** Settings and Credits now open as books; the right page of Settings is half empty. Give Sound, Display and Accessibility a written page each, with the Almanac-style margin notes.
+**Brief:** Goal: split `settings` body into themed spreads in `src/ui/panelBook.js`/`topbar.js`, add page-specific margin notes. Done when: phones step page by page, reduced motion unchanged. **Touches:** topbar. **Conflicts:** 7, 9.
+
+### P2. Keys and Help as a book on the desk
+**Pitch:** The keyboard-help panel (and any future confirm dialogs) should also grow out of a book, not a bare box.
+**Brief:** Goal: reuse `openPanelBook` for the keys panel and the Export/Reset dialogs. Files: `panelBook.js`. Done when: no panel fades in bare. **Conflicts:** 104 follow-ups, save-manager threads.
+
