@@ -5,3 +5,8 @@
 .bk-spread.menu .sb-fav{position:absolute;left:3px;top:-5px;z-index:2}
 /* other places a word sat on one clipped line: let it wrap instead */
 .rtile b,.rbook .rw,.bk-spread.menu .dly .dly-res .w,.home .lg-row dd{text-overflow:clip;overflow:visible;white-space:normal;overflow-wrap:anywhere}
+/* clip sweep: plaques, tier list and home spines wrap instead of cutting words */
+.bk-spread.menu .splaque em{overflow:visible;white-space:normal;text-overflow:clip;overflow-wrap:anywhere}
+.bk-spread.menu .splaque span{overflow:visible;white-space:normal;text-overflow:clip;text-align:center;overflow-wrap:anywhere}
+.home .cc-tiers li{white-space:normal;align-items:baseline}
+.home .cc-tiers span{overflow:visible;text-overflow:clip}

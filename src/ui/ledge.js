@@ -46,7 +46,7 @@ export function drawLedge(ctx, o) {
     }
     const dm = dims(b);
     ctx.translate(cx, base); ctx.scale(L.s, L.s);
-    bookArt(ctx, {w: dm.w, h: dm.h, tier: b.tier, seed: hash(b.w) & 0xffff, word: b.w, ribbon: b.tier >= 1 ? ribbons[b.tier % 5] : null}, now / 1000);
+    bookArt(ctx, {w: dm.w, h: dm.h, fit: dm.fit, tier: b.tier, seed: hash(b.w) & 0xffff, word: b.w, ribbon: b.tier >= 1 ? ribbons[b.tier % 5] : null}, now / 1000);
     ctx.restore();
     hits.push({x: cx - it.w / 2, y: base - dm.h * L.s, w: it.w, h: dm.h * L.s, i: it.i});
   }
