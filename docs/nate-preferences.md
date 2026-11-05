@@ -91,3 +91,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-04 attic piles: "it shouldnt be as uniform, add some variety to the locations" and "weird shadow" -> no per-book shadows; vary pile height, shape and base (crates, trunks) across the attic floor.
 - 2026-11-04 streak candles: picked N11 "objects not numbers" -> the streak is shown as lit candles on a mantel beside the cabinet, a break as one cold stub with a wax ring; no new number on screen (thread: streak candles)
 - 2026-11-04 sigils: picked S1 + S2 -> the mark should be big on covers and a set should read as a family (shared ring, unique centre); same word, same mark everywhere.
+- 2026-11-05 zero answers: a 0/100 answer keeps its book and 13 ft, "just because of the spacing the alcove" -> depth gain is alcove spacing, not a reward; do not punish misses (thread: audit Q11)
