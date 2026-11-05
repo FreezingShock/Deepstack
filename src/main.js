@@ -32,6 +32,7 @@ import {initRulesCard} from './ui/welcome.js';
 initRulesCard();
 import './ui/bookOpenFx.js';
 import './ui/bookOpenFx.css';
+import './ui/pageFlip.css';
 import {watchHomeLayout} from './ui/homeLayout.js';
 import './ui/descend.js';
 import './ui/camMotion.js';
