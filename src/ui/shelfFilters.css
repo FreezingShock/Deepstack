@@ -1,0 +1,12 @@
+/* Shelf filter page (audit Q4): the four filter lists share a compact written column so they fit page 1 at
+   375x667 and 1280x720, with a soft fade at the foot in case a big font setting still scrolls. */
+.bk-spread.menu .chipgroup{display:grid;grid-template-columns:3.4em 1fr;align-items:baseline;gap:0 8px;margin-top:6px}
+.bk-spread.menu .chipgroup>.kicker{margin:0}
+.bk-spread.menu .chipgroup .chips{gap:0 11px}
+.bk-spread.menu .chipgroup .fchip{font-size:20px;padding-bottom:5px}
+.bk-spread.menu .chipgroup .fchip small{font-size:14px}
+.bk-spread.menu .pg-in:has(.chipgroup){-webkit-mask-image:linear-gradient(#000 calc(100% - 18px),transparent);mask-image:linear-gradient(#000 calc(100% - 18px),transparent);padding-bottom:18px}
+/* Empty shelf: the facing page shows a sketched shelf awaiting the first book. */
+.bk-spread.menu .empty-shelf{text-align:center;margin-top:14%}
+.bk-spread.menu .empty-shelf svg{width:min(78%,260px);height:auto;stroke:var(--mute);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.7}
+.bk-spread.menu .empty-shelf .empty{margin-top:10px}
