@@ -1157,7 +1157,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: an optional `origin` hint after the synonym, from Wiktionary etymology language only (never the etymon). Files: `scripts/build-words.mjs`, `src/core/riddleHints.js`. Done when: the no-leak test covers it and words without data simply skip it.
 **Touches:** CORE, DATA. **Conflicts:** none.
 
-### R3. Hints that fade in on the slip
+### R3. [x] Hints that fade in on the slip (PR pending)
 **Pitch:** riddle hints pin onto the slip one at a time with the blank in the sentence slowly pulsing like a held breath.
 **Brief:** Goal: polish the gap mark and slip entrance using the shared motion tokens. Files: `src/ui/hintSlips.css`. Done when: reduced-motion shows no animation.
 **Touches:** UI. **Conflicts:** none.

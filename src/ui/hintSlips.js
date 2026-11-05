@@ -12,7 +12,7 @@ export function hintSlipHtml(h, word, ft, n) {
     ? esc(h.text).replace('___', word ? `<mark>${esc(word)}</mark>` : '<mark class="gap" aria-label="blank"></mark>')
     : esc(h.text);
   const tilt = (n % 2 ? -1 : 1) * (0.6 + (n % 3) * 0.4);
-  return `<div class="hslip" data-kind="${h.kind}" style="--tilt:${tilt}deg"><i class="hpin"></i>` +
+  return `<div class="hslip" data-kind="${h.kind}" style="--tilt:${tilt}deg;--hn:${Math.max(0, n - 1) % 4}"><i class="hpin"></i>` +
     `<span class="hcap">${HINT_TITLE[h.kind] || 'Hint'} <b>${ft ? '−' + ft + ' ft' : 'free'}</b></span><span class="hbody">${body}</span></div>`;
 }
 
