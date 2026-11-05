@@ -55,3 +55,12 @@ test('contents split across pages repeat the month heading',()=>{
  const toc=leaves.filter(l=>l.includes('dly-toc'));
  assert.ok(toc.length>=3);assert.ok(toc.some(l=>l.includes('· cont.')));
 });
+
+test('cover has Daily and Daily Riddle sections; a played riddle shows on its day', () => {
+  const S = {daily: {}, riddle: {days: {'2026-11-04': {books: [{tier:1}], solved: 3, of: 7, depth: 120}}}};
+  const {leaves} = dailyLeaves(S, '2026-11-04', {wordsFor});
+  assert.match(leaves[0], /aria-label="Daily"/);
+  assert.match(leaves[0], /aria-label="Daily Riddle"[\s\S]*data-act="dailyRiddle"/);
+  assert.match(leaves[0], /Solved 3 of 7 today/);
+  assert.ok(leaves.some(l => /<h2>Daily Riddle<\/h2><div class="dly-sum"><span><b>3<\/b> of 7 solved/.test(l)));
+});
