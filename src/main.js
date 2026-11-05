@@ -1,5 +1,6 @@
 import './ui/bookArt.js';
 import './ui/perf.js';
+import './core/swRegister.js';
 import './theme/colors.js';
 import './core/hints.js';
 import './core/combo.js';
