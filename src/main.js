@@ -70,6 +70,8 @@ import './ui/ink.css';
 import './ui/inkInput.css';
 import './ui/inkInput.js';
 import './ui/shelfBays.css';
+import './ui/shelfSpineFit.css';
+import './ui/shelfSpineFit.js';
 import './ui/fonts.css';
 import './ui/googleFonts.css';
 import {initLedge} from './ui/ledge.js';
