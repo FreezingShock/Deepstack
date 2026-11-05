@@ -30,7 +30,7 @@ import {nookMetrics,drawNook,paintAroundAlcoves,alcoveRects} from '../ui/alcoveA
 import {$,RM,clamp} from '../app/util.js';
 import {FT,TIERS,atmosphereAt,floorAtRow,hashStr,mulberry,tierOf} from '../app/state.js';
 import {bookDims,seedOf,shelfDims} from './bookArt.js';
-import {buildRoom,drawAttic,sectionCount,sectionTitle} from './atticRoom.js';
+import {buildHall,drawAttic,rowCount,rowTitle} from './atticRoom.js';
 import {drawLadder,climbLight} from './atticClimb.js';
 import {drawBackStacks,resetBackStacks} from './backStacks.js';
 
@@ -41,6 +41,7 @@ export const World=(()=>{
  let eyeCam=0,atticMove=null,atticYLast=0,atticT=0,atticGoal=0,atticCb=null,atticItems=[],room=null,roomKey='',atticS=0,atticSGoal=0,atticSAt=0,atticSCb=null,atticSecI=-1,atticA=0;
  let shelf=[],hits=[],ledgeCb=null,onDepth=null,gaugeCb=null,niches=new Map(),boff=0,btgt=0,wasB=false,browseCb=null;
  const ZS=[0,.14,.3,.46,.62,.78,.92];
+ let rowsKey=null,rowsVal=0;const rowsN=()=>{if(rowsKey!==atticItems||rowsW!==W){rowsKey=atticItems;rowsW=W;rowsVal=rowCount(atticItems,W);}return rowsVal;};let rowsW=0;
  const restCam=r=>r*RH-(H-RH-BM);
  const abn=r=>Math.max(clamp(r/190,0,1),floorAtRow(r).decay);
  const barPx=()=>52+(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat'))||0);
@@ -254,10 +255,11 @@ export const World=(()=>{
   if(atticT!==atticGoal){atticT=RM?atticGoal:clamp(atticT+(atticGoal>atticT?1:-1)*rdt/.95,0,1);if(Math.abs(atticT-atticGoal)<1e-4)atticT=atticGoal;}
   if(atticGoal===0)atticSGoal=0;
   atticA=Math.round(H-40);
-  { /* climbing on through the sections: eased toward the goal; a pause settles it on the nearest section */
-   if(!RM&&atticSGoal!==atticS&&atticSAt&&now-atticSAt>260&&atticGoal===1&&atticA>0){const g=clamp(Math.round(atticSGoal/atticA)*atticA,0,Math.max(0,(sectionCount(atticItems,W)-1)*atticA));if(g!==atticSGoal)atticSGoal=g;}
-   if(atticS!==atticSGoal){atticS=RM?atticSGoal:atticS+(atticSGoal-atticS)*(1-Math.exp(-rdt*5));if(Math.abs(atticSGoal-atticS)<.4)atticS=atticSGoal;}
-   const si=atticA>0?Math.round(atticS/atticA):0;if(si!==atticSecI){atticSecI=si;atticSCb&&atticSCb(si,sectionCount(atticItems,W),sectionTitle(atticItems,W,si));}
+  { /* moving along the room: eased toward the goal row; a pause settles it on the nearest whole row */
+   const mx=Math.max(0,rowsN()-1);
+   if(!RM&&atticSGoal!==atticS&&atticSAt&&now-atticSAt>240&&atticGoal===1){const g=clamp(Math.round(atticSGoal),0,mx);if(g!==atticSGoal)atticSGoal=g;}
+   if(atticS!==atticSGoal){atticS=RM?atticSGoal:atticS+(atticSGoal-atticS)*(1-Math.exp(-rdt*6));if(Math.abs(atticSGoal-atticS)<.004)atticS=atticSGoal;}
+   const si=Math.round(atticS);if(si!==atticSecI){atticSecI=si;atticSCb&&atticSCb(si,mx+1,rowTitle(atticItems,W,si));}
   }
   const atticY=atticT>0?ease(atticT)*aMax:0;camNow-=atticY;
   if(atticMove&&(atticY!==atticYLast)){atticYLast=atticY;atticMove(atticY,ease(atticT));}
@@ -273,8 +275,8 @@ export const World=(()=>{
   let tgt=null;
   if(Quality.params().backStacks){for(let r=top;r<=bot;r++){if(r===0)continue;const f=floorAtRow(r);let r2=r;while(r2+1<=bot&&r2+1!==0&&floorAtRow(r2+1)===f)r2++;drawBackStacks(ctx,f,{W,RH,DPR,cam:camNow,y0:r*RH-camNow-1,y1:(r2+1)*RH-camNow+1});r=r2;}} // dim far row of shelves behind the walls, slower than the camera
   for(let r=top;r<=bot;r++){const o=drawRow(r,0,camNow,1,1);if(st&&r===st.row)tgt=o;}
-  if(atticT>0){const A=Math.round(H-40),k=W+'x'+A+'x'+DPR;if(!room||roomKey!==k){room=buildRoom(W,A,DPR);roomKey=k;}
-   hits=drawAttic(ctx,room,{W,A,ry:aFloor-camNow-A,items:atticItems,TIERS,vt,RM,lit:climbLight(atticT),H,scroll:atticS});if(atticS<atticA*.6){ctx.save();ctx.globalAlpha=1-atticS/(atticA*.6);drawLadder(ctx,{W,H,fy:aFloor-camNow,t:ease(atticT)});ctx.restore();}}
+  if(atticT>0){const A=Math.round(H-40),k=W+'x'+A+'x'+DPR;if(!room||roomKey!==k){room=buildHall(W,A,DPR);roomKey=k;}
+   hits=drawAttic(ctx,room,{W,A,ry:aFloor-camNow-A,items:atticItems,TIERS,vt,RM,lit:climbLight(atticT),H,scroll:atticS});if(atticS<1.2){ctx.save();ctx.globalAlpha=1-atticS/1.2;drawLadder(ctx,{W,H,fy:aFloor-camNow,t:ease(atticT)});ctx.restore();}}
   for(const [nr,nv] of niches)drawNiche(nr,nv,camNow,now);
   drawLoreGlows(top,bot,camNow);
   if(ledgeCb){const cn=niches.get(restRow);ledgeCb(!st&&!rest&&cn&&cn.hit&&cn.books?cn.hit:null,cn&&cn.books);}
@@ -337,18 +339,18 @@ export const World=(()=>{
  return{
   setShelf(b){shelf=b;},hits:()=>hits,
   /* the attic: a room above the top shelves. setAttic(true) climbs into it from home. */
-  setAtticItems(l){atticItems=l||[];atticSGoal=clamp(atticSGoal,0,Math.max(0,(sectionCount(atticItems,W)-1)*atticA));},
-  /* how many sections the attic has (one per month found, plus the recent guesses), and where you are among them */
-  get atticSections(){return sectionCount(atticItems,W);},
-  get atticSection(){return atticA>0?Math.round(atticSGoal/atticA):0;},
-  atticSectionTitle(i){return sectionTitle(atticItems,W,i);},
-  onAtticSection(f){atticSCb=f;},
-  /* climb on (+px) or come back (-px). A step of +-A moves one whole section. Returns false when already at the first
-     section and settled, so the caller can leave the attic. */
-  atticGo(px){if(atticGoal!==1)return false;const mx=Math.max(0,(sectionCount(atticItems,W)-1)*atticA),g=clamp(atticSGoal+px,0,mx),now2=performance.now();
-   if(g===atticSGoal){const hold=px<0&&atticSGoal===0&&now2-atticSAt<450;if(hold)atticSAt=now2;return hold;}
+  setAtticItems(l){atticItems=l||[];atticSGoal=clamp(atticSGoal,0,Math.max(0,rowsN()-1));},
+  /* how many rows the attic has, and which one you are at */
+  get atticRows(){return rowsN();},
+  get atticRow(){return Math.round(atticSGoal);},
+  atticRowTitle(i){return rowTitle(atticItems,W,i);},
+  onAtticRow(f){atticSCb=f;},
+  /* move along the room by `n` rows (fractions from a wheel). Returns false when already at the first row and settled,
+     so the caller can leave the attic. */
+  atticGo(n){if(atticGoal!==1)return false;const mx=Math.max(0,rowsN()-1),g=clamp(atticSGoal+n,0,mx),now2=performance.now();
+   if(g===atticSGoal){const hold=n<0&&atticSGoal===0&&now2-atticSAt<450;if(hold)atticSAt=now2;return hold;}
    atticSGoal=g;atticSAt=now2;return true;},
-  atticStep(n){return World.atticGo(n*atticA);},
+  atticStep(n){return World.atticGo(n);},
   get canAttic(){return !st&&!rest&&restRow===0;},
   get atticOpen(){return atticGoal===1;},
   onAttic(f){atticCb=f;},
