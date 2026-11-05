@@ -51,7 +51,10 @@ const coverLeaf=(S,today,entries,streak)=>{
   <section class="dly-sec" aria-label="Daily Riddle"><h2>Daily Riddle</h2>
    <p class="dly-line">${rid?`Solved ${rid.solved} of ${rid.of} today.`:'Seven definitions: write the word. One try a day.'}</p>
    <p class="dly-tally"><span><b>${rs}</b> day streak</span></p>
-   <button class="dly-act pen-ink" data-act="dailyRiddle">${rid?'See today’s riddle result':'Open today’s riddle'}</button></section></div>`;
+   <button class="dly-act pen-ink" data-act="dailyRiddle">${rid?'See today’s riddle result':'Open today’s riddle'}</button></section>
+  <section class="dly-sec" aria-label="Practice"><h2>Practice</h2>
+   <p class="dly-line">No pressure: nothing here touches your streak, shelf or rating.</p>
+   <button class="dly-act pen-ink" data-act="practice">Start Practice</button></section></div>`;
 };
 
 /* Contents leaves: days newest first, under a heading for each month. startSpread is the spread of the first day. */

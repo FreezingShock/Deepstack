@@ -35,9 +35,8 @@ export const HOME_BOOK_COLORS={
 };
 /* stack: which pile the book lies in (0 = play modes, 1 = collection). */
 export const HOME_LINKS=[
- {id:'bDaily',stack:0,tex:'grain',color:'navy',label:'Daily',note:'Every Daily, word by word',badge:(s,x)=>x.dailyNo?'No. '+x.dailyNo:''},
- {id:'bUnl',stack:0,color:'oxblood',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>s.rating&&s.rating.placed?'Lexicon '+x.lexicon(s.rating.L):'placement'},
- {id:'bPrac',stack:0,tex:'cloth',color:'bottle',label:'Practice',note:'Same words, no pressure'},
+ {id:'bDaily',stack:0,tex:'grain',color:'navy',label:'Daily',note:'Every Daily, plus Practice',badge:(s,x)=>x.dailyNo?dailyBadge({S:s,played:x.played,no:x.dailyNo,today:x.today}):''},
+ {id:'bUnl',stack:0,color:'oxblood',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>unlimitedBadge(s,x.lexicon)},
  {id:'bAll',stack:1,tex:'worn',color:'calf',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
  {id:'bSets',stack:1,tex:'vellum',color:'ochre',label:'Sets',note:'Themed collections'},
  {id:'bStats',stack:1,tex:'grain',color:'slate',label:'Stats',note:'Streaks, depth and tiers'},
@@ -47,8 +46,9 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 
 import {rulesCardHTML,ledgerHTML} from './welcome.js';
 import {mantelHTML} from './mantel.js';
-export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>''}){
- const ctx={lexicon,dailyNo:no};
+import {plaqueState,dailyBadge,unlimitedBadge} from './homePlaque.js';
+export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>'',today=''}){
+ const ctx={lexicon,dailyNo:no,played:!!d,today},pq=plaqueState({S,played:!!d,no,today,lexicon});
  const steps=HOME_STEPS.map(s=>`<li class="step"><span class="hn" aria-hidden="true">${s.n}</span><b>${esc(s.h)}</b><span>${esc(s.p)}</span></li>`).join('');
  /* library furniture built into the niche walls: a card-catalogue cabinet (rules) and the borrower's ledger (welcome.css) */
  const rules=rulesCardHTML(steps);
@@ -60,8 +60,8 @@ export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>''}){
  return `<div class="sheet home">
   <header class="hz hz-title"><h1 class="title wordmark">Deepstack</h1>
   <p class="tagline">Every word is a step into the dark.</p></header>
-  <section class="hz hz-plaque" aria-label="Descend">${rules}${slip}${mantelHTML({streak:st.streak,played:Math.max(Object.keys(S.daily||{}).length,(S.streak&&S.streak.n)||0)})}${d?`<div class="row"><button class="btn pri big" id="bRes">Today’s result</button></div><p class="next" id="nextd"></p>`
-     :`<div class="row"><button class="descend" id="bPlay"><i class="d-flame" aria-hidden="true"></i><span class="d-t">Descend</span><i class="d-chev" aria-hidden="true"></i></button></div><p class="next daily-tag">Daily No. ${no}</p>`}</section>
+  <section class="hz hz-plaque" aria-label="Descend">${rules}${slip}${mantelHTML({streak:st.streak,played:Math.max(Object.keys(S.daily||{}).length,(S.streak&&S.streak.n)||0)})}<div class="row"><button class="descend" id="${pq.kind==='unlimited'?'bNext':'bPlay'}" data-next="${pq.kind}"><i class="d-flame" aria-hidden="true"></i>${pq.kind==='daily'?`<span class="d-t">${esc(pq.label)}</span>`:`<span class="d-col"><span class="d-t">${esc(pq.label)}</span><small class="d-sub">${esc(pq.tag)}</small></span>`}<i class="d-chev" aria-hidden="true"></i></button></div>
+     ${pq.second?`<div class="row plaque-second"><button class="btn big" id="bRes">Today’s result</button></div><p class="next" id="nextd"></p>`:pq.kind==='daily'?`<p class="next daily-tag">${esc(pq.tag)}</p>`:''}</section>
   <nav class="hz hsecs" aria-label="Menu books">${secs}</nav></div>`;
 }
 
@@ -71,7 +71,6 @@ export const BOOK_INTROS={
  bUnl:{h:'Unlimited',kicker:'Explain the word',p:'Words keep coming, matched to your level. Each answer is rated, and your Lexicon moves with how well you explain it.',pts:['No daily limit','Adaptive difficulty','Rated against the real definition'],btn:'Descend',
   /* two sections on the same two pages: the left page explains the word, the right page is the riddle (you get the definition) */
   riddle:{h:'Riddle',kicker:'The word is the answer',p:'The other way round: a slip shows what a word means and you write the word. The exact word sinks deepest.',pts:['Seven riddles, forty seconds each','Hints never reveal the spelling','Counts toward your shelf, not the Daily'],btn:'Begin the riddles',act:'riddle'}},
- bPrac:{h:'Practice',kicker:'No pressure',p:'The same seven words as today’s Daily, with no pressure: your answers are not recorded to your streak or your records.',pts:['Seven words, forty-five seconds each','Hints available','Does not count toward the Daily'],btn:'Start Practice'},
 };
 
 /* Generic spread content. A book is a list of spreads, each {l, r} of HTML for the

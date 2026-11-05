@@ -7,7 +7,7 @@ import {readFileSync} from 'node:fs';
 const src = readFileSync(new URL('../src/ui/hearth.js', import.meta.url), 'utf8');
 
 test('hearth layout falls back to the result button when Descend is gone', () => {
-  assert.match(src, /descend = q\('#bPlay'\) \|\| q\('#bRes'\)/);
+  assert.match(src, /descend = q\('#bPlay'\) \|\| q\('#bNext'\) \|\| q\('#bRes'\)/);
 });
 test('hearth no longer hides itself when the streak mantel is hidden in short rooms', () => {
   assert.doesNotMatch(src, /display === 'none'\) \{ layer\.hidden = true; return; \}/);

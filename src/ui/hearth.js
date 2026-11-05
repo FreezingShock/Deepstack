@@ -140,7 +140,7 @@ function createHearth(home, sfx, mood) {
     if (home.hidden || W < 200 || H < 260) { layer.hidden = true; return; }
     const loc = el => { const r = el.getBoundingClientRect(); return {x: r.left - hr.left, y: r.top - hr.top, w: r.width, h: r.height, b: r.bottom - hr.top, r: r.right - hr.left}; };
     const q = s => home.querySelector(s);
-    const tagline = q('.tagline'), descend = q('#bPlay') || q('#bRes') || q('.hz-plaque .row button'), row = q('.hz-plaque .row'), tag = q('.hz-plaque .next'), mantelEl = q('.mantel');
+    const tagline = q('.tagline'), descend = q('#bPlay') || q('#bNext') || q('#bRes') || q('.hz-plaque .row button'), row = q('.hz-plaque .row'), tag = q('.hz-plaque .next'), mantelEl = q('.mantel');
     const beamEl = q('.mantel-beam'), shelves = [...home.querySelectorAll('.hshelf')];
     if (!tagline || !descend || !mantelEl || !beamEl) { layer.hidden = true; return; }
     const wide = innerWidth >= WIDE_MIN && getComputedStyle(mantelEl).position === 'absolute';
