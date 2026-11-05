@@ -89,9 +89,17 @@
 .home .lg-page{margin:0;height:100%;box-sizing:border-box;padding:6px 10px 4px;display:flex;flex-direction:column;justify-content:space-around;
  background:repeating-linear-gradient(180deg,transparent 0 25px,color-mix(in srgb,var(--c-oak-4a3a22) 30%,transparent) 25px 26px),radial-gradient(120% 90% at 30% 10%,var(--c-parchment-85),var(--c-parchment-dim));
  box-shadow:0 0 0 1px var(--c-black-alpha-66),inset 0 2px 5px var(--c-black-alpha-33);border-radius:1px}
-.home .lg-row{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin:0;font:400 13px/26px var(--mono);color:var(--c-oak-1a1208);white-space:nowrap}
+.home .lg-row{--lg-ink:var(--c-book-red);display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin:0;font:400 13px/26px var(--mono);color:var(--c-oak-1a1208);white-space:nowrap}
 .home .lg-row dt{margin:0}
-.home .lg-row dd{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;font:700 17px/26px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--c-book-red)}
+.home .lg-row dd{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;font:700 17px/26px var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--lg-ink)}
+/* Librarian's Card colour: quiet labels, the streak in ember and dominant, depth in deep ink, books/floor in their tier/floor colour, each value underlined like a ruled entry */
+.home .lg-row dt{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,var(--c-oak-1a1208) 55%,transparent)}
+.home .lg-row dd{text-shadow:0 0 .5px currentColor;border-bottom:1.5px solid color-mix(in srgb,var(--lg-ink) 45%,transparent)}
+.home .lg-streak{--lg-ink:color-mix(in srgb,var(--c-book-red) 55%,var(--c-brass-65))}
+.home .lg-streak dd{font-size:23px;border-bottom-style:double;border-bottom-width:3px}
+.home .lg-deep{--lg-ink:color-mix(in srgb,var(--c-book-blue) 55%,var(--c-book-green))}
+.home .lg-row dt{color:color-mix(in srgb,var(--lg-ink) 50%,var(--c-oak-1a1208) 50%)}
+.home .lg-row dd{border-bottom-color:color-mix(in srgb,var(--lg-ink) 70%,transparent)}
 /* values are written in one after another when the room appears */
 .home .lg-row dd{animation:lg-write var(--m-smooth) var(--e-ink) both;animation-delay:calc(260ms + var(--n,0)*140ms)}
 .home .lg-row:nth-child(2) dd{--n:1}.home .lg-row:nth-child(3) dd{--n:2}.home .lg-row:nth-child(4) dd{--n:3}

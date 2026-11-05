@@ -11,6 +11,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Scroll up into the attic and tap an earlier find that has no floor: a slip asks which floor it was found on, the pen underlines your pick and the book leaves the attic for that floor's bay on the Shelf. Check the slip reads at your screen size. (dust-off thread, PR #156)
 - Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Borrower's ledger on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
 - Scroll up into the attic, then keep scrolling up (or ArrowUp / swipe down): you should move back through a doorway into further rooms with parallax, and the books should look as detailed as on the Shelf. Check it at your screen size, and say if the fade between rooms feels too long. (attic layers thread)
+- Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Librarian’s Card on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
 - Scroll up into the attic and back a few times (also Escape, swipe, with reduced motion): a ladder now slides in from the left and its rungs pass you as you rise, and the room brightens as the skylight comes overhead. Say if it is too long or too dark at the start. (attic climb thread)
 - Play a few books at every tier and say if the ceremony feels right: Codex gets a faint flash, Grimoire a rune and sting, Apocrypha waits for its implosion, then flash and cover swing. Also try Settings > Graphics low (no rune, fewer rays). (reveal recipes)
 - Play down to 252 ft (Catacombs), 454 ft (Sunken Vault), 706 ft (Hollow) and 1008 ft (Abyss) and say which door still feels like "just a tint": each floor's first row now has a sign, a doorway scene and its own wall (item 1).
@@ -1214,3 +1215,11 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Touches:** UI. **Conflicts:** `src/ui/home.js`.
 ### S1. [x] Menu spines in real book-cloth colours (done: navy, oxblood, bottle green, tan calf, ochre, slate; muted, tier colours untouched)
 - Follow-ups: S1a recolour the Riddle/merged-riddle spines once the riddle-merge thread lands (muted aubergine/verdigris from `HOME_BOOK_COLORS`); S1b per-book spine wear (rubbed corners, faded titles) so the stack reads as old; S1c let the Descend plaque and mantel wood take a matching muted tone.
+### R1. Librarian's Card colour hierarchy (done, thread "Restyle the Librarian's Card")
+- [x] Renamed Borrower's record to Librarian's Card; per-row ink (ember streak, deep ink depth, best-tier Books, floor-coloured Floor), quiet labels, underlines.
+### R2. Stamps on the Librarian's Card
+**Pitch:** a milestone stamp (e.g. "100 BOOKS", "7-DAY STREAK") thumps onto the card the first time you pass it, in the row's own ink.
+**Brief:** Goal: tiny rotated ink stamps layered on `.lg-page`, saved additively. Files: `src/ui/welcome.js`, `welcome.css`. **Conflicts:** home stamp prop.
+### R3. Card ink follows the lamp
+**Pitch:** the card's ink and parchment warm or cool with the time-of-day light in the nook, so the card reads as part of the room.
+**Brief:** Goal: tint `--lg-ink` mixes by the existing time-of-day variable. Files: `welcome.css`. **Conflicts:** none.
