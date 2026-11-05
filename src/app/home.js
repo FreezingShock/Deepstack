@@ -15,6 +15,7 @@ import {showFinal} from './final.js';
 import {startRiddle,startTodayRiddle} from './riddle.js';
 import {bindAtticHome} from '../ui/atticHome.js';
 import {bindDeskProps} from '../ui/deskProps.js';
+import {mountHearth} from '../ui/hearth.js';
 
 /* ---------- home ---------- */
 export let cdTimer=0;
@@ -33,6 +34,7 @@ export function showHome(){
  bookify(ui.home);applyHomeTier(ui.home);
  bindAtticHome(ui.home,{shelf:S.shelf});
  bindDeskProps(ui.home,{sfx:Sfx});
+ mountHearth(ui.home,{sfx:Sfx});
  setBookSfx(n=>n==="whoosh"?Sfx.whoosh(.22):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
