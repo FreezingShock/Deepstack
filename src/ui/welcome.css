@@ -97,7 +97,9 @@
 .home .lg-row dd{text-shadow:0 0 .5px currentColor;border-bottom:1.5px solid color-mix(in srgb,var(--lg-ink) 45%,transparent)}
 .home .lg-streak{--lg-ink:color-mix(in srgb,var(--c-book-red) 55%,var(--c-brass-65))}
 .home .lg-streak dd{font-size:23px;border-bottom-style:double;border-bottom-width:3px}
-.home .lg-deep{--lg-ink:var(--c-oak-4a3a22)}
+.home .lg-deep{--lg-ink:color-mix(in srgb,var(--c-book-blue) 55%,var(--c-book-green))}
+.home .lg-row dt{color:color-mix(in srgb,var(--lg-ink) 50%,var(--c-oak-1a1208) 50%)}
+.home .lg-row dd{border-bottom-color:color-mix(in srgb,var(--lg-ink) 70%,transparent)}
 /* values are written in one after another when the room appears */
 .home .lg-row dd{animation:lg-write var(--m-smooth) var(--e-ink) both;animation-delay:calc(260ms + var(--n,0)*140ms)}
 .home .lg-row:nth-child(2) dd{--n:1}.home .lg-row:nth-child(3) dd{--n:2}.home .lg-row:nth-child(4) dd{--n:3}
