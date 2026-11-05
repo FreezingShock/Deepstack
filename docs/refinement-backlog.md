@@ -1396,6 +1396,8 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The spines in the run row are only for show; tapping one could peek its answer, like the alcove ledge does.
 **Brief:** Goal: make `.runledge .spine` focusable with the same tip as `ledgeTip`. Files: `src/ui/runLedge.js`. Done when: keyboard and hover show word, tier and score.
 **Touches:** RUN. **Conflicts:** G4, G5.
+### G5. Time you can feel at a glance [x] (candle is the one run clock, PR pending)
+**Follow-ups:** G5a. Let the candle's wax drip a bead at each 10 s ring so crossing a ring is a small physical event (reduced motion: no bead). Conflicts: `src/ui/candle.css`. G5b. A "show the seconds" toggle in Settings for people who want the numeral back (the screen-reader text is already there). Conflicts: settings, `src/ui/candle.js`.
 ### LM4. [x] (this PR) The run candle really lights the room
 **Serves:** pattern 8 (immersion), pattern 5 (mysterious, believable light).
 **Pitch:** The candle's glow was a gradient inside the answer box and ended in a hard line at the alcove edge. It is now a canvas light that spills over the frame, ledge, shelves and books, fading with distance, and registers with the dark pass.

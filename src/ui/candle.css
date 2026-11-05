@@ -14,6 +14,24 @@
 .clock.low{animation:none;text-shadow:0 0 12px var(--c-amber-ffb84d-alpha-88)}
 .timer.low i{background:linear-gradient(90deg,var(--c-amber-ffd98a),var(--c-parchment))}
 @media(prefers-reduced-motion:reduce){.candle .flame,.candle.dying .flame{animation:none;transition:none}.candle.out .wick::after{animation:none;opacity:0}}
+
+/* ---- the candle as the run clock: beside the slip, a ruler of rings, no numeral, no bar ---- */
+#stage .timer{display:none!important}
+#stage .slipwrap>.candle{display:flex!important;position:absolute;left:auto;right:calc(100% + 18px);bottom:6px;width:44px;transform:none;z-index:0;overflow:visible}
+#stage .slipwrap>.candle::before{width:340px;height:300px;margin-left:-170px;bottom:30px}
+#stage .slipwrap>.candle .wax{width:22px;transition:height .1s linear}
+#stage .slipwrap>.candle .plate{width:44px}
+.candle .gauge{position:absolute;left:100%;bottom:0;width:0;height:0}
+.candle .gauge i{position:absolute;left:-6px;width:12px;height:2px;border-radius:1px;background:var(--c-parchment-alpha-40);box-shadow:0 1px 0 var(--c-black-alpha-33)}
+.candle .gauge i.last{width:18px;height:3px;background:var(--c-amber-ffd98a);box-shadow:0 0 10px var(--c-amber-ffb84d-alpha-88)}
+/* last 10 s without red: the wax shows a bright amber band and the flame narrows and darts (not a colour swap) */
+.candle.low .wax{box-shadow:inset -3px 0 4px var(--c-black-alpha-33),0 0 0 1px var(--c-black-alpha-33),0 0 16px 2px var(--c-amber-ffb84d-alpha-88)}
+.candle.low .flame{background:radial-gradient(ellipse at 50% 72%,var(--c-amber-fff7cf) 0,var(--c-amber-69) 42%,var(--c-amber-58) 74%,var(--c-amber-58-alpha-00) 100%);box-shadow:0 0 calc(30px * var(--fh)) calc(10px * var(--fh)) var(--c-amber-ffa83c-alpha-66)}
+/* narrow windows: the candle stands against the slip's right edge instead, so the slip keeps its width */
+@media(max-width:1000px){#stage .slipwrap>.candle{right:auto;left:100%;margin-left:-26px;width:36px;transform:scale(.78);transform-origin:50% 100%;bottom:4px}#stage .slipwrap>.candle::before{width:220px;height:220px;margin-left:-110px}}
+@media(max-width:640px){#stage.center .slipwrap{width:calc(100% - 38px);margin-left:0;margin-right:auto}#stage.center .slipwrap>.candle{margin-left:-1px;transform:scale(.7)}}
+/* reduced motion: still, but the ring marks and the shrinking wax carry the time on their own */
+@media(prefers-reduced-motion:reduce){#stage .slipwrap>.candle .wax{transition:none}}
 /* the candle's light now lives on the world canvas (ui/candleLight.js): the DOM halo was clipped by the answer box at the alcove edge */
 .candle::before{display:none}
 .candle .flame,.candle.low .flame{box-shadow:none}
