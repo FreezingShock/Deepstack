@@ -1484,7 +1484,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: ribbons or tabs on the spread that cross-fade pages (pre-built like the open) and re-colour the board. Files: `src/ui/home.js`, new `src/ui/bookTabs.js`. Done when: switching Shelf to Sets never shows the room. **Touches:** UI, UX. **Conflicts:** `home.js`, Unlimited pages thread.
 
 
-### PF1. Split the CSS and JS that only some screens need
+### PF1. [x] (PR pending: Shelf, Daily and Stats books lazy; first-paint JS 407 to 383 KB, CSS 249 to 228 KB; more screens to follow) Split the CSS and JS that only some screens need
 **Pitch:** Home loads 248 KB of CSS (49 KB gzip) of which only about a fifth is used on the first screen, plus the whole app JS (407 KB). Load attic, sets, almanac and book-page styles and code only when you first go there, so the first paint arrives sooner.
 **Brief:** Goal: dynamic-import per-screen modules and their CSS from a thin hook, keeping cascade order (append, do not reorder `src/styles/index.css`); prewarm in idle after first paint so opening never waits. Files: new `src/ui/lazyScreens.js`, small hooks in `src/main.js`. Done when: `scripts/loadpath.mjs` shows fewer bytes before first paint and every screen still opens instantly. **Touches:** Performance. **Conflicts:** `main.js` imports (do when few threads are in flight).
 
@@ -1512,3 +1512,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### UB5. Tap the pen line to see a run
 **Pitch:** Let each dot on the Lexicon line open the run it came from (date, words, books), so the climb is a trail back through the shelf.
 **Brief:** Goal: tappable points showing date and Lexicon, link to Almanac page. Files: `lexiconTrend.js`, `statsPages.js`. **Touches:** UI. **Conflicts:** Almanac tap-through (B).
+
+### PF4. Lazy attic, curios and lore code
+**Pitch:** PF1 moved the three menu books out of the first-paint bundle; the attic room, lore books and curios (and their CSS) are the next biggest chunks nobody needs before scrolling or opening a book.
+**Brief:** Goal: same pattern as `src/ui/lazyScreens.js` for the attic climb/room and `initLore`/`initCurios`, prewarmed in idle. Done when: `scripts/loadpath.mjs` shows fewer bytes before first paint and the attic still opens without a wait. **Touches:** Performance. **Conflicts:** `main.js` imports, attic threads.
