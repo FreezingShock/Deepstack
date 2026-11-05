@@ -1104,7 +1104,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: pick one (needs nate): a 0 becomes a "damp, unreadable" pamphlet that stays off the shelf, or the descent stalls at the same depth, or leave as is. Files: `src/core/scoring.js`, `src/app/card.js`. Done when: Daily score rules unchanged, test pins the choice.
 **Touches:** CORE, RESULT. **Conflicts:** Judge accuracy, Daily fairness.
 
-### Q12. Open books on a phone cover the top bar and clip the ribbon
+### [x] Q12. Open books on a phone cover the top bar and clip the ribbon (fixed, PR pending: book sits below the bar at 375 and 360)
 **Serves:** integrated not bolted on, spacing.
 **Pitch:** At 375 the open Shelf and Almanac books slide over the Sound, Credits and Settings buttons and the bookmark ribbon is cut off at the right edge as an unreadable stub.
 **Brief:** Goal: start the book below the top bar, keep the ribbon fully inside the cover, keep Close reachable without scrolling. Files: `src/ui/bookOpen.css`. Done when: all six menu books screenshot clean at 375x667 and 360x640.
