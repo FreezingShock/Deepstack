@@ -68,9 +68,9 @@ export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>''}){
 
 /* Books that open onto intro pages with a Start button instead of a menu. */
 export const BOOK_INTROS={
- bUnl:{h:'Unlimited',kicker:'Explain the word',p:'Words keep coming, matched to your level. Your answers are rated, and your Lexicon rating rises and falls with how closely you explain each one.',pts:['No daily limit','Adaptive difficulty','Rated against the real definition'],btn:'Start Unlimited',
+ bUnl:{h:'Unlimited',kicker:'Explain the word',p:'Words keep coming, matched to your level. Each answer is rated, and your Lexicon moves with how well you explain it.',pts:['No daily limit','Adaptive difficulty','Rated against the real definition'],btn:'Descend',
   /* two sections on the same two pages: the left page explains the word, the right page is the riddle (you get the definition) */
-  riddle:{h:'Riddle',kicker:'The word is the answer',p:'The other way round: a slip shows what a word means and you write the word. The exact word sinks deepest.',pts:['Seven riddles, forty seconds each','Hints never reveal the spelling','Counts toward your shelf, not the Daily'],btn:'Start the Riddles',act:'riddle'}},
+  riddle:{h:'Riddle',kicker:'The word is the answer',p:'The other way round: a slip shows what a word means and you write the word. The exact word sinks deepest.',pts:['Seven riddles, forty seconds each','Hints never reveal the spelling','Counts toward your shelf, not the Daily'],btn:'Begin the riddles',act:'riddle'}},
  bPrac:{h:'Practice',kicker:'No pressure',p:'The same seven words as today’s Daily, with no pressure: your answers are not recorded to your streak or your records.',pts:['Seven words, forty-five seconds each','Hints available','Does not count toward the Daily'],btn:'Start Practice'},
 };
 
@@ -85,7 +85,8 @@ export const pg={
 };
 /* Click handlers for extra Start buttons inside a book (a section's data-act). app/home.js fills it. */
 export const BOOK_ACTS={};
-const introPage=(i,btn,close)=>pg.head(i.kicker,i.h)+pg.body(i.p)+(i.extra?i.extra():'')+pg.label('In this book')+pg.list(i.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest"${i.act?` data-act="${i.act}"`:''}>${esc(i.btn)}</button>${close?`<button class="bs-back-btn pen-ink">Close the book</button>`:''}</div>`;
+/* a sectioned page: the main action sits right under the intro (and rank), never at the foot where a tall page would clip it; the feature list follows */
+const introPage=(i,btn,close)=>pg.head(i.kicker,i.h)+pg.body(i.p)+(i.extra?i.extra():'')+`<div class="pg-actions"><button class="bs-start bs-primary pen-ink rest"${i.act?` data-act="${i.act}"`:''}>${esc(typeof i.btn==='function'?i.btn():i.btn)}</button>${i.second?i.second():''}${close?`<button class="bs-back-btn pen-ink">Close the book</button>`:''}</div>`+pg.label('In this book')+pg.list(i.pts);
 export function introSpreads(intro){
  if(intro.riddle){/* sectioned book: left page the book's own mode, right page its riddle; phones step left then right */
   const a=introPage(intro,0,false),b=introPage(intro.riddle,0,true);
@@ -234,7 +235,7 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
    if(pages){bk.onPaint=(sp,idx)=>{inkPage(sp,pages.label);pages.onPaint&&pages.onPaint(sp,bk,idx);};}
    else if(intro){
     bk.onPaint=sp=>{const bb=sp.querySelector('.bs-back-btn');
-     sp.querySelectorAll('.bs-start').forEach(b=>{b.onclick=()=>{const a=b.dataset.act&&BOOK_ACTS[b.dataset.act];(a||(()=>go.call(el,e)))();bk.close();};});if(bb)bb.onclick=bk.close;};
+     sp.querySelectorAll('.bs-start,.bs-again').forEach(b=>{b.onclick=()=>{const a=b.dataset.act&&BOOK_ACTS[b.dataset.act];(a||(()=>go.call(el,e)))();bk.close();};});if(bb)bb.onclick=bk.close;};
    }else setTimeout(()=>{go.call(el,e);bk.close();},wait);
   };
  });

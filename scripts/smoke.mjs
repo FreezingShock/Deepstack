@@ -162,7 +162,7 @@ await step('resume daily after leaving mid-run', async () => {
 await step('unlimited descends to a finite depth', async () => {
   await realClick(page, '#mark', 'Deepstack home mark');
   await realClick(page, '#bUnl', 'Unlimited book');
-  await realClick(page, '[role=dialog].intro button:has-text("Start Unlimited")', 'Start Unlimited');
+  await realClick(page, '[role=dialog].intro button.bs-primary:not([data-act])', 'Unlimited primary action');
   await page.locator('#stage .word').waitFor({state: 'visible', timeout: T}).catch(() => { fail('Unlimited: no word appeared'); throw new Error('stop'); });
   const word = await page.locator('#stage .word').getAttribute('aria-label');
   const data = JSON.parse(await readFile(join(root, 'data/words.json'), 'utf8'));
