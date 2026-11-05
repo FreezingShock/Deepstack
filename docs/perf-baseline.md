@@ -24,3 +24,11 @@ Same machine and renderer. Alcove open on each floor, cursor on the shelf, 5 s e
 | abyss | 1.04 / 1.5 | 1.73 / 2.5 | 1.18 / 1.5 | 1.73 / 2.0 |
 
 Cost of the pass is about 0.5 to 1.4 ms per frame under software rendering, well inside a 16 ms frame. Stacks rows are noise (no pass runs there).
+
+## Load-path and warm-up pass (2026-11-05, PRs #241 to #243)
+Headless Chromium, software rendering, local server.
+- Model runtime: the judge fetched `ort-wasm-simd-threaded.asyncify.wasm` (26.9 MB, 6.7 MB gzip, a WebGPU build). It now fetches the plain 14 MB build. Judge scores unchanged. `dist/` 100 MB to 49 MB.
+- First answer of a session: 7.1 s cold (relations and senses JSON parse plus distractor embeddings at submit) vs 88 ms when the judge is warmed in idle after the model loads.
+- Repeat visits: a service worker caches hashed assets, fonts, the ONNX runtime and data; with the network off the home screen and a first Descend still work after one online visit.
+- Home idle is about 125 ms/s of script and the rest is native raster under software rendering, so it is not representative of a GPU; the Descend plaque's infinite `box-shadow` animation (a full glow repaint every frame) is now an opacity pulse on a pseudo-element.
+- Not changed: transformers.js sends `Range: bytes=0-0` size probes for each model file; a static host answers with 1 byte, so those are not re-downloads (a Range-ignoring dev server makes them look like 3 to 4 full downloads).

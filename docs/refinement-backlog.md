@@ -1467,3 +1467,17 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### BS2. Switch books without going home
 **Pitch:** Today you close a book and pick another from the stack. A bookmark tab on the open book's edge for each sibling would swap one book for the next in a single turn.
 **Brief:** Goal: ribbons or tabs on the spread that cross-fade pages (pre-built like the open) and re-colour the board. Files: `src/ui/home.js`, new `src/ui/bookTabs.js`. Done when: switching Shelf to Sets never shows the room. **Touches:** UI, UX. **Conflicts:** `home.js`, Unlimited pages thread.
+
+
+### PF1. Split the CSS and JS that only some screens need
+**Pitch:** Home loads 248 KB of CSS (49 KB gzip) of which only about a fifth is used on the first screen, plus the whole app JS (407 KB). Load attic, sets, almanac and book-page styles and code only when you first go there, so the first paint arrives sooner.
+**Brief:** Goal: dynamic-import per-screen modules and their CSS from a thin hook, keeping cascade order (append, do not reorder `src/styles/index.css`); prewarm in idle after first paint so opening never waits. Files: new `src/ui/lazyScreens.js`, small hooks in `src/main.js`. Done when: `scripts/loadpath.mjs` shows fewer bytes before first paint and every screen still opens instantly. **Touches:** Performance. **Conflicts:** `main.js` imports (do when few threads are in flight).
+
+### PF2. Pre-draw particles, sprites and fonts before first use
+**Pitch:** The first time a candle, dust or reveal burst appears it builds its sprites then. Draw them into small offscreen bitmaps during idle after first paint so the first burst is as smooth as the hundredth.
+**Brief:** Goal: audit sprite and gradient creation inside frame callbacks (`world.js`, `revealFx.js`, `ambient.js`, `lanterns.js`) and move it to a one-time idle prewarm; also `document.fonts.load` for the Anthropic Serif weights the alcove uses. Done when: `?perf` shows no long frame in the first 3 s after Descend. **Touches:** Performance. **Conflicts:** `world.js` owners.
+
+### PF3. Smaller word list
+**Pitch:** `words.json` is 2.2 MB (691 KB gzip) and loads on every visit before the Daily can start. A compact columnar format, or dropping fields the game never reads, would cut it a lot.
+**Brief:** Goal: shrink the file (see backlog item 80) and keep `loadWords()` output identical; the service worker (#243) then caches it. Done when: tests pass unchanged and gzip size drops. **Touches:** Performance, data. **Conflicts:** `scripts/build-words.mjs`.
+

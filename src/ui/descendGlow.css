@@ -1,0 +1,7 @@
+/* Perf: the Descend plaque used to animate a 54px box-shadow forever (a full repaint of the glow every frame on the home screen).
+   The pulse now lives on a pseudo-element's opacity, which the compositor animates without repainting. Same 3.4 s breath. */
+.descend{animation:none;isolation:isolate}
+.descend::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
+ box-shadow:0 0 54px -2px var(--c-amber-58-alpha-99);opacity:0;animation:dglowpulse 3.4s ease-in-out infinite;will-change:opacity}
+@keyframes dglowpulse{50%{opacity:.85}}
+@media(prefers-reduced-motion:reduce){.descend::before{animation:none}}
