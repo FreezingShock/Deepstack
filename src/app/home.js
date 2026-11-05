@@ -10,7 +10,7 @@ import {ui} from './chrome.js';
 import {FLOORS,S,computeStats,dailyNo,fmtCountdown,msUntilNextDaily,utc} from './state.js';
 import {World} from '../world/world.js';
 import {$} from './util.js';
-import {setRun,startDaily,startUnlimited} from './run.js';
+import {setRun,startDaily,startUnlimited,startPractice} from './run.js';
 import {showFinal} from './final.js';
 import {startRiddle,startTodayRiddle} from './riddle.js';
 import {bindAtticHome} from '../ui/atticHome.js';
@@ -29,7 +29,7 @@ export function showHome(){
  World.clearNiches();World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
- $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
+ $('#bPrac').onclick=()=>startPractice();$('#bUnl').onclick=startUnlimited;
  BOOK_INTROS.bUnl.extra=()=>rankHTML(S.rating,core.lexicon)+(S.rating.placed?`<p class="lx-again"><button class="bs-start pen-ink" data-act="replace">Place me again</button></p>`:'');
  BOOK_ACTS.replace=()=>startUnlimited(true);
  BOOK_ACTS.riddle=startRiddle;BOOK_ACTS.dailyRiddle=startTodayRiddle;BOOK_ACTS.daily=()=>d?showFinal(d,true):startDaily(false);

@@ -19,6 +19,8 @@ import {$,esc,sleep} from './util.js';
 import {FX} from './fx.js';
 import {openCard} from './card.js';
 import {showFinal} from './final.js';
+import {PRACTICE_MS,pickPracticeWords,markSeen,finishPractice} from '../core/practice.js';
+import {addCoach} from '../ui/practiceCoach.js';
 
 /* ---------- daily run ---------- */
 export let run=null,timerId=0;
@@ -39,6 +41,16 @@ export async function startDaily(practice){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
+export async function startPractice(){
+ await wordsReady;
+ if(modelStatus().state==='loading')await whenReady(8000);
+ const words=pickPracticeWords(S.practice,S.rating,7,dailyWords(utc(),7).map(x=>x.id));
+ prepareWords(words).catch(()=>{});
+ World.reset();World.setShelf([]);
+ run={mode:'practice',practice:true,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true};
+ ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
+ showWord();
+}
 export async function startUnlimited(replace=false){
  await wordsReady;
  if(modelStatus().state==='loading')await whenReady(8000);
@@ -53,12 +65,12 @@ export async function startUnlimited(replace=false){
 }
 export function pipsHTML(){return `<div class="pips" aria-label="word ${run.i+1} of 7">${run.words.map((_,i)=>{const r=run.results[i];const T=r?TIERS[r.tier]:null;return `<i class="pip ${i===run.i?'now':''} ${r?'done':''}" style="${T?`background:${T.spine};box-shadow:0 0 8px ${T.spine}99`:''}"></i>`;}).join('')}</div>`;}
 export function showWord(){
- if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();run.limit=45000;
+ if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();run.limit=run.practice?PRACTICE_MS:45000;
  const el=ui.stage;el.hidden=false;el.className='center';
  el.innerHTML=`<div class="candle" id="candle" aria-hidden="true"><div class="wax" id="wax"><i class="flame"></i><i class="wick"></i></div><div class="plate"></div></div><div class="sheet">${pipsHTML()}
   <div class="wlabel">Word ${run.i+1} of ${run.words.length}</div>${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
   <div class="word" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
-  <div class="pos">${esc(w.pos)}</div><div class="clock" id="clock" aria-hidden="true">0:45</div>
+  <div class="pos">${esc(w.pos)}</div><div class="clock" id="clock" aria-hidden="true">${run.practice?'2:00':'0:45'}</div>
   <div class="timer" id="tbar"><i id="tfill"></i></div>
   <div class="slipwrap" id="fld"><i class="pin"></i><div class="slip"><textarea id="ans" placeholder="In your own words\u2026" maxlength="300" aria-label="Your explanation" enterkeyhint="send"></textarea></div></div>
   <div class="hintline" id="hl" aria-live="polite"></div>
@@ -75,7 +87,7 @@ export function showWord(){
  timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;Sfx.candle(fr);f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);paintRun(left,run.limit);if(left<=0)submit(!$('#ans').value.trim());},100);
 }
 export function paintHintBtn(){const b=$('#hint');if(!b)return;const n=run.ladder[run.hintN];b.disabled=!n;b.textContent=hintButtonLabel(n,n?(run.freeHint?0:n.cost*FT|0):0,run.ladder.length-run.hintN);const k=$('#skip');if(k)k.textContent=skipButtonLabel(run.combo,run.hintN);}
-export function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;const free=!!run.freeHint;run.freeHint=false;if(!free)run.hintSpent=(run.hintSpent||0)+n.cost;
+export function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;const free=run.practice||!!run.freeHint;run.freeHint=false;if(!free)run.hintSpent=(run.hintSpent||0)+n.cost;
  const hl=$('#hl');
  hl.insertAdjacentHTML('beforeend',hintSlipHtml(n,run.words[run.i].w,free?0:n.cost*FT|0,run.hintN));Sfx.flip&&Sfx.flip();requestAnimationFrame(()=>hl.classList.add('on'));paintHintBtn();$('#ans').focus({preventScroll:true});}
 export async function submit(skipped){
@@ -98,17 +110,20 @@ export async function submit(skipped){
  run.results.push({...book,skipped});run.depthRows+=rows;
  World.fillNiche(nicheRow,{w:w.w,pos:w.pos,answer:text,score:j.score,tier:t,ft:book.ft,verdict:book.verdict,skipped},run.results.slice());
  if(cb.chain)setTimeout(()=>Sfx.link(cb.chain),120);else if(cb.broke)setTimeout(()=>Sfx.clunk(),200); // the ledge chain gains a link or lets go
+ if(run.practice){S.practice=markSeen(S.practice,w);save();}
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
  if(!run.practice){S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}save();}
  if(!run.practice&&run.mode!=='unlimited'){S.dailyRun=snapshotRun(run);save();}
  const depth1=Math.round((World.restRow+rows)*FT);
  openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length;if(!last&&run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id));prepareWords([run.words[run.i]]).catch(()=>{});}const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
+ if(run.practice)addCoach($('#cardlayer'),book,w);
 }
 export function verdictFor(j,t,w){if(j.empty)return 'Nothing written.';if(j.opposite)return 'That points the other way. The word means close to the opposite.';const T=TIERS[t];return T.lines[(w.id+j.score)%T.lines.length];}
 export function finishRun(){
  const r=run;const books=r.results;const avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length);const best=Math.max(...books.map(b=>b.tier));
  const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,isDaily=r.mode!=='unlimited',depth=isDaily?worldDepth:worldDepth+setBonus; // Daily depth is words only: set bonuses depend on each player's collection, so they stay out of the shared score
- const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
+ if(r.practice){S.practice=finishPractice(S.practice);save();}
+ const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,mode:r.practice?'practice':undefined,setBonus:setBonus||undefined};
  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});}
  else if(!r.practice){delete S.dailyRun;if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);save();}
  showFinal(d,false);

@@ -36,7 +36,7 @@ export const HOME_BOOK_COLORS={
 export const HOME_LINKS=[
  {id:'bDaily',stack:0,tex:'grain',color:'navy',label:'Daily',note:'Every Daily, word by word',badge:(s,x)=>x.dailyNo?'No. '+x.dailyNo:''},
  {id:'bUnl',stack:0,color:'oxblood',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>s.rating&&s.rating.placed?'Lexicon '+x.lexicon(s.rating.L):'placement'},
- {id:'bPrac',stack:0,tex:'cloth',color:'bottle',label:'Practice',note:'Same words, no pressure'},
+ {id:'bPrac',stack:0,tex:'cloth',color:'bottle',label:'Practice',note:'Learn the words, no clock pressure'},
  {id:'bAll',stack:1,tex:'worn',color:'calf',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
  {id:'bSets',stack:1,tex:'vellum',color:'ochre',label:'Sets',note:'Themed collections'},
  {id:'bStats',stack:1,tex:'grain',color:'slate',label:'Stats',note:'Streaks, depth and tiers'},
@@ -70,7 +70,7 @@ export const BOOK_INTROS={
  bUnl:{h:'Unlimited',kicker:'Explain the word',p:'Words keep coming, matched to your level. Your answers are rated, and your Lexicon rating rises and falls with how closely you explain each one.',pts:['No daily limit','Adaptive difficulty','Rated against the real definition'],btn:'Start Unlimited',
   /* two sections on the same two pages: the left page explains the word, the right page is the riddle (you get the definition) */
   riddle:{h:'Riddle',kicker:'The word is the answer',p:'The other way round: a slip shows what a word means and you write the word. The exact word sinks deepest.',pts:['Seven riddles, forty seconds each','Hints never reveal the spelling','Counts toward your shelf, not the Daily'],btn:'Start the Riddles',act:'riddle'}},
- bPrac:{h:'Practice',kicker:'No pressure',p:'The same seven words as today’s Daily, with no pressure: your answers are not recorded to your streak or your records.',pts:['Seven words, forty-five seconds each','Hints available','Does not count toward the Daily'],btn:'Start Practice'},
+ bPrac:{h:'Practice',kicker:'No pressure',p:'A gentler way to learn. Fresh words every time, never repeated, easing upward from a little below your Lexicon. After each answer you see what counted and what was missing.',pts:['Seven new words, two minutes each','Hints are free','Not recorded to your streak, shelf or Lexicon'],btn:'Start Practice'},
 };
 
 /* Generic spread content. A book is a list of spreads, each {l, r} of HTML for the

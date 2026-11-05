@@ -111,7 +111,7 @@ import {FLOORS,FT,S,TIERS,WORDS,computeStats,dailyWords,floorAtFt,floorStartFt,h
 import {announceFloor,hideTip,showTip,ui} from './app/chrome.js';
 import {World} from './world/world.js';
 import {cardOpts,closeCard,openCard} from './app/card.js';
-import {run,startDaily,startUnlimited} from './app/run.js';
+import {run,startDaily,startUnlimited,startPractice} from './app/run.js';
 import {leaveRun,paintJudge,showHome} from './app/home.js';
 
 initCursorLight({reduced:RM});
@@ -161,4 +161,4 @@ initTransitions();
 showHome();
 wordsReady.catch(()=>{}).then(()=>deferAfterPaint(startModelLoad,1500));
  // judge model downloads after first paint and the word list
-window.__deepstack={openCard,S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,get run(){return run;}};
+window.__deepstack={openCard,S,World,startDaily,startUnlimited,startPractice,showHome,judge:judgeAnswer,get run(){return run;}};

@@ -1384,3 +1384,18 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### G9b. Rank-up moment
 **Pitch:** When a run crosses a band, give the final page one small ink-stamp beat instead of only a line.
 **Brief:** Goal: stamp animation on `.lx-change` when `rankIndex` rises, reduced-motion safe. **Conflicts:** results.js.
+### P1. [x] Practice as a learning mode (this PR)
+**Pitch:** Practice used to replay today's Daily words, so it felt like a pointless copy; now it is its own mode with fresh words, free hints, a long clock and a coach strip after each answer.
+**Touches:** `src/core/practice.js`, `src/ui/practiceCoach.js`, `src/app/run.js`. **Conflicts:** G2 score explanations (#227, card.js).
+
+### P2. Practice: words to revisit
+**Pitch:** "Why is practice giving the same words?" -> the other half of learning is returning to what you missed: at the end of a practice run, offer a short second pass over the words that scored low.
+**Brief:** Goal: a 'Try the missed ones again' button on the Practice results that replays only low-scoring words once. Files: `src/core/practice.js`, `src/app/run.js`. Done when: test covers selection. **Touches:** run.js. **Conflicts:** none.
+
+### P3. Practice: show a model answer
+**Pitch:** Teach by example: after a weak answer, one plain-language model answer in the same voice as the word's hint.
+**Brief:** Goal: write a one-sentence model answer from the definition and show it in the coach strip; reuse #227's 'stronger answer' line when merged. Files: `src/ui/practiceCoach.js`. **Conflicts:** #227.
+
+### P4. Practice: topic and difficulty picker
+**Pitch:** Let the learner choose to practise easier, harder, or (later) a topic room.
+**Brief:** Goal: a small handwritten choice before the run (easier / usual / harder). Files: `src/core/practice.js`, `src/ui/home.js`. **Touches:** places registry (G10/G12).
