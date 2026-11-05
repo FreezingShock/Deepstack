@@ -845,7 +845,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: add per-tier cue lists (timing, layers) to `revealCeremony` and let `Sfx` play them, so the sting lands on the flash and the cover creak matches the cover time. Files: `src/ui/revealRecipes.js`, `src/feel.js`. Done when: tests pin cue timing against `flash.at` and `cover.delay`.
 **Touches:** reveal, sound. **Conflicts:** 24.
 
-### R4. Reveal cover materials
+### R4. [x] Reveal cover materials (PR pending)
 **Serves:** rarity is the hero, everything is a book.
 **Pitch:** the cover only changes speed per tier; each tier's cover could crack, unlatch, unseal or burn open in its own way.
 **Brief:** Goal: add a `cover.style` field to the ceremony table (wax seal snap, clasp, chain, glow seam) with CSS in `reveal.css`. Done when: all seven covers differ at a glance in a screenshot strip at 1280 and 375.
@@ -1224,7 +1224,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 
 - [x] Page flip overhaul (PR #199; curl, page-edge thickness, handwritten cue, tug hint, lifted leaf)
 
-### P1. Ribbon markers that jump pages
+### P1. [x] Ribbon markers that jump pages (this PR)
 **Pitch:** each menu book has a ribbon; tug it to jump to the contents page, and let a pen-ink bookmark remember where you stopped.
 **Brief:** Goal: a clickable ribbon on open books that returns to page 1, plus the last page remembered per book for the session. Files: new `src/ui/bookRibbon.js`, hook in `home.js` paint. Done when: keys and swipe unaffected, tested with a fake spread. **Touches:** BOOKS. **Conflicts:** page flip.
 
@@ -1398,3 +1398,17 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Touches:** RUN. **Conflicts:** G4, G5.
 ### G5. Time you can feel at a glance [x] (candle is the one run clock, PR pending)
 **Follow-ups:** G5a. Let the candle's wax drip a bead at each 10 s ring so crossing a ring is a small physical event (reduced motion: no bead). Conflicts: `src/ui/candle.css`. G5b. A "show the seconds" toggle in Settings for people who want the numeral back (the screen-reader text is already there). Conflicts: settings, `src/ui/candle.js`.
+### R6. Cover sounds per closure
+**Serves:** rarity is the hero, sound lines up with motion.
+**Pitch:** each cover now comes undone its own way (tape, twine, strap, clasp, seal, chain, seam) but the audio is still one paper sound.
+**Brief:** Goal: one cue per closure (tape rip, cord slip, buckle, brass click, wax crack, chain rattle, shimmer) timed from `cover.lock`/`cover.delay`. Files: `src/ui/revealRecipes.js`, `src/feel.js`. Done when: tests pin cue time against `cover.delay`. **Touches:** reveal, sound. **Conflicts:** R3.
+
+### R7. Covers on the shelf and in the almanac
+**Serves:** everything is a book, integrated.
+**Pitch:** the seven closures could also show on closed books you tap on the shelf and as the tier key in the almanac, so a book's rarity is readable before it opens.
+**Brief:** Goal: reuse `coverLockHTML(style)` on shelf cards and almanac tier swatches. Files: `src/ui/coverLock.js`, shelf and almanac modules. Done when: 375 and 1280 screenshots. **Touches:** HOME, card. **Conflicts:** 16.
+
+### R8. Reopen a book you already have with its cover
+**Serves:** physical, rarity is the hero.
+**Pitch:** opening an old book from the shelf skips the closure; let it play a short, quiet version of its tier closure instead.
+**Brief:** Goal: in `openCard` non-fresh path, play the lock at half speed without particles. Done when: reduced motion shows no closure. **Touches:** card. **Conflicts:** 16.

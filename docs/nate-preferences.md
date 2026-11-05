@@ -114,3 +114,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-05 judge leniency: "is convince really just 10 points" for tempt -> close concepts of a word (persuade-like verbs for entice-like words) must not land in Pamphlet; check these by hand after judge changes.
 - 2026-11-05 hints and skip (G4): "make them much more on theme and satisfying to press", "maybe they should be notes on the notecard" -> controls are objects (pressable tabs with pips, not capital-letter sentences); hints are handwriting on the card itself, not floating popups.
 - 2026-11-05 empty pages (Q7, from the audit): a new player's books should look finished, not blank: one hand-drawn sketch and one written line per book, never the same note twice.
+- 2026-11-04 reveal: picked 'cover materials' with 15, 18, 14 and asked for 'more polished recommendations': each tier's cover must open in its own physical way, rarity is the hero (thread: reveal cover openings)
