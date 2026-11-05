@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Open the Unlimited book at your window size and on your phone: a big Descend button (Find my rank before you are placed) now sits under your rank, with "Place me again" quietly beneath. Say if it reads clearly. (Unlimited pages, UB1)
 - Pick from the new G1 to G10 goal-level menu (section G near the end of this file). (polish menu thread)
 - Pull `main` and look at the home screen: a stone fireplace now burns between the book stacks on a brick back wall, and the fire lights the room (lamps down). Move the cursor near it (flames lean away) and click it to stoke. Check your window size and phone, and say if the room is too dark. On a short phone (667 tall) and on tablets in portrait there is no room for it yet. (fireside home, FH1)
 - Open the Unlimited book: the left page is Unlimited, the right page is Riddle, each with its own Start link. Open the Daily book: its first page now has Daily and Daily Riddle with Descend / Open today's riddle. Say if the sections read clearly or if the Riddle half needs more weight. (merged modes)
@@ -1427,3 +1428,15 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### LM6. Lantern light spills out of the alcove too
 **Pitch:** Same treatment for the two alcove lanterns: their glow should reach the frame and the shelves beside the alcove, not stop at the alcove edge.
 **Brief:** Goal: audit `lanterns.js` glow radius against the frame and widen with falloff. Files: `lanterns.js`. Done when: no visible edge at 1280 and 1640. **Touches:** UI. **Conflicts:** none.
+
+### UB1. [x] (this PR) Unlimited book: one clear way in
+**Pitch:** The Unlimited page now leads with a big Descend button (Find my rank the first time), the rank above it, and "Place me again" as a quiet second choice.
+**Brief:** Goal: keep the main action visible on every sectioned page at 1280, 1640 and 375. Files: `src/ui/home.js`, `src/ui/lexiconRank.css`. Done when: no `.bs-start` sits below `.pg-in`. **Touches:** UI. **Conflicts:** none.
+
+### UB2. Unlimited book: show the Lexicon climbing
+**Pitch:** The right-hand page of the Unlimited book could draw the last few runs as a small pen line so the rank feels earned.
+**Brief:** Goal: sparkline from `S.rating.hist` on a notebook page, no new numbers. Files: new `src/ui/lexiconTrend.js`. Done when: it reads at 375. **Touches:** UI. **Conflicts:** none.
+
+### UB3. Riddle half gets its own weight
+**Pitch:** The Riddle section is a plain twin of Unlimited; give it a small sketch and a best-streak line.
+**Brief:** Goal: one hand-drawn sketch plus a stat line on the Riddle page. Files: `src/ui/home.js`, new css. Done when: both pages feel balanced. **Touches:** UI. **Conflicts:** UB2.

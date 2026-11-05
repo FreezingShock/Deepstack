@@ -30,7 +30,10 @@ export function showHome(){
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
  $('#bPrac').onclick=()=>startDaily(true);$('#bUnl').onclick=startUnlimited;
- BOOK_INTROS.bUnl.extra=()=>rankHTML(S.rating,core.lexicon)+(S.rating.placed?`<p class="lx-again"><button class="bs-start pen-ink" data-act="replace">Place me again</button></p>`:'');
+ BOOK_INTROS.bUnl.extra=()=>rankHTML(S.rating,core.lexicon);
+ /* the main action is always a run: Descend once placed, "Find my rank" (the placement words) the first time; re-placing is the quiet second choice */
+ BOOK_INTROS.bUnl.btn=()=>S.rating.placed?'Descend':'Find my rank';
+ BOOK_INTROS.bUnl.second=()=>S.rating.placed?`<button class="bs-again pen-ink" data-act="replace">Place me again</button>`:'';
  BOOK_ACTS.replace=()=>startUnlimited(true);
  BOOK_ACTS.riddle=startRiddle;BOOK_ACTS.dailyRiddle=startTodayRiddle;BOOK_ACTS.daily=()=>d?showFinal(d,true):startDaily(false);
  
