@@ -1,0 +1,14 @@
+/* Run ledge of spines (replaces the progress diamonds). Appended last so it wins over .pip rules. */
+.runledge{position:relative;display:flex;gap:5px;align-items:flex-end;justify-content:center;height:34px;padding:0 10px}
+.runledge .rail{position:absolute;left:0;right:0;bottom:-3px;height:3px;border-radius:1px;background:linear-gradient(var(--c-brass-69),var(--c-black));opacity:.55}
+.runledge .spine{position:relative;display:block;width:11px;height:var(--sh,26px);border-radius:1px 1px 0 0;box-sizing:border-box}
+.runledge .spine.next{height:26px;border:1px solid var(--rule);opacity:.55}
+.runledge .spine.now{height:26px;border:1px solid var(--ink);box-shadow:0 0 0 2px var(--c-ink-alpha-33)}
+.runledge .spine.done{background:linear-gradient(90deg,rgba(255,255,255,.14),transparent 35%,rgba(0,0,0,.28)),var(--sp);box-shadow:inset 0 2px 0 rgba(0,0,0,.25),inset 0 -2px 0 rgba(0,0,0,.2),0 0 8px color-mix(in srgb,var(--sp) 55%,transparent)}
+.runledge .spine.skipped{border:1px dashed var(--rule);opacity:.7}
+.runledge .spine.linked::before{content:"";position:absolute;left:-5px;top:50%;width:5px;height:2px;background:var(--c-brass-69)}
+.runledge .spine.fresh{animation:spine-in var(--m-smooth) var(--e-settle) both}
+@keyframes spine-in{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.runledge .spine.fresh{animation:none}}
+/* phones: keep the row short so it clears the depth rail */
+@media(max-width:640px){.runledge{height:28px;gap:4px}.runledge .spine{width:9px;height:calc(var(--sh,22px) - 4px)}.runledge .spine.next,.runledge .spine.now{height:22px}}

@@ -12,6 +12,7 @@ import {paintRun} from '../ui/runScreen.js';
 import {writeInRun} from '../ui/runWriteIn.js';
 import {paintHintControls,hintSlipHtml} from '../ui/hintSlips.js';
 import {feedbackData} from '../core/feedback.js';
+import {runLedgeHTML} from '../ui/runLedge.js';
 import {FT,S,TIERS,dailyNo,dailyWords,floorAtFt,floorAtRow,save,tierOf,utc,wordsReady} from './state.js';
 import {World} from '../world/world.js';
 import {ui} from './chrome.js';
@@ -51,7 +52,7 @@ export async function startUnlimited(replace=false){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
-export function pipsHTML(){return `<div class="pips" aria-label="word ${run.i+1} of 7">${run.words.map((_,i)=>{const r=run.results[i];const T=r?TIERS[r.tier]:null;return `<i class="pip ${i===run.i?'now':''} ${r?'done':''}" style="${T?`background:${T.spine};box-shadow:0 0 8px ${T.spine}99`:''}"></i>`;}).join('')}</div>`;}
+export function pipsHTML(){return runLedgeHTML(run.words,run.results,run.i,TIERS);}
 export function showWord(){
  if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();run.limit=45000;
  const el=ui.stage;el.hidden=false;el.className='center';
