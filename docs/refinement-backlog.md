@@ -42,6 +42,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
 - [~] Spacing and type pass on every screen
 - [~] Run screen overhaul (alcove, wall lettering, candle timer, input)
+- [x] Text size applies to all text and keeps layouts intact (`--ts` on every font size, `src/ui/textScale.css`, PR #206)
 - [~] Floors: distinct look per floor (#81)
 - [~] Tactile hover/press/focus everywhere (#82)
 - [x] Rare tier reveals: particle overhaul (pooled sprite engine, prewarmed, per-tier recipes; this PR)
@@ -1267,3 +1268,13 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** phone landscape (667x375) still scrolls on Shelf/Stats pages; give those a compact layout.
 **Brief:** Goal: a max-height:420px compact mode for menu book pages. Files: new css. Done when: no bar at 667x375.
 **Touches:** UI. **Conflicts:** none.
+
+### T1. Text size preview
+**Pitch:** show the real library change as nate taps A, A+, A++ in Settings, with a one-line sample under the buttons, so he can see a size before leaving the panel.
+**Brief:** Goal: a live sample line in the Settings panel that grows with `--ts`. Files: `src/ui/topbar.js`, `src/ui/textScale.css`. Done when: the sample matches the real text at each size, tested at 375 and 1280.
+**Touches:** UI. **Conflicts:** `src/ui/topbar.js`.
+
+### T2. Text-size screenshot sweep in CI
+**Pitch:** catch overlaps and clipped text at every size before nate does.
+**Brief:** Goal: a smoke step that opens home, run, Shelf and Settings at normal/large/xlarge in 375 and 1280 and fails on text overflowing its box. Files: `scripts/`, `test/`. Done when: it fails on a deliberately broken label.
+**Touches:** HEALTH. **Conflicts:** `scripts/smoke.mjs`.
