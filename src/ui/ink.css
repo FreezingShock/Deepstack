@@ -7,7 +7,7 @@
 .bk-spread.menu h1.inked-title{padding-right:60px}
 .bk-spread.menu .ink-doodle{position:absolute;top:clamp(14px,3.6%,26px);right:16px;width:38px;height:38px;color:var(--mute);opacity:.6;transform:rotate(6deg)}
 .bk-spread.menu .ink-doodle path{stroke-width:1.5}
-.bk-spread.menu .ink-note{display:flex;align-items:center;gap:8px;margin:22px 0 4px;font:500 19px/1.2 'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive;color:var(--mute);transform:rotate(-1.5deg);transform-origin:left}
+.bk-spread.menu .ink-note{display:flex;align-items:center;gap:8px;margin:22px 0 4px;font:500 calc(19px*var(--ts))/1.2 'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive;color:var(--mute);transform:rotate(-1.5deg);transform-origin:left}
 .bk-spread.menu .ink-blot{flex:none;width:20px;height:20px;color:var(--ink);opacity:.5}
 @media(prefers-reduced-motion:no-preference){
  .bk-spread.menu .ink-rule,.bk-spread.menu .ink-under,.bk-spread.menu .ink-doodle{animation:inkdraw var(--m-page) var(--e-ink) .15s both}

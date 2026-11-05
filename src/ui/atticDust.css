@@ -1,10 +1,10 @@
 /* "Shelve it on": a row of floor chips on the book's own page when a floorless attic book is opened. */
 .book .page .shelve{margin:10px 0 0;text-align:center}
-.shelve-k{display:block;margin-bottom:6px;font:600 11px var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--tm)}
+.shelve-k{display:block;margin-bottom:6px;font:600 calc(11px*var(--ts)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--tm)}
 .shelve-f{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .shelve-f button{display:flex;flex-direction:column;align-items:center;margin:0;padding:5px 10px 4px;border:1px solid var(--c-white-alpha-22);border-radius:6px;background:none;color:var(--tx);cursor:pointer;
  transition:background var(--m-smooth) var(--e-settle),border-color var(--m-smooth) var(--e-settle)}
-.shelve-f button b{font:600 13px/1.1 var(--serif)}
-.shelve-f button small{font:11px/1.2 "Special Elite",monospace;color:var(--tm)}
+.shelve-f button b{font:600 calc(13px*var(--ts))/1.1 var(--serif)}
+.shelve-f button small{font:calc(11px*var(--ts))/1.2 "Special Elite",monospace;color:var(--tm)}
 .shelve-f button:hover,.shelve-f button:focus-visible{background:var(--c-white-alpha-22);border-color:var(--tc);outline:none}
 @media(prefers-reduced-motion:reduce){.shelve-f button{transition:none}}

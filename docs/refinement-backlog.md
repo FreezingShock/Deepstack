@@ -3,7 +3,10 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Pick from the new G1 to G10 goal-level menu (section G near the end of this file). (polish menu thread)
+- Pull `main` and look at the home screen: a stone fireplace now burns between the book stacks on a brick back wall, and the fire lights the room (lamps down). Move the cursor near it (flames lean away) and click it to stoke. Check your window size and phone, and say if the room is too dark. On a short phone (667 tall) and on tablets in portrait there is no room for it yet. (fireside home, FH1)
 - Open the Unlimited book: the left page is Unlimited, the right page is Riddle, each with its own Start link. Open the Daily book: its first page now has Daily and Daily Riddle with Descend / Open today's riddle. Say if the sections read clearly or if the Riddle half needs more weight. (merged modes)
+- Play a run and answer with general ideas, close concepts and words that relate to the definition ("money" for frugal, "related to time" for ephemeral): they should now earn a small score (Pamphlet to Paperback), never as much as a precise answer. Open any book: other meanings and the meanings of close synonyms appear under "Also means". Tell me any wrong answer that scores well or any book that looks too tall. (judge leniency, backlog J1)
 - Pick from the Q1 to Q16 audit menu (end of this file). Q11 is decided (a 0 keeps its book and 13 ft).
 - Descend past a floor door (Archive 101 ft, Catacombs 252 ft and deeper) and say if the half-speed hold at the door, the one-time swing of the sign and the quiet floor sound feel right or too subtle; also check Settings reduced motion removes the hold and swing. (door walk-through thread)
 - Play a run and answer with plain synonyms of rare words ("curt" for laconic, "blunt" or "forthright" for candid, "conscientious" for diligent): they should now land in Paperback or better. Tell me any everyday word that still scores 0 or any wrong word that scores well. (judge thesaurus, backlog 90)
@@ -41,6 +44,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
 - [~] Spacing and type pass on every screen
 - [~] Run screen overhaul (alcove, wall lettering, candle timer, input)
+- [x] Text size applies to all text and keeps layouts intact (`--ts` on every font size, `src/ui/textScale.css`, PR #206)
 - [~] Floors: distinct look per floor (#81)
 - [~] Tactile hover/press/focus everywhere (#82)
 - [x] Rare tier reveals: particle overhaul (pooled sprite engine, prewarmed, per-tier recipes; this PR)
@@ -422,6 +426,21 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** Bare synonyms still miss when Wiktionary has no list ("curt" for laconic, "friction" for discord). Add a small frequency-filtered thesaurus of everyday words and score answers against it.
 **Brief:** Files: `scripts/build-relations.mjs`, `public/data/relations.json`. Done when: `npm run judge:eval` good/synonym in band beats 79% on `relation-answers.json` without wrong answers rising.
 **Touches:** JUDGE. **Conflicts:** none.
+
+### J1. [x] Judge accepts other meanings and broad ideas, books show them (PR #214)
+**Pitch:** A word's other senses and its synonyms' senses count as targets; general ideas and words related to the definition earn a low score; the book lists the other meanings.
+**Brief:** Files: `scripts/build-senses.mjs`, `public/data/senses.json`, `src/scorer/senses.js`, `src/ui/alsoMeans.{js,css}`. Done: `npm run judge:eval` good 79% to 85%, AUC 0.899 to 0.916.
+**Touches:** JUDGE, card hook. **Conflicts:** none.
+
+### J2. Judge explains broad matches
+**Pitch:** When an answer scored on a general idea or another meaning, the card says so in one handwritten line ("that is another meaning of frugal").
+**Brief:** Files: new `src/ui/judgeNote.js`; `judgeAnswer` returns `rel` hits and which reference won. Done when: line shows for lenient hits only, never clips at 375px.
+**Touches:** JUDGE return shape, card. **Conflicts:** 91, 93.
+
+### J3. Tune leniency from real play
+**Pitch:** Log (locally, never sent) answers that scored 10 to 30 and let nate mark them fair or too generous, then refit the floors in `RELATION`.
+**Brief:** Files: new `src/core/judgeLog.js`, Settings export. Done when: export file feeds `scripts/judge-eval.mjs` as a fixture.
+**Touches:** Settings, JUDGE. **Conflicts:** J1.
 
 ### 91. Why this score (judge explains itself)
 **Pitch:** The result card says in one handwritten line what the judge noticed: "Reticent is a synonym of taciturn", "you reached the idea through 'miserly'".
@@ -1033,6 +1052,9 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 
 - [x] N8. A sigil for every book (sigils thread): `src/ui/sigil.js`, one call in `bookArt.js`.
 
+### S1b+S1c. [x] Menu spine wear and muted plaque/mantel oak (this PR)
+- Follow-ups: S1d chip and stain marks that persist per save (a book you open often looks more thumbed); S1e dust on top edge of the stack that wipes on hover.
+
 ### S1. Sigils on the book cover and the result card
 **Pitch:** stamp the sigil big on the opened/DOM book covers too.
 **Brief:** Goal: reuse `drawSigil`. Files: `src/ui/bookOpenFx.js`, `src/ui/bookCard.css`. Done when: same word, same sigil everywhere.
@@ -1040,7 +1062,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 ### 93. Judge says what it noticed in the thesaurus
 **Pitch:** The `c` lists are separate, so the result card can name where a hit came from ("curt is an everyday word for laconic").
 **Brief:** Goal: expose which list matched in `relate()` so item 91's handwritten line can phrase it. Files: `src/scorer/relations.js`, `src/ui/judgeNote.js`. Done when: test pins wording per list.
-**Touches:** JUDGE. **Conflicts:** 91.
+**Touches:** JUDGE. **Conflicts:** 91, 93.
 
 ### 94. Phrases and two-word synonyms
 **Pitch:** "show-off", "drive away" and "cast out" still miss because the frequency filter and the matcher stay with single words.
@@ -1248,3 +1270,109 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** phone landscape (667x375) still scrolls on Shelf/Stats pages; give those a compact layout.
 **Brief:** Goal: a max-height:420px compact mode for menu book pages. Files: new css. Done when: no bar at 667x375.
 **Touches:** UI. **Conflicts:** none.
+
+### T1. Text size preview
+**Pitch:** show the real library change as nate taps A, A+, A++ in Settings, with a one-line sample under the buttons, so he can see a size before leaving the panel.
+**Brief:** Goal: a live sample line in the Settings panel that grows with `--ts`. Files: `src/ui/topbar.js`, `src/ui/textScale.css`. Done when: the sample matches the real text at each size, tested at 375 and 1280.
+**Touches:** UI. **Conflicts:** `src/ui/topbar.js`.
+
+### T2. Text-size screenshot sweep in CI
+**Pitch:** catch overlaps and clipped text at every size before nate does.
+**Brief:** Goal: a smoke step that opens home, run, Shelf and Settings at normal/large/xlarge in 375 and 1280 and fails on text overflowing its box. Files: `scripts/`, `test/`. Done when: it fails on a deliberately broken label.
+**Touches:** HEALTH. **Conflicts:** `scripts/smoke.mjs`.
+
+### FH1. Fireside home [x] (PR pending)
+**Done:** nate picked "B with a C background": stone fireplace between the stacks with grate, logs, live flames (lean from the cursor, click to stoke), book piles, streak candles on its mantel, brick back wall, firelit room light on the shelves (`src/ui/hearth.{js,css}`). Mockups: `screenshots/fireplace-home/`.
+**Follow-ups:** FH2 fire sounds, FH3 a fire that remembers you, FH4 room for the hearth on short phones and portrait tablets. **Conflicts:** `src/ui/home.css`, `mantel.css`.
+
+### FH2. Fire sounds
+**Pitch:** a soft crackle loop that swells when you stoke the fire, an ember pop now and then, silent when sound is off or the tab is hidden.
+**Brief:** Goal: `src/sound/hearth.js` on the existing sound bus, gain tied to the fire's intensity (`fireIntensity`). Done when: stoke is audible, the loop is seamless, mute works.
+**Touches:** FEEL. **Conflicts:** `src/ui/hearth.js` (one hook).
+
+### FH3. A fire that remembers you
+**Pitch:** the hearth reflects your play: it burns higher with your streak, and the sparks take your last book's tier colour (aqua after an Apocrypha).
+**Brief:** Goal: read streak and last tier from the save (no new fields), map them to flame height and spark tint. Done when: a 0 streak shows a low fire, a long streak a roaring one.
+**Touches:** MECHANICS, UI. **Conflicts:** `src/ui/hearth.js`.
+
+### FH4. Hearth on short phones and portrait tablets
+**Pitch:** at 375x667 and around 800 wide the home has no spare height, so the fireplace is skipped; give it a compact form there (a low fire under the mantel, stacks a size down).
+**Brief:** Goal: a compact `planFlow` that fits 80-100 px by shrinking the mantel's headroom and the stack books. Done when: a fire shows at 375x667 and 800x900 with nothing overlapping or sinking behind the ledge.
+**Touches:** UI. **Conflicts:** `src/ui/hearth.js`, `homeLayout.js`.
+
+
+## G. Goal-level polish menu (2026-11-05, from a play-through at 1280 and 375 plus nate's repeated asks)
+Broader than pixel fixes: each item is a goal to make the base game clearer, more fun and more finished. Nothing here builds zones or topic rooms; G10 only leaves a door for them. Play-through note: the sandbox could not download the full judge, so scores seen were the quick judge's (a decent answer for "tempt" scored 0).
+
+### G1. A first run that explains itself
+**Serves:** easy to understand, concise and mysterious copy, integrated not bolted on.
+**Pitch:** A new player meets the timer, Enter, hints, skip and tiers with no word of explanation; Descend, Daily, Unlimited and Practice all look like "play". Teach inside the world, once: a single handwritten margin line appears the first time each thing matters (the candle the first time it burns low, "Enter" under the slip, the hint slip the first time you tap it), then never again.
+**Brief:** Goal: contextual first-time notes, not a tutorial screen or pop-up. Flag each in additive `S.seen.*`. Files: new `src/ui/firstNotes.js` plus css, one hook in `showWord`. Done when: each note shows once, reduced motion shows it static, Daily timing is not changed by it, 14-letter word and 375 checked.
+**Touches:** RUN, HOME. **Conflicts:** run screen thread, 29 (welcome).
+
+### G2. A score that explains itself
+**Serves:** scoring clarity, rarity is the hero, words fully readable, lenient judging.
+**Pitch:** The card says "Pamphlet, 0/100" and a vague line like "Nothing here points at the meaning yet", but not why. Show it: in "You wrote" underline the words the judge counted, and add one quiet handwritten caption saying what a stronger answer would have named. A long answer must never be cut with an ellipsis ("somethin…" today).
+**Brief:** Goal: surface the judge's matched concepts/relations in the card, no scoring change. Files: `src/ui/alsoAccepted.js`, `src/app/card.js`, judge result already carries hits. Done when: matched words are underlined, caption is under 12 words, "You wrote" wraps fully or scrolls under a fade (never ellipsis), rarity stays the hero.
+**Touches:** RESULT, JUDGE. **Conflicts:** N20 follow-ups, 104.
+
+### G3. The judge never decides your Daily unfairly
+**Serves:** honest answers, lenient judging, Daily is its own thing.
+**Pitch:** When the full judge cannot load the "quick judge" quietly scores sensible answers 0 and those scores still write to the Daily, the streak and the Shelf. A bad connection should not cost a streak or a permanent Pamphlet.
+**Brief:** Goal: decide and pin one policy (recommend: Daily waits for the full judge with a written "the librarian is still arriving" line and Unlimited/Practice may use the quick judge, marked in the book as rough). Also the first-visit download (about 23 MB) should read as part of the world, not a grey status line, and never block typing. Files: `src/ui/judgeLabel.js`, `src/scorer/*` facade, `src/app/daily.js`. Done when: tests pin the policy, Daily cannot be scored by the fallback.
+**Touches:** JUDGE, DAILY. **Conflicts:** Daily fairness, judge accuracy threads.
+
+### G4. Hints and skip as one understandable object
+**Serves:** easy to understand, handwritten, integrated.
+**Pitch:** The button reads "HINT: IN A SENTENCE (FREE, ONCE PER RUN) · 3 LEFT", then "NO MORE HINTS" and "SKIP (HINTS WASTED)", and the hint slip ends with "keep (something, such as…". Too many rules in capitals. Make it one thing: a written "Hint" word with three small pips for what is left, the free one drawn differently, skip as a written word whose cost is shown by the object, and hint text never ellipsized.
+**Brief:** Goal: collapse hint/skip labelling into a pips-and-handwriting control; the rules live in the Library Rules card. Files: `src/ui/hintSlips.js/.css`, run hooks. Done when: no label over 3 words, hint slip fits its full text at 375 and 1280, keyboard hints unchanged.
+**Touches:** RUN. **Conflicts:** hints thread, Q2 phone run.
+
+### G5. Time you can feel at a glance
+**Serves:** objects not numbers, spacing, smooth and physical.
+**Pitch:** Time is shown three ways: a small "0:43" under the word, the candle far left, and the candle's flicker. Pick the object. Keep the candle as the clock, put it where the eye already is (beside the slip), and keep the numeral only when text size or accessibility needs it.
+**Brief:** Goal: one time source with a clear read from 2 m away. Files: `src/ui/candle.js`, run css. Done when: seconds are readable without the numeral, last 10 s unmistakable without red, phone layout keeps the candle beside the slip.
+**Touches:** RUN. **Conflicts:** run screen thread, candle timer.
+
+### G6. A run that builds a story
+**Serves:** persistent world, rarity is the hero, fun.
+**Pitch:** Seven words are seven separate events, and the progress diamonds are plain. Let each finished word leave its book as a spine on a small ledge in the alcove (its tier colour) so by word 7 you can see how the run went, and so the final ledger already has its cast. The combo chain sits on the same ledge.
+**Brief:** Goal: replace the diamonds with a growing row of earned spines; no new numbers. Files: new `src/ui/runLedge.js`, hooks in `showWord`/`finishRun`. Done when: row matches the finished books, skipped words show a gap, reduced motion drops the slide-in, no overlap with the depth rail on phones.
+**Touches:** RUN, RESULT. **Conflicts:** 32 chain, Q5 final ledger.
+
+### G7. The way on after a run
+**Serves:** fun, easy to understand, fewer menu books.
+**Pitch:** After a descent the player lands on a ledger and a Back word. The next step (one more run, today's Daily, or look at the books I missed) should be one written choice on the page, not a trip home. Missed words become a short "to read again" page with their definitions.
+**Brief:** Goal: two or three handwritten next-step words on the final page, chosen by state (Daily unplayed, Daily played, streak at risk). Files: `src/app/final.js`, `src/ui/finalPage.css`. Done when: each state is tested, nothing outlined, Copy and Back unchanged.
+**Touches:** RESULT, HOME. **Conflicts:** Q5, 28.
+
+### G8. Home knows what you should do next
+**Serves:** easy to understand, fewer menu books, spacing.
+**Pitch:** Descend always means today's Daily, even after it is played, and "Unlimited Placement" on a spine is unexplained. Make the plaque honest: unplayed Daily says so, played Daily turns Descend into your Unlimited level. Fold Practice into the Daily book as a section on the same two pages, as the riddle already was.
+**Brief:** Goal: contextual plaque and spine text (backlog 28 covers resume), and one fewer menu book (Practice as a Daily section, same pages). Files: `src/ui/home.js`, `src/ui/dailyBook.js`, `src/app/home.js`. Done when: five books on the stacks, plaque tested in unplayed/played/mid-run states, no spine text clipped at 375.
+**Touches:** HOME. **Conflicts:** 28, merged-modes follow-ups, any home thread.
+
+### G9. A level you can see and trust
+**Serves:** objects not numbers, mechanics clarity.
+**Pitch:** Unlimited promises words "matched to your level" but the 8-word placement feels abrupt and the Lexicon number is hidden. Make the level an object (a rank on the Librarian's Card, a bookmark that moves) and the placement a short interview at the desk, with a visible "your level changed" moment after a run.
+**Brief:** Goal: show the Lexicon as one hand-lettered rank, explain placement in one line before it starts, add a re-placement option, and a quiet level-change line on the final page. Files: `src/core/unlimited.js` (read only), `src/ui/home.js`, final page. Done when: rank text is tested for each band, no new numbers beyond the existing Lexicon.
+**Touches:** HOME, RESULT, MECHANICS. **Conflicts:** difficulty thread, G7, G8.
+
+### [x] G10. Leave a door for zones and topic rooms
+**Serves:** planned zones, topics and levels; integrated not bolted on.
+**Pitch:** Floors, decks and rooms will all be "a place with its own words". Give them one registry now so a new zone is data, not code, and decide where its door lives (a doorway in the niche, a section of the Unlimited book) so nothing is retrofitted. Content is out of scope.
+**Brief:** Goal: a single `places` registry (id, name, floor art key, word filter, unlock rule) read by the picker, floors, shelf bays and Almanac; default place unchanged. Files: new `src/core/places.js`, picker and floors read it. Done when: output with only the default place is byte-identical in tests, saves untouched, one test adds a fake place and sees it in picker and bays.
+**Touches:** CORE, WORLD. **Conflicts:** 35 topic decks (do together), word pool thread.
+
+**Done (PR pending):** `src/core/places.js` registry (default place `deepstack` owns the six floors; `registerPlace` appends a place's floors to FLOORS so bays, Almanac, tracker and ambience see them; word filter and unlock rule fields; door location not yet decided, see G11). Test `test/places.test.js`. Nothing visible changes.
+
+### G11. Pick where a zone's door lives
+**Serves:** planned zones; integrated not bolted on.
+**Pitch:** G10 left the registry; now choose and build the door: a doorway in the niche or a Zones page in the Unlimited book listing `unlockedPlaces`, with locked ones shown as unlit.
+**Brief:** Goal: UI for `places()` with unlock hints. Files: new `src/ui/zonesDoor.js` plus css, one hook in home. Done when: only the default place shows no door.
+**Touches:** HOME. **Conflicts:** 35 topic decks, home threads.
+
+### G12. Run words from a place's filter
+**Pitch:** Make Unlimited and Practice draw from `placeWords(place, WORDS)` so a topic room is only data.
+**Brief:** Goal: pass the active place into `pickWord` callers; default unchanged. Files: `src/core/level.js`, `unlimited.js`. Done when: tests prove the default pool is untouched.
+**Touches:** CORE. **Conflicts:** word pool thread.

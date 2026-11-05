@@ -28,7 +28,7 @@
 /* chips: no outlines, just ledger text with a dot between */
 .book .page .chips{gap:2px 0}
 .book .page .chips span{border:0;border-radius:0;padding:2px 0}
-.book .page .chips span+span::before{content:"\25C6";font-size:7px;margin:0 12px;color:var(--th);opacity:.7;vertical-align:2px}
+.book .page .chips span+span::before{content:"\25C6";font-size:calc(7px*var(--ts));margin:0 12px;color:var(--th);opacity:.7;vertical-align:2px}
 .book .page .chips .cb{border:0}
 .book .page .meter{height:2px;border-radius:2px}
 /* the button is a ribbon bookmark with swallow-tailed ends */
