@@ -1046,11 +1046,12 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: while a book is open, dim and lower the home hero (wordmark, lanterns, No. plaque, mantel) so only shelves show behind the book. Files: `src/ui/bookOpen.css` (or a new `bookBackdrop.css`), hook where `#home.book-opening` is set. Done when: no wordmark pixels above the book at 1280 and 1640, close restores it with the existing motion language, reduced motion has no fade.
 **Touches:** HOME, books. **Conflicts:** 104, N-series home threads.
 
-### Q2. Phone run screen: the answer slip is a sliver
+### Q2. [x] Phone run screen: the answer slip is a sliver (this PR)
 **Serves:** words fully readable, overhaul not tweak.
 **Pitch:** At 375x667 the pinned slip shows two lines ("your / own / wor…" is cut off), the Hint button runs under the depth rail, and the bottom third of the screen is empty shelf.
 **Brief:** Goal: give the slip the free space (taller, text starts level with the quill), move the depth rail to a slim strip that never overlaps controls, keep Hint and Skip inside the alcove. Files: `src/styles/responsive.css` or new `src/styles/phone-run.css`. Done when: a 14-letter word, the longest hint label and the on-screen keyboard open all fit at 375x667 and 360x640, Riddle Shelf included.
 **Touches:** RUN, phone. **Conflicts:** Spacing and type pass, 95.
+**Done:** `src/styles/phone-run.css`: slip height scales with the viewport (135px at 375x667, 107px at 360x640, was 97/80), text indents 46px; hint and skip share one row inside the alcove, clear of the 32px rail (hint label wraps). Not yet verified: on-screen keyboard open, Riddle shelf.
 
 ### Q3. [x] Settings: Graphics "Low" clipped on phones (this PR)
 **Pitch:** The four Graphics choices ran past the panel at 375 so Low was half off-screen. Now the legend takes its own line and the buttons share the width (test pins the rule).
