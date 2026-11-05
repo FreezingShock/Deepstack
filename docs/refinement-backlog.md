@@ -13,7 +13,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Open `?perf` on your own machine at home, mid-run and during a descent and tell me the p95 and whether it feels smoother or the same: the headless box can only see JS cost, and your GPU is the real test for the glow-cache change (item 38).
 - Scroll up into the attic and tap an earlier find that has no floor: a slip asks which floor it was found on, the pen underlines your pick and the book leaves the attic for that floor's bay on the Shelf. Check the slip reads at your screen size. (dust-off thread, PR #156)
 - Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Borrower's ledger on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
-- Scroll up into the attic, then keep scrolling up (or ArrowUp / swipe down): you should move back through a doorway into further rooms with parallax, and the books should look as detailed as on the Shelf. Check it at your screen size, and say if the fade between rooms feels too long. (attic layers thread)
+- Scroll up into the attic, then keep scrolling up (or ArrowUp / swipe down): you should climb through separate sections (recent guesses, then each month) with no doorway or parallax. (superseded wording follows) you should move back through a doorway into further rooms with parallax, and the books should look as detailed as on the Shelf. Check it at your screen size, and say if the fade between rooms feels too long. (attic layers thread)
 - Pull `main` and look at the home screen at your window size: the card-catalogue cabinet on the left and the Librarian’s Card on the right should mirror each other. Pull the top drawer (click, or Tab and Enter), turn the card, close with Esc or by clicking the dark; ring the bell and stamp the ledger. Say if the card gliding over Descend feels right or should sit elsewhere. (home drawer and record overhaul)
 - Scroll up into the attic and back a few times (also Escape, swipe, with reduced motion): a ladder now slides in from the left and its rungs pass you as you rise, and the room brightens as the skylight comes overhead. Say if it is too long or too dark at the start. (attic climb thread)
 - Play a few books at every tier and say if the ceremony feels right: Codex gets a faint flash, Grimoire a rune and sting, Apocrypha waits for its implosion, then flash and cover swing. Also try Settings > Graphics low (no rune, fewer rays). (reveal recipes)
@@ -40,6 +40,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 ## In progress (do not start)
 - [x] S1 + S2. Big sigils on result-card covers, set books share a ring (`src/ui/coverSigil.js`, PR #174)
 - [x] F / 102. Fallen books in front of shelf gaps (toppled, stacked, open face-down; `src/ui/fallenBooks.js`, PR #140)
+- [x] Q7. Empty pages for a new player: Almanac, Sets and Riddle books get a faint pen sketch plus one written line (`src/ui/emptyPages.js`); Shelf left to Q4 (#181); margin notes no longer repeat on a spread (PR TBD)
 - [x] C. Attic for earlier Shelf finds (backfill floors from Daily history, scroll-up attic)
 - [x] Recent guesses move to the attic (#145), then the attic becomes a real scroll-up room above the shelves in the world canvas: beams, cobwebs, window light, book piles (PR pending)
 - [~] Spacing and type pass on every screen
@@ -1112,7 +1113,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: fit the filters (two rows of handwritten words, rarity as one row of tier-coloured ticks) or let the page scroll under a deckled fade, and use the empty right page for something useful (the first tier shelf, or a hand-drawn "your first answer goes here"). Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: nothing is clipped at 375x667 or 1280x720 with 0 and 60 books.
 **Touches:** SHELF book. **Conflicts:** 11, 82. Done: filters in a compact two-column written layout with a foot fade (`src/ui/shelfFilters.css`); empty Shelf shows a sketched empty shelf on the right page.
 
-### Q5. Descent complete is still boxes and a half-empty alcove
+### Q5. [x] (PR: Q5 final ledger) Descent complete is still boxes and a half-empty alcove
 **Serves:** everything is a book/page, no outlined rectangles, rarity is the hero.
 **Pitch:** The final screen has outlined stat tiles (Answered / Best book / Combo), outlined Copy and Back buttons, and a small column of text in the upper half with the lower 40% of the alcove empty.
 **Brief:** Goal: rebuild as the closing page of a ledger: tallies written in ink, the seven books lined on the ledge as the hero, Copy and Back as handwritten words with the pen underline, depth numeral large. Files: `src/app/final.js`, `src/styles/result.css` or new `src/ui/finalPage.css`. Done when: fits one view at 1280x720 and 375x667, 14-letter word does not clip, share note unchanged.
@@ -1154,7 +1155,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Brief:** Goal: pick one (needs nate): a 0 becomes a "damp, unreadable" pamphlet that stays off the shelf, or the descent stalls at the same depth, or leave as is. Files: `src/core/scoring.js`, `src/app/card.js`. Done when: Daily score rules unchanged, test pins the choice.
 **Touches:** CORE, RESULT. **Conflicts:** Judge accuracy, Daily fairness.
 
-### Q12. Open books on a phone cover the top bar and clip the ribbon
+### [x] Q12. Open books on a phone cover the top bar and clip the ribbon (fixed, PR pending: book sits below the bar at 375 and 360)
 **Serves:** integrated not bolted on, spacing.
 **Pitch:** At 375 the open Shelf and Almanac books slide over the Sound, Credits and Settings buttons and the bookmark ribbon is cut off at the right edge as an unreadable stub.
 **Brief:** Goal: start the book below the top bar, keep the ribbon fully inside the cover, keep Close reachable without scrolling. Files: `src/ui/bookOpen.css`. Done when: all six menu books screenshot clean at 375x667 and 360x640.
@@ -1165,6 +1166,12 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Pitch:** "Start the Riddle Shelf" wraps to "Shelf" alone on its own line while "Start Unlimited" fits; Close the book sits tight beneath it.
 **Brief:** Goal: shorten or scale the handwritten CTA so it stays on one line ("Start the Riddles"), give the pen underline and Close a consistent gap. Files: `src/ui/bookMenus.js`, `src/ui/bookStyle.css`. Done when: all six books' CTAs on one line at 1280 and 375.
 **Touches:** books. **Conflicts:** Q7.
+
+### Q12b. Daily page date is clipped at the right edge on phones
+**Serves:** words fully readable, spacing.
+**Pitch:** On the open Daily book at 375, "Thursday, 5 November 2026" runs past the page and the last digit of the year is cut off.
+**Brief:** Goal: let the date wrap or scale to fit inside the page margin. Files: `src/ui/dailyBook.css`. Done when: full date visible at 375x667 and 360x640.
+**Touches:** Daily book, phone. **Conflicts:** Q14.
 
 ### Q14. [x] Daily calendar header has stray marks (done in this PR: hand-drawn SVG prev/next arrows, 44 px, no text-decoration underline)
 **Serves:** spacing and polish, handwritten.
@@ -1334,7 +1341,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: one time source with a clear read from 2 m away. Files: `src/ui/candle.js`, run css. Done when: seconds are readable without the numeral, last 10 s unmistakable without red, phone layout keeps the candle beside the slip.
 **Touches:** RUN. **Conflicts:** run screen thread, candle timer.
 
-### G6. A run that builds a story
+### G6. A run that builds a story (DONE, see PR)
 **Serves:** persistent world, rarity is the hero, fun.
 **Pitch:** Seven words are seven separate events, and the progress diamonds are plain. Let each finished word leave its book as a spine on a small ledge in the alcove (its tier colour) so by word 7 you can see how the run went, and so the final ledger already has its cast. The combo chain sits on the same ledge.
 **Brief:** Goal: replace the diamonds with a growing row of earned spines; no new numbers. Files: new `src/ui/runLedge.js`, hooks in `showWord`/`finishRun`. Done when: row matches the finished books, skipped words show a gap, reduced motion drops the slide-in, no overlap with the depth rail on phones.
@@ -1352,7 +1359,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: contextual plaque and spine text (backlog 28 covers resume), and one fewer menu book (Practice as a Daily section, same pages). Files: `src/ui/home.js`, `src/ui/dailyBook.js`, `src/app/home.js`. Done when: five books on the stacks, plaque tested in unplayed/played/mid-run states, no spine text clipped at 375.
 **Touches:** HOME. **Conflicts:** 28, merged-modes follow-ups, any home thread.
 
-### G9. A level you can see and trust
+### G9. [x] A level you can see and trust (PR pending)
 **Serves:** objects not numbers, mechanics clarity.
 **Pitch:** Unlimited promises words "matched to your level" but the 8-word placement feels abrupt and the Lexicon number is hidden. Make the level an object (a rank on the Librarian's Card, a bookmark that moves) and the placement a short interview at the desk, with a visible "your level changed" moment after a run.
 **Brief:** Goal: show the Lexicon as one hand-lettered rank, explain placement in one line before it starts, add a re-placement option, and a quiet level-change line on the final page. Files: `src/core/unlimited.js` (read only), `src/ui/home.js`, final page. Done when: rank text is tested for each band, no new numbers beyond the existing Lexicon.
@@ -1376,5 +1383,18 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Make Unlimited and Practice draw from `placeWords(place, WORDS)` so a topic room is only data.
 **Brief:** Goal: pass the active place into `pickWord` callers; default unchanged. Files: `src/core/level.js`, `unlimited.js`. Done when: tests prove the default pool is untouched.
 **Touches:** CORE. **Conflicts:** word pool thread.
+
+### G9a. Rank on the Librarian's Card
+**Pitch:** The rank now lives in the Unlimited book; put the same hand-lettered rank on the Librarian's Card so it follows you home.
+**Brief:** Goal: show `rankFor(lexicon)` on the card via `src/ui/lexiconRank.js`. Done when: tested per band. **Conflicts:** welcome.js, G7.
+
+### G9b. Rank-up moment
+**Pitch:** When a run crosses a band, give the final page one small ink-stamp beat instead of only a line.
+**Brief:** Goal: stamp animation on `.lx-change` when `rankIndex` rises, reduced-motion safe. **Conflicts:** results.js.
+
+### G6a. Ledge spines open the book
+**Pitch:** The spines in the run row are only for show; tapping one could peek its answer, like the alcove ledge does.
+**Brief:** Goal: make `.runledge .spine` focusable with the same tip as `ledgeTip`. Files: `src/ui/runLedge.js`. Done when: keyboard and hover show word, tier and score.
+**Touches:** RUN. **Conflicts:** G4, G5.
 ### G5. Time you can feel at a glance [x] (candle is the one run clock, PR pending)
 **Follow-ups:** G5a. Let the candle's wax drip a bead at each 10 s ring so crossing a ring is a small physical event (reduced motion: no bead). Conflicts: `src/ui/candle.css`. G5b. A "show the seconds" toggle in Settings for people who want the numeral back (the screen-reader text is already there). Conflicts: settings, `src/ui/candle.js`.

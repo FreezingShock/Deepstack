@@ -14,15 +14,14 @@ function sync(open){
  if(cue)cue.hidden=open||!count||!(home&&!home.hidden);
  if(down)down.hidden=!open;
  if(open&&down)down.focus({preventScroll:true});
- if(depthEl)depthEl.hidden=!open||World.atticLayers<2;
- if(open)showDepth(World.atticDepth,World.atticLayers);
+ if(depthEl)depthEl.hidden=!open||World.atticSections<2;
+ if(open){const i=World.atticSection;showSection(i,World.atticSections,World.atticSectionTitle(i));}
 }
-/* A quiet line under the room: which room you are in, and that there is more behind. */
-function showDepth(g,n){
+/* A quiet line low on the screen: which section you are in. Hidden when there is only one. */
+function showSection(i,n,title){
  if(!depthEl)return;
  depthEl.hidden=!World.atticOpen||n<2;
- const k=Math.round(g)+1;
- depthEl.textContent=k<n?`Room ${k} of ${n} · keep climbing back ↑`:`Room ${k} of ${n} · the back of the attic`;
+ depthEl.textContent=i+1<n?`${title} · ${i+1} of ${n} · scroll up for more ↑`:`${title} · ${i+1} of ${n} · the back of the attic`;
 }
 /* The home panel sits in the alcove, which is part of the world. While the camera climbs, move the panel by exactly the
    same pixels as the world (same frame, same easing) so it stays inside the alcove instead of sliding on its own clock. */
@@ -42,7 +41,7 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
  const items=atticTidy(atticAll(shelf));count=items.length;
  World.setAtticItems(items);
  if(!depthEl){depthEl=document.createElement('div');depthEl.className='attic-depth';depthEl.hidden=true;depthEl.setAttribute('aria-live','polite');homeEl.after(depthEl);}
- World.onAtticDepth(showDepth);
+ World.onAtticSection(showSection);
  if(!cue){
   cue=document.createElement('button');cue.type='button';cue.className='attic-cue-home';
   down=document.createElement('button');down.type='button';down.className='attic-down';down.textContent='Down the ladder ↓';down.hidden=true;
@@ -56,23 +55,22 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
  if(!wired){wired=true;
   addEventListener('wheel',e=>{
    if(World.atticOpen){
-    /* scrolling up keeps going back through the rooms; scrolling down comes forward, and out of the attic from the first room */
-    const d=Math.max(-120,Math.min(120,e.deltaY));
-    if(d<-1)World.atticGo(-d/520);
-    else if(d>1&&!World.atticGo(-d/520)&&e.deltaY>2)close();
+    /* scrolling up keeps climbing through the sections (one whole section per notch of a pause); down comes back, and out from the first */
+    const d=Math.max(-160,Math.min(160,e.deltaY));
+    if(d<-1)World.atticGo(-d*1.6);
+    else if(d>1&&!World.atticGo(-d*1.6)&&e.deltaY>2)close();
    }else if(e.deltaY<-2&&count&&ui().live)open();},{passive:true});
-  addEventListener('pointermove',e=>{if(World.atticOpen&&e.pointerType==='mouse')World.atticLook((e.clientX/innerWidth-.5)*2);},{passive:true});
   addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input,textarea,select'))return;
    if(World.atticOpen){
-    if(e.key==='ArrowUp'){if(World.atticGo(1))e.stopImmediatePropagation();}
-    else if(e.key==='ArrowDown'){e.stopImmediatePropagation();if(!World.atticGo(-1))close();}
+    if(e.key==='ArrowUp'){if(World.atticStep(1))e.stopImmediatePropagation();}
+    else if(e.key==='ArrowDown'){e.stopImmediatePropagation();if(!World.atticStep(-1))close();}
     else if(e.key==='Escape'){e.stopImmediatePropagation();close();}
    }
    else if(e.key==='ArrowUp'&&count&&ui().live)open();},true);
   let y0=null;
   addEventListener('pointerdown',e=>{y0=e.pointerType==='mouse'||e.target.closest('button,a,input,textarea,select')?null:e.clientY;});
   addEventListener('pointerup',e=>{if(y0==null)return;const dy=e.clientY-y0;y0=null;
-   if(World.atticOpen){if(dy>60)World.atticGo(1);else if(dy<-60&&!World.atticGo(-1))close();}else if(dy>60&&count&&ui().live)open();});
+   if(World.atticOpen){if(dy>60)World.atticStep(1);else if(dy<-60&&!World.atticStep(-1))close();}else if(dy>60&&count&&ui().live)open();});
 }
 }
 function open(){if(count&&ui().live)World.setAttic(true);}
