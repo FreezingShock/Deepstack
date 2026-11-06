@@ -23,3 +23,10 @@
 .book-opening.book-closing li:nth-child(3)>.hbook:not(.opening){transition-delay:80ms}
 .book-opening.book-closing li:nth-child(4)>.hbook:not(.opening){transition-delay:120ms}
 .book-opening.book-closing li:nth-child(n+5)>.hbook:not(.opening){transition-delay:160ms}
+
+/* AT10: a landed book gives the stack a small weight bump: its spine drops 2px, the neighbours 1px (individual
+   `translate`, so it never fights the transform transitions). */
+@keyframes hb-set{0%{translate:0 0}40%{translate:0 var(--hb-dip,1px)}100%{translate:0 0}}
+.book-landed .hbook{animation:hb-set var(--m-base) var(--e-settle)}
+.book-landed .hbook.landed{--hb-dip:2px}
+@media(prefers-reduced-motion:reduce){.book-landed .hbook{animation:none}}

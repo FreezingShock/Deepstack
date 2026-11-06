@@ -117,6 +117,9 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches,T=bookTimings(reduce);
  dressBook(sp,T);
  document.body.appendChild(sp);bookSound('whoosh');
+ /* The closed book's size is the spine's, so it leaves the spine standing up and lands back on it lying down (AT8/AT9). */
+ const footprint=()=>{if(r.width>0&&sp.offsetWidth){sp.style.setProperty('--sx',(r.width/(sp.offsetWidth/2)).toFixed(4));sp.style.setProperty('--sy',(r.height/sp.offsetHeight).toFixed(4));}};
+ sp.style.transition='none';footprint();void sp.offsetWidth;sp.style.transition='';
  requestAnimationFrame(()=>requestAnimationFrame(()=>sp.classList.add('go')));
  const timers=[];let idx=0,closed=false;
  const t=(fn,ms)=>timers.push(setTimeout(fn,ms));
@@ -128,7 +131,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   const swing=sp.classList.contains('open')?T.swing:0,fly=T.flyBack;
   sp.removeAttribute('role');sp.setAttribute('aria-hidden','true');
   /* land exactly on the spine: scale the closed book (half the spread wide) down to the spine's size */
-  if(r.width>0&&sp.offsetWidth){sp.style.setProperty('--sx',(r.width/(sp.offsetWidth/2)).toFixed(4));sp.style.setProperty('--sy',(r.height/sp.offsetHeight).toFixed(4));}
+  footprint();
   sp.classList.remove('intro','open');sp.classList.add('closing');
   if(swing)setTimeout(()=>thud(sp),swing);
   setTimeout(()=>{sp.classList.remove('go');sp.classList.add('flyback','out');onFly();setTimeout(()=>{sp.remove();onClose();},(reduce?T.fade:Math.max(fly,300))+30);},swing+T.shutHold);
@@ -242,7 +245,7 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
    /* The room comes back while the book is still flying home (not after it lands), so closing is one motion,
       and the spine it left fades in as the book settles onto it. */
    const lift=()=>{flying=true;root.classList.remove('book-opening');root.classList.remove('book-closing');setTimeout(()=>el.classList.remove('opening'),reduce?0:Math.max(0,BOOK_TIMING.flyBack-170));};
-   const fin=()=>{el.classList.remove('opening');root.classList.remove('book-opening');root.classList.remove('book-closing');busy=false;flying=false;
+   const fin=()=>{el.classList.remove('opening');if(!reduce){root.classList.add('book-landed');el.classList.add('landed');setTimeout(()=>{root.classList.remove('book-landed');el.classList.remove('landed');},300);}root.classList.remove('book-opening');root.classList.remove('book-closing');busy=false;flying=false;
     if(pending){const n=pending;pending=null;n();}};
    const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onFly:lift,onClose:fin,onShut:()=>root.classList.add('book-closing'),
     colors:{bk:cs.getPropertyValue('--bk'),bk2:cs.getPropertyValue('--bk2'),gild:cs.getPropertyValue('--bk-gild'),tex:cs.getPropertyValue('--tex')}});
