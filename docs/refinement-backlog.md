@@ -1922,6 +1922,6 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On phones the streak chip drops its label and the Librarian's Card is hidden, so the "this room" tag is invisible there.
 **Brief:** Goal: on screens under 560 px show a room-coloured dot on the streak chip (tap shows "Chronicle streak"), and put the same scope tags on the Rooms book page. Files: `src/ui/topbarRail.js`, `scope.css`. **Conflicts:** none known.
 
-### SL2. Optional "all rooms" streak (nate to pick A, B or C: screenshots/scope-labels/sl2-options-*.png)
+### [x] SL2. Optional "all rooms" streak (nate picked B: two tallies side by side on the Almanac streak page, #306)
 **Pitch:** Each room keeps its own streak, so a 0 in the Chronicle sits next to a 5 in the Reading Room; some players will want one combined flame.
 **Brief:** Goal: a pen line on the Almanac streak page, "Any room: N days", counting a day if any room's Daily was played. Files: `src/ui/statsPages.js`, `src/core/stats.js`. **Conflicts:** TR12.

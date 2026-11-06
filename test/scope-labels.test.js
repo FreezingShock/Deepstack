@@ -56,3 +56,12 @@ for (const r of ROOMS) {
     assert.match(pages[3], /scope-all/);
   });
 }
+
+import {anyRoomStreak} from '../src/ui/statsPages.js';
+test('any-room streak counts a day when any room played', () => {
+  const S = installRooms({shelf: [], daily: {'2026-11-05': {}, '2026-11-06': {}}, streak: {last: '2026-11-06', n: 2}});
+  S.rooms.history = {daily: {'2026-11-04': {}}, streak: {last: '2026-11-04', n: 1}};
+  assert.deepEqual(anyRoomStreak(S, '2026-11-06'), {n: 3, best: 3});
+  const l = statsLeaves(base, S, ctx);
+  assert.match(l[0], /Any room/);
+});
