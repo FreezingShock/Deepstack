@@ -1,7 +1,7 @@
 import {finalHTML,bindRecap} from '../ui/results.js';
 import {coverWorld,liftWorld} from '../ui/screenFx.js';
 import {replayLayout} from '../core/replay.js';
-import {FLOORS,FT,S,TIERS,dailyNo,levelTitle} from './state.js';
+import {FLOORS,FT,S,TIERS,dailyNo,levelTitle,utc} from './state.js';
 import {countUp,ui} from './chrome.js';
 import {World} from '../world/world.js';
 import {$,$$} from './util.js';
@@ -9,6 +9,7 @@ import {spineImg} from '../world/bookArt.js';
 import {openCard} from './card.js';
 import {showHome} from './home.js';
 import {setRun} from './run.js';
+import {snapSpines,beginBind,playBind,isDailyRun} from '../ui/dailyBind.js';
 
 import {dailyNumber} from '../core/daily.js';
 import {riddleDayShare} from '../core/riddleDaily.js';
@@ -27,5 +28,5 @@ export async function showFinal(d,fromHome){
  bindRecap(el,d.books,openCard);
  $$('#sp img').forEach(im=>{im.onclick=()=>openCard(d.books[+im.dataset.i],{fresh:false});});
  $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(txt);$('#cp').textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents($('#shr'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('#cp').textContent='Selected — copy it';}};
- $('#up').onclick=async()=>{ui.final.hidden=true;ui.hud.hidden=true;setRun(null);await World.ascend();showHome();};
+ $('#up').onclick=async()=>{const bind=!fromHome&&isDailyRun(d)?snapSpines(ui.final):null;if(bind)beginBind();ui.final.hidden=true;ui.hud.hidden=true;setRun(null);await World.ascend();showHome();if(bind)playBind(bind,ui.home,d,d.day||utc());};
 }
