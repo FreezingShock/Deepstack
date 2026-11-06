@@ -49,7 +49,7 @@ export function finalHTML(d, S, o) {
   <div class="spineimgs" id="sp">${o.spines}</div></div>
   <div class="fright">${recapHTML(d, S)}
   <div class="slipwrap fslip"><i class="pin"></i><div class="slip"><pre class="share pe" id="shr">${shareHTML(o.txt)}</pre></div></div></div>
-  <div class="row"><button class="btn pri" id="cp">Copy result</button><button class="btn" id="up">Back to the surface</button></div></div>`;
+  <div class="row">${o.share ? '<button class="btn pri" id="sh">Share</button><button class="btn" id="cp">Copy result</button>' : '<button class="btn pri" id="cp">Copy result</button>'}<button class="btn" id="up">Back to the surface</button></div></div>`;
 }
 
 export function bindRecap(root, books, openCard) {
