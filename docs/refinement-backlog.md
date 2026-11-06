@@ -1645,3 +1645,25 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### V18. More floor rules for topic zones
 **Pitch:** When the topic zones arrive each one should carry its own small rule, same as the floors, so a zone feels different to play and not only to look at.
 **Brief:** Goal: let `FLOOR_RULES` take a zone key, plus two spare rules (a slower first letter fade, a bonus second hint). Files: `src/core/floorRules.js`. Done when: tests pin each new rule, Daily unaffected. **Conflicts:** V7 follow-ups, G11.
+
+## W. Audit menu 2026-11-06 (second pass: transitions, after #265; frames in screenshots/audit/t-*.png and u-*.png)
+
+### W1. Home comes back behind the book, not after it
+**Pitch:** Closing a home book (Shelf, Daily) flies it back to its stack in under 250 ms, and in that first frame the whole home is gone: title, plaque, cabinet and card missing, only a lone closed book on bare brick. Half a second later everything is back at once. The room should fade in under the flying book so the book lands into a room that is already there.
+**Brief:** Goal: start the home fade-in when the book starts flying home, finish as it lands; same curves as the open. Files: `src/ui/bookOpen*.js`, home fade css. Done when: frames at 0/120/250/500 ms show the home partly visible throughout, reduced motion unchanged. **Touches:** HOME, BOOKS. **Conflicts:** #265 follow-ups, BS2.
+
+### W2. Attic piles in the light
+**Pitch:** The attic's lit beam falls on an empty centre of floor while all the piles sit low and to the sides, and the "Recent guesses" sign floats far left of its books. The room's best light is wasted.
+**Brief:** Goal: lay the first row's piles around the light pool, the sign beside its first pile, the chest in the beam. Files: `src/world/atticProps.js`, pile layout. Done when: 1280 and 375 first-row screenshots show books in the light. **Conflicts:** AT12, AT13.
+
+### W3. The most common card deserves a moment
+**Pitch:** Pamphlet is the result players see most, and its card is the plainest: flat grey cover, dark slab. Each tier should feel like its own small event, including the low ones.
+**Brief:** Goal: tier-coloured edge light and a distinct cover motion for Pamphlet (a quiet "close, try again" feel, not a sad one). Files: card css, `revealRecipes`. Done when: all seven covers compared side by side in one screenshot. **Conflicts:** 16, 64, R2.
+
+### W4. Transition guard tests
+**Pitch:** The attic and book transitions were rebuilt twice in a day. Nothing in CI catches a regression like rows reachable mid-climb or scroll-down not returning home.
+**Brief:** Goal: a Playwright check in `scripts/` that climbs, tries to change rows mid-climb (must be refused), scrolls down (must reach home) and opens and closes each home book checking the home is partly visible during close. Done when: runs in CI under 30 s. **Conflicts:** CI3.
+
+### W5. Wayfinding in the attic
+**Pitch:** On a phone the only sign of depth is one wrapped line of text ("row 1 of 3, scroll up to go further in"). The floor rail does this job in the run; the attic has nothing like it.
+**Brief:** Goal: a slim brass marker on the side showing which row you are in, tappable to jump. Files: `src/world/atticClimb.js`. Done when: 375 and 1280 screenshots, keyboard reachable. **Conflicts:** X2, V3.
