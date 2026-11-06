@@ -38,7 +38,8 @@ export const HOME_LINKS=[
  {id:'bDaily',stack:0,tex:'grain',color:'navy',label:'Daily',note:'Every Daily, plus Practice',badge:(s,x)=>x.dailyNo?dailyBadge({S:s,played:x.played,no:x.dailyNo,today:x.today}):''},
  {id:'bUnl',stack:0,color:'oxblood',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>unlimitedBadge(s,x.lexicon)},
  {id:'bAll',stack:1,tex:'worn',color:'calf',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
- {id:'bSets',stack:1,tex:'vellum',color:'ochre',label:'Sets',note:'Themed collections'},
+ /* the Rooms book (src/ui/roomLedger.js) took over from Sets: every set now lives in its topic room */
+ {id:'bRooms',stack:1,tex:'vellum',color:'ochre',label:'Rooms',note:'Every room, its fire and its sets',badge:s=>{const r=roomById(currentRoom(s));return r.id==='hall'?ROOMS.length+' rooms':r.short;}},
  {id:'bStats',stack:1,tex:'grain',color:'slate',label:'Stats',note:'Streaks, depth and tiers'},
 ];
 
@@ -47,6 +48,8 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 import {rulesCardHTML,ledgerHTML} from './welcome.js';
 import {mantelHTML} from './mantel.js';
 import {plaqueState,dailyBadge,unlimitedBadge} from './homePlaque.js';
+import {ROOMS,roomById} from '../core/rooms.js';
+import {currentRoom} from '../core/roomStore.js';
 export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>'',today=''}){
  const ctx={lexicon,dailyNo:no,played:!!d,today},pq=plaqueState({S,played:!!d,no,today,lexicon});
  const steps=HOME_STEPS.map(s=>`<li class="step"><span class="hn" aria-hidden="true">${s.n}</span><b>${esc(s.h)}</b><span>${esc(s.p)}</span></li>`).join('');

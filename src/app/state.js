@@ -1,8 +1,10 @@
-import {backfill as backfillSets} from '../sets/sets.js';
+import {backfill as backfillSets,SETS} from '../sets/sets.js';
 import * as core from '../core/index.js';
 import {deferAfterPaint} from '../core/boot.js';
 import {installRooms,currentRoom} from '../core/roomStore.js';
-import {captureFullPool,loadRoomLists,applyRoomPool} from '../core/roomPool.js';
+import {captureFullPool,loadRoomLists,applyRoomPool,setRoomExtras} from '../core/roomPool.js';
+/* every set can be finished inside its own room: its words join that room's pool */
+setRoomExtras(SETS.reduce((m,s)=>((m[s.room]||=[]).push(...s.words),m),{}));
 
 export const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 /* topic rooms: once every word is in, keep a copy of the full pool and narrow to the room the player was last in */

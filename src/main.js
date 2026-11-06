@@ -14,7 +14,9 @@ import './ui/dprCap.js';
 import './sets/sets.js';
 import {backfillFloors} from './core/attic.js';
 import {dustCardOpts} from './ui/atticDust.js';
-import {setsBook} from './sets/ui.js';
+import {roomsBook} from './ui/roomLedger.js';
+import './ui/roomHome.css';
+import {goRoom} from './app/roomGo.js';
 import './ui/results.js';
 import './ui/results.css';
 import './ui/finalPage.css';
@@ -157,7 +159,7 @@ addEventListener('keydown',e=>{
 });
 /* ---------- shelf, sets and stats: pages of the menu books (src/ui/bookMenus.js, home.js BOOK_PAGES) ---------- */
 const bookOpenCard=()=>!$('#cardlayer').hidden;
-BOOK_PAGES.bSets={...setsBook(S),keepOnEsc:bookOpenCard};
+BOOK_PAGES.bRooms={...roomsBook(S,{go:id=>goRoom(id),today:utc,lexicon:core.lexicon}),keepOnEsc:bookOpenCard};
 lazyBooks({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,utc,computeStats,floorAtFt,wordsReady,wordsLoaded:()=>wordsLoaded});
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();
