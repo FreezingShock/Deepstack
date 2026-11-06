@@ -1,6 +1,6 @@
 // Stress test: a full 300-book save through the shelf, attic and Sets. Prints timings and fails on layout
 // breaks or a main-thread stall over the budget. Run after `npm run build`:
-//   node scripts/stress300.mjs [--budget 150] [--viewport 1280x800] [--json out.json]
+//   node scripts/stress300.mjs [--budget 150] [--viewport 1280x800] [--timing-report-only] [--json out.json]
 // Timings come from software-rendered headless Chromium, so use them to compare before/after, not as absolutes.
 // Skips (exit 0) when no browser is available, like smoke.mjs. Set CHROMIUM_PATH to use your own.
 import {createServer} from 'node:http';
@@ -9,6 +9,7 @@ import {extname, join, normalize} from 'node:path';
 import {fullSave} from './lib/fullSave.mjs';
 
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i > 0 ? process.argv[i + 1] : d; };
+const REPORT_ONLY = process.argv.includes('--timing-report-only'); // CI shares its CPU with other browsers, so there timings are printed but only layout, counts and page errors fail
 const BUDGET = +arg('budget', 150), [vw, vh] = arg('viewport', '1280x800').split('x').map(Number), jsonOut = arg('json', '');
 const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.svg': 'image/svg+xml'};
 const root = join(process.cwd(), 'dist');
@@ -44,7 +45,7 @@ async function step(name, fn, {budget = BUDGET} = {}) {
   await page.waitForTimeout(400);
   const longest = Math.round(Math.max(0, ...await page.evaluate(() => window.__long)));
   const ok = longest <= budget; rows.push({name, wall, longest, ok});
-  if (!ok) failures.push(`${name}: a ${longest} ms main-thread task (budget ${budget} ms)`);
+  if (!ok && !REPORT_ONLY) failures.push(`${name}: a ${longest} ms main-thread task (budget ${budget} ms)`);
 }
 const layout = async (name, sel) => {
   const bad = await page.evaluate(sel => {

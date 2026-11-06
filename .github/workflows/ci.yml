@@ -93,7 +93,7 @@ jobs:
           node scripts/smoke.mjs & smoke=$!
           node scripts/snapshots.mjs & snaps=$!
           node scripts/text-fit.mjs & fit=$!
-          node scripts/stress300.mjs --budget 400 & stress=$!
+          node scripts/stress300.mjs --timing-report-only & stress=$!
           rc=0
           wait $smoke || rc=1
           wait $snaps || rc=1
