@@ -28,6 +28,7 @@ import {drawLighting,addLight,reach} from '../ui/lighting.js';
 import {registerCandleLight,drawCandleGlow} from '../ui/candleLight.js';
 import {drawEyes} from '../ui/eyes.js';
 import {litProp,brazierProps,isLit} from '../ui/litProps.js';
+import {alcoveFit} from './alcoveFit.js';
 import {nookMetrics,drawNook,paintAroundAlcoves,alcoveRects} from '../ui/alcoveArt.js';
 import {$,RM,clamp} from '../app/util.js';
 import {FT,TIERS,atmosphereAt,floorAtRow,hashStr,mulberry,tierOf} from '../app/state.js';
@@ -48,11 +49,12 @@ export const World=(()=>{
  const restCam=r=>r*RH-(H-RH-BM);
  const abn=r=>Math.max(clamp(r/190,0,1),floorAtRow(r).decay);
  const barPx=()=>52+(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat'))||0);
- function nicheBox(){const nw=nicheWidth(W),NT=barPx()+16,NB=H-RH-BM-10;return{x:(W-nw)/2,w:nw,t:NT,h:NB-NT,b:NB};}
+ function nicheBox(){const nw=nicheWidth(W),f=alcoveFit(H,barPx(),BM);return{x:(W-nw)/2,w:nw,t:f.top,h:f.h,b:f.bottom};} // centred: half a shelf row above and below (alcoveFit.js)
  function setNicheVars(){const n=nicheBox(),r=document.documentElement.style;r.setProperty('--nx',n.x+'px');r.setProperty('--nw',n.w+'px');r.setProperty('--nt',n.t+'px');r.setProperty('--nb',(H-n.b)+'px');r.setProperty('--nook',nookMetrics(W).reserve+'px');}
  function resize(){W=innerWidth;H=innerHeight;DPR=worldDpr(W,H,Math.min(devicePixelRatio||1,Quality.params().dprMax)); // capped at ~6 MP so huge screens stay light
-  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);RH=clamp(H*.22,clamp(H*.2,70,108),172); // short windows get shorter shelves, so the room above them keeps its heightBM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);rows.clear();resetBackStacks();
-  document.documentElement.style.setProperty('--shelfH',(RH+BM+10)+'px');setNicheVars();document.documentElement.style.setProperty('--rh',Math.round(RH*.8)+'px');if(!st)cam=restCam(restRow);}
+  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);BM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);RH=alcoveFit(H,barPx(),BM).RH; // the row height is fitted so the alcove centres with half a row above and below
+  rows.clear();resetBackStacks();
+  document.documentElement.style.setProperty('--shelfH',(H-nicheBox().b)+'px');setNicheVars();document.documentElement.style.setProperty('--rh',Math.round(RH*.8)+'px');if(!st)cam=restCam(restRow);}
  // where the book for row r is pulled from: a random spot along that shelf, stable for the row
  function pullX(r){return pullXAt(r,W);}
  function genRow(r,layer){
