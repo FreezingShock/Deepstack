@@ -2,12 +2,11 @@
    - simulateRoom: replays N days of Dailies (and one Unlimited-sized run) over a room's pool and reports repeats.
    - metCount: how many of a room's words the player has met (a shelf book or a collected set word). */
 import {dailyWords} from './daily.js';
-import {roomList} from './roomPool.js';
+import {roomList, roomEntries} from './roomPool.js';
 
 export const DAILY_LEN = 7;       // words in a Daily
 export const SIM_DAYS = 60;       // days the simulation replays
-export const MIN_DEPTH_WORDS = 110; // enforced floor on a room's playable words (about 15 Dailies before a word returns); CI fails below it
-export const DEPTH_TARGET = 210;    // where lists should be: a month of Dailies with no repeat (reported, not enforced)
+export const MIN_DEPTH_WORDS = 210; // enforced floor on a room's playable words (a month of Dailies before a word returns); CI fails below it
 export const MIN_REPEAT_GAP_DAYS = 14; // enforced: in a 60-day run no Daily word returns sooner than this
 
 const dayKey = i => new Date(Date.UTC(2026, 10, 3) + i * 86400000).toISOString().slice(0, 10);
@@ -35,9 +34,15 @@ export function metWords(S, list) {
   for (const w of Object.keys(got)) if (inRoom.has(w)) met.add(w);
   return met.size;
 }
+/** Every word a room holds: its list (sets included) plus its own entries (room-words.json). Null until a list has loaded. */
+export function roomWordNames(id) {
+  const l = roomList(id), e = roomEntries(id);
+  if (!l && !e) return null;
+  return [...new Set([...(l || []), ...(e || []).map(x => x.w)])];
+}
 export const metLabel = (met, total) => `${met} of ${total} met`;
 /** "47 of 118 met" for room `id`, or '' until its word list has loaded (the Reading Room has no list). */
 export function roomMetLabel(S, id) {
-  const l = roomList(id);
+  const l = roomWordNames(id);
   return l && l.length ? metLabel(metWords(S, l), l.length) : '';
 }

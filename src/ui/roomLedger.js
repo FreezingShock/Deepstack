@@ -4,10 +4,10 @@
 import {toSpreads} from './bookpages.js';
 import {ROOMS, HALL, rgbOf} from '../core/rooms.js';
 import {currentRoom, roomData} from '../core/roomStore.js';
-import {roomList, loadRoomLists} from '../core/roomPool.js';
+import {loadRoomLists} from '../core/roomPool.js';
 import {SETS, setStatus, bonusFt, MIN_SCORE} from '../sets/sets.js';
 import {setPageHTML} from '../sets/pages.js';
-import {roomMetLabel} from '../core/roomDepth.js';
+import {roomMetLabel, roomWordNames} from '../core/roomDepth.js';
 import {BOOK_TIMING} from './bookOpenFx.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
@@ -51,7 +51,7 @@ export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, 
 /** Registry entry for home.js BOOK_PAGES. go(id) walks to the room once the book has closed. */
 export function roomsBook(S, {go = () => {}, today = () => '', lexicon = () => ''} = {}) {
   let spreads = [], at = {};
-  const words = id => (roomList(id) || []).length;
+  const words = id => (roomWordNames(id) || []).length;
   if (typeof setTimeout === 'function') setTimeout(() => loadRoomLists(), 3000); // word counts for the room pages
   return {
     label: 'Room ledger',
