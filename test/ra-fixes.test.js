@@ -42,3 +42,11 @@ test('RA5: every Room Ledger row shows met progress, with a swatch fill to match
   assert.match(toc, /data-room="math".*?<b>0\/3 sets<\/b>/);
   assert.equal(HALL, 'hall');
 });
+
+test('RA8/RA10: Today card carries the met line; ledger rows carry a sets ring', () => {
+  const room = {name: 'The Chronicle', short: 'Chronicle', rgb: [235, 60, 60], met: '5 of 156 met'};
+  assert.match(cabinetHTML({steps: [], today: {no: 4, kind: 'daily', tag: '', streak: 0, played: false, room}}), /<p class="cb-met">5 of 156 met<\/p>/);
+  const toc = roomLeaves({shelf: [], sets: {got: {}}}, {met: () => ''}).leaves[0];
+  assert.match(toc, /data-room="math"[^>]*title="[^"]*0 of 3 sets complete"/);
+  assert.match(toc, /class="rl-dot nosets"/);
+});

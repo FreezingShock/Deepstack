@@ -1964,13 +1964,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 
 ### RA7. [x] (PR pending, RA2/RA5/RA7 thread) Today drawer cycles every room but opens on the wrong one
 **Pitch:** The Today card opens on "No. 7 of 7" in the Reading Room; it should open on the room you are in and show that room's colour. **Brief:** Goal: start on the current room, tint the heading with the room's ink. Screens: y-drawer-today-1280.png. **Conflicts:** CC2.
-### RA8. Today card shows the room's own progress
+### RA8. [x] (PR #312) Today card shows the room's own progress
 **Pitch:** The Today card now names the room and takes its colour; it could also say how far in you are ("47 of 118 met") and this room's streak so the card stands alone. **Brief:** Goal: one pen line under the Daily number with the room's met count and room streak (the same `roomMetLabel`). Files: `src/ui/cabinet.js`, `roomHome.css`. **Conflicts:** none known.
 
-### RA9. Phone rail brings the streak flame back
+### RA9. [x] (PR #312) Phone rail brings the streak flame back
 **Pitch:** On phones under 414px the streak and deepest plates are hidden so the hatch and Mute fit; the flame is the thing you check every day. **Brief:** Goal: a small flame and number tucked on the left of the hatch when there is room (or hanging under the rail like the depth tag), room dot included. Files: `src/ui/railFit.js`, `topbarRail.css`. **Conflicts:** none known.
 
-### RA10. Ledger rows open their room page with a progress ring
+### RA10. [x] (PR #312) Ledger rows open their room page with a progress ring
 **Pitch:** The ledger swatches fill with rooms met; the sets tally ("0/3 sets") now only lives on each room's page. **Brief:** Goal: a thin second ring (sets complete) around each swatch and a tooltip/pen note on tap. Files: `src/ui/roomLedger.js`, `roomHome.css`. **Conflicts:** TR12.
 
 ### [x] SL1. Show the room on the phone top bar and Card (done in the scope-labels PR: bars under 1180 px keep a room dot; the Almanac tags already show on phones; bars under 400 px still hide the plates)
