@@ -1,9 +1,13 @@
 // Judge worker: loads the embedding model and runs inference off the main thread so the canvas keeps animating.
 // Protocol: main -> {type:'load', base} | {type:'embed', id, texts}; worker -> {type:'progress'|'ready'|'error'|'result'|'fail', ...}
 import {loadEngine} from './engine.js';
+// Vite drops exports from a worker entry, so hand loadEngine to the main-thread fallback (model.js) through a global.
+// That lets the fallback reuse this bundle and the model library ships once instead of twice.
+globalThis.__deepstackLoadEngine = loadEngine;
 
 let engine = null;
-self.onmessage = async ({data: m}) => {
+const inWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+if (inWorker) self.onmessage = async ({data: m}) => {
   if (m.type === 'load') {
     try {
       const files = {};

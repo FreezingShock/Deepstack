@@ -11,4 +11,5 @@ const emitServiceWorker = () => ({name: 'emit-sw', apply: 'build', generateBundl
   this.emitFile({type: 'asset', fileName: 'sw.js', source: readFileSync('src/sw/sw.js', 'utf8').replaceAll('__ORT_VERSION__', ort)});
 }});
 // worker.format 'es': the judge worker is a module worker that lazily imports transformers.js (code-splitting needs ES output).
-export default defineConfig({server: {host: true, port: 5173}, worker: {format: 'es'}, plugins: [dropUnusedOrt(), emitServiceWorker()]});
+// chunkSizeWarningLimit: the one chunk over 500 KB is transformers.js, fetched lazily by the judge worker only (never on first paint).
+export default defineConfig({server: {host: true, port: 5173}, worker: {format: 'es'}, build: {chunkSizeWarningLimit: 600}, plugins: [dropUnusedOrt(), emitServiceWorker()]});
