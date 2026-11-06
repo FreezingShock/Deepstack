@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
 - Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
 - Pick a one-tap way into the Ember Log on phones (LC7): A flame tag, B fire, C labelled flame tag (recommended), D streak line under Descend. Screenshots in screenshots/ember-log-onetap/.
 - Slow-network check (perf pass): on your phone, load the site once, then toggle airplane-mode-slow or a weak connection and reload; entering another room and the first answer should no longer stall. Tell me if any room still feels slow and which (numbers in screenshots/performance/results.md).
@@ -517,6 +518,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Touches:** workflows. **Conflicts:** none.
 
 ### 52. PWA and deploy previews
+**Status:** [x] installable app: manifest, icons, launch screen, install tab, offline shell (install PR). Deploy previews still open.
 **Pitch:** Installable, offline Daily after first load, a preview URL per PR so nate can test from his phone.
 **Brief:** Files: manifest, service worker, deploy workflow. Done when: Lighthouse PWA check, cache version pinned to model version.
 **Touches:** `index.html`, `vite.config.js`. **Conflicts:** 39.
@@ -568,6 +570,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Touches:** CORE words, build script. **Conflicts:** judge and word pool threads.
 
 ### 81. Offline Daily
+**Status:** [x] the app shell and the Daily data are precached at install (install PR); airplane-mode check in `scripts/pwa-check.mjs`.
 **Pitch:** Cache the word list and judge model so the Daily works with no connection after the first visit.
 **Brief:** Files: a service worker plus a precache list. Done when: airplane-mode Daily plays through, cache version pinned to the model revision, `loadpath.mjs` shows zero requests on the second load.
 **Touches:** `index.html`, `vite.config.js`. **Conflicts:** 52.
@@ -2025,3 +2028,17 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### LC7. A one-tap way into the Ember Log on phones
 **Pitch:** On phones the Ember Log is two taps away (Stats, then the link); the attic hatch leaves no room for a streak chip in the rail.
 **Brief:** Goal: one tap from home, e.g. tap the hearth fire (the fire already reflects the streak). Files: `src/ui/hearth.js`, `src/ui/ledgerBooks.js`. **Conflicts:** fireplace layout threads, RA2 rail fit.
+
+## P. Installable app (2026-11-06, the install PR)
+
+### PWA1. Offline note on the Daily
+**Pitch:** When the Daily is played with no connection, a small pen note on its page says it is running from the saved library, so nothing looks broken.
+**Brief:** Files: `src/ui/dailyBook.js` (a read of `navigator.onLine` and the service worker's cache state, nothing new stored). Done when: `scripts/pwa-check.mjs` also checks the note shows with the network off and not online. **Touches:** Daily book. **Conflicts:** 81, PWA2.
+
+### PWA2. Keep-the-library tab on the wall
+**Pitch:** The install tab on home could sit as a brass plate on the cabinet's cornice instead of a corner tab, so it reads as part of the room.
+**Brief:** Files: `src/ui/installHint.js`, `installHint.css`, one slot in the home furniture. Done when: phone and desktop screenshots show no overlap with the spines or the cabinet, and the card still opens over a veil. **Touches:** home. **Conflicts:** E-section home furniture.
+
+### PWA3. Launch screen hands off to home
+**Pitch:** The launch screen could fade into the home screen's fireplace glow rather than cut off, so the first frame of the app feels lit.
+**Brief:** Files: the `#splash` block in `index.html` and `src/ui/splash.js`. Done when: a frame capture at 0, 250 and 500 ms shows no flash, and reduced motion still removes it at once. **Touches:** boot. **Conflicts:** PWA1.
