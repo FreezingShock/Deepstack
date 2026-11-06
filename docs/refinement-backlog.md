@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Settings placement (ST1): A gear in the top bar, B card catalogue drawer (desktop only, the phone has no cabinet), C both (recommended). Mockups in screenshots/settings-overhaul/ (where-A, where-B, where-C at 1280 and 375). Reply with a letter and I will act on it.
+- Pick the Daily share look (screenshots in screenshots/daily-share/): A is built and is the default (streak line added, Share button first). B is a boxed brass card and button, C uses coloured tier dots. Phones: the note is hidden today to fit one view; showing it (B or C) pushes the buttons below the fold, so say whether the phone should show it or keep it hidden (item 70).
 - Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
 - Pick a one-tap way into the Ember Log on phones (LC7): A flame tag, B fire, C labelled flame tag (recommended), D streak line under Descend. Screenshots in screenshots/ember-log-onetap/.
 - Slow-network check (perf pass): on your phone, load the site once, then toggle airplane-mode-slow or a weak connection and reload; entering another room and the first answer should no longer stall. Tell me if any room still feels slow and which (numbers in screenshots/performance/results.md).
@@ -2043,3 +2044,12 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### ST4. Hear a level while dragging Music or Effects
 **Pitch:** The Music and Effects sliders give no sound while you drag, so players guess the level.
 **Brief:** Files: `src/ui/settingsBook.js`, `src/feel.js`. Done when: letting go of the Effects slider plays one short page turn at that level, and the Music slider plays a short room tone at its level, with nothing when Sound is off. **Touches:** settings, sound. **Conflicts:** sound palette threads.
+### SH1. [x] Shareable Daily result card (per room, Share button)
+**Pitch:** After a Daily the Share button copies a spoiler-free text card (room, Daily number, depth, floor, streak, one tier symbol per book) and opens the system share sheet where the browser has one.
+**Brief:** Done: `src/ui/dailyShare.js` (text and share helper), `src/app/final.js`, `src/ui/results.js` (button), `src/ui/dailyShare.css` (phone wrap). Tests in `test/daily-share.test.js`. Screenshots in screenshots/daily-share/.
+### SH2. A picture for the share
+**Pitch:** Share the result as a small PNG of the descent: the room's colour, the shelf of books and the tier grid, for chat apps that take images.
+**Brief:** Goal: draw the share card to a canvas from the run data, pass it to navigator.share with files, copy text as the fallback. Files: new `src/ui/dailyShareImage.js`. **Conflicts:** SH1.
+### SH3. Room colour on the share text
+**Pitch:** The share card's header takes the room's fire colour, so a Chronicle share looks red and a Gallery share purple (text only, no emoji).
+**Brief:** Goal: a colour line via `ROOMS[].rgb` in the share card's header (HTML sheet only). Files: `src/ui/results.js`, `src/ui/dailyShare.css`. **Conflicts:** SH1.
