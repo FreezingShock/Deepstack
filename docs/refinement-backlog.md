@@ -1356,11 +1356,19 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 - [x] Attic floorboards and first-row room (nate 2026-11-05): fixed floorboard pattern, row 0 pulled back, one-row-per-step settle. Conflicts: atticRoom.js, world.js.
 Broader than pixel fixes: each item is a goal to make the base game clearer, more fun and more finished. Nothing here builds zones or topic rooms; G10 only leaves a door for them. Play-through note: the sandbox could not download the full judge, so scores seen were the quick judge's (a decent answer for "tempt" scored 0).
 
-### G1. A first run that explains itself
+### G1. [x] A first run that explains itself (PR pending: three pencil notes on the hint strip)
 **Serves:** easy to understand, concise and mysterious copy, integrated not bolted on.
 **Pitch:** A new player meets the timer, Enter, hints, skip and tiers with no word of explanation; Descend, Daily, Unlimited and Practice all look like "play". Teach inside the world, once: a single handwritten margin line appears the first time each thing matters (the candle the first time it burns low, "Enter" under the slip, the hint slip the first time you tap it), then never again.
 **Brief:** Goal: contextual first-time notes, not a tutorial screen or pop-up. Flag each in additive `S.seen.*`. Files: new `src/ui/firstNotes.js` plus css, one hook in `showWord`. Done when: each note shows once, reduced motion shows it static, Daily timing is not changed by it, 14-letter word and 375 checked.
 **Touches:** RUN, HOME. **Conflicts:** run screen thread, 29 (welcome).
+
+### G12. [ ] Phone run sheet has no room for a hint or a note
+**Pitch:** At 375x667 and 360x640 the hint strip (and now the first-run notes) takes about 60px from the run sheet, so the answer slip shrinks from 132px to about 70px and the typed text scrolls. Screenshots: /mnt/project-files/screenshots/onboarding/before-375-b-hint.png.
+**Brief:** Goal: give the run sheet a fixed budget on phones (tighter word size or top padding, or notes that float in the empty alcove wall under the row). Files: `src/styles/phone-run.css`. Done when: the slip keeps its height with a hint and with a note at 320x568, 360x640 and 375x667.
+
+### G13. [ ] First result card explains its score
+**Pitch:** The first result card shows "0/100" and a tier name with no words for either. One pencil line on the first card only, using the same once-only flag in `S.seen`.
+**Brief:** Goal: one note near the score, under 34 characters. Files: `src/app/card.js` (fit-checked, so check the card at 375 and 1280). Done when: the card fit tests still pass.
 
 ### G2. A score that explains itself
 **Serves:** scoring clarity, rarity is the hero, words fully readable, lenient judging.
