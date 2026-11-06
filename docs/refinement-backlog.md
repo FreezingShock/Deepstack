@@ -1763,7 +1763,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 
 ### [x] TR13. Room switch as a colour shift (#294, then keep-the-fire follow-up)
 **Pitch:** Walking to another room keeps the same fireplace: fire, light, the Deepstack title and labels glide to the new room's colours, then the room line and Daily line type themselves in. No whole-room slide or fade; works under reduced motion.
-**Brief:** Follow-up: the home is redrawn with `showHome({keep:true})` so the same hearth layer, wall and doors persist (`mountHearth({reuse})`), the doors' colours glide (`@property --c`), and the typewriter reveals from the centre out. Done in `src/app/roomGo.js`, `src/ui/roomHome.{js,css}`, `src/ui/typewrite.js`. **Conflicts:** hearth, doors-under-reduced-motion thread.
+**Brief:** Follow-up: the home is redrawn with `showHome({keep:true})` so the same hearth layer, wall and doors persist (`mountHearth({reuse})`), the doors' colours glide (`@property --c`), and the typewriter reveals from the centre out; the Descend plaque button glides to its new place and size and changed words type in (`src/ui/plaqueMorph.js`). Done in `src/app/roomGo.js`, `src/ui/roomHome.{js,css}`, `src/ui/typewrite.js`. **Conflicts:** hearth, doors-under-reduced-motion thread.
 
 ### TR14. Tint the Descend plaque and book spines by room
 **Pitch:** The colour glide also reaches the Descend plaque trim and the home book spines in a faint wash of the room's fire, so the whole room feels lit by it.

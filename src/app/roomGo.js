@@ -9,6 +9,8 @@ import {showHome} from './home.js';
 import {currentRoom} from '../core/roomStore.js';
 import {roomIndex,ROOMS} from '../core/rooms.js';
 import {paintRoomVars,typeOnNextMount} from '../ui/roomHome.js';
+import {snapPlaque,morphPlaque} from '../ui/plaqueMorph.js';
+import {RM} from './util.js';
 
 let busy=false;
 /** Direction of the shorter way round the ring from the current room to `id`: 1 next (rightwards), -1 previous. */
@@ -23,7 +25,9 @@ export async function goRoom(id,dir){
   typeOnNextMount();
   await new Promise(r=>{requestAnimationFrame(()=>r());setTimeout(r,60);}); // let the first frame of the glide paint before the room's save swap and word lists load
   await enterRoom(id);
-  showHome({keep:true}); // the home is redrawn around the same burning fire and the same wall; only the words type
+  const snap=snapPlaque(ui.home);
+  showHome({keep:true});
+  morphPlaque(ui.home,snap,{still:RM||ui.home.hidden}); // the home is redrawn around the same burning fire and the same wall; only the words type
  }finally{busy=false;}
  return true;
 }
