@@ -15,6 +15,7 @@ import {writeInRun} from '../ui/runWriteIn.js';
 import {paintHintControls,hintSlipHtml} from '../ui/hintSlips.js';
 import {feedbackData} from '../core/feedback.js';
 import {runLedgeHTML} from '../ui/runLedge.js';
+import {currentRoom} from '../core/roomStore.js';
 import {FT,S,TIERS,dailyNo,dailyWords,floorAtFt,floorAtRow,save,tierOf,utc,wordsReady} from './state.js';
 import {World} from '../world/world.js';
 import {ui} from './chrome.js';
@@ -92,7 +93,7 @@ export async function submit(skipped){
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
  const base=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);
  const cb=applyCombo(run.combo,t,base,skipped);run.combo=cb.chain;const rows=cb.rows;
- const book={fl:floorAtRow(World.restRow+rows).id,wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,rough:j.engine==='lexical'||undefined,tier:t,mode:run.mode||'daily',t:Date.now(),no:dailyNo(),hints:run.hintN||0,fb:feedbackData(j,w),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
+ const book={fl:floorAtRow(World.restRow+rows).id,wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,rough:j.engine==='lexical'||undefined,tier:t,mode:run.mode||'daily',room:currentRoom(S)==='hall'?undefined:currentRoom(S),t:Date.now(),no:dailyNo(),hints:run.hintN||0,fb:feedbackData(j,w),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
  {const sw=$('#fld');if(sw){sw.classList.add('sending');Sfx.seal();const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}FX.warm(t);}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
