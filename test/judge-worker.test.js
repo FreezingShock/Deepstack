@@ -16,7 +16,10 @@ test('model.js falls back to the main-thread engine when the worker fails', () =
 });
 test('the worker and the fallback share one engine (so scores cannot differ)', () => {
   assert.match(src('worker.js'), /from '\.\/engine\.js'/);
-  assert.match(src('model.js'), /import\('\.\/engine\.js'\)/);
+  // the fallback reuses the worker bundle (one copy of transformers.js in dist), which exposes the same loadEngine
+  assert.match(src('model.js'), /import\('\.\/worker\.js\?worker&url'\)/);
+  assert.match(src('worker.js'), /globalThis\.__deepstackLoadEngine = loadEngine/);
+  assert.match(src('model.js'), /globalThis\.__deepstackLoadEngine/);
 });
 test('vite builds the worker as an ES module (the transformers.js import is code-split)', () => {
   assert.match(readFileSync(new URL('../vite.config.js', import.meta.url), 'utf8'), /format:\s*'es'/);

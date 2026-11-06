@@ -1569,7 +1569,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The share text is fine (no emojis, nate's rule) but the Daily deserves a shareable picture: a pen-written bookplate with the date, the seven tier spines and the depth, rendered on a canvas.
 **Brief:** Goal: "Copy bookplate" next to "Copy result" on the Daily final screen; text stays the default. Files: new `src/ui/bookplate.js`. Done when: PNG at 1080x1350, no emojis, works offline, test checks the canvas size. **Touches:** final screen. **Conflicts:** G7, 28.
 
-### V7. Floors that change how a word feels (not just how it looks)
+### V7. [x] Floors that change how a word feels (not just how it looks)
 **Pitch:** Floors already change the room. Let each one also change one small rule so descending feels different, ready for the topic zones: Catacombs candle burns a little faster, the Sunken Vault smears the ink of the word's first letters until you type, the Hollow whispers an extra hint after skipping.
 **Brief:** Goal: one optional modifier per floor, shown as a line on the floor door, off for the Daily so it stays fair. Files: new `src/core/floorRules.js`, hook in `run.js`. Done when: tests pin each modifier, Daily unaffected, Settings can turn them off. **Conflicts:** G10, G11, F1, 142.
 
@@ -1581,11 +1581,11 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Sound is off by default and the open sound items are many small threads (door stings, hatch creak, ladder rungs, page turns, fire, cover thuds). One pass would give them a single set of recipes so nothing sounds like a different game.
 **Brief:** Goal: a sound palette doc (materials: paper, leather, wood, stone, brass) and every open sound item built from it. Files: `src/sound/`. Done when: every UI motion has a sound mapped, mute and quality settings respected. **Conflicts:** FH2, AE5, AT3, D1a, D1b, 103, BS1, R6, N9b.
 
-### V10. Keyboard and screen reader pass
+### V10. Keyboard and screen reader pass (done: #258 shortcuts, K1/K2 follow-up)
 **Pitch:** The world is rich but tiers are told mainly by colour, pen text sits on cream at low contrast, and focus rings are not checked across the books and the attic.
 **Brief:** Goal: audit with the a11y test plus a manual keyboard walk: visible focus ring everywhere, tier name always in text, contrast at 4.5:1 for handwritten body text on paper. Files: styles, `test/a11y.test.js` additions. Done when: report of findings fixed. **Conflicts:** T-series, any css thread.
 
-### V11. Duplicate model code in the build
+### V11. [x] Duplicate model code in the build (PR pending: one transformers.js copy, warning silenced on purpose; first-paint bytes were already lazy for the model, so the win is deploy size; main chunk 392 KB is spread thin, see V15 below)
 **Pitch:** `dist/assets` holds two identical-size copies of transformers.web (579 KB each) next to a 392 KB main chunk and 235 KB css. The first load is heavier than it needs to be, and the Vite chunk-size warning is on every build.
 **Brief:** Goal: share one chunk between the worker and the main thread or load the judge only when a run starts; add manualChunks. Files: `vite.config.js`, `src/scorer/*`. Done when: build warning gone or silenced on purpose, `?perf` first-load numbers before and after. **Conflicts:** PF1, PF2, 39.
 
@@ -1616,3 +1616,32 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### X4. A name for the ring on the Sets page
 **Pitch:** The right page of Book Sets shows an empty pink ring above the set title with no label or meaning.
 **Brief:** Goal: it becomes the set's sigil: empty until you finish the set, then inked in the colour of your best tier in it, with a pen caption. Files: sets book page. Done when: tested for 0, partial and complete. **Conflicts:** S1, 14.
+### V15. Trim the main chunk
+**Pitch:** The first paint still ships a 392 KB (151 KB gzip) main chunk and 235 KB css, spread over hundreds of small modules; the biggest are hearth.js, world.js, thresholds.js and atticRoom.js.
+**Brief:** Goal: lazy-load the attic room drawing and other below-the-fold canvas code behind idle time, and split rarely used css, without changing any animation. Files: `src/world/atticRoom.js`, `src/world/world.js`, `src/ui/lazyScreens.js`. Done when: `?perf` first-load numbers drop and the smoke test passes. **Conflicts:** PF1, PF2, AT13.
+
+### K1. Shortcuts inside the books [x] (`/` search, `?` in books; O/G/R/F chips, [ ] months, T today, Home/End and PageUp/Down pages)
+**Pitch:** Home keys now open every book, but inside a book you can only turn pages and close it.
+**Brief:** Goal: in the Shelf, Stats and Daily books add keys for search focus (`/`), filter chips and jumping to a date. Files: `src/ui/bookMenus.js`, `src/ui/keysCore.js`. Done when: listed in the `?` page. **Conflicts:** V10, T-series.
+
+### K2. Contrast and focus-ring audit [x] (book muted ink 4.5:1, focus rings on books, calendar, home books, attic; real screen reader untested)
+**Pitch:** Finish the rest of V10: handwriting-on-paper contrast at 4.5:1 and focus rings across the attic and books.
+**Brief:** Goal: a manual keyboard walk plus `test/a11y.test.js` additions. Files: `src/ui/a11y.css`. **Conflicts:** any css thread.
+
+### AT6. Attic and home transition overhaul (done, thread: attic transition)
+- [x] Rows locked until the attic is fully in; one notch is one row; a down scroll turns round mid-pull or mid-climb and returns home from the first row; slim ladder (canvas and the "Down the ladder" hatch); home book rims and an eased sibling fade when a book opens. PR: attic transition overhaul.
+
+### AT7. Sound for the hatch and ladder
+**Pitch:** The cord creak, lid knock and rungs creaking as you climb, so the way in feels as physical as it looks.
+**Brief:** Goal: three short Sfx hooks fired from `atticHome.js` (pull, arrive, descend). Files: `src/sound/`, `src/ui/atticHome.js`. **Conflicts:** sound threads.
+
+### AT8. Books return to the stack
+**Pitch:** After a menu book closes it should slide back into its exact slot on the stack, with the others easing forward rather than popping.
+**Brief:** Goal: shared-element return flight and sibling stagger in `bookOpenFx`. Files: `src/ui/bookOpenFx.css`, `src/ui/homeBookEdges.css`. **Conflicts:** home book threads.
+### V17. Floor rule on the door sign
+**Pitch:** Floors now bend one rule each in Unlimited, but the line only shows once you are on the word. Let the hanging sign on each floor door say it as you walk through.
+**Brief:** Goal: draw the rule's short name under the floor name on the threshold sign. Files: `src/ui/thresholds.js`, `src/core/floorRules.js`. Done when: sign shows the name only when rules are on and the mode is Unlimited. **Conflicts:** G10, F1, 142.
+
+### V18. More floor rules for topic zones
+**Pitch:** When the topic zones arrive each one should carry its own small rule, same as the floors, so a zone feels different to play and not only to look at.
+**Brief:** Goal: let `FLOOR_RULES` take a zone key, plus two spare rules (a slower first letter fade, a bonus second hint). Files: `src/core/floorRules.js`. Done when: tests pin each new rule, Daily unaffected. **Conflicts:** V7 follow-ups, G11.

@@ -8,3 +8,23 @@
 .khbox th{white-space:nowrap}
 .khbox kbd{font:inherit;padding:1px 7px;border:1px solid var(--c-brass-70);border-radius:3px}
 .khbox :focus-visible{outline:3px solid var(--c-lamplight);outline-offset:3px}
+
+/* the shortcut sheet is a page from the library's own book: ruled cream paper, red margin, ink */
+.keyhelp{background:var(--c-black-alpha-aa)}
+.khbox{max-width:520px;color:var(--c-ink);border:0;border-radius:3px;padding:26px 28px 22px 52px;background:linear-gradient(90deg,transparent 38px,var(--c-blood-54-alpha-70) 38px 40px,transparent 40px),repeating-linear-gradient(to bottom,transparent 0 27px,var(--c-steel-63-alpha-55) 27px 28px),linear-gradient(180deg,var(--c-parchment-92),var(--c-parchment-ebe1c4));box-shadow:0 0 0 1px var(--c-black-alpha-44),0 18px 50px var(--c-black-alpha-aa)}
+.khbox h2{font-family:var(--serif);font-weight:400;font-size:calc(26px*var(--ts));margin:0}
+.khbox .khsub{margin:2px 0 10px;font-size:calc(14px*var(--ts));color:var(--c-bronze-32)}
+.khbox h3{margin:14px 0 4px;font:600 calc(12px*var(--ts))/1 var(--f-label,serif);letter-spacing:.14em;text-transform:uppercase;color:var(--c-bronze-32)}
+.khbox dl{margin:0}.khbox dl>div{display:flex;gap:14px;padding:3px 0;align-items:baseline}
+.khbox dt{flex:0 0 150px;font-size:calc(14px*var(--ts))}.khbox dd{margin:0;font-size:calc(15px*var(--ts))}
+.khbox kbd{border-color:var(--c-bronze-32);background:var(--c-white-alpha-99)}
+.khbox .btn{color:var(--c-ink);margin-top:14px}
+.khbox :focus-visible{outline-color:var(--c-blood-34)}
+@media (max-width:480px){.khbox{padding:20px 16px 18px 40px}.khbox dl>div{flex-direction:column;gap:0}.khbox dt{flex:none}}
+.khbox kbd{white-space:nowrap}.khbox dt{flex-basis:190px}
+
+/* K2: a visible focus ring everywhere keyboard users land (ink-red on paper, lamplight on the dark) */
+.bk-spread :focus-visible{outline:2px solid var(--c-blood-34);outline-offset:3px;border-radius:3px}
+.bk-spread.menu .dly.cal .cal-nav:focus-visible,.bk-spread.menu .dly.cal button.cal-d:focus-visible,.bk-spread.menu .fchip:focus-visible{outline:2px solid var(--c-blood-34);outline-offset:3px}
+.hbook:focus-visible,.descend:focus-visible{outline:3px solid var(--c-lamplight);outline-offset:4px}
+.attic-cue-home:focus-visible .ach-hatch,.attic-down:focus-visible .adl-frame{outline:3px solid var(--c-lamplight);outline-offset:4px}

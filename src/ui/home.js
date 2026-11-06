@@ -197,7 +197,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const rb=sp.querySelector('.bs-ribbon');
  if(rb)rb.addEventListener('click',()=>{const j=ribbonTarget(idx,recall(rkey),spreads.length);if(j===idx)return;settle();queued=0;noteTurned(sp);bookSound('flip');idx=j;side='l';paint();});
  corners.forEach(c=>c.addEventListener('click',()=>turn(c.classList.contains('next')?1:-1)));
- const key=ev=>{if(ev.key==='Escape'){if(!(keepOnEsc&&keepOnEsc()))close();return;}if(ev.target.closest&&ev.target.closest('input,textarea,select'))return;if(ev.key==='ArrowRight')turn(1);else if(ev.key==='ArrowLeft')turn(-1);};
+ const key=ev=>{if(ev.key==='Escape'){if(!(keepOnEsc&&keepOnEsc()))close();return;}if(ev.target.closest&&ev.target.closest('input,textarea,select'))return;if(ev.key==='ArrowRight'||ev.key==='PageDown')turn(1);else if(ev.key==='ArrowLeft'||ev.key==='PageUp')turn(-1);else if((ev.key==='Home'||ev.key==='End')&&!ev.altKey&&!ev.ctrlKey&&!ev.metaKey){const j=ev.key==='Home'?0:spreads.length-1;if(j!==idx){ev.preventDefault();settle();queued=0;noteTurned(sp);bookSound('flip');idx=j;side='l';paint();}}};
  /* swap the pages in place (filters, search); stays on spread i. only 'r' or 'l' repaints just that page, so an input on the other page keeps focus */
  const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0,only){settle();queued=0;spreads=s;idx=Math.max(0,Math.min(i,s.length-1));if(!only)side='l';paint(only);}};
  t(()=>{sp.classList.add('open');bookSound('flip');},T.fly+T.hold);

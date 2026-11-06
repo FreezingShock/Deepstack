@@ -1,3 +1,4 @@
+import {loadEnabled,saveEnabled} from '../core/floorRules.js';
 /* Library-themed top bar: brass plaque, wooden lintel, and the buttons on it
    (Sound, Credits, Settings) plus the panels they open. */
 import './topbar.css';
@@ -57,7 +58,9 @@ export function initTopbar({Sfx,doc=document}={}){
    <fieldset class="tprow tpseg"><legend>Text size</legend>${TEXT_SIZES.map((t,i)=>`<button type="button" data-text="${t}" aria-pressed="${st.text===t}" style="font-size:${14+i*3}px">A${i?'+'.repeat(i):''}<span class="sr-only"> ${['Normal','Large','Extra large'][i]}</span></button>`).join('')}</fieldset>
    <fieldset class="tprow tpseg" id="sQual"><legend>Graphics</legend>${PREFS.map(p=>`<button type="button" data-q="${p}" aria-pressed="${Quality.pref()===p}">${p[0].toUpperCase()+p.slice(1)}</button>`).join('')}</fieldset>
    <p class="tphint">Auto lightens dust, particles and resolution on slow devices. Pick Low if the library stutters.</p>
-   <div class="tprow"><span id="lCon">High contrast</span><button type="button" class="tpsw" id="sContrast" role="switch" aria-checked="${st.contrast}" aria-labelledby="lCon"><i></i></button></div>`;
+   <div class="tprow"><span id="lCon">High contrast</span><button type="button" class="tpsw" id="sContrast" role="switch" aria-checked="${st.contrast}" aria-labelledby="lCon"><i></i></button></div>
+   <div class="tprow"><span id="lFR">Floor rules</span><button type="button" class="tpsw" id="sFloorRules" role="switch" aria-checked="${loadEnabled()}" aria-labelledby="lFR"><i></i></button></div>
+   <p class="tphint">Each deeper floor bends one small rule in Unlimited, like a faster candle. The Daily never uses them.</p>`;
   },
  };
  const useBook=doc===globalThis.document&&typeof matchMedia==='function';
@@ -96,6 +99,7 @@ export function initTopbar({Sfx,doc=document}={}){
   sw($('#sSound'),()=>{snd&&snd.click();$('#sSound').setAttribute('aria-checked',snd.getAttribute('aria-pressed')==='true');});
   sw($('#sMotion'),v=>set({motion:v?'reduce':'full'}));
   sw($('#sContrast'),v=>set({contrast:v}));
+  $('#sFloorRules').setAttribute('aria-checked',loadEnabled());sw($('#sFloorRules'),v=>saveEnabled(v));
   root.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{Quality.setPref(b.dataset.q);root.querySelectorAll('[data-q]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
   const vol=$('#sVol');vol.oninput=()=>{const n=+vol.value;$('#oVol').textContent=n+'%';vol.setAttribute('aria-valuetext',n+' percent');set({volume:n/100});};
   root.querySelectorAll('[data-text]').forEach(b=>b.onclick=()=>{set({text:b.dataset.text});root.querySelectorAll('[data-text]').forEach(x=>x.setAttribute('aria-pressed',x===b));});

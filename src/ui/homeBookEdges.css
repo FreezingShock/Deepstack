@@ -1,0 +1,18 @@
+/* Home menu books: finished edges, and a calmer hand-off when one opens. Loaded after menuWear.css.
+   Edges: the wear layers sit inside the spine, so the board ends read as flat. A hairline rim (light on the leading
+   edge, dark on the trailing one) closes the silhouette on every book, and the end bands take a gilt tint so both
+   ends of the spine show. Nothing here moves. */
+.hbook::after{content:"";position:absolute;inset:0;border-radius:3px 6px 6px 3px;pointer-events:none;
+ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bk-gild) 26%,transparent),0 0 0 1px var(--c-black-alpha-77);
+ background:linear-gradient(90deg,var(--c-white-alpha-1f) 0,transparent 3px,transparent calc(100% - 3px),var(--c-black-alpha-4d) 100%),
+  linear-gradient(180deg,var(--c-white-alpha-2a) 0,transparent 1px,transparent calc(100% - 1px),var(--c-black-alpha-4d) 100%)}
+.hb-band{background:linear-gradient(90deg,var(--c-black-alpha-4d),color-mix(in srgb,var(--bk-gild) 40%,transparent) 45%,var(--c-black-alpha-3d))}
+.hb-band:first-child{margin-left:-4px;width:8px}
+.hb-band:last-child{margin-right:-3px}
+/* Opening: the other books ease back and fade together on the shared motion curve (they used to blink out), and
+   settle forward again on the way home. The clicked book hands over without a hover jump. */
+.book-opening .hbook:not(.opening){opacity:0;transform:translateX(-8px) scale(.97);filter:none;transition:opacity var(--m-base) var(--e-cruise),transform var(--m-base) var(--e-cruise)}
+.book-opening .hbook.opening{transform:none}
+.hbook{transition:transform var(--m-base) var(--e-settle),filter var(--m-base),opacity var(--m-base) var(--e-cruise)}
+.hbook:hover,.hbook:focus-visible{transition:transform var(--m-base) var(--e-spring),filter var(--m-base),opacity var(--m-base) var(--e-cruise)}
+@media(prefers-reduced-motion:reduce){.book-opening .hbook:not(.opening){transform:none;transition:opacity var(--m-quick)}}

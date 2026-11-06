@@ -9,6 +9,7 @@ import {replayLayout,ROMAN} from '../core/replay.js';
 import {resumable,snapshotRun} from '../core/dailyRun.js';
 import {attachInk} from '../ui/inkInput.js';
 import {paintRun} from '../ui/runScreen.js';
+import {ruleFor,limitFor,loadEnabled,WHISPER_AT_MS} from '../core/floorRules.js';
 import {seatCandle} from '../ui/candle.js';
 import {writeInRun} from '../ui/runWriteIn.js';
 import {paintHintControls,hintSlipHtml} from '../ui/hintSlips.js';
@@ -55,12 +56,12 @@ export async function startUnlimited(replace=false){
 }
 export function pipsHTML(){return runLedgeHTML(run.words,run.results,run.i,TIERS);}
 export function showWord(){
- if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();run.limit=45000;
+ if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();const fr_=ruleFor(floorAtRow(World.restRow).key,run,loadEnabled());run.rule=fr_;run.whispered=false;run.limit=limitFor(fr_);
  const el=ui.stage;el.hidden=false;el.className='center';
  el.innerHTML=`<div class="candle" id="candle" aria-hidden="true"><div class="wax" id="wax"><i class="flame"></i><i class="wick"></i></div><div class="plate"></div></div><div class="sheet">${pipsHTML()}
-  <div class="wlabel">Word ${run.i+1} of ${run.words.length}</div>${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
-  <div class="word" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
-  <div class="pos">${esc(w.pos)}</div><div class="clock" id="clock" aria-hidden="true">0:45</div>
+  <div class="wlabel">Word ${run.i+1} of ${run.words.length}</div>${fr_?`<div class="floorrule">${esc(fr_.line)}</div>`:''}${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
+  <div class="word${fr_&&fr_.smear?' smeared':''}" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
+  <div class="pos">${esc(w.pos)}</div><div class="clock" id="clock" aria-hidden="true">${Math.floor(run.limit/60000)}:${String(run.limit/1000%60).padStart(2,'0')}</div>
   <div class="timer" id="tbar"><i id="tfill"></i></div>
   <div class="slipwrap" id="fld"><i class="pin"></i><div class="slip"><textarea id="ans" placeholder="In your own words\u2026" maxlength="300" aria-label="Your explanation" enterkeyhint="send"></textarea></div></div>
   <div class="hintline" id="hl" aria-live="polite"></div>
@@ -70,12 +71,14 @@ export function showWord(){
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
  attachInk(ta);
- ta.oninput=()=>{Sfx.quill();const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
+ ta.oninput=()=>{Sfx.quill();const wd=$('.word.smeared');if(wd)wd.classList.remove('smeared');const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
  run.ladder=hintLadder(w);run.hintN=0;paintHintBtn();
  $('#hint').onclick=useHint;$('#skip').onclick=()=>submit(true);
  clearInterval(timerId);
- timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;Sfx.candle(fr);f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);paintRun(left,run.limit);if(left<=0)submit(!$('#ans').value.trim());},100);
+ timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;Sfx.candle(fr);f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);paintRun(left,run.limit);if(run.rule&&run.rule.whisper&&!run.whispered&&left<=WHISPER_AT_MS)whisper();if(left<=0)submit(!$('#ans').value.trim());},100);
 }
+function whisper(){run.whispered=true;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;const hl=$('#hl');
+ if(hl){hl.insertAdjacentHTML('beforeend',hintSlipHtml(n,run.words[run.i].w,0,run.hintN));requestAnimationFrame(()=>hl.classList.add('on'));}paintHintBtn(true);}
 export function paintHintBtn(spent){paintHintControls(document,run,FT,spent);}
 export function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;const free=!!run.freeHint;run.freeHint=false;if(!free)run.hintSpent=(run.hintSpent||0)+n.cost;
  const hl=$('#hl');

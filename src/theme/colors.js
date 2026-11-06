@@ -79,6 +79,7 @@ export const COLORS={
  'oak-22':'#4a3524',
  'parchment-eee2c4':'#eee2c4',
  'bronze-32':'#6b5a3a',
+ 'bronze-5c4d30':'#5c4d30',
  'oak-1a1208':'#1a1208',
  'parchment-89':'#f6ecd0',
  'oak-19':'#44341d',
