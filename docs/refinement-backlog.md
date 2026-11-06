@@ -1692,3 +1692,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### AT8b. [x] Spine settle nudge
 **Pitch:** When the book lands the stack could take a tiny weight bump, like setting a book down on a pile.
 **Brief:** Goal: a 2px translate on the landed spine and its neighbours, transform only. Files: `src/ui/homeBookEdges.css`. **Conflicts:** AT8a.
+
+- [x] Z2 The room breathes when you leave it alone (idle director, `src/ui/idleRoom.js`).
+
+### Z2b. A cat on the hearth rug
+**Pitch:** The room already breathes when idle (Z2); something alive should settle in. After a few minutes idle a small shape curls up by the grate, its flank rising slowly in the firelight, and it lifts its head when you move.
+**Brief:** Goal: one new idle event in `src/ui/idleRoom.js` that draws a sleeping creature by the hearth (low quality and reduced motion: off). Files: `src/ui/idleRoom.js`, `idleRoom.css`. **Conflicts:** FH2, W5.
+
+### Z2c. Rain and wind answer the idle room
+**Pitch:** Long idle, the world outside should show up: a rain patter on the attic skylight, a draught that bends the candle flames.
+**Brief:** Goal: two more events in the idle director tied to the attic skylight weather and the mantel flames, same stop-on-input rule. Files: `src/ui/idleRoom.js`, `idleRoom.css`. **Conflicts:** AT10, FH3.
