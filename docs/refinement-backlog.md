@@ -1745,3 +1745,5 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Brief:** Goal: `SETS` gains a `room` field (default `hall`), Sets book filters by room, Shelf tabs, Stats page. Files: `src/sets/sets.js`, `src/sets/ui.js`, shelf filters, stats pages. Done when: existing set progress untouched (`S.sets` shape unchanged), tests per room. **Conflicts:** TR1, Almanac, shelf threads.
 
 
+- [x] Settings book fix (PR pending): the panel book carried the generic `.panel` class (overflow:auto, padding, dark background); renamed to `pbook`, and scripts/transitions.mjs now opens Settings and Credits and checks fixed position, no scrolling, fits viewport. Follow-ups: S1 Settings page for sound/music mix sliders, S2 'reset my save' with a two-step confirm inside the book, S3 phone single-page Settings pass. Conflicts: panelBook.css, topbar.js.
+- [x] S4 Keys of the library as a book (#276): two-page book via openPanelBook, guard covers it.

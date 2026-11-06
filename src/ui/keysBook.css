@@ -1,0 +1,7 @@
+/* The keys page as a book page (.bk-spread.pbook): each shortcut is a key cap and its meaning on one ruled line. */
+.bk-spread.pbook .kh-h{margin:14px 0 4px;font:600 calc(11px*var(--ts)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--bs-mute)}
+.bk-spread.pbook .kh-dl{margin:0}
+.bk-spread.pbook .kh-dl>div{display:grid;grid-template-columns:minmax(84px,34%) 1fr;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px dotted var(--bs-rule)}
+.bk-spread.pbook .kh-dl dt{margin:0;display:flex;flex-wrap:wrap;gap:4px;align-items:baseline}
+.bk-spread.pbook .kh-dl dd{margin:0;font:400 calc(14px*var(--ts))/1.35 var(--serif);color:var(--bs-ink)}
+.bk-spread.pbook .kh-dl kbd{font:600 calc(12px*var(--ts)) var(--sans);padding:1px 6px;border:1px solid var(--bs-mute);border-bottom-width:2px;border-radius:4px;color:var(--bs-ink);background:transparent}

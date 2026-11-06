@@ -183,6 +183,35 @@ for (const [id, name] of [['bDaily', 'Daily'], ['bUnl', 'Unlimited'], ['bAll', '
   console.log(`transitions: ${name} close, ${frames.length} frames, lowest title/plaque opacity ${bare(frames.map(f => f.vis))}`);
 }
 
+// 4. Settings and Credits open as books from the top bar. They once picked up the generic `.panel` class (overflow:auto,
+// padding, a dark background), which gave stray scrollbars and a book stuck at its cover with a dark slab beside it.
+// Check the open book is fixed-position, never scrolls, fits the viewport, and that the settings controls are in it.
+for (const [id, name] of [['bSettings', 'Settings'], ['bCredits', 'Credits'], ['bKeys', 'Shortcuts']]) {
+  const btn = page.locator('#' + id);
+  if (!(await btn.count())) { fail(`${name}: top bar button missing`); continue; }
+  await page.waitForTimeout(600);
+  await btn.click({timeout: T}).catch(() => fail(`${name}: could not click button`));
+  const dlg = page.locator('[role=dialog].intro').first();
+  if (!await dlg.waitFor({state: 'visible', timeout: T}).then(() => true, () => false)) { fail(`${name}: never opened`); continue; }
+  await page.waitForTimeout(300);
+  // nothing behind the opening book may show through (#210): the home is marked and every shelf book has faded out
+  const behind = await page.evaluate(() => ({marked: !!document.querySelector('#home.book-opening'), maxOp: Math.max(0, ...[...document.querySelectorAll('#home .hbook')].map(e => +getComputedStyle(e).opacity))}));
+  if (!behind.marked) fail(`${name}: home not marked book-opening while the book opens (room shows through)`);
+  if (behind.maxOp > 0.05) fail(`${name}: a shelf book still shows behind the opening book (opacity ${behind.maxOp.toFixed(2)})`);
+  await page.waitForTimeout(1200);
+  const m = await page.evaluate(() => {
+    const d = document.querySelector('[role=dialog].intro'), cs = getComputedStyle(d), r = d.getBoundingClientRect();
+    return {pos: cs.position, ov: cs.overflowX + '/' + cs.overflowY, scrolls: d.scrollHeight > d.clientHeight + 1 || d.scrollWidth > d.clientWidth + 1, fits: r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight, ctl: !!d.querySelector('.bs-page.l [role=switch], .bs-page.l dt')};
+  });
+  if (m.pos !== 'fixed') fail(`${name}: book is position:${m.pos}, not fixed`);
+  if (/auto|scroll/.test(m.ov)) fail(`${name}: book container scrolls (${m.ov})`);
+  if (!m.fits) fail(`${name}: book does not fit the viewport`);
+  if (!m.ctl) fail(`${name}: no content on the left page`);
+  await page.keyboard.press('Escape');
+  await dlg.waitFor({state: 'detached', timeout: T}).catch(() => fail(`${name}: did not close`));
+  await page.locator('#home.book-opening').waitFor({state: 'detached', timeout: T}).catch(() => fail(`${name}: home stayed locked after closing`));
+}
+
 await browser.close(); server.close();
 if (problems.length) { console.error('transitions: FAILED\n - ' + [...new Set(problems)].join('\n - ')); process.exit(1); }
 console.log('transitions: ok');
