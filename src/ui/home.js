@@ -51,11 +51,12 @@ import {mantelHTML} from './mantel.js';
 import {plaqueState,dailyBadge,unlimitedBadge} from './homePlaque.js';
 import {ROOMS,roomById} from '../core/rooms.js';
 import {currentRoom} from '../core/roomStore.js';
+import {scopeRoom} from './scope.js';
 export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>'',today=''}){
  const ctx={lexicon,dailyNo:no,played:!!d,today},pq=plaqueState({S,played:!!d,no,today,lexicon});
  /* library furniture built into the niche walls: a card-catalogue cabinet (rules) and the borrower's ledger (welcome.css) */
  const rules=cabinetHTML({steps:HOME_STEPS,bestTier:S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1),today:{no,kind:pq.kind,tag:pq.tag,streak:st.streak|0,played:!!d},tierCounts:S.shelf.reduce((a,b)=>{const t=b.tier|0;a[t]=(a[t]|0)+1;return a;},[]),seen:loadSeen()});
- const slip=ledgerHTML({streak:st.streak,deepest:st.deepest,books:S.shelf.length,floor:floorName||'',floorKey:floorKey||'',tierInk:tierInk||''});
+ const slip=ledgerHTML({streak:st.streak,deepest:st.deepest,books:S.shelf.length,floor:floorName||'',floorKey:floorKey||'',tierInk:tierInk||'',room:scopeRoom(S)});
  const book=l=>{const b=l.badge?l.badge(S,ctx):'';const c=HOME_BOOK_COLORS[l.color]||HOME_BOOK_COLORS.brown;
   return `<li><button class="hbook" data-tex="${l.tex||'leather'}" id="${l.id}"${l.note?` title="${esc(l.note)}"`:''} style="--bk:${c[0]};--bk2:${c[1]};--bk-gild:${c[2]}"><span class="hb-pages" aria-hidden="true"></span><span class="hb-spine"><i class="hb-band" aria-hidden="true"></i><span class="hb-t">${esc(l.label)}${b?` <small>${esc(b)}</small>`:''}</span><i class="hb-band" aria-hidden="true"></i></span></button></li>`;};
  const stacks=[...new Set(HOME_LINKS.map(l=>l.stack||0))].sort((a,b)=>a-b);
@@ -211,7 +212,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  corners.forEach(c=>c.addEventListener('click',()=>turn(c.classList.contains('next')?1:-1)));
  const key=ev=>{if(ev.key==='Escape'){if(!(keepOnEsc&&keepOnEsc()))close();return;}if(ev.target.closest&&ev.target.closest('input,textarea,select'))return;if(ev.key==='ArrowRight'||ev.key==='PageDown')turn(1);else if(ev.key==='ArrowLeft'||ev.key==='PageUp')turn(-1);else if((ev.key==='Home'||ev.key==='End')&&!ev.altKey&&!ev.ctrlKey&&!ev.metaKey){const j=ev.key==='Home'?0:spreads.length-1;if(j!==idx){ev.preventDefault();settle();queued=0;noteTurned(sp);bookSound('flip');idx=j;side='l';paint();}}};
  /* swap the pages in place (filters, search); stays on spread i. only 'r' or 'l' repaints just that page, so an input on the other page keeps focus */
- const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0,only){settle();queued=0;spreads=s;idx=Math.max(0,Math.min(i,s.length-1));if(!only)side='l';paint(only);}};
+ const api={el:sp,close,onPaint:null,get index(){return idx;},setSpreads(s,i=0,only,toSide){settle();queued=0;spreads=s;idx=Math.max(0,Math.min(i,s.length-1));if(!only)side=toSide==='r'?'r':'l';paint(only);}};
  t(()=>{sp.classList.add('open');bookSound('flip');},T.fly+T.hold);
  if(spreads&&spreads.length){
   /* Both pages are built before the first frame (a microtask, after the caller has hooked onPaint), so they are

@@ -4,6 +4,7 @@ import './topbarRail.css';
 import './railHatch.css';
 import {railValues,dayKey} from './topbarRailCore.js';
 import {loadSettings} from './settings.js';
+import {scopeRoom,ALL} from './scope.js';
 
 const SVG=(p)=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${p}</svg>`;
 const FLAME='<path d="M12 3c1 3.500 5 5.500 5 10a5 5 0 0 1-10 0c0-2 1-3.200 2-4 .2 1.500 1 2.200 1.800 2.500C10.500 9 10.800 5.500 12 3z"/>';
@@ -15,10 +16,10 @@ export function initTopbarRail({S,Sfx,doc=document}={}){
  if(!bar||!nav)return;
  /* readouts sit beside the plaque; the centre of the bar stays free for the attic hatch and the depth plate */
  const g=doc.createElement('div');g.id='barGauges';g.setAttribute('aria-label','Your record');
- g.innerHTML=`<span class="bg bg-streak" title="Daily streak">${SVG(FLAME)}<b id="bgStreak">0</b><i>day streak</i></span><span class="bg bg-deep" title="Deepest descent">${SVG(DEEP)}<b id="bgDeep">0</b><i>ft deepest</i></span>`;
+ g.innerHTML=`<span class="bg bg-streak" title="Daily streak">${SVG(FLAME)}<b id="bgStreak">0</b><i>day streak</i><i class="scope" id="bgStreakRoom"></i></span><span class="bg bg-deep" title="Deepest descent, all rooms">${SVG(DEEP)}<b id="bgDeep">0</b><i>ft deepest</i><i class="scope">${ALL}</i></span>`;
  doc.querySelector('#mark').after(g);
- const eS=g.querySelector('#bgStreak'),eD=g.querySelector('#bgDeep'),gs=g.querySelector('.bg-streak');
- const paint=()=>{const v=railValues(S,dayKey());const a=String(v.streak),b=String(v.deepest);
+ const eR=g.querySelector('#bgStreakRoom'),eS=g.querySelector('#bgStreak'),eD=g.querySelector('#bgDeep'),gs=g.querySelector('.bg-streak');
+ let rid='';const paint=()=>{const sr=scopeRoom(S);if(sr.id!==rid){rid=sr.id;eR.innerHTML=`<span class="rl-dot" style="--c:${sr.rgb}"></span>${sr.short}`;gs.title=`Daily streak in ${sr.name} (each room keeps its own)`;}const v=railValues(S,dayKey());const a=String(v.streak),b=String(v.deepest);
   if(eS.textContent!==a){eS.textContent=a;gs.classList.toggle('lit',v.streak>0);}
   if(eD.textContent!==b)eD.textContent=b;
   g.hidden=!doc.querySelector('#depthHud').hidden;};

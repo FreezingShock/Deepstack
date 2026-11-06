@@ -3,6 +3,8 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- On your phone, open the Rooms book, tap a room in the contents list (try the Reading Room): it now turns to that room's page. CI also walks every room by door, keys, dots and the book on every push (TA4).
+- Switch to the Chronicle on desktop: the top bar plates and Librarian's Card now tag Streak with the room and Deepest/Books/Floor with "all rooms"; open Stats and check the pen tags under each page title. Say if the wording or size is off.
 - Open the card catalogue on the left wall of home (1000 px and wider): pull each of the eight drawers, flip the cards with Turn, cycle with the arrow keys, and check the Settings drawer. On a big window the whole room, cabinet and fire are now much bigger; say if the word alcoves being wider on big windows feels right. Tell me which drawers to add or drop (CC1 to CC3 below).
 - Look at the home plaque on your 1920 screen while mid-Daily: Continue should now have a clear gap to the Library Rules drawers and the Librarian's Card (src/ui/plaqueGap.css).
 - Walk between rooms on desktop: the fireplace should stay put while the fire, title and labels glide to the new colour and the room and Daily lines type in. Tell me if the glide is too slow or the title tint is too strong.
@@ -1828,13 +1830,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** "117 of 118 met" is a good moment: the door plate could glow or the ledger page could say the room is mastered.
 **Brief:** Goal: a small flourish on the plate and the ledger page at 100% met, not a popup. Files: `src/ui/roomHome.js`, `roomHome.css`, `roomLedger.js`. **Conflicts:** TR9.
 
-### TA3. Which numbers are per room, and do they agree
+### [x] TA3. Which numbers are per room, and do they agree (scope labels PR: top bar, Librarian's Card, Almanac tagged "this room" vs "all rooms")
 **Pitch:** In the Chronicle the top bar and Almanac show "0 day streak" next to "300 ft deepest", and the Card shows Books 13 and Floor from your whole shelf, while streak and Dailies are the room's own. Nothing says which is which, and an unsynced number would be a bug that a player reads as lost progress.
 **Brief:** Goal: a script that seeds a save with two rooms (different Dailies, streaks, ratings, shelf books) and checks every readout in every room: top bar chips, Card, Almanac, Lexicon, Shelf counts and room tabs, Daily book calendar, share text, spine badges, Room Ledger. Fix mismatches and label shared versus room numbers in a few pen words ("all rooms", "this room"). Files: `roomStore.js`, `statsPages.js`, `welcome.js`, `topbar.js`. Done when: the table of readouts per room is in the PR and tested. **Conflicts:** TR8, TR12.
 
-### TA4. Switching rooms by every route
+### TA4. [x] Switching rooms by every route (PR pending)
 **Pitch:** There are four ways into a room (a side door on desktop, the Room Ledger, the dots above the fire, keyboard shortcuts) plus reload and leaving mid-run. Each could leave a different residue: a flash of the old fire, the old tagline, a stale Card, the wrong spine badges, the old room after a reload mid-Daily.
-**Brief:** Goal: a frame-capture check (like `scripts/transitions-guard`) that enters every room by every route, at 375 and 1280, and asserts within 150 ms: fire hue, tagline, Card, Daily plaque text and badges all match the new room; reload mid-run returns to the same room and word. Files: new `scripts/rooms-guard.mjs`. Done when: runs in CI under 30 s. **Conflicts:** W4 guard, V10 keys.
+**Brief:** Goal: a frame-capture check (like `scripts/transitions-guard`) that enters every room by every route, at 375 and 1280, and asserts within 150 ms: fire hue, tagline, Card, Daily plaque text and badges all match the new room; reload mid-run returns to the same room and word. Files: new `scripts/room-switch.mjs` (built: door, [ ] keys, ring of lights, Rooms book on a phone, reload and mid-Daily reload; one snapshot per animation frame, fails on a frame where fire, tagline, Daily tag, ring, doors, Rooms badge and Card streak name different rooms, a third room, a blank tagline or a rebuilt fireplace; ~50 s locally, runs beside the other guards). Done when: runs in CI under 30 s. **Conflicts:** W4 guard, V10 keys.
 
 ### TA5. Swipe the hearth to change room on phones
 **Pitch:** On a phone the only quick room switch is seven 20 px dots on the mantel, too small to hit, or the Rooms book. The desktop has doors you walk through. A phone should let you swipe the fireplace sideways and the next room's fire slides in, with a small name label.
@@ -1904,6 +1906,14 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### CC5. Tall-screen alcove breathing
 **Pitch:** On 1440p+ tall windows the alcove spans many rows; add a mid-wall detail.
 **Brief:** Goal: for windows over 1200 px tall, add a small plaque or ladder on the side shelves at the alcove's mid height. Files: new css/js only. **Conflicts:** none known.
+
+### RS1. [x] Per-room run and result card guard (PR pending)
+**Pitch:** The room-switch guard stops at the home. The run alcove, the lift and the result card also wear the room's fire (TA6), and a stale colour there would only show after a Descend.
+**Brief:** Goal: extend `scripts/room-switch.mjs` to start a Daily in two rooms and assert the halo, lanterns, plaque name and card rim match the room, and the Reading Room stays unchanged. Done when: runs under 20 s extra in CI. **Touches:** scripts only. **Conflicts:** none.
+
+### RS2. [x] Phone ring of lights hit areas (PR pending)
+**Pitch:** On a phone the ledger contents list used to leave the Reading Room's page on the hidden right-hand side; it now lands on the right page, but the 20 px dots still open the book rather than walking.
+**Brief:** Goal: 44 px hit areas for the dots and a name toast on press; the guard already covers the ledger route. **Touches:** `roomHome.js`, css. **Conflicts:** TA5.
 ### LC1. Librarian's Card rows open books (done in this PR)
 **Pitch:** Each card row is a doorway: Floor to the Floors book, Books and Deepest to Stats.
 **Brief:** Goal: Streak row opens something new once nate picks. Files: `src/ui/ledgerBooks.js`, `src/ui/floorLeaves.js`. **Conflicts:** fireplace/mantel layout thread.
@@ -1939,3 +1949,10 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 
 ### RA7. Today drawer cycles every room but opens on the wrong one
 **Pitch:** The Today card opens on "No. 7 of 7" in the Reading Room; it should open on the room you are in and show that room's colour. **Brief:** Goal: start on the current room, tint the heading with the room's ink. Screens: y-drawer-today-1280.png. **Conflicts:** CC2.
+### [x] SL1. Show the room on the phone top bar and Card (done in the scope-labels PR: bars under 1180 px keep a room dot; the Almanac tags already show on phones; bars under 400 px still hide the plates)
+**Pitch:** On phones the streak chip drops its label and the Librarian's Card is hidden, so the "this room" tag is invisible there.
+**Brief:** Goal: on screens under 560 px show a room-coloured dot on the streak chip (tap shows "Chronicle streak"), and put the same scope tags on the Rooms book page. Files: `src/ui/topbarRail.js`, `scope.css`. **Conflicts:** none known.
+
+### [x] SL2. Optional "all rooms" streak (nate picked B: two tallies side by side on the Almanac streak page, #306)
+**Pitch:** Each room keeps its own streak, so a 0 in the Chronicle sits next to a 5 in the Reading Room; some players will want one combined flame.
+**Brief:** Goal: a pen line on the Almanac streak page, "Any room: N days", counting a day if any room's Daily was played. Files: `src/ui/statsPages.js`, `src/core/stats.js`. **Conflicts:** TR12.

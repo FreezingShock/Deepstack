@@ -41,6 +41,7 @@ import {registerLedgerBooks} from './ui/ledgerBooks.js';
 import './ui/home.css';
 import './ui/descendGlow.css';
 import './ui/welcome.css';
+import './ui/scope.css';
 import './ui/plaqueGap.css';
 import './ui/homeTight.css';
 import './ui/deskProps.css';
