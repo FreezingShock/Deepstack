@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Settings placement (ST1): A gear in the top bar, B card catalogue drawer (desktop only, the phone has no cabinet), C both (recommended). Mockups in screenshots/settings-overhaul/ (where-A, where-B, where-C at 1280 and 375). Reply with a letter and I will act on it.
 - Pick the Daily share look (screenshots in screenshots/daily-share/): A is built and is the default (streak line added, Share button first). B is a boxed brass card and button, C uses coloured tier dots. Phones: the note is hidden today to fit one view; showing it (B or C) pushes the buttons below the fold, so say whether the phone should show it or keep it hidden (item 70).
 - Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
 - Pick a one-tap way into the Ember Log on phones (LC7): A flame tag, B fire, C labelled flame tag (recommended), D streak line under Descend. Screenshots in screenshots/ember-log-onetap/.
@@ -2027,6 +2028,22 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On phones the Ember Log is two taps away (Stats, then the link); the attic hatch leaves no room for a streak chip in the rail.
 **Brief:** Goal: one tap from home, e.g. tap the hearth fire (the fire already reflects the streak). Files: `src/ui/hearth.js`, `src/ui/ledgerBooks.js`. **Conflicts:** fireplace layout threads, RA2 rail fit.
 
+### [x] ST1. Settings overhaul: one settings book (Music and Effects, Motion that follows the OS, reset progress with a confirm)
+**Pitch:** Reduced motion showed "off" while the OS asked for calm motion, Sound and Volume had no music/effects split, and there was no way to start over.
+**Brief:** Done: `src/ui/settings.js` (new `music`, `effects` fields; `motion` is now system / reduce / full), `src/ui/settingsBook.js` + `settingsBook.css` (page markup), `src/ui/progressReset.js` (erases `deepstack.v1`, `deepstack.cabinet.v1`, `deepstack.flipHint`; never settings), `src/feel.js` (Music and Effects buses, each with its own reverb send), `src/ui/topbar.js` (wiring). Tests: `test/settings.test.js`, `test/settings-book.test.js`; smoke step "settings: sliders save and reset asks first". Before/after: screenshots/settings-overhaul/.
+**Done:** PR pending (draft). Placement is open: see "What nate needs to do".
+
+### ST2. Reach Settings from a phone's card catalogue
+**Pitch:** The card catalogue and its Settings drawer exist only on desktop, so on a phone the Settings book is reachable only from the gear.
+**Brief:** Goal: a phone player can open Settings in one tap from home, in the way nate picks (see ST1 placement). Files: `src/ui/cabinet.js`, `src/ui/topbarRail.js`. Done when: a phone test taps the chosen entry and the book opens. **Touches:** settings, home. **Conflicts:** card catalogue and rail threads.
+
+### ST3. Motion changes take effect without a reload
+**Pitch:** Changing Motion only settles the candle, dust and book-opening effects on the next page load, so the setting feels broken until then.
+**Brief:** Files: `src/ui/motion.js`, `src/ui/candle.js`, `src/ui/atticDust.js`, `src/ui/bookOpenFx.js` (read `reducedMotion()` per use, or re-read on change). Done when: switching Calm in the settings book stops those effects at once, with a test that flips the setting. **Touches:** settings, book opening. **Conflicts:** book-opening and attic threads.
+
+### ST4. Hear a level while dragging Music or Effects
+**Pitch:** The Music and Effects sliders give no sound while you drag, so players guess the level.
+**Brief:** Files: `src/ui/settingsBook.js`, `src/feel.js`. Done when: letting go of the Effects slider plays one short page turn at that level, and the Music slider plays a short room tone at its level, with nothing when Sound is off. **Touches:** settings, sound. **Conflicts:** sound palette threads.
 ### SH1. [x] Shareable Daily result card (per room, Share button)
 **Pitch:** After a Daily the Share button copies a spoiler-free text card (room, Daily number, depth, floor, streak, one tier symbol per book) and opens the system share sheet where the browser has one.
 **Brief:** Done: `src/ui/dailyShare.js` (text and share helper), `src/app/final.js`, `src/ui/results.js` (button), `src/ui/dailyShare.css` (phone wrap). Tests in `test/daily-share.test.js`. Screenshots in screenshots/daily-share/.
