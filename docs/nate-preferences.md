@@ -146,3 +146,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 alcove position: the alcove must sit vertically centred with half a row of books above and below on every resolution, home and in the run (after each answer, results); it looked off at the top with a full row below on a windowed 1920x1080.
 - 2026-11-06 room switching (tested): the whole fireplace must never disappear or reset elements; only gradient-tween the colours; typewriter reveals from the centre out.
 - 2026-11-06 room switching, plaque: the main box (Continue / Descend / Descend Unlimited) must not disappear between rooms; its words type from the centre out and the button itself glides to its new position and size.
+- 2026-11-06 stats scope: picked "TA3" from the audit, wants numbers clearly labelled as this room versus all rooms (the 0 day streak beside 300 ft deepest in the Chronicle confused).
