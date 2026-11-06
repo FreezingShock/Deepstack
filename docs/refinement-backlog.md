@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Look at the home plaque on your 1920 screen while mid-Daily: Continue should now have a clear gap to the Library Rules drawers and the Librarian's Card (src/ui/plaqueGap.css).
 - Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
 - Resize the window (or rotate your phone) on home and in each menu book: the hatch tag should clear the title, Descend and the five spines should always fit, short landscape windows get one row of spines, and the background shelves (books, cobwebs, props) should stay put as you drag the window. Say which size still feels cramped. (thread: fix layout at small and odd window sizes, `node scripts/responsive.mjs`)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
@@ -1779,3 +1780,11 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### RS3. Orientation change keeps the camera and open book
 **Pitch:** Rotating a phone mid-descent or with a book open should keep where you were, same books, same page.
 **Brief:** Goal: resize and orientationchange keep scroll depth, attic state and the open book's page; test in `scripts/responsive.mjs` with `page.setViewportSize`. Files: `src/world/world.js`, `src/ui/bookpages.js`. **Conflicts:** AT8, attic threads.
+
+### PG1. Plaque gap guard
+**Pitch:** A test that fails if the Continue/Descend plaque ever gets within 16px of the cabinet or ledger.
+**Brief:** Goal: extend `scripts/responsive.mjs` to measure `.descend` vs `.cc-cab`/`.ledger` at 1000 to 2560 wide in daily, resume and unlimited states. Files: `scripts/responsive.mjs`. Conflicts: low.
+
+### PG2. Long label stress states
+**Pitch:** Check every plaque state (resume, played, big text sizes) at all widths for touching neighbours.
+**Brief:** Goal: screenshot sweep of plaque states with text size large; fix any contact via `plaqueGap.css`. Conflicts: low.

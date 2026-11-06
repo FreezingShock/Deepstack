@@ -38,6 +38,7 @@ import {lazyBooks} from './ui/lazyScreens.js';
 import './ui/home.css';
 import './ui/descendGlow.css';
 import './ui/welcome.css';
+import './ui/plaqueGap.css';
 import './ui/deskProps.css';
 import './ui/mantel.css';
 import './ui/hearth.css';
