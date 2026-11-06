@@ -1,0 +1,23 @@
+/* Settings book (settingsBook.js). Uses the panel-book tokens (--bs-ink, --bs-mute, --bs-rule, --bk) so it sits on the parchment
+   page like the rest of the book. Text sizes follow --ts; nothing here moves, so reduced motion needs no rule. */
+.bk-spread.panel .sb-group{margin:0 0 6px}
+.bk-spread.panel .sb-h{font:600 calc(11px*var(--ts)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--bs-mute);margin:14px 0 2px}
+.bk-spread.panel .sb-slider output{flex:none;width:3.6ch;text-align:right;font-variant-numeric:tabular-nums;color:var(--bs-mute)}
+.bk-spread.panel .sb-slider input[type="range"]{flex:1 1 90px;min-width:0;width:auto;accent-color:var(--bk)}
+.bk-spread.panel .sb-slider label{flex:none;min-width:4.6em}
+.bk-spread.panel .sb-motion{margin-bottom:0}
+.bk-spread.panel .sb-danger{margin-top:8px;padding-top:4px;border-top:1px solid var(--bs-rule)}
+.bk-spread.panel .sb-dangerrow[hidden],.bk-spread.panel .sb-confirm[hidden]{display:none}
+.bk-spread.panel .sb-dangerrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;justify-content:space-between;padding:6px 0 10px}
+.bk-spread.panel .sb-dangerrow p{flex:1 1 180px;margin:0;font:italic calc(14px*var(--ts))/1.4 var(--serif);color:var(--bs-ink)}
+.bk-spread.panel .sb-reset{flex:none;min-height:36px;padding:0 14px;border:1px solid var(--c-blood-34);color:var(--c-blood-34);background:transparent;font:600 calc(13px*var(--ts)) var(--label);letter-spacing:.04em;cursor:pointer;border-radius:5px}
+.bk-spread.panel .sb-reset:hover,.bk-spread.panel .sb-reset[aria-expanded="true"]{background:var(--c-blood-34);color:var(--c-parchment)}
+.bk-spread.panel .sb-confirm{margin-top:6px;padding:12px 14px;border:1px solid var(--c-blood-34);border-radius:6px;background:var(--c-white-alpha-99)}
+.bk-spread.panel .sb-confirm h4{margin:0 0 4px;font:600 calc(16px*var(--ts)) var(--serif);color:var(--c-blood-34)}
+.bk-spread.panel .sb-confirm p{margin:0 0 10px;font:400 calc(14px*var(--ts))/1.45 var(--serif);color:var(--bs-ink)}
+.bk-spread.panel .sb-acts{display:flex;flex-wrap:wrap;gap:8px}
+.bk-spread.panel .sb-acts .btn{min-height:36px}
+.bk-spread.panel .sb-go{border-color:var(--c-blood-34);color:var(--c-blood-34)}
+.bk-spread.panel .sb-go:hover,.bk-spread.panel .sb-go:focus-visible{background:var(--c-blood-34);color:var(--c-parchment)}
+/* phones: the two confirm buttons share one row so the card stays on the page */
+@media (max-width:480px){.bk-spread.panel .sb-acts{flex-wrap:nowrap}.bk-spread.panel .sb-acts .btn{flex:1 1 0;min-width:0;padding:0 8px;font-size:calc(13px*var(--ts))}}
