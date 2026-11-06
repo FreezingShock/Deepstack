@@ -2,6 +2,7 @@
 // built by scripts/build-relations.mjs). An answer that never repeats the definition's words can still be right because it
 // is *related* to the word ("reserved" for taciturn) or to the words of its definition ("miserly" for a definition that says
 // "stingy"). Pure functions here; the facade loads the data once and hands it in.
+import {dataUrl} from '../core/dataUrl.js';
 import {analyze, stem, STOP, FILL} from './lexical.js';
 
 let REL = null;           // word -> {s,h,r,a}
@@ -13,7 +14,7 @@ export const hasRelations = () => !!REL;
 
 let loading = null;
 /** Fetches relations.json once. Resolves false (never throws) when it is missing so the judge still works without it. */
-export function loadRelations(url = (import.meta.env?.BASE_URL || '/') + 'data/relations.json') {
+export function loadRelations(url = dataUrl('relations.json')) {
   return loading ||= (async () => {
     try {
       const r = await fetch(url);

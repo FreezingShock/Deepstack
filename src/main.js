@@ -35,7 +35,7 @@ import './ui/reveal.js';
 import * as core from './core/index.js';
 import {Sfx} from './feel.js';
 import {installUiSounds} from './sound/uiHooks.js';
-import {onModelStatus,startModelLoad,judgeAnswer,prepareWords} from './scorer/index.js';
+import {onModelStatus,startModelLoad,judgeAnswer,prepareWords,loadRelations,loadSenses} from './scorer/index.js';
 import {BOOK_PAGES} from './ui/home.js';
 import {lazyBooks} from './ui/lazyScreens.js';
 import {registerLedgerBooks} from './ui/ledgerBooks.js';
@@ -179,8 +179,8 @@ const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();
 initTransitions();
 showHome();
-wordsReady.catch(()=>{}).then(()=>deferAfterPaint(startModelLoad,1500))
- // once the model is up, warm the judge in idle time: relations/senses (7 MB of JSON parse) and the distractor embeddings, so the first answer isn't slow
- .then(ok=>ok&&deferAfterPaint(()=>prepareWords([]),2500)).catch(()=>{});
+wordsReady.catch(()=>{}).then(()=>deferAfterPaint(()=>{const m=startModelLoad();Promise.all([loadRelations(),loadSenses()]).catch(()=>{});return m;},1500)) // relations/senses download beside the model, not after it
+ // once the model is up, warm the distractor embeddings in idle time so the first answer isn't slow
+ .then(ok=>ok&&deferAfterPaint(()=>prepareWords([]),600)).catch(()=>{});
  // judge model downloads after first paint and the word list
 window.__deepstack={openCard,S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,get run(){return run;}};
