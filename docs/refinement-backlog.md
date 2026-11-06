@@ -1619,13 +1619,9 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** At 375 the attic footer says "scroll up to go further in" (phones swipe) and wraps to three lines on a dark band, while the "Down the ladder" label touches the lantern tag. Copy that names an input (scroll, click, Enter) should follow the device.
 **Brief:** Goal: one helper that picks scroll/swipe, click/tap, and hides key hints on touch; use it in the attic hint and run hints; keep the label clear of the lantern at 375. Files: new `src/ui/inputCopy.js`, attic hint. Done when: 375 screenshot, test pins wording per input type. **Conflicts:** V10 (shortcuts), AE4.
 
-<<<<<<< HEAD
-### X3. "Close the book" belongs to the whole book
-=======
 ### [x] X3. "Close the book" belongs to the whole book
 
 _Done in this PR: Close the book is now a `.pg-foot` link on the right page bottom edge, in every menu book._
->>>>>>> origin/main
 **Pitch:** In the Unlimited book the handwritten "Close the book" sits under the Riddle button on the right page, so it reads as part of Riddle. It closes both halves.
 **Brief:** Goal: move it to the spread's bottom edge (or a ribbon) in every menu book so it is always in the same place. Files: book page builders, `bookpages.css`. Done when: all menu books at 1280 and 375. **Conflicts:** P1, 104 follow-ups.
 
@@ -1683,44 +1679,6 @@ _Done in this PR: Close the book is now a `.pg-foot` link on the right page bott
 ### W5. Wayfinding in the attic
 **Pitch:** On a phone the only sign of depth is one wrapped line of text ("row 1 of 3, scroll up to go further in"). The floor rail does this job in the run; the attic has nothing like it.
 **Brief:** Goal: a slim brass marker on the side showing which row you are in, tappable to jump. Files: `src/world/atticClimb.js`. Done when: 375 and 1280 screenshots, keyboard reachable. **Conflicts:** X2, V3.
-<<<<<<< HEAD
-
-## Y. From nate's own examples (2026-11-06): niche, animation-feel and overhaul items
-
-### Y1. The lift carries your book into the cage and you read it there
-**Pitch:** After a word, the brass lift that takes you down makes the new book simply disappear. The book should be picked up (by the crane or hand on the rope), placed in the cage, ride down with you, and be opened there so reading the result card feels like the cage delivering it.
-**Brief:** Goal: the earned book travels from the niche into the lift cage (grab, lift, set down inside, cage latch closes), the cage descends, and the result card opens out of the book in the cage. Files: `src/world/lift.js`, `src/app/run.js`, card reveal (`src/app/card.js`, `revealRecipes`). Done when: frame strip at 0/300/600/900/1200 ms for each tier, reduced motion skips to the card, no flash when the book vanishes, uniform motion curves. **Touches:** RUN, MAIN card hook. **Conflicts:** W3, R2, 16, V9 sounds.
-
-### Y2. Book page switch that is smooth
-**Pitch:** Turning pages in the menu books looks choppy: the leaf jumps between states instead of sweeping.
-**Brief:** Goal: profile the page turn (layout thrash, image decode, shadow repaint), move the leaf and shadow to transform/opacity only, pre-render the next spread, and measure frame time before and after with `?perf`. Files: `src/ui/pageFlip.js`, `pageFlip.css`, book builders. Done when: p95 frame under 20 ms on a 4x CPU-throttled run, no visible hitch on 10 consecutive turns. **Conflicts:** BS1, P1, P2, V10 keys.
-
-### Y3. Descent to home in half the time
-**Pitch:** Leaving a run (or finishing a descent) and coming back to the home page takes too long; the player waits through the whole lift-up and fade.
-**Brief:** Goal: cut the return to under ~1.2 s total, skippable by a keypress or tap, with the home fading in underneath rather than after. Files: `src/app/final.js`, `src/app/home.js`, `src/world/lift.js`. Done when: timing table before and after for Daily end, Unlimited end and mid-run leave. **Touches:** HOME, RUN. **Conflicts:** W1, Y1.
-
-### Y4. Top bar overhaul
-**Pitch:** The top bar (Deepstack plate, Sound, Credits, Settings, attic hatch) is functional but does not feel like part of the game. Not a hamburger menu: a bar that belongs to the library.
-**Brief:** Goal: redesign as part of the room (a brass rail or card-catalogue rail), with room for streak/depth readouts, a keys hint, and the attic hatch, hover and press feedback in the shared motion language, phone layout that does not crowd. Files: `src/ui/topbar.js`, `topbar.css`, `src/styles/`. nate to review two mockups before it ships. Done when: 375/1280/1640 screenshots, all existing buttons and keys unchanged. **Touches:** every screen. **Conflicts:** V3, V10 shortcuts, attic hatch.
-
-## Z. Niche felt-moment menu 2026-11-06 (built to nate's Y-series bar; proposals, none verified as absent beyond a code search)
-
-### Z1. Words you have met before
-**Pitch:** When a word you already own comes back (Unlimited pool, Riddle, a Daily weeks later), a pencilled margin note appears on the alcove frame: "met 9 days ago: Paperback". Beat it and the old book is slid off its shelf and replaced; fall short and it stays. Today a repeat is just another word.
-**Brief:** Goal: look up `S.shelf` by word at word start, show a margin note in the pen font, and on the card compare old and new tier with one handwritten line ("up from Paperback"). Files: new `src/ui/metBefore.js`, hook in `run.js` and `card.js`. Done when: tested for new word, repeat better, repeat worse, repeat equal; Daily unaffected for scoring. **Conflicts:** W3, Y1, 91.
-
-### Z2. The room breathes when you leave it alone
-**Pitch:** Home is perfectly still if you stop touching it. After ~40 s idle the fire pops and throws an ember, a candle on the mantel drips, a moth circles the candles, the bell on the cabinet rings once on its own. All of it stops the moment you move.
-**Brief:** Goal: a small idle director with 5 to 6 one-shot events at random 6 to 15 s spacing, each using existing sprites and sounds, all paused on any input and off in reduced motion and low quality. Files: new `src/ui/idleRoom.js`, hooks in `hearth.js`. Done when: tests for start, stop and reduced motion, `?perf` shows no cost at rest. **Conflicts:** FH2, W5, AT10.
-
-### Z3. The card cannot be skipped before the ink dries
-**Pitch:** The result card takes Enter to dismiss, and Enter was just how you submitted. Mashing or holding Enter can fly past the card before you read it. Make the "Next word" ribbon fill like cooling wax for ~0.5 s so it cannot be skipped by accident, and let any key after that go.
-**Brief:** Goal: ignore Enter repeat and key presses for the first 500 ms after the card's text has landed, shown as the ribbon filling left to right; first confirm the problem by simulating held Enter in a script. Files: `src/app/card.js`, card css. Done when: held Enter does not skip, a deliberate press after 0.5 s does, reduced motion shortens it. **Conflicts:** V10 keys, W3.
-
-### Z4. Seven books bound into the Daily
-**Pitch:** Finishing a Daily ends on a results screen. It should end with the librarian binding your seven books: they slide into the Daily book, a dated tab sticks out of its spine, and the Daily spine on home now shows today's tier colours.
-**Brief:** Goal: a 2 s end-of-Daily scene from the final screen back to home where the seven earned spines fly into the Daily book on the stack and a dated tab appears. Files: `src/app/final.js`, home Daily spine. Done when: frame strip, skippable, reduced motion jumps to the result. **Conflicts:** Y1, Y3, W1, 62, 63.
-=======
 ### W1 (home close). [x] Home comes back behind the book, not after it (PR pending)
 The room (title, plaque with cabinet, card and fire, sibling spines) now fades in from the moment a home book starts to close, over one `--m-page` cruise, so it is whole by the time the book lands (`.book-closing` in `bookOpenFx.css`, `onShut` in `openBook`). Test: `test/home-close-fade.test.js`.
 
@@ -1821,7 +1779,6 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### RS3. Orientation change keeps the camera and open book
 **Pitch:** Rotating a phone mid-descent or with a book open should keep where you were, same books, same page.
 **Brief:** Goal: resize and orientationchange keep scroll depth, attic state and the open book's page; test in `scripts/responsive.mjs` with `page.setViewportSize`. Files: `src/world/world.js`, `src/ui/bookpages.js`. **Conflicts:** AT8, attic threads.
->>>>>>> origin/main
 
 ## TA. Topic rooms audit menu 2026-11-06 (after #289/#290; screenshots audit/rm-*.png; word data from public/data/rooms.json vs words.json)
 
