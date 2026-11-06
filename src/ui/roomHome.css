@@ -131,3 +131,14 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
 /* TA7c: the room name stays on one line (tighter tracking), the topic and count sit below */
 .rm-plate b{white-space:nowrap;letter-spacing:.08em}
 .rm-plate{max-width:none}
+/* RA5: the Room ledger's swatches fill with how much of each room you have met, like the door plates */
+.rl-toc .rl-dot{width:.7em;height:.7em;background:conic-gradient(rgb(var(--c)) calc(var(--f,0)*1turn),rgba(var(--c),.3) 0);box-shadow:0 0 5px 1px rgba(var(--c),.4),0 0 0 1px rgba(var(--c),.85)}
+
+/* RA7: the Today card belongs to the room you are in: its name where "No. 7 of 7" used to be, and its fire colour on the card */
+.home .cc-slot[data-card="today"]{--rt:color-mix(in srgb,rgb(var(--rc,150,40,30)) 52%,var(--c-oak-1a1208))}
+.home .cc-slot[data-card="today"] .cb-big{color:var(--rt)}
+.home .cc-slot[data-card="today"] .cb-streak b{color:var(--rt)}
+.home .cc-slot[data-card="today"] .cc-no{color:var(--rt);opacity:1;font-weight:700}
+.home .cc-slot[data-card="today"] .wc-head{color:var(--rt);border-bottom-color:color-mix(in srgb,var(--rt) 55%,transparent)}
+.home .cb-room{display:flex;align-items:center;justify-content:center;gap:7px;margin:0 0 calc(6px*var(--ts));font:600 calc(10px*var(--ts))/1 var(--label);letter-spacing:.16em;text-transform:uppercase;color:var(--rt)}
+.home .cb-room i{width:8px;height:8px;border-radius:50%;background:rgb(var(--rc,150,40,30));box-shadow:0 0 6px 1px rgba(var(--rc,150,40,30),.55),0 0 0 1px rgba(0,0,0,.35)}
