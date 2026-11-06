@@ -29,19 +29,21 @@ export const KINDS=['stack','heap','trunk','slump','crate','plank','heap','stack
    phone the sign gets a row of its own). Every pile gets {x,w,kind}; every row {sec,title,count,sign,piles}.
    Rows beyond maxRows are counted in `hidden` (all of those books are on the Shelf). */
 export function planRows(items,W,{maxRows=60}={}){
- const phone=W<600,pileW=phone?150:214,fit=Math.max(1,Math.floor((W-28)/pileW)),x0=(W-fit*pileW)/2+pileW/2;
+ const phone=W<600,pileW=phone?150:214,fit=Math.max(1,Math.floor((W-28)/pileW));
  const rows=[];let n=0,hidden=0;
  atticSections(items).forEach((s,si)=>{
   const piles=[];
   for(let k=0,o=0;k<s.items.length;o++){const c=SIZES[(o+(s.items[0].recent?0:3))%SIZES.length];piles.push({items:s.items.slice(k,k+c),ord:o});k+=c;}
   let k=0,first=true;
   for(;;){
-   const cap=first?(fit>=3?fit-1:0):fit,take=piles.slice(k,k+cap);k+=cap;
+   const cap=first?(fit>=4?fit-2:fit>=2?fit-1:0):fit,take=piles.slice(k,k+cap);k+=cap;
    if(rows.length>=maxRows){hidden+=take.reduce((m,p)=>m+p.items.length,0);}
    else{
-    const off=first&&cap>0?1:0;
-    take.forEach((p,j)=>{p.x=x0+(j+off)*pileW;p.w=pileW;p.kind=KINDS[(n++*3+si)%KINDS.length];});
-    rows.push({sec:si,title:s.title,count:s.items.length,sign:first?{x:x0,w:pileW}:null,piles:take});
+    /* the sign and its piles stand as one group, centred under the light: a short row (a month with one pile) sits in
+       the beam instead of hugging the left wall, and the sign stays right beside its first pile */
+    const off=first&&cap>0?1:0,slots=take.length+(first?1:0),g0=W/2-slots*pileW/2+pileW/2;
+    take.forEach((p,j)=>{p.x=g0+(j+off)*pileW;p.w=pileW;p.kind=KINDS[(n++*3+si)%KINDS.length];});
+    rows.push({sec:si,title:s.title,count:s.items.length,sign:first?{x:g0+(off&&take.length?pileW*.06:0),w:pileW}:null,piles:take});
    }
    first=false;if(k>=piles.length)break;
   }
@@ -147,8 +149,12 @@ export function buildHall(W,A,DPR=1,seed=7){
  const dg=c.createRadialGradient(vp.x,vp.y+A*.25,A*.05,vp.x,vp.y+A*.25,Math.max(W,A)*.8);dg.addColorStop(0,rgb(0,0,0,0));dg.addColorStop(1,rgb(0,0,0,.5));c.fillStyle=dg;c.fillRect(0,0,W,A);
  /* round window on the back wall and the shaft of light it throws down the room */
  const wc=P(W/2,A*.08,FARS),wr=Math.max(13,Math.min(W*.034,A*.05));
- const shaft=c.createLinearGradient(0,wc.y,0,yF);shaft.addColorStop(0,rgb(255,243,201,.2));shaft.addColorStop(1,rgb(255,243,201,0));
+ const shaft=c.createLinearGradient(0,wc.y,0,yF);shaft.addColorStop(0,rgb(255,243,201,.2));shaft.addColorStop(.7,rgb(255,243,201,.15));shaft.addColorStop(1,rgb(255,243,201,.1));
  c.fillStyle=shaft;c.beginPath();c.moveTo(wc.x-wr*.8,wc.y);c.lineTo(wc.x+wr*.8,wc.y);c.lineTo(wc.x+wr*3.4+W*.07,yF);c.lineTo(wc.x-wr*3.4-W*.07,yF);c.closePath();c.fill();
+ /* where the beam lands: a warm pool on the near boards, where the first rows of piles stand */
+ {const py=yF*.9,prx=Math.max(W*.24,170),pry=A*.13;c.save();c.translate(wc.x,py);c.scale(1,pry/prx);
+  const pg=c.createRadialGradient(0,0,0,0,0,prx);pg.addColorStop(0,rgb(255,236,180,.26));pg.addColorStop(.55,rgb(255,226,160,.12));pg.addColorStop(1,rgb(255,220,150,0));
+  c.fillStyle=pg;c.beginPath();c.arc(0,0,prx,0,6.3);c.fill();c.restore();}
  const wgl=c.createRadialGradient(wc.x,wc.y,0,wc.x,wc.y,wr*3);wgl.addColorStop(0,rgb(255,243,201,.5));wgl.addColorStop(1,rgb(255,243,201,0));c.fillStyle=wgl;c.fillRect(wc.x-wr*3,wc.y-wr*3,wr*6,wr*6);
  c.fillStyle=rgb(255,244,214);c.beginPath();c.arc(wc.x,wc.y,wr,0,6.3);c.fill();
  c.strokeStyle=rgb(58,40,22);c.lineWidth=Math.max(2.5,wr*.18);c.beginPath();c.arc(wc.x,wc.y,wr,0,6.3);c.stroke();
