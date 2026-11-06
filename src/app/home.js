@@ -44,7 +44,7 @@ export function showHome(){
  bindAtticHome(ui.home,{shelf:S.shelf});
  bindDeskProps(ui.home,{sfx:Sfx});
  mountHearth(ui.home,{sfx:Sfx,mood:hearthMood(S,st.streak)});
- setBookSfx(n=>n==="whoosh"?Sfx.whoosh(.22):Sfx[n]&&Sfx[n]());
+ setBookSfx(n=>n==="whoosh"?Sfx.cue("lift"):n==="thud"?Sfx.cue("shut"):n==="flip"?Sfx.cue("turn"):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
 }

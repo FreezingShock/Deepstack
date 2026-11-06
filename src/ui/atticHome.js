@@ -3,6 +3,7 @@
    swipe up, ArrowDown, Escape or "Down the ladder" to come back. One cue and one ladder button live on the page for
    the whole session; bindAtticHome only refreshes what they say. */
 import {World} from '../world/world.js';
+import {Sfx} from '../feel.js';
 import {atticAll,atticTidy} from '../core/attic.js';
 import './attic.css';
 
@@ -97,12 +98,16 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
 }
 /* Click the hatch: the cord is pulled, the lid swings down and warm light falls onto the panel (CSS, class "pulling"),
    then the climb starts. Reduced motion skips the show and climbs at once. */
+/* sound palette: the hatch creaks, then a wooden rung under each hand (silent under reduced motion) */
+let rungT=0;
+const rungs=n=>{if(reduced())return;for(let i=0;i<n;i++)setTimeout(()=>Sfx.cue('rung'),i*210);};
 function open(){
  if(!count||!ui().live||pulling)return;
  if(reduced()||!cue){World.setAttic(true);return;}
+ Sfx.cue('hatch');rungT=setTimeout(()=>rungs(5),PULL_MS);
  cue.classList.add('pulling');document.documentElement.classList.add('attic-lit');
  pulling=setTimeout(()=>{pulling=0;World.setAttic(true);if(!World.atticOpen)cue.classList.remove('pulling');document.documentElement.classList.remove('attic-lit');},PULL_MS);
 }
 /* scrolling back down while the cord is still being pulled puts the lid back; nothing climbs */
-function cancelPull(){clearTimeout(pulling);pulling=0;if(cue)cue.classList.remove('pulling');document.documentElement.classList.remove('attic-lit');}
-function close(){World.setAttic(false);}
+function cancelPull(){clearTimeout(pulling);clearTimeout(rungT);pulling=0;if(cue)cue.classList.remove('pulling');document.documentElement.classList.remove('attic-lit');}
+function close(){if(World.atticOpen)rungs(4);World.setAttic(false);}

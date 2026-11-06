@@ -28,6 +28,7 @@ import './ui/coverLock.css';
 import './ui/reveal.js';
 import * as core from './core/index.js';
 import {Sfx} from './feel.js';
+import {installUiSounds} from './sound/uiHooks.js';
 import {onModelStatus,startModelLoad,judgeAnswer,prepareWords} from './scorer/index.js';
 import {BOOK_PAGES} from './ui/home.js';
 import {lazyBooks} from './ui/lazyScreens.js';
@@ -120,7 +121,7 @@ function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
 initA11y();
 initKeys();
-initTopbar({Sfx});
+initTopbar({Sfx});installUiSounds(Sfx);
 watchHomeLayout(ui.home);
 World.onLedge(initLedge({tiers:TIERS,canActivate:()=>ui.stage.hidden&&$('#cardlayer').hidden,onOpen:b=>openCard(b,{fresh:false}),showTip,hideTip}));
 const browse=initBrowse({world:World,floors:FLOORS,startOf:floorStartFt,ft:FT,rm:RM});
