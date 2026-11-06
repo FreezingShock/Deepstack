@@ -173,7 +173,7 @@ addEventListener('keydown',e=>{
 const bookOpenCard=()=>!$('#cardlayer').hidden;
 BOOK_PAGES.bRooms={...roomsBook(S,{go:id=>goRoom(id),today:utc,lexicon:core.lexicon}),keepOnEsc:bookOpenCard};
 lazyBooks({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,utc,computeStats,floorAtFt,wordsReady,wordsLoaded:()=>wordsLoaded});
-registerLedgerBooks({S,FLOORS,floorStartFt:core.floorStartFt});
+registerLedgerBooks({S,FLOORS,floorStartFt:core.floorStartFt,today:utc,computeStats});
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();
 initTransitions();

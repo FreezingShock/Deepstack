@@ -14,3 +14,13 @@ html[data-motion="reduce"] .home .lg-row[role="button"] dd{transition:none}
 .bk-spread.menu .flb-stats{list-style:none;margin:14px 0 0;padding:0}
 .bk-spread.menu .flb-stats li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--rule);font:500 calc(18px*var(--ts))/1.6 var(--hand)}
 .home .lg-row#bFloors{--bk:#3a2a1a;--bk2:#241709;--bk-gild:#c9a24a}
+/* The Ember Log (Streak row) */
+.home .lg-row#bStreak{--bk:#5a2410;--bk2:#331208;--bk-gild:#d98a3a}
+.bk-spread.menu .emb-bar{height:12px;border-radius:6px;background:var(--rule);overflow:hidden;margin:8px 0 4px}
+.bk-spread.menu .emb-bar i{display:block;height:100%;width:var(--w);background:linear-gradient(90deg,var(--c-book-red),var(--c-brass-65))}
+.bk-spread.menu .emb-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:calc(6px*var(--ts));margin-top:8px}
+.bk-spread.menu .emb-cal i{font:500 calc(10px*var(--ts)) var(--mono);color:var(--mute);text-align:center;font-style:normal}
+.bk-spread.menu .emb-d{aspect-ratio:1;display:grid;place-items:center;min-width:0;border:1.5px solid var(--rule);border-radius:50%;font:700 calc(12px*var(--ts)) var(--mono);color:var(--mute)}
+.bk-spread.menu .emb-d.played{background:radial-gradient(circle at 40% 35%,var(--c-brass-65),var(--c-book-red));border-color:var(--c-book-red);color:var(--c-parchment-85)}
+.bk-spread.menu .emb-d.today{outline:2px solid var(--bk);outline-offset:2px;color:var(--bk)}
+.bk-spread.menu .emb-d.none{opacity:.3}
