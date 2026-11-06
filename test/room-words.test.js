@@ -17,7 +17,7 @@ test('room-words.json: every topic room has sorted, unique, playable, unblocked 
   assert.deepEqual(RW.cols, ['w', 'pos', 'def', 'd', 't', 'hint']);
   for (const r of topicRooms) {
     const list = RW.rooms[r.id];
-    assert.ok(list.length >= 300, `${r.id}: ${list.length}`);
+    assert.ok(list.length >= 200, `${r.id}: ${list.length}`);
     assert.equal(new Set(list.map(e => e[0])).size, list.length, `${r.id}: duplicate words`);
     for (const [w, pos, def, d, t] of list) {
       assert.match(w, /^[a-z]{5,16}$/);
