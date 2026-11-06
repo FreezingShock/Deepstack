@@ -24,3 +24,8 @@ html .attic-cue-home .ach-hatch::after{top:calc(100% + 2px)}
 html .attic-down .adl-frame{top:calc((var(--barH,52px) - 12px)/2)}
 .attic-beam{top:calc(var(--barH,52px) - 6px)}
 @media(max-width:560px){html .attic-cue-home{--hw:72px}}
+
+/* RA2: railFit.js hides these step by step when the rail is too narrow for the hatch to sit clear of every button. */
+#bar.fit-nogauge #barGauges,#bar.fit-nokeys #bKeys{display:none}
+html .attic-cue-home[data-tight="1"] .ach-word{font-size:calc(8px*var(--ts));letter-spacing:.08em;text-indent:.08em;margin-left:4px}
+#bar.fit-smallmark #mark{zoom:.72}

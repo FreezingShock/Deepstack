@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Phone check for the three audit fixes (RA2/RA5/RA7): the attic hatch should now sit between the wordmark and the buttons with Mute fully tappable (on very narrow phones the keyboard button hides and the wordmark shrinks a little; Keys is still in the card catalogue). Open the Rooms book (each row says "N of M met" and its swatch fills), and open the Today card in a few rooms (the footer names the room and the card takes its colour). Tell me if you would rather keep the keyboard button and lose the streak plate instead.
 - On your phone, open the Rooms book, tap a room in the contents list (try the Reading Room): it now turns to that room's page. CI also walks every room by door, keys, dots and the book on every push (TA4).
 - Look at the Card's Floor row (try the Catacombs and the Sunken Vault), the attic ladder at phone width, and the fire swatch on the side-door plates (TA7, PR #305 + follow-up). Also note: side doors were missing under reduced motion until this PR; check they now show on first load with Reduce motion on.
 - Look at the door plates (swatch fills with rooms met, one-line names) and the Card's Floor row (try the Catacombs and the Sunken Vault), the attic ladder at phone width, and the fire swatch on the side-door plates (TA7, PR #305 + follow-up). Also note: side doors were missing under reduced motion until this PR; check they now show on first load with Reduce motion on.
@@ -1946,7 +1947,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### RA1. [x] (PR pending) Phone room home hides Unlimited and Stats
 **Pitch:** In a topic room at 375x667 the extra "N of M met" line and Daily line push the fire down, and the Unlimited and Stats spines slide under the shelf (Reading Room is fine). **Brief:** Goal: pull the room's two caption lines into one row or tighten the fire's top margin so all four spines stay visible down to 360x640. Files: `src/ui/roomHome.js`, new `src/ui/roomHomeFit.css`. Screens: audit/x-room-home-375.png vs x-home-375.png. **Conflicts:** CC1, TR7.
 
-### RA2. Attic gauge sits on the Mute button on phones
+### RA2. [x] (PR pending, RA2/RA5/RA7 thread) Attic gauge sits on the Mute button on phones
 **Pitch:** On every phone screen the ATTIC gauge covers the mute button (the dots show behind it), so you cannot mute from the home or any book. **Brief:** Goal: move the gauge into the free space left of Keys or shrink it, keeping the hatch tag hanging from it. Files: `src/ui/topbarRail.js` css. Screens: x-home-375.png. **Conflicts:** none.
 
 ### RA3. [x] (PR pending) Depth plaque overlaps the top bar on phones
@@ -1955,14 +1956,23 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### RA4. [x] (PR pending, filters fold to one line each) Shelf filter rows crowd on phones
 **Pitch:** The ROOM and RARITY rows wrap with the colour dots under the labels and the squiggle under "All" cutting through the next line; "Longest word" drops to its own line under a squiggle. **Brief:** Goal: a two-column chip grid with the dot inline and no squiggle on wrapped rows. Screens: x-room-shelf-375.png. **Conflicts:** TR7.
 
-### RA5. Room Ledger shows met counts, not just sets
+### RA5. [x] (PR pending, RA2/RA5/RA7 thread) Room Ledger shows met counts, not just sets
 **Pitch:** Every room line says "0/3 sets" but the door plates already know "5 of 156 met"; the ledger should say how far into each room you are. **Brief:** Goal: add a thin progress bar and "5 of 156" beside each room line, on phone and desktop. Files: `src/ui/roomLedger.js`. Screens: x-rooms-375.png. **Conflicts:** TA2c, TA3.
 
 ### RA6. Almanac and Lexicon show the room you are standing in
 **Pitch:** In the Chronicle the Almanac says "0 days running, no descents yet" while the top bar says 5 day streak and 300 ft deepest: the page and the bar disagree and nothing says which scope each shows. **Brief:** Goal: a room label on each stats page ("The Chronicle" vs "All rooms") and agree the bar with it. Screens: x-room-stats-1280.png, y-home-1280.png. **Conflicts:** TA3 (started), TR8.
 
-### RA7. Today drawer cycles every room but opens on the wrong one
+### RA7. [x] (PR pending, RA2/RA5/RA7 thread) Today drawer cycles every room but opens on the wrong one
 **Pitch:** The Today card opens on "No. 7 of 7" in the Reading Room; it should open on the room you are in and show that room's colour. **Brief:** Goal: start on the current room, tint the heading with the room's ink. Screens: y-drawer-today-1280.png. **Conflicts:** CC2.
+### RA8. Today card shows the room's own progress
+**Pitch:** The Today card now names the room and takes its colour; it could also say how far in you are ("47 of 118 met") and this room's streak so the card stands alone. **Brief:** Goal: one pen line under the Daily number with the room's met count and room streak (the same `roomMetLabel`). Files: `src/ui/cabinet.js`, `roomHome.css`. **Conflicts:** none known.
+
+### RA9. Phone rail brings the streak flame back
+**Pitch:** On phones under 414px the streak and deepest plates are hidden so the hatch and Mute fit; the flame is the thing you check every day. **Brief:** Goal: a small flame and number tucked on the left of the hatch when there is room (or hanging under the rail like the depth tag), room dot included. Files: `src/ui/railFit.js`, `topbarRail.css`. **Conflicts:** none known.
+
+### RA10. Ledger rows open their room page with a progress ring
+**Pitch:** The ledger swatches fill with rooms met; the sets tally ("0/3 sets") now only lives on each room's page. **Brief:** Goal: a thin second ring (sets complete) around each swatch and a tooltip/pen note on tap. Files: `src/ui/roomLedger.js`, `roomHome.css`. **Conflicts:** TR12.
+
 ### [x] SL1. Show the room on the phone top bar and Card (done in the scope-labels PR: bars under 1180 px keep a room dot; the Almanac tags already show on phones; bars under 400 px still hide the plates)
 **Pitch:** On phones the streak chip drops its label and the Librarian's Card is hidden, so the "this room" tag is invisible there.
 **Brief:** Goal: on screens under 560 px show a room-coloured dot on the streak chip (tap shows "Chronicle streak"), and put the same scope tags on the Rooms book page. Files: `src/ui/topbarRail.js`, `scope.css`. **Conflicts:** none known.
