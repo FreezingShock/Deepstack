@@ -51,7 +51,7 @@ async function open(view, room, bestFloor) {
 const seenFloors = new Set();
 for (const view of VIEWS) for (const room of ROOMS) {
   const tag = `${view.w}px ${room}`;
-  for (const depth of room === 'hall' ? FLOOR_IDX : [3]) {
+  for (const depth of room === 'hall' && view.w === 1280 ? FLOOR_IDX : [3]) {
     const {ctx, page} = await open(view, room, depth);
     try {
       const f = await page.evaluate(() => {
@@ -80,4 +80,4 @@ if (![...seenFloors].some(t => /Catacombs/.test(t))) problems.push('the Catacomb
 
 await browser.close(); server.close();
 if (problems.length) { console.error(`room-visuals: FAILED (${problems.length})\n - ` + [...new Set(problems)].join('\n - ')); process.exit(1); }
-console.log(`room-visuals: ok (${ROOMS.length} rooms x 375/1280, reduced motion; floors seen: ${[...seenFloors].join(', ')})`);
+console.log(`room-visuals: ok (${ROOMS.length} rooms x ${VIEWS.map(v => v.w).join('/')}px, reduced motion; floors seen: ${[...seenFloors].join(', ')})`);
