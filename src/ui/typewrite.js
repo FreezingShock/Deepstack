@@ -1,4 +1,4 @@
-/* Typewriter for text that is already in the DOM. The full text stays in place (hidden letters still take their space),
+/* Typewriter for text that is already in the DOM, revealed from the middle of the line outwards. The full text stays in place (hidden letters still take their space),
    so nothing around it reflows while it types. Time-based, so a slow frame skips letters instead of stretching the line.
    Under reduced motion, or with no animation frames, the text simply stands there. */
 const CPS = 70, MIN = 240, MAX = 620; // letters per second, and the bounds on how long one line may take
@@ -13,17 +13,24 @@ export function typewrite(el, {still = false, delay = 0} = {}) {
   walk(el);
   const total = nodes.reduce((n, t) => n + t.nodeValue.length, 0);
   if (still || !total || typeof requestAnimationFrame === 'undefined') return () => {};
+  let at = 0;
   const parts = nodes.map(t => {
-    const full = t.nodeValue, a = document.createElement('span'), b = document.createElement('span');
-    b.style.visibility = 'hidden'; b.textContent = full;
-    t.replaceWith(a, b); return {a, b, full, t};
+    const full = t.nodeValue, mk = hid => { const x = document.createElement('span'); if (hid) x.style.visibility = 'hidden'; return x; };
+    const p = {pre: mk(true), mid: mk(false), post: mk(true), full, t, s: at, e: at + full.length};
+    at += full.length; t.replaceWith(p.pre, p.mid, p.post); return p;
   });
   const dur = Math.min(MAX, Math.max(MIN, total / CPS * 1000));
   let raf = 0, done = false, t0 = 0;
-  const show = k => { let left = k; for (const p of parts) { const n = Math.max(0, Math.min(p.full.length, left)); left -= n; p.a.textContent = p.full.slice(0, n); p.b.textContent = p.full.slice(n); } };
+  const show = k => {
+    const lo = Math.round(total / 2 - k / 2), hi = Math.round(total / 2 + k / 2); // the letters showing: a window growing out of the centre
+    for (const p of parts) {
+      const a = Math.min(p.full.length, Math.max(0, lo - p.s)), b = Math.max(a, Math.min(p.full.length, hi - p.s));
+      p.pre.textContent = p.full.slice(0, a); p.mid.textContent = p.full.slice(a, b); p.post.textContent = p.full.slice(b);
+    }
+  };
   const finish = () => {
     if (done) return; done = true; cancelAnimationFrame(raf); live.delete(el);
-    for (const p of parts) if (p.a.isConnected) { p.a.replaceWith(p.t); p.b.remove(); }
+    for (const p of parts) if (p.mid.isConnected) { p.pre.replaceWith(p.t); p.mid.remove(); p.post.remove(); }
   };
   const step = now => {
     if (done) return;

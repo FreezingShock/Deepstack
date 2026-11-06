@@ -1,0 +1,5 @@
+/* Tight home rooms (under 380px of room height, e.g. a 1280x500 window or an 800x600 one) kept overflowing by a few px
+   once the streak candles and the room ring were on: a smaller wordmark and tagline give that height back so the
+   room never needs a scrollbar. Loaded after home.css, which sets the base sizes. */
+[data-room=tight] .home .title{font-size:calc(34px*var(--ts))}
+[data-room=tight] .home .tagline{font-size:calc(14px*var(--ts))}

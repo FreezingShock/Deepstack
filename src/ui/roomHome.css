@@ -8,6 +8,10 @@
 @property --rm-ink{syntax:'<number>#';inherits:true;initial-value:255,214,150}
 html{transition:--rm-hue var(--m-page) var(--e-cruise),--rm-sat var(--m-page) var(--e-cruise),--rm-rgb var(--m-page) var(--e-cruise),--rm-ink var(--m-page) var(--e-cruise)}
 
+@property --c{syntax:'<number>#';inherits:true;initial-value:255,200,120}
+@property --ci{syntax:'<number>#';inherits:true;initial-value:255,214,150}
+.rm-door{transition:--c var(--m-page) var(--e-cruise),--ci var(--m-page) var(--e-cruise)}
+
 /* the fire: the hearth's live flames take the room's salt colour; the room light follows */
 html[data-room] .hearth canvas:last-of-type{filter:hue-rotate(var(--rm-hue)) saturate(var(--rm-sat,1.2))}
 html[data-room] .hearth-light.hl-glow{background:
@@ -82,9 +86,6 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
 .rl-here{font-style:italic;opacity:.75;margin-top:10px}
 .bk-spread .rl-enter{margin-top:12px}
 @media(prefers-reduced-motion:reduce){.rm-fire{animation:none}}
-/* the new room's doors come in with it */
-body:has(#home.rm-enter) #rm-doors{animation:rmDoorsIn var(--m-smooth) var(--e-settle) both}
-@keyframes rmDoorsIn{from{opacity:0}}
 
 /* Stats: the Rooms pages (roomStats.js) */
 .alm.rs .rs-t{width:100%;border-collapse:collapse;font-size:calc(14px*var(--ts,1));margin-top:6px}

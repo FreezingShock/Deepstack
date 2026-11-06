@@ -108,7 +108,10 @@ function roomLight() {
 /* ---------- mount ---------- */
 let current = null;
 /** Build the hearth into #home (call after every home render). Returns {destroy, stoke}. */
-export function mountHearth(home, {sfx, mood} = {}) {
+export function mountHearth(home, {sfx, mood, reuse = false} = {}) {
+  /* reuse: the home was redrawn around a fire that should keep burning (walking between rooms): put the same layer back
+     and lay it out again, so the flames, sparks and bricks never restart */
+  if (reuse && current && current.layer && home && !current.dead()) { home.prepend(current.layer); current.setMood(mood); current.layout(); return current; }
   if (current) current.destroy();
   if (!home || typeof document === 'undefined') return null;
   current = createHearth(home, sfx, mood);
@@ -117,7 +120,7 @@ export function mountHearth(home, {sfx, mood} = {}) {
 
 function createHearth(home, sfx, mood) {
   sprites();
-  const MH = mood && mood.h > 0 ? mood.h : 1, SPARK = emberSprite(mood && mood.tint);
+  let MH = mood && mood.h > 0 ? mood.h : 1, SPARK = emberSprite(mood && mood.tint);
   const doc = document, root = doc.documentElement;
   const layer = doc.createElement('div'); layer.className = 'hearth'; layer.setAttribute('aria-hidden', 'true');
   const cStatic = doc.createElement('canvas'), cAnim = doc.createElement('canvas');
@@ -165,6 +168,7 @@ function createHearth(home, sfx, mood) {
       const candles = q('.mantel-row');
       if (getComputedStyle(mantelEl).display === 'none') { setStyle(mantelEl, 'display', 'block'); setStyle(candles, 'display', 'none'); }
       home.classList.add('hearth-flow');
+      setStyle(mantelEl, 'transition', 'none'); // reduced motion gives every property a 0.01ms transition, and the solver below would measure stale margins
       // room under the mantel: the mantel's own headroom plus whatever is left above the stacks, at most 230
       const stacksTop = () => shelves.length ? Math.min(...shelves.map(s => loc(s).y)) : H;
       const bottom = () => loc(tag && tag.style.display !== 'none' ? tag : descend).b;
@@ -577,6 +581,9 @@ function createHearth(home, sfx, mood) {
     stoke,
     pop,
     layout,
+    layer,
+    dead: () => dead,
+    setMood(m) { MH = m && m.h > 0 ? m.h : 1; SPARK = emberSprite(m && m.tint); },
     get geom() { return G; },
     destroy() {
       dead = true; clearTimeout(crackleT); cancelAnimationFrame(raf); raf = 0; if (pend) cancelAnimationFrame(pend);

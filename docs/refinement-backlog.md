@@ -1761,9 +1761,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Make walking through a door feel like a place: the door you take swings open, the new fire flares up from embers as the room slides in, and a soft footstep and latch sound plays.
 **Brief:** Goal: richer `rm-leave`/`rm-enter` keyframes, a `door` cue in `src/sound/materials.js`; keep it under 600 ms and transform/opacity only. **Conflicts:** sound threads, hearth.
 
-### [x] TR13. Room switch as a colour shift (PR pending)
+### [x] TR13. Room switch as a colour shift (#294, then keep-the-fire follow-up)
 **Pitch:** Walking to another room keeps the same fireplace: fire, light, the Deepstack title and labels glide to the new room's colours, then the room line and Daily line type themselves in. No whole-room slide or fade; works under reduced motion.
-**Brief:** Done in `src/app/roomGo.js`, `src/ui/roomHome.{js,css}`, `src/ui/typewrite.js`. **Conflicts:** hearth, doors-under-reduced-motion thread.
+**Brief:** Follow-up: the home is redrawn with `showHome({keep:true})` so the same hearth layer, wall and doors persist (`mountHearth({reuse})`), the doors' colours glide (`@property --c`), and the typewriter reveals from the centre out; the Descend plaque button glides to its new place and size and changed words type in (`src/ui/plaqueMorph.js`). Done in `src/app/roomGo.js`, `src/ui/roomHome.{js,css}`, `src/ui/typewrite.js`. **Conflicts:** hearth, doors-under-reduced-motion thread.
 
 ### TR14. Tint the Descend plaque and book spines by room
 **Pitch:** The colour glide also reaches the Descend plaque trim and the home book spines in a faint wash of the room's fire, so the whole room feels lit by it.
@@ -1889,3 +1889,17 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### TA9. [x] (senses half done in this PR: scripts/build-room-senses.mjs) A room's word shows the room's own hint and "also means"
 **Pitch:** The Observatory now asks for the science sense of a word, but the "also means" strip and the clue still come from the main list's sense.
 **Brief:** Goal: for words in `room-words.json`, drive the clue, hint and "also means" line from the room entry so the whole card agrees with the definition. Files: `src/core/roomPool.js`, `src/ui/alsoMeans.js`. **Conflicts:** TA1 (done).
+
+### SC1. Partial-answer verdicts follow the score — DONE (this PR)
+**Pitch:** "someones speaking patterns" for prose scored 5 (+21 ft) but the line said "Nothing here points at the meaning yet." Tier 0 answers with 3+ points now get "Close in spirit, but it misses the core: <gist of the definition>." (`src/core/verdict.js`).
+### SC2. Add missing senses for newly added words (speech / ordinary language for prose)
+**Pitch:** nate: multi-definition words and homophones might not be added; answers that fit a real sense should score. **Brief:** Goal: each new word gets its other senses in `public/data/senses.json` (`alt: [[pos, gloss]]`); the scorer already reads them. Files: `scripts/build-senses.mjs`, data only. **Conflicts:** room word lists thread.
+### SC3. Show what the answer did get right on low scores
+**Pitch:** the verdict names the gap; the caught/missed lines could also say which part overlapped. **Brief:** Goal: use `j.caught` in the tier 0 and 1 verdict. Files: `src/core/verdict.js`. **Conflicts:** none.
+### CC4. Half-row bands as a living edge
+**Pitch:** The half rows above and below the alcove are now deliberate; make them feel alive.
+**Brief:** Goal: let a few books in the top and bottom bands react (a book tilts toward the cursor, a lamp glow spills on the bottom plank). Files: a new `src/ui/bandLife.js`. **Conflicts:** `world.js` draw loop, ambient.js.
+
+### CC5. Tall-screen alcove breathing
+**Pitch:** On 1440p+ tall windows the alcove spans many rows; add a mid-wall detail.
+**Brief:** Goal: for windows over 1200 px tall, add a small plaque or ladder on the side shelves at the alcove's mid height. Files: new css/js only. **Conflicts:** none known.
