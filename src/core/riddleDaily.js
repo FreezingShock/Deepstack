@@ -1,6 +1,6 @@
 /* Daily Riddle: the Riddle section seeded by UTC date. Same seven words for everyone, one attempt a day.
    Results live in S.riddle.days[dayKey] (additive), with a streak derived from those keys. Pure helpers, tested without the canvas. */
-import {WORDS} from './words.js';
+import {WORDS,GHOSTS} from './words.js';
 import {pickWord} from './level.js';
 import {rampTargets,pickRampWord} from './difficulty.js';
 import {hashStr,mulberry,dailyWords,dailyNumber} from './daily.js';
@@ -13,7 +13,7 @@ export function dailyRiddleWords(dateStr,n=RIDDLE_DAY_WORDS){
   const rng=mulberry(hashStr('deepstack-riddle-'+dateStr));
   const used=new Set(dailyWords(dateStr,n).map(w=>w.id)),out=[];
   for(const target of rampTargets(n)){
-    const w=pickRampWord(WORDS,target,used,out.map(x=>x.w),rng)||pickWord(target,used,rng);
+    const w=pickRampWord(WORDS,target,used,out.map(x=>x.w),rng,undefined,GHOSTS)||pickWord(target,used,rng);
     used.add(w.id);out.push(w);
   }
   return out.sort((a,b)=>a.d-b.d);

@@ -1,5 +1,5 @@
 import {pickWord} from './level.js';
-import {WORDS} from './words.js';
+import {WORDS,GHOSTS} from './words.js';
 import {rampTargets, pickRampWord} from './difficulty.js';
 /* ----- seeded daily ----- */
 export function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19;}return (h>>>0);}
@@ -10,7 +10,7 @@ export const DAILY_SPAN=5;
 export function dailyWords(dateStr,n){
  const rng=mulberry(hashStr('deepstack-'+dateStr));const used=new Set(),out=[];
  for(const target of rampTargets(n)){
-  const w=pickRampWord(WORDS,target,used,out.map(x=>x.w),rng)||pickWord(target,used,rng);
+  const w=pickRampWord(WORDS,target,used,out.map(x=>x.w),rng,undefined,GHOSTS)||pickWord(target,used,rng);
   used.add(w.id);out.push(w);
  }
  // Jitter can swap neighbours; keep the run strictly easiest-to-hardest.

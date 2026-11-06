@@ -1709,3 +1709,16 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### Y8. Hatch lid reacts to the fire (from Y5)
 **Pitch:** The hatch sits in the rail now; its inner glow could breathe with the hearth flame below it so the room feels connected.
 **Brief:** Goal: drive `.ach-glow` opacity from the hearth flicker value, subtle, off in reduced motion. Files: `src/ui/atticHome.js`, `src/ui/hearth.js`. **Conflicts:** hearth threads.
+
+### TR4. Word pool safety filter [x] (word-blocklist PR)
+**Pitch:** The topic scan found a racial slur ("coolie") in the shipped word list. Done: `src/core/blocklist.js` drops slurs, hateful terms and ethnic or sexual stereotypes by word and by gloss; `test/word-blocklist.test.js` fails if one returns.
+**Brief:** Blocked words stay as non-playable "ghosts" in the Daily's random stream so no other day reshuffles (Daily No. 1 to 4 are pinned by a fixture). Add a word to `BLOCKED_WORDS` to block it. **Conflicts:** word pool threads.
+
+### TR5. Hand-review the Daily slice of the word list
+**Pitch:** The blocklist catches known slurs; a person should still skim the easy and mid words for anything odd or unfair.
+**Brief:** Goal: print the words between difficulty 1.5 and 5.5 with their glosses into `notes/`, flag anything off, add to `BLOCKED_WORDS`. Files: `src/core/blocklist.js`. **Conflicts:** word pool threads.
+
+### TR6. Report-a-word on the result page
+**Pitch:** If a word or definition still feels wrong, a quiet "Skip this word" mark on the book page hides it on this device.
+**Brief:** Goal: additive `S.hiddenWords`, filtered at pick time. Files: new `src/core/hiddenWords.js`, one hook in the result page. **Conflicts:** result page threads, Daily (hidden words must not change the seeded Daily).
+
