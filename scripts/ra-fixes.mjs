@@ -112,6 +112,66 @@ for (const room of Object.keys(ROOMS)) {
     await ctx.close();
   }
 }
+// PN: phone layout nits (audit A-F), checked at 320 to 430 wide with reduced motion, in the Reading Room.
+//  A: the streak flame tag keeps 12px clear of the attic hatch's cord tag.  E: it starts 6px or more below the rail's bottom edge, not tucked under it.
+//  F: on tall phones (760px and up) the Descend block sits within 14px of the shelf spines.
+//  B/C: the open Room filter has no blank band under its last row (at most 12px) and each colour dot is level with its label.
+const PN_ROOMS = ['hall', 'history', 'math', 'science', 'english', 'art', 'body', 'hall'];
+const PN_BOOKS = PN_ROOMS.map((r, i) => ({fl: 'hall', wid: 'w' + i, w: 'word' + i, pos: 0, def: 'a thing', answer: 'a thing', score: 70 + i, tier: i % 4, mode: 'daily', room: r === 'hall' ? undefined : r, t: Date.now() - i * 1e6, no: i + 1, hints: 0, fb: null, verdict: 'ok', rows: [], ft: 100 + i}));
+const PN_SIZES = [[320, 568], [360, 640], [375, 667], [390, 844], [430, 932]];
+for (const [w, h] of PN_SIZES) {
+  const tag = `${w}x${h} phone nits`;
+  const ctx = await browser.newContext({viewport: {width: w, height: h}, reducedMotion: 'reduce', serviceWorkers: 'block'});
+  await ctx.addInitScript(s => { try { localStorage.setItem('deepstack.v1', JSON.stringify(s.save)); localStorage.setItem('deepstack.settings.v1', JSON.stringify({motion: 'reduce'})); } catch {} }, {save: {shelf: PN_BOOKS, bestDepth: 900, bestFloor: 3, streak: {last: '', n: 3}, daily: {}}});
+  const page = await ctx.newPage();
+  await page.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
+  try {
+    await page.goto(url, {waitUntil: 'load'});
+    await page.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T});
+    await page.waitForTimeout(700);
+    // A, E, F on the home screen
+    const home = await page.evaluate(() => {
+      const vis = e => e && e.getClientRects().length > 0;
+      const R = e => { const b = e.getBoundingClientRect(); return {l: b.left, r: b.right, t: b.top, b: b.bottom}; };
+      const q = s => [...document.querySelectorAll(s)].find(vis);
+      const bar = q('#bar'), tagEl = q('.ach-tag'), flame = q('.ach-flame'), plaque = q('.hz-plaque'), stack = q('#bAll')?.parentElement;
+      return {bar: bar && R(bar), tag: tagEl && R(tagEl), flame: flame && R(flame), plaque: plaque && R(plaque), stack: stack && R(stack), tall: innerHeight >= 760};
+    });
+    if (home.flame && home.tag && home.flame.l - home.tag.r < 12) problems.push(`${tag}: streak flame is ${(home.flame.l - home.tag.r).toFixed(1)}px from the attic hatch tag (needs 12, PN-A)`);
+    if (home.flame && home.bar && home.flame.t < home.bar.b + 6) problems.push(`${tag}: streak flame starts ${(home.flame.t - home.bar.b).toFixed(1)}px below the rail, too close to its bottom edge to read clear (needs 6, PN-E)`);
+    if (home.tall && home.plaque && home.stack && home.stack.t - home.plaque.b > 14) problems.push(`${tag}: ${(home.stack.t - home.plaque.b).toFixed(1)}px dead band between Descend and the shelf spines (PN-F)`);
+    // B and C: the Room filter on the shelf
+    await page.goto(url, {waitUntil: 'load'});
+    await page.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T});
+    await page.waitForTimeout(700);
+    await page.locator('#bAll').click({timeout: T});
+    await page.locator('.chipgroup').first().waitFor({state: 'attached', timeout: T});
+    const roomGroup = page.locator('.chipgroup:has(.chips[aria-label="Room"])');
+    const fold = roomGroup.locator('.fold');
+    if (await fold.count() && !(await roomGroup.first().evaluate(g => g.classList.contains('open')))) { await fold.first().click({timeout: T}); await page.waitForTimeout(500); }
+    const shelf = await page.evaluate(() => {
+      const vis = e => e && e.getClientRects().length > 0;
+      const g = [...document.querySelectorAll('.chipgroup')].find(x => vis(x) && x.querySelector('.chips[aria-label="Room"]'));
+      if (!g) return null;
+      const chips = [...g.querySelectorAll('.fchip')].filter(vis);
+      const box = g.querySelector('.chips').getBoundingClientRect();
+      const lastB = Math.max(...chips.map(c => c.getBoundingClientRect().bottom));
+      const dots = chips.filter(c => c.querySelector('.dot')).map(c => {
+        const d = c.querySelector('.dot').getBoundingClientRect(), tn = [...c.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+        if (!tn) return null;
+        const rg = document.createRange(); rg.selectNodeContents(tn); const tb = rg.getBoundingClientRect();
+        return Math.abs((d.top + d.bottom) / 2 - (tb.top + tb.bottom) / 2);
+      }).filter(x => x !== null);
+      return {band: box.bottom - lastB, dotOff: dots.length ? Math.max(...dots) : 0};
+    });
+    if (!shelf) problems.push(`${tag}: the shelf Room filter did not open`);
+    else {
+      if (shelf.band > 12) problems.push(`${tag}: ${shelf.band.toFixed(1)}px blank band under the open Room filter (PN-B)`);
+      if (shelf.dotOff > 3) problems.push(`${tag}: a Room colour dot is ${shelf.dotOff.toFixed(1)}px off its label's line (PN-C)`);
+    }
+  } catch (e) { problems.push(`${tag}: ${e.message.split('\n')[0]}`); }
+  await ctx.close();
+}
 await browser.close(); server.close();
 if (problems.length) { console.error('ra-fixes FAILED:\n' + problems.map(p => ' - ' + p).join('\n')); process.exit(1); }
 console.log(`ra-fixes: ok (${Object.keys(ROOMS).length} rooms, rail at ${RAIL_WIDTHS.join('/')}px, today card and ledger at 375 and 1280)`);

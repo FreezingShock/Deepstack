@@ -1,0 +1,3 @@
+/* Phone layout nits (audit A-F). Loaded last so it wins over the earlier rules it adjusts. */
+/* F: on tall phones the Descend block sat high, leaving a dead band above the shelf spines and the fire looked stranded. Nudge the block down into the band (short phones keep their layout). */
+@media(max-width:640px) and (min-height:760px){html .home .hz-plaque{position:relative;top:18px}}

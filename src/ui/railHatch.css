@@ -30,6 +30,6 @@ html .attic-down .adl-frame{top:calc((var(--barH,52px) - 12px)/2)}
 html .attic-cue-home[data-tight="1"] .ach-word{font-size:calc(8px*var(--ts));letter-spacing:.08em;text-indent:.08em;margin-left:4px}
 #bar.fit-smallmark #mark{zoom:.72}
 /* RA9: streak flame tag beside the cord when the streak plate is hidden for room */
-.ach-flame{position:absolute;left:calc(var(--hw) + 14px);top:calc(var(--bh,52px) + 3px);display:flex;align-items:center;gap:3px;padding:3px 7px 3px 5px;border-radius:3px 3px 8px 8px;pointer-events:none;
+.ach-flame{position:absolute;left:calc(var(--hw) + 24px);top:calc(var(--bh,52px) + 8px);display:flex;align-items:center;gap:3px;padding:3px 7px 3px 5px;border-radius:3px 3px 8px 8px;pointer-events:none;
  font:600 calc(11px*var(--ts))/1 var(--typewriter,var(--sans));color:var(--c-oak-1c1209);background:linear-gradient(180deg,var(--c-bronze-56),var(--c-bronze-40));box-shadow:inset 0 1px 0 rgba(255,240,200,.4),0 2px 5px var(--c-black-alpha-bb),0 0 0 1px rgba(var(--c),.55)}
 .ach-flame[hidden]{display:none}.ach-flame svg{color:rgb(var(--c));filter:drop-shadow(0 0 2px rgba(0,0,0,.5))}
