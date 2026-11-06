@@ -1545,7 +1545,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 
 ## V. Audit menu 2026-11-06 (fresh run of main at 375x667, 1280x800, 1640x900; screenshots in screenshots/audit/r2-*.png)
 
-### V1. Small visual bugs from the audit (one PR)
+### V1. [x] Small visual bugs from the audit (one PR, fixed in this PR)
 **Pitch:** Five rough edges a player sees in the first minute. (a) Result card foot reads "+21 FT · 21 FT" (the same number twice) and ends "6/100•" with a dangling bar. (b) On the Shelf book at 1280 the "turn the page" note overlaps the bottom of the Hardbound bay. (c) On the 375 run screen the slip placeholder "In your own words…" wraps to three lines. (d) In the attic the "Down the ladder" label sits to the right of the two cords. (e) Placeholder grey on the cream slip is low contrast.
 **Brief:** Files: `src/app/card.js`, shelf book css, `src/ui/atticHome.js`, run slip css. Done when: 375/1280 screenshots show each fixed, text-fit sweep still passes. **Touches:** card, shelf, attic, run. **Conflicts:** 16, 91, G14.
 
