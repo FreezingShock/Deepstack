@@ -6,6 +6,7 @@ import { createScribe } from './sound/scribe.js';
 import { createAmbience } from './sound/ambience.js';
 import { createSting } from './sound/thresholdSting.js';
 import { createScore } from './sound/score.js';
+import { createMaterials } from './sound/materials.js';
 import { Quality } from './ui/quality.js';
 const RM = reducedMotion();
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -129,6 +130,7 @@ export const Sfx = (() => {
   const floorTone = createAmbience({ ctx: () => ctx, on: () => on, dest: () => master, send: () => wet, noiseBuf });
   const score = createScore({ ctx: () => ctx, on: () => on, dest: () => master, send: () => wet }, { allowed: () => Quality.tier() !== 'low' });
   Quality.subscribe(() => score.refresh());
+  const mats = createMaterials({ ctx: () => ctx, on: () => on, out, noiseBuf }, { fine: () => Quality.tier() !== 'low' });
   const scribe = createScribe({ ctx: () => ctx, on: () => on, out, noiseBuf });
   const sting = createSting({ ctx: () => ctx, on: () => on, out, noiseBuf });
   return {
@@ -136,6 +138,8 @@ export const Sfx = (() => {
     threshold: key => { if (sting.play(key)) score.duck(2.5); },
     /** candle fraction 1..0: the score thins as the flame burns down */
     candle: fr => score.setCandle(fr),
+    /** one cue from the sound palette (src/sound/materials.js): turn, lift, shut, hatch, rung, knock, tick, crackle ... */
+    cue: (kind, arg) => mats.play(kind, arg),
     quill: () => scribe.quill(), paper: () => scribe.paper(), seal: () => scribe.seal(), land: () => scribe.land(),
     /** master volume 0..1 (settings panel) */
     volume(v) { vol = Math.max(0, Math.min(1, v)); if (master) master.gain.setTargetAtTime(.9 * vol, ctx.currentTime, .05); },

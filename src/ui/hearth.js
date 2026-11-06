@@ -552,6 +552,10 @@ function createHearth(home, sfx, mood) {
   addEventListener('resize', relayout);
   const mo = new MutationObserver(() => { syncLit(); if (!layer.hidden && !G && !home.hidden) relayout(); kick(); });
   mo.observe(home, {attributes: true, attributeFilter: ['hidden', 'class']});
+  // the hearth pops now and then (sound palette: fire); stops with the hearth, quiet in a hidden tab
+  let crackleT = 0;
+  const crackle = () => { if (dead) return; if (sfx && sfx.cue && !doc.hidden) try { sfx.cue('crackle'); } catch (e) {} crackleT = setTimeout(crackle, rr(900, 4200)); };
+  crackleT = setTimeout(crackle, 1500);
   const onVis = () => kick(); doc.addEventListener('visibilitychange', onVis);
   const unQ = Quality.subscribe(() => relayout());
   // fonts and the home's own tiering settle over the first frames: lay out once now and again when fonts are ready
@@ -563,7 +567,7 @@ function createHearth(home, sfx, mood) {
     layout,
     get geom() { return G; },
     destroy() {
-      dead = true; cancelAnimationFrame(raf); raf = 0; if (pend) cancelAnimationFrame(pend);
+      dead = true; clearTimeout(crackleT); cancelAnimationFrame(raf); raf = 0; if (pend) cancelAnimationFrame(pend);
       if (ro) ro.disconnect(); mo.disconnect(); unQ && unQ(); removeEventListener('resize', relayout); doc.removeEventListener('visibilitychange', onVis);
       removeEventListener('pointermove', onMove); doc.removeEventListener('pointerleave', onLeave); removeEventListener('pointerdown', onDown); root.classList.remove('hearth-hover');
       undo(); layer.remove(); root.classList.remove('hearth-lit');

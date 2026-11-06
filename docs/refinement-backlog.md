@@ -1577,9 +1577,17 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** A missed day deletes a long streak, which punishes a casual player. A ribbon bookmark you earn after seven straight days lets one miss slide, and it is shown on the Card.
 **Brief:** Files: `src/core/streak.js`, Card. Done when: tests for miss with and without ribbon, additive save field `ribbon`, wording on the Card. nate decides whether to ship it (it softens the streak). **Conflicts:** R2 stamps, H3.
 
-### V9. One sound language
+### V9. One sound language [x] (#259)
 **Pitch:** Sound is off by default and the open sound items are many small threads (door stings, hatch creak, ladder rungs, page turns, fire, cover thuds). One pass would give them a single set of recipes so nothing sounds like a different game.
 **Brief:** Goal: a sound palette doc (materials: paper, leather, wood, stone, brass) and every open sound item built from it. Files: `src/sound/`. Done when: every UI motion has a sound mapped, mute and quality settings respected. **Conflicts:** FH2, AE5, AT3, D1a, D1b, 103, BS1, R6, N9b.
+
+### V9b. Tune the sound palette by ear
+**Pitch:** The new cues are synthesised blind; nate should hear each material once and say louder, softer or drop.
+**Brief:** Goal: a hidden `?sounds` audition strip that plays every cue in `CUES`, then adjust levels in `src/sound/materials.js`. Files: new `src/sound/audition.js`. Done when: nate picks levels he likes. **Conflicts:** FH2, AE5.
+
+### V9c. Keyboard sounds for shortcuts
+**Pitch:** Once the keyboard shortcut pass lands, each shortcut should answer with the same palette (a knock for toggles, a turn for page keys).
+**Brief:** Goal: map shortcut actions to `Sfx.cue` names. Files: `src/ui/keys.js`, `src/sound/uiHooks.js`. Done when: no double sounds with the button tick. **Conflicts:** V10.
 
 ### V10. Keyboard and screen reader pass (done: #258 shortcuts, K1/K2 follow-up)
 **Pitch:** The world is rich but tiers are told mainly by colour, pen text sits on cream at low contrast, and focus rings are not checked across the books and the attic.
