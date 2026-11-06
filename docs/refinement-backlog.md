@@ -1808,7 +1808,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Brief:** Goal: screenshot sweep of plaque states with text size large; fix any contact via `plaqueGap.css`. Conflicts: low.
 ## TA. Topic rooms audit menu 2026-11-06 (after #289/#290; screenshots audit/rm-*.png; word data from public/data/rooms.json vs words.json)
 
-### TA1. Room word lists miss the obvious and keep the odd
+### TA1. [x] Room word lists miss the obvious and keep the odd (PR #299: built here; scripts/build-room-words.mjs -> public/data/room-words.json, 3,000 room-sense entries; anchors 88-97% per room, was 21-46%)
 **Pitch:** Measured against the main word list, the room lists leave out on-topic words and keep off-topic ones. Math has furlong, gallon, litre, quark, aperture and approximately, but not theorem, integer, equation, algebra, calculus, axiom, matrix, exponent or polynomial (all in the pool). History is mostly war and ships (quiver, scabbard, schooner, starboard) and misses renaissance, dynasty, feudal, treaty, pharaoh, medieval. English misses metaphor, simile, irony, alliteration. Art misses sculpture, fresco, tapestry, mural. Science misses photosynthesis, molecule, electron, velocity. Body & Sport holds board and card games (checkmate, rummy, trump, backgammon).
 **Brief:** Goal: a repeatable audit script (`scripts/room-audit.mjs`) with a hand-written anchor list per room (about 40 must-have words) reporting misses and a sample of suspected noise, then fix `scripts/build-rooms.mjs` (labels, thresholds, per-room include/exclude lists) until every anchor is in and the noise is gone. Done when: audit table in the PR, rooms.json rebuilt, tests pin the anchors. **Touches:** room data only. **Conflicts:** TR5, TR4.
 
@@ -1883,6 +1883,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** The cabinet, ledger and fire grew with the room; the title and Descend plaque did not.
 **Brief:** Goal: scale `.wordmark`, the tagline and `.descend` by `--hs` (up to 1.45) without changing the fit at 1280 or below. Files: `src/ui/cabinet.css` or a new css file. **Conflicts:** the Continue plaque spacing thread (`homePlaque`).
 
+### TA8. Weed the last wrong-room words out of the room lists
+**Pitch:** After TA1 about one word in six is still off (racism in the Anatomy Theatre, tramp in the Chronicle, blueberry in the Gallery) because Wiktionary tags the sense loosely and the meaning check is MiniLM, not a person.
+**Brief:** Goal: print each room's 500 words as a one-line-each review sheet (`node scripts/room-audit.mjs --noise` already lists untagged ones), cull by eye into `scripts/data/room-excludes.json`, rebuild, keep the anchor guard green. Files: `scripts/data/room-excludes.json`, `scripts/build-room-words.mjs`. **Conflicts:** TA1 (done), TA2.
+
+### TA9. [x] (senses half done in this PR: scripts/build-room-senses.mjs) A room's word shows the room's own hint and "also means"
+**Pitch:** The Observatory now asks for the science sense of a word, but the "also means" strip and the clue still come from the main list's sense.
+**Brief:** Goal: for words in `room-words.json`, drive the clue, hint and "also means" line from the room entry so the whole card agrees with the definition. Files: `src/core/roomPool.js`, `src/ui/alsoMeans.js`. **Conflicts:** TA1 (done).
 
 ### SC1. Partial-answer verdicts follow the score — DONE (this PR)
 **Pitch:** "someones speaking patterns" for prose scored 5 (+21 ft) but the line said "Nothing here points at the meaning yet." Tier 0 answers with 3+ points now get "Close in spirit, but it misses the core: <gist of the definition>." (`src/core/verdict.js`).
