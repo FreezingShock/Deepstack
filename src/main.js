@@ -37,6 +37,7 @@ import {installUiSounds} from './sound/uiHooks.js';
 import {onModelStatus,startModelLoad,judgeAnswer,prepareWords} from './scorer/index.js';
 import {BOOK_PAGES} from './ui/home.js';
 import {lazyBooks} from './ui/lazyScreens.js';
+import {registerLedgerBooks} from './ui/ledgerBooks.js';
 import './ui/home.css';
 import './ui/descendGlow.css';
 import './ui/welcome.css';
@@ -169,6 +170,7 @@ addEventListener('keydown',e=>{
 const bookOpenCard=()=>!$('#cardlayer').hidden;
 BOOK_PAGES.bRooms={...roomsBook(S,{go:id=>goRoom(id),today:utc,lexicon:core.lexicon}),keepOnEsc:bookOpenCard};
 lazyBooks({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,utc,computeStats,floorAtFt,wordsReady,wordsLoaded:()=>wordsLoaded});
+registerLedgerBooks({S,FLOORS,floorStartFt:core.floorStartFt});
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();
 initTransitions();
