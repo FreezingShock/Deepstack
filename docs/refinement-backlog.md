@@ -1545,7 +1545,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 
 ## V. Audit menu 2026-11-06 (fresh run of main at 375x667, 1280x800, 1640x900; screenshots in screenshots/audit/r2-*.png)
 
-### V1. Small visual bugs from the audit (one PR)
+### V1. [x] Small visual bugs from the audit (one PR, fixed in this PR)
 **Pitch:** Five rough edges a player sees in the first minute. (a) Result card foot reads "+21 FT · 21 FT" (the same number twice) and ends "6/100•" with a dangling bar. (b) On the Shelf book at 1280 the "turn the page" note overlaps the bottom of the Hardbound bay. (c) On the 375 run screen the slip placeholder "In your own words…" wraps to three lines. (d) In the attic the "Down the ladder" label sits to the right of the two cords. (e) Placeholder grey on the cream slip is low contrast.
 **Brief:** Files: `src/app/card.js`, shelf book css, `src/ui/atticHome.js`, run slip css. Done when: 375/1280 screenshots show each fixed, text-fit sweep still passes. **Touches:** card, shelf, attic, run. **Conflicts:** 16, 91, G14.
 
@@ -1601,7 +1601,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The shelf caps at 300 books but every test seeds a handful. Shelf, attic and Sets with a full save are the place a polished game can quietly stutter.
 **Brief:** Goal: a seeded 300-book save in the snapshot and perf scripts, fix whatever is slow (shelf render, attic piles, search). Files: `scripts/perf.mjs`, `test/`. Done when: numbers in the PR, no jank over 50 ms. **Conflicts:** PF1, AT13.
 
-### V13. Judge shows an unrelated sense of a related word
+### V13. [x] (PR #262, narrow fix: a synonym that is part of another listed synonym is hidden; part-of-speech formatting untouched) Judge shows an unrelated sense of a related word
 **Pitch:** For "cabaret" the card's "Also means" lists "club: a heavy object, often a stick..." because nightclub contains "club". That is a bad look on a screen that is supposed to teach.
 **Brief:** Goal: only show related-word senses that share a relation with the target (synonym or hypernym link), cap at two, and give every line the same part-of-speech format ("noun" tag on all or none). Files: `src/scorer/`, card block. Done when: test with cabaret, bank, bark. **Conflicts:** J2, 91, 92, 93.
 
@@ -1609,6 +1609,21 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The judge is the heart of the game and nate cannot see its mistakes. A script that runs 300 wrong, vague and right answers across the Daily pool and writes a table of surprises (wrong word scores 40+, good answer under 20).
 **Brief:** Files: extend `scripts/judge-bench.mjs`, output to `notes/judge-report.md`. Done when: runs offline in under a minute, top 20 surprises listed with words. **Conflicts:** J3, G3.
 
+### X1. Librarian's Card floor line overflows the card (bug)
+**Pitch:** With a saved depth the Card's "Floor" line wraps "The Sunken Vault" onto three handwritten lines that run past the bottom of the card at 1640 (screenshot audit/r3-s-home-1640.png).
+**Brief:** Goal: floor names fit the card at every width: shorter pen size or a two-line cap with the article dropped ("Sunken Vault"). Files: Card ledger css/js. Done when: all six floors fit at 1280, 1640 and 375. **Touches:** HOME. **Conflicts:** V4, H3, R2.
+
+### X2. Touch-aware copy and the attic hint on phones
+**Pitch:** At 375 the attic footer says "scroll up to go further in" (phones swipe) and wraps to three lines on a dark band, while the "Down the ladder" label touches the lantern tag. Copy that names an input (scroll, click, Enter) should follow the device.
+**Brief:** Goal: one helper that picks scroll/swipe, click/tap, and hides key hints on touch; use it in the attic hint and run hints; keep the label clear of the lantern at 375. Files: new `src/ui/inputCopy.js`, attic hint. Done when: 375 screenshot, test pins wording per input type. **Conflicts:** V10 (shortcuts), AE4.
+
+### X3. "Close the book" belongs to the whole book
+**Pitch:** In the Unlimited book the handwritten "Close the book" sits under the Riddle button on the right page, so it reads as part of Riddle. It closes both halves.
+**Brief:** Goal: move it to the spread's bottom edge (or a ribbon) in every menu book so it is always in the same place. Files: book page builders, `bookpages.css`. Done when: all menu books at 1280 and 375. **Conflicts:** P1, 104 follow-ups.
+
+### X4. A name for the ring on the Sets page
+**Pitch:** The right page of Book Sets shows an empty pink ring above the set title with no label or meaning.
+**Brief:** Goal: it becomes the set's sigil: empty until you finish the set, then inked in the colour of your best tier in it, with a pen caption. Files: sets book page. Done when: tested for 0, partial and complete. **Conflicts:** S1, 14.
 ### V15. Trim the main chunk
 **Pitch:** The first paint still ships a 392 KB (151 KB gzip) main chunk and 235 KB css, spread over hundreds of small modules; the biggest are hearth.js, world.js, thresholds.js and atticRoom.js.
 **Brief:** Goal: lazy-load the attic room drawing and other below-the-fold canvas code behind idle time, and split rarely used css, without changing any animation. Files: `src/world/atticRoom.js`, `src/world/world.js`, `src/ui/lazyScreens.js`. Done when: `?perf` first-load numbers drop and the smoke test passes. **Conflicts:** PF1, PF2, AT13.
@@ -1638,3 +1653,25 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### V18. More floor rules for topic zones
 **Pitch:** When the topic zones arrive each one should carry its own small rule, same as the floors, so a zone feels different to play and not only to look at.
 **Brief:** Goal: let `FLOOR_RULES` take a zone key, plus two spare rules (a slower first letter fade, a bonus second hint). Files: `src/core/floorRules.js`. Done when: tests pin each new rule, Daily unaffected. **Conflicts:** V7 follow-ups, G11.
+
+## W. Audit menu 2026-11-06 (second pass: transitions, after #265; frames in screenshots/audit/t-*.png and u-*.png)
+
+### W1. Home comes back behind the book, not after it
+**Pitch:** Closing a home book (Shelf, Daily) flies it back to its stack in under 250 ms, and in that first frame the whole home is gone: title, plaque, cabinet and card missing, only a lone closed book on bare brick. Half a second later everything is back at once. The room should fade in under the flying book so the book lands into a room that is already there.
+**Brief:** Goal: start the home fade-in when the book starts flying home, finish as it lands; same curves as the open. Files: `src/ui/bookOpen*.js`, home fade css. Done when: frames at 0/120/250/500 ms show the home partly visible throughout, reduced motion unchanged. **Touches:** HOME, BOOKS. **Conflicts:** #265 follow-ups, BS2.
+
+### W2. Attic piles in the light
+**Pitch:** The attic's lit beam falls on an empty centre of floor while all the piles sit low and to the sides, and the "Recent guesses" sign floats far left of its books. The room's best light is wasted.
+**Brief:** Goal: lay the first row's piles around the light pool, the sign beside its first pile, the chest in the beam. Files: `src/world/atticProps.js`, pile layout. Done when: 1280 and 375 first-row screenshots show books in the light. **Conflicts:** AT12, AT13.
+
+### W3. The most common card deserves a moment
+**Pitch:** Pamphlet is the result players see most, and its card is the plainest: flat grey cover, dark slab. Each tier should feel like its own small event, including the low ones.
+**Brief:** Goal: tier-coloured edge light and a distinct cover motion for Pamphlet (a quiet "close, try again" feel, not a sad one). Files: card css, `revealRecipes`. Done when: all seven covers compared side by side in one screenshot. **Conflicts:** 16, 64, R2.
+
+### W4. Transition guard tests
+**Pitch:** The attic and book transitions were rebuilt twice in a day. Nothing in CI catches a regression like rows reachable mid-climb or scroll-down not returning home.
+**Brief:** Goal: a Playwright check in `scripts/` that climbs, tries to change rows mid-climb (must be refused), scrolls down (must reach home) and opens and closes each home book checking the home is partly visible during close. Done when: runs in CI under 30 s. **Conflicts:** CI3.
+
+### W5. Wayfinding in the attic
+**Pitch:** On a phone the only sign of depth is one wrapped line of text ("row 1 of 3, scroll up to go further in"). The floor rail does this job in the run; the attic has nothing like it.
+**Brief:** Goal: a slim brass marker on the side showing which row you are in, tappable to jump. Files: `src/world/atticClimb.js`. Done when: 375 and 1280 screenshots, keyboard reachable. **Conflicts:** X2, V3.

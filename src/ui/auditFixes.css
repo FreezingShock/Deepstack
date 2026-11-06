@@ -1,0 +1,8 @@
+/* Audit 2026-11-06 (V1): small visual fixes. */
+.book .page .chips .cs .meter{margin-left:6px}
+.bk-spread .bs-cue{right:76px;bottom:12px}
+.attic-down .adl-word{left:50%;right:auto;transform:translateX(-50%)}
+.slip textarea::placeholder{opacity:.8}
+@media(max-width:560px){.slip textarea::placeholder{font-size:calc(19px*var(--ts));line-height:calc(26px*var(--ts))}}
+/* Librarian's Card: a floor name stays on one line (shelfSpineFit lets other ledger values wrap). */
+.home .lg-row.lg-floor dd{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(14px*var(--ts))}
