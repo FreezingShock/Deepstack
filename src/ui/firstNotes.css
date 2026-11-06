@@ -1,0 +1,4 @@
+/* First-time margin notes (src/ui/firstNotes.js): a pencilled aside on the hint strip, one line, lighter than a hint.
+   Reduced motion: the strip and its slips already stop animating (hintSlips.css), so the note simply sits there. */
+.hslip.fnote{font:500 calc(16px*var(--ts))/24px 'Fuzzy Bubbles','Newsreader',cursive;color:var(--c-steel-53);text-align:left;overflow-wrap:anywhere;text-wrap:pretty}
+@media(max-width:640px){.hslip.fnote{font-size:calc(15px*var(--ts));line-height:23px}}

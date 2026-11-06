@@ -3,9 +3,12 @@ import {loadEnabled,saveEnabled} from '../core/floorRules.js';
    (Sound, Credits, Settings) plus the panels they open. */
 import './topbar.css';
 import './panelBook.css';
+import './settingsBook.css';
 import {Quality,PREFS} from './quality.js';
 import {openPanelBook} from './panelBook.js';
-import {loadSettings,saveSettings,applySettings,TEXT_SIZES,reducedMotion} from './settings.js';
+import {loadSettings,saveSettings,applySettings,reducedMotion,systemReduces} from './settings.js';
+import {settingsPages} from './settingsBook.js';
+import {eraseProgress} from './progressReset.js';
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -28,7 +31,8 @@ export function initTopbar({Sfx,doc=document}={}){
  let st=loadSettings();
  applySettings(st,doc);
  Sfx&&Sfx.volume(st.volume);
- const set=patch=>{st={...st,...patch};saveSettings(st);applySettings(st,doc);if('volume' in patch&&Sfx)Sfx.volume(st.volume);};
+ Sfx&&Sfx.levels(st.music,st.effects);
+ const set=patch=>{st={...st,...patch};saveSettings(st);applySettings(st,doc);if('volume' in patch&&Sfx)Sfx.volume(st.volume);if(('music' in patch||'effects' in patch)&&Sfx)Sfx.levels(st.music,st.effects);};
 
  addEventListener('deepstack:set-volume',e=>{set({volume:e.detail});dispatchEvent(new CustomEvent('deepstack:volume',{detail:e.detail}));});
  /* ---- the plaque and buttons ---- */
@@ -49,19 +53,8 @@ export function initTopbar({Sfx,doc=document}={}){
  const body={
   credits:()=>`<h2 id="tpT">Credits</h2><dl class="tpcred">${CREDITS.map(([h,p])=>`<dt>${h}</dt><dd>${p}</dd>`).join('')}</dl>`,
   settings:()=>{
-   const on=snd&&snd.getAttribute('aria-pressed')==='true';
-   return `<h2 id="tpT">Settings</h2>
-   <div class="tprow"><span id="lSnd">Sound</span><button type="button" class="tpsw" id="sSound" role="switch" aria-checked="${on}" aria-labelledby="lSnd"><i></i></button></div>
-   <div class="tprow"><label for="sVol">Volume</label><input id="sVol" type="range" min="0" max="100" step="5" value="${Math.round(st.volume*100)}" aria-valuetext="${Math.round(st.volume*100)} percent"><output id="oVol">${Math.round(st.volume*100)}%</output></div>
-   <div class="tprow"><span id="lMot">Reduced motion</span><button type="button" class="tpsw" id="sMotion" role="switch" aria-checked="${st.motion==='reduce'}" aria-labelledby="lMot"><i></i></button></div>
-   <p class="tphint">Calmer animations. The candle, dust and book-opening effects settle fully the next time the page loads.</p>
-   <!--pg-->
-   <fieldset class="tprow tpseg"><legend>Text size</legend>${TEXT_SIZES.map((t,i)=>`<button type="button" data-text="${t}" aria-pressed="${st.text===t}" style="font-size:${14+i*3}px">A${i?'+'.repeat(i):''}<span class="sr-only"> ${['Normal','Large','Extra large'][i]}</span></button>`).join('')}</fieldset>
-   <fieldset class="tprow tpseg" id="sQual"><legend>Graphics</legend>${PREFS.map(p=>`<button type="button" data-q="${p}" aria-pressed="${Quality.pref()===p}">${p[0].toUpperCase()+p.slice(1)}</button>`).join('')}</fieldset>
-   <p class="tphint">Auto lightens dust, particles and resolution on slow devices. Pick Low if the library stutters.</p>
-   <div class="tprow"><span id="lCon">High contrast</span><button type="button" class="tpsw" id="sContrast" role="switch" aria-checked="${st.contrast}" aria-labelledby="lCon"><i></i></button></div>
-   <div class="tprow"><span id="lFR">Floor rules</span><button type="button" class="tpsw" id="sFloorRules" role="switch" aria-checked="${loadEnabled()}" aria-labelledby="lFR"><i></i></button></div>
-   <p class="tphint">Each deeper floor bends one small rule in Unlimited, like a faster candle. The Daily never uses them.</p>`;
+   const p=settingsPages({st,sound:!!snd&&snd.getAttribute('aria-pressed')==='true',prefs:PREFS,pref:Quality.pref(),floorRules:loadEnabled(),osCalm:systemReduces()});
+   return `<h2 id="tpT">Settings</h2>${p.left}<!--pg-->${p.right}`;
   },
  };
  const useBook=doc===globalThis.document&&typeof matchMedia==='function';
@@ -92,18 +85,32 @@ export function initTopbar({Sfx,doc=document}={}){
  }
  function wireSettings(root=layer){
   const $=s=>root.querySelector(s);
+  const sndOn=()=>!!snd&&snd.getAttribute('aria-pressed')==='true';
   /* pages repaint on a turn: show the live values, not the ones the book was opened with */
-  $('#sSound').setAttribute('aria-checked',!!snd&&snd.getAttribute('aria-pressed')==='true');$('#sMotion').setAttribute('aria-checked',st.motion==='reduce');$('#sContrast').setAttribute('aria-checked',st.contrast);
-  $('#sVol').value=Math.round(st.volume*100);$('#oVol').textContent=Math.round(st.volume*100)+'%';
-  root.querySelectorAll('[data-text]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.text===st.text));root.querySelectorAll('[data-q]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.q===Quality.pref()));
+  $('#sSound').setAttribute('aria-checked',sndOn());$('#sContrast').setAttribute('aria-checked',st.contrast);
+  $('#sFloorRules').setAttribute('aria-checked',loadEnabled());
+  const pct=v=>Math.round(v*100);
+  const showSlider=(id,v)=>{const el=$(id);if(!el)return;el.value=pct(v);el.setAttribute('aria-valuetext',pct(v)+' percent');$('#o'+id.slice(2)).textContent=pct(v)+'%';};
+  showSlider('#sVol',st.volume);showSlider('#sMus',st.music);showSlider('#sFx',st.effects);
+  const mark=(sel,attr,val)=>root.querySelectorAll(sel).forEach(x=>x.setAttribute('aria-pressed',x.dataset[attr]===val));
+  mark('[data-text]','text',st.text);mark('[data-q]','q',Quality.pref());mark('[data-motion-choice]','motionChoice',st.motion);
   const sw=(el,fn)=>el.onclick=()=>{const v=el.getAttribute('aria-checked')!=='true';el.setAttribute('aria-checked',v);fn(v);};
-  sw($('#sSound'),()=>{snd&&snd.click();$('#sSound').setAttribute('aria-checked',snd.getAttribute('aria-pressed')==='true');});
-  sw($('#sMotion'),v=>set({motion:v?'reduce':'full'}));
+  sw($('#sSound'),()=>{snd&&snd.click();$('#sSound').setAttribute('aria-checked',sndOn());});
   sw($('#sContrast'),v=>set({contrast:v}));
-  $('#sFloorRules').setAttribute('aria-checked',loadEnabled());sw($('#sFloorRules'),v=>saveEnabled(v));
-  root.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{Quality.setPref(b.dataset.q);root.querySelectorAll('[data-q]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
-  const vol=$('#sVol');vol.oninput=()=>{const n=+vol.value;dispatchEvent(new CustomEvent('deepstack:volume',{detail:n/100}));$('#oVol').textContent=n+'%';vol.setAttribute('aria-valuetext',n+' percent');set({volume:n/100});};
-  root.querySelectorAll('[data-text]').forEach(b=>b.onclick=()=>{set({text:b.dataset.text});root.querySelectorAll('[data-text]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
+  sw($('#sFloorRules'),v=>saveEnabled(v));
+  root.querySelectorAll('[data-motion-choice]').forEach(b=>b.onclick=()=>{set({motion:b.dataset.motionChoice});mark('[data-motion-choice]','motionChoice',st.motion);});
+  root.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{Quality.setPref(b.dataset.q);mark('[data-q]','q',Quality.pref());});
+  root.querySelectorAll('[data-text]').forEach(b=>b.onclick=()=>{set({text:b.dataset.text});mark('[data-text]','text',st.text);});
+  const slide=(id,apply)=>{const el=$(id);if(!el)return;el.oninput=()=>{const n=+el.value;$('#o'+id.slice(2)).textContent=n+'%';el.setAttribute('aria-valuetext',n+' percent');apply(n/100);};};
+  slide('#sVol',v=>{dispatchEvent(new CustomEvent('deepstack:volume',{detail:v}));set({volume:v});});
+  slide('#sMus',v=>set({music:v}));
+  slide('#sFx',v=>set({effects:v}));
+  /* Progress: the reset asks first. Keep is the default focus; Erase clears the save and reloads into an empty library. */
+  const confirm=$('#sConfirm'),reset=$('#sReset');
+  const row=$('#sDangerRow');
+  if(reset)reset.onclick=()=>{row.hidden=true;confirm.hidden=false;$('#scKeep').focus({preventScroll:true});};
+  $('#scKeep').onclick=()=>{confirm.hidden=true;row.hidden=false;reset.focus({preventScroll:true});};
+  $('#scGo').onclick=()=>{eraseProgress();location.reload();};
  }
  layer.addEventListener('click',e=>{if(e.target===layer)closePanel();});
  /* capture phase so Esc closes this panel before main.js sees it; Tab stays inside */
