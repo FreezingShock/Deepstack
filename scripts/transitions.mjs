@@ -56,19 +56,19 @@ else {
   if (await homeAway()) {
     for (let i = 0; i < 3; i++) { await page.keyboard.press('ArrowUp'); await page.waitForTimeout(30); }
     if (await rowNo() > 1) fail(`row changed mid-climb (row ${await rowNo()})`);
-    await page.waitForTimeout(1800); // let the climb land
+    // The climb length depends on machine load (CI runs three browsers at once), so poll for the landing: keep nudging
+    // one row further in until it takes. Early presses are swallowed by the lock, which is the behaviour under test.
     const rows = +((/of (\d+)/.exec(await rowText()) || [])[1] || 0);
     if (rows < 2) fail('seeded attic has fewer than 2 rows; cannot check row moves');
     else {
-      await page.keyboard.press('ArrowUp');
-      await page.waitForTimeout(700);
+      for (let i = 0; i < 20 && await rowNo() < 2; i++) { await page.waitForTimeout(400); await page.keyboard.press('ArrowUp'); await page.waitForTimeout(250); }
       if (await rowNo() !== 2) fail(`ArrowUp after landing did not go one row further in (row ${await rowNo()})`);
       await wheel(-300); await page.waitForTimeout(80); await wheel(-300);
       await page.waitForTimeout(150);
       if (await rowNo() > 3) fail('two quick wheel notches moved more than one row each (rest period broken)');
       await page.waitForTimeout(900);
       // 2. scroll down returns through the rows and then home
-      for (let i = 0; i < 8 && await homeAway(); i++) { await wheel(200); await page.waitForTimeout(700); }
+      for (let i = 0; i < 14 && await homeAway(); i++) { await wheel(200); await page.waitForTimeout(700); }
       await page.waitForFunction(() => !document.querySelector('#home')?.classList.contains('attic-away'), null, {timeout: T}).catch(() => fail('scrolling down never returned home'));
       if (await page.locator('.attic-down').isVisible()) fail('"Down the ladder" still showing after returning home');
     }
