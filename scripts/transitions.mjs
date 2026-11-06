@@ -84,9 +84,10 @@ await page.waitForTimeout(1000);
 
 // 3. Each home book opens, then closes without leaving the home locked, hidden or faded. The close is sampled every
 // 40 ms and logged; the hard check is that the home itself is never display:none/hidden during it and always settles
-// back to fully shown (title and plaque included). Once the "home fades in under the flying book" work lands, tighten
-// the sampled floor below (see MIN_DURING_CLOSE) so a bare-brick first frame fails.
-const MIN_DURING_CLOSE = 0;
+// back to fully shown (title and plaque included). The room fades in under the flying book (W1, #272), so by about
+// 200 ms into the close (sample 5) the title/plaque must be at least faintly there, and by the last sample (~480 ms)
+// mostly there. Before W1 they sat at 0 until ~360 ms, a lone book on bare brick; that now fails.
+const MIN_AT_200MS = 0.05, MIN_AT_END = 0.5;
 const homeState = () => page.evaluate(() => {
   const home = document.querySelector('#home'), cs = home && getComputedStyle(home);
   const t = ['.hz-title', '.hz-plaque'].map(s => { const e = document.querySelector(s); return e ? +getComputedStyle(e).opacity : 1; });
@@ -102,7 +103,8 @@ for (const [id, name] of [['bDaily', 'Daily'], ['bUnl', 'Unlimited'], ['bAll', '
   await page.keyboard.press('Escape');
   const samples = [];
   for (let i = 0; i < 12; i++) { const s = await homeState(); samples.push(s); if (!s.shown) fail(`${name}: home hidden during close (frame ${i})`); await page.waitForTimeout(40); }
-  if (samples.some(s => s.vis < MIN_DURING_CLOSE)) fail(`${name}: home title/plaque too faded during close`);
+  if (samples.slice(5).some(s => s.vis < MIN_AT_200MS)) fail(`${name}: home still bare 200 ms into the close (bare brick under the flying book)`);
+  if (samples[samples.length - 1].vis < MIN_AT_END) fail(`${name}: home only ${samples[samples.length - 1].vis.toFixed(2)} visible at the end of the close`);
   await dlg.waitFor({state: 'detached', timeout: T}).catch(() => fail(`${name}: did not close`));
   await page.locator('#home.book-opening').waitFor({state: 'detached', timeout: T}).catch(() => fail(`${name}: home stayed locked after closing`));
   await page.waitForFunction(() => ['.hz-title', '.hz-plaque'].every(s => { const e = document.querySelector(s); return !e || +getComputedStyle(e).opacity > 0.99; }), null, {timeout: 3000})
