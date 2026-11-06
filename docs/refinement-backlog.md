@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Open the topic rooms mockup (https://claude.ai/artifact/6jSVvLziuGc55Pb12z6cGa): six recoloured fireplace rooms, three ways to switch (A Room Ledger book, B side doors, C fire salts on the mantel, my pick C+A), and 20 starter sets from real Wiktionary topic labels. Pick a switch option and answer the six questions at the bottom (Daily per room? Unlimited rating per room? which five rooms first?). (topic rooms mockup thread, TR)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
 - Pull `main` and look at the fire: it now burns low on a 0 streak and roars after a few weeks, and its sparks take the colour of your last book's tier (aqua after an Apocrypha, red after a Grimoire). At 375x667 and 800x900 the fireplace now shows, with the Daily and Unlimited spines still on screen. Say if the low 0-streak fire feels too dim.
 - Open the Unlimited book at your window size and on your phone: a big Descend button (Find my rank before you are placed) now sits under your rank, with "Place me again" quietly beneath. Say if it reads clearly. (Unlimited pages, UB1)
@@ -1726,3 +1727,21 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### Headword fit follow-ups
 **Pitch:** Headwords now shrink to fit on one line; the same fit rule could cover the shelf spine plaques and Daily result words.
 **Brief:** Goal: reuse `src/ui/fitHeadword.js` selectors for any remaining word label that still wraps. Files: that selector list only. **Conflicts:** result page threads.
+## TR. Topic rooms (nate 2026-11-06: "a room full of just history terms, or just mathematical terms"; mockup https://claude.ai/artifact/6jSVvLziuGc55Pb12z6cGa, sources design/topic-rooms/)
+
+### [x] TR0. Mock up topic rooms (done: artifact + screenshots/topic-rooms/, no code PR)
+**Pitch:** Rooms per topic reusing the fireplace home with a different coloured fire; Daily, Unlimited, Shelf and Stats come along, Sets move into rooms. Three switch options mocked by injecting into the real build; Wiktionary topic labels counted for all 13,470 words (10,345 matched, about 570 to 950 labelled words per room).
+
+### TR1. Rooms registry, word lists and the recoloured fire
+**Pitch:** The five starter rooms (Chronicle, Abacus, Herbarium, Gallery, Observatory) become real places with their own fire colour and word list, so Descend and Unlimited draw from the room you stand in.
+**Brief:** Goal: keep sense topic labels in `scripts/build-words.mjs` (kaikki `senses[].topics`), map labels to rooms (`design/topic-rooms/groups.json`), filter each room list by embedding closeness of the game's definition to the room, write an additive `rooms` field; register rooms in `src/core/places.js`; hearth reads a room hue (hue-rotate on the live canvas + `--rm-rgb` glow, as in `inject.js`). Files: build script, `src/core/places.js`, `src/ui/hearth.css`. Done when: default room byte-identical, a test picks only room words, save field `room` additive. **Conflicts:** G11, 35, word pool threads.
+
+### TR2. Fire salts switcher and Room Ledger
+**Pitch:** Five salt jars on the mantel switch rooms in one tap (a pinch arcs into the grate, the fire flares into the new colour, the room slides sideways); a Rooms book lists every room and its progress.
+**Brief:** Goal: jars drawn on the hearth mantel with 44 px hit areas, toss + slide transition in the shared motion tokens, mantel plate with the room name, Rooms spine opening a ledger in the menu-book system. Files: new `src/ui/roomSalts.js`, `src/ui/roomLedger.js` + css, one hook in home. Done when: transitions guard passes, reduced motion swaps instantly, keyboard reaches every jar. **Conflicts:** home threads, hearth, TR1.
+
+### TR3. Sets move into rooms
+**Pitch:** Each room owns four sets (the 20 in the mockup are real words from the game's list); the Sets book shows the current room's; the current six stay in the Reading Room; Shelf gets room tabs and Stats a Rooms page.
+**Brief:** Goal: `SETS` gains a `room` field (default `hall`), Sets book filters by room, Shelf tabs, Stats page. Files: `src/sets/sets.js`, `src/sets/ui.js`, shelf filters, stats pages. Done when: existing set progress untouched (`S.sets` shape unchanged), tests per room. **Conflicts:** TR1, Almanac, shelf threads.
+
+
