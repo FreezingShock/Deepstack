@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Open the topic rooms mockup (https://claude.ai/artifact/6jSVvLziuGc55Pb12z6cGa): six recoloured fireplace rooms, three ways to switch (A Room Ledger book, B side doors, C fire salts on the mantel, my pick C+A), and 20 starter sets from real Wiktionary topic labels. Pick a switch option and answer the six questions at the bottom (Daily per room? Unlimited rating per room? which five rooms first?). (topic rooms mockup thread, TR)
+- Resize the window (or rotate your phone) on home and in each menu book: the hatch tag should clear the title, Descend and the five spines should always fit, short landscape windows get one row of spines, and the background shelves (books, cobwebs, props) should stay put as you drag the window. Say which size still feels cramped. (thread: fix layout at small and odd window sizes, `node scripts/responsive.mjs`)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
 - Pull `main` and look at the fire: it now burns low on a 0 streak and roars after a few weeks, and its sparks take the colour of your last book's tier (aqua after an Apocrypha, red after a Grimoire). At 375x667 and 800x900 the fireplace now shows, with the Daily and Unlimited spines still on screen. Say if the low 0-streak fire feels too dim.
 - Open the Unlimited book at your window size and on your phone: a big Descend button (Find my rank before you are placed) now sits under your rank, with "Place me again" quietly beneath. Say if it reads clearly. (Unlimited pages, UB1)
@@ -1745,3 +1746,15 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Brief:** Goal: `SETS` gains a `room` field (default `hall`), Sets book filters by room, Shelf tabs, Stats page. Files: `src/sets/sets.js`, `src/sets/ui.js`, shelf filters, stats pages. Done when: existing set progress untouched (`S.sets` shape unchanged), tests per room. **Conflicts:** TR1, Almanac, shelf threads.
 
 
+### RS1. [x] Stand-alone phone layout for the Unlimited and Daily books (done in the same thread: #283)
+
+**Pitch:** The menu books fit at every size now, but on a 320 px phone they still show one page at a time with long lists clipped under "turn the page"; give the Shelf rarity list and the Daily list a phone-sized rhythm so nothing is cut.
+**Brief:** Goal: at 320 to 414 px wide, no handwritten line is clipped or overlapped by the page-turn hint on any menu book page; extend `scripts/responsive.mjs` to assert it. Files: `src/ui/pageFit.js`, `src/ui/bookpages.css`, `scripts/responsive.mjs`. **Conflicts:** menu book threads.
+
+### RS2. [x] A fireplace that scales down instead of vanishing (done in the same thread: #283)
+**Pitch:** On short phones (360x640 and under) the fire now gives way to a plain wall; a tiny framed hearth would keep the room's heart.
+**Brief:** Goal: a minimal hearth (arch, glow, no mantel candles) at heights where `planFlow` returns null, still without overlapping Descend. Files: `src/ui/hearth.js` (`planFlow`, `layout`). **Conflicts:** FH2, FH3.
+
+### RS3. Orientation change keeps the camera and open book
+**Pitch:** Rotating a phone mid-descent or with a book open should keep where you were, same books, same page.
+**Brief:** Goal: resize and orientationchange keep scroll depth, attic state and the open book's page; test in `scripts/responsive.mjs` with `page.setViewportSize`. Files: `src/world/world.js`, `src/ui/bookpages.js`. **Conflicts:** AT8, attic threads.
