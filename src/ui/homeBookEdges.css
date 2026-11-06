@@ -16,3 +16,10 @@
 .hbook{transition:transform var(--m-base) var(--e-settle),filter var(--m-base),opacity var(--m-base) var(--e-cruise)}
 .hbook:hover,.hbook:focus-visible{transition:transform var(--m-base) var(--e-spring),filter var(--m-base),opacity var(--m-base) var(--e-cruise)}
 @media(prefers-reduced-motion:reduce){.book-opening .hbook:not(.opening){transform:none;transition:opacity var(--m-quick)}}
+
+/* AT8: as a book closes the other spines ease forward in a short ripple (nearest the top first) rather than all at once. */
+.book-opening.book-closing .hbook:not(.opening){transition:opacity var(--m-smooth) var(--e-cruise),transform var(--m-smooth) var(--e-cruise)}
+.book-opening.book-closing li:nth-child(2)>.hbook:not(.opening){transition-delay:40ms}
+.book-opening.book-closing li:nth-child(3)>.hbook:not(.opening){transition-delay:80ms}
+.book-opening.book-closing li:nth-child(4)>.hbook:not(.opening){transition-delay:120ms}
+.book-opening.book-closing li:nth-child(n+5)>.hbook:not(.opening){transition-delay:160ms}

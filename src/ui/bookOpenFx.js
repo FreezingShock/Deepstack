@@ -3,7 +3,7 @@
    all in under 600 ms. Close (outside click or Esc): text clears, the cover swings shut with a thud, the book
    flies home. Reduced motion skips the flight and the swing and simply fades. */
 export const OPEN_BUDGET_MS=600;
-export const BOOK_TIMING=Object.freeze({fly:230,hold:30,swing:320,shutHold:80,flyBack:230,fade:160});
+export const BOOK_TIMING=Object.freeze({fly:230,hold:30,swing:320,shutHold:80,flyBack:300,fade:160});
 
 export function bookTimings(reduce=false){
  const T=BOOK_TIMING;

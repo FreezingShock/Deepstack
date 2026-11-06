@@ -126,7 +126,10 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   if(!(spreads&&spreads.length)){sp.classList.add('out');setTimeout(()=>{sp.remove();onClose();},400);return;}
   bookSound('flip');
   const swing=sp.classList.contains('open')?T.swing:0,fly=T.flyBack;
-  sp.removeAttribute('role');sp.setAttribute('aria-hidden','true');sp.classList.remove('intro','open');sp.classList.add('closing');
+  sp.removeAttribute('role');sp.setAttribute('aria-hidden','true');
+  /* land exactly on the spine: scale the closed book (half the spread wide) down to the spine's size */
+  if(r.width>0&&sp.offsetWidth){sp.style.setProperty('--sx',(r.width/(sp.offsetWidth/2)).toFixed(4));sp.style.setProperty('--sy',(r.height/sp.offsetHeight).toFixed(4));}
+  sp.classList.remove('intro','open');sp.classList.add('closing');
   if(swing)setTimeout(()=>thud(sp),swing);
   setTimeout(()=>{sp.classList.remove('go');sp.classList.add('flyback','out');onFly();setTimeout(()=>{sp.remove();onClose();},(reduce?T.fade:Math.max(fly,300))+30);},swing+T.shutHold);
  };
@@ -238,7 +241,7 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
    busy=true;flying=false;root.classList.add('book-opening');el.classList.add('opening');
    /* The room comes back while the book is still flying home (not after it lands), so closing is one motion,
       and the spine it left fades in as the book settles onto it. */
-   const lift=()=>{flying=true;root.classList.remove('book-opening');root.classList.remove('book-closing');setTimeout(()=>el.classList.remove('opening'),reduce?0:130);};
+   const lift=()=>{flying=true;root.classList.remove('book-opening');root.classList.remove('book-closing');setTimeout(()=>el.classList.remove('opening'),reduce?0:Math.max(0,BOOK_TIMING.flyBack-170));};
    const fin=()=>{el.classList.remove('opening');root.classList.remove('book-opening');root.classList.remove('book-closing');busy=false;flying=false;
     if(pending){const n=pending;pending=null;n();}};
    const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onFly:lift,onClose:fin,onShut:()=>root.classList.add('book-closing'),
