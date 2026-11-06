@@ -91,7 +91,7 @@ const MIN_AT_200MS = 0.05, MIN_AT_END = 0.5;
 const homeState = () => page.evaluate(() => {
   const home = document.querySelector('#home'), cs = home && getComputedStyle(home);
   const t = ['.hz-title', '.hz-plaque'].map(s => { const e = document.querySelector(s); return e ? +getComputedStyle(e).opacity : 1; });
-  return {shown: !!home && !home.hidden && cs.display !== 'none' && cs.visibility !== 'hidden', vis: Math.min(...t)};
+  return {shown: !!home && !home.hidden && cs.display !== 'none' && cs.visibility !== 'hidden', vis: Math.min(...t), at: performance.now()};
 });
 for (const [id, name] of [['bDaily', 'Daily'], ['bUnl', 'Unlimited'], ['bAll', 'Shelf'], ['bSets', 'Sets'], ['bStats', 'Stats']]) {
   const btn = page.locator('#' + id);
@@ -100,17 +100,19 @@ for (const [id, name] of [['bDaily', 'Daily'], ['bUnl', 'Unlimited'], ['bAll', '
   const dlg = page.locator('[role=dialog].intro').first();
   if (!await dlg.waitFor({state: 'visible', timeout: T}).then(() => true, () => false)) { fail(`${name}: never opened`); continue; }
   if (await page.locator('#home.book-opening').count() === 0) fail(`${name}: home not marked book-opening while open`);
+  const t0 = await page.evaluate(() => performance.now());
   await page.keyboard.press('Escape');
   const samples = [];
   for (let i = 0; i < 12; i++) { const s = await homeState(); samples.push(s); if (!s.shown) fail(`${name}: home hidden during close (frame ${i})`); await page.waitForTimeout(40); }
-  if (samples.slice(5).some(s => s.vis < MIN_AT_200MS)) fail(`${name}: home still bare 200 ms into the close (bare brick under the flying book)`);
+  // judge by elapsed time, not sample index (a loaded runner takes ~50-100 ms per sample); 260 ms still catches the old bug, which stayed bare until ~360 ms
+  if (samples.filter(s => s.at - t0 >= 260).some(s => s.vis < MIN_AT_200MS)) fail(`${name}: home still bare 200 ms into the close (bare brick under the flying book)`);
   if (samples[samples.length - 1].vis < MIN_AT_END) fail(`${name}: home only ${samples[samples.length - 1].vis.toFixed(2)} visible at the end of the close`);
   await dlg.waitFor({state: 'detached', timeout: T}).catch(() => fail(`${name}: did not close`));
   await page.locator('#home.book-opening').waitFor({state: 'detached', timeout: T}).catch(() => fail(`${name}: home stayed locked after closing`));
   await page.waitForFunction(() => ['.hz-title', '.hz-plaque'].every(s => { const e = document.querySelector(s); return !e || +getComputedStyle(e).opacity > 0.99; }), null, {timeout: 3000})
     .catch(() => fail(`${name}: home title/plaque never came back after closing`));
   if (!(await page.locator('#bPlay, #bRes').first().isVisible())) fail(`${name}: Descend button missing after closing`);
-  console.log(`transitions: ${name} close, title/plaque opacity per 40ms: ${samples.map(s => s.vis.toFixed(2)).join(' ')}`);
+  console.log(`transitions: ${name} close, opacity@ms: ${samples.map(s => s.vis.toFixed(2) + '@' + Math.round(s.at - t0)).join(' ')}`);
 }
 
 await browser.close(); server.close();
