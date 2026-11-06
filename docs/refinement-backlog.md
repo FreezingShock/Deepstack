@@ -1882,3 +1882,10 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** The cabinet, ledger and fire grew with the room; the title and Descend plaque did not.
 **Brief:** Goal: scale `.wordmark`, the tagline and `.descend` by `--hs` (up to 1.45) without changing the fit at 1280 or below. Files: `src/ui/cabinet.css` or a new css file. **Conflicts:** the Continue plaque spacing thread (`homePlaque`).
 
+
+### SC1. Partial-answer verdicts follow the score — DONE (this PR)
+**Pitch:** "someones speaking patterns" for prose scored 5 (+21 ft) but the line said "Nothing here points at the meaning yet." Tier 0 answers with 3+ points now get "Close in spirit, but it misses the core: <gist of the definition>." (`src/core/verdict.js`).
+### SC2. Add missing senses for newly added words (speech / ordinary language for prose)
+**Pitch:** nate: multi-definition words and homophones might not be added; answers that fit a real sense should score. **Brief:** Goal: each new word gets its other senses in `public/data/senses.json` (`alt: [[pos, gloss]]`); the scorer already reads them. Files: `scripts/build-senses.mjs`, data only. **Conflicts:** room word lists thread.
+### SC3. Show what the answer did get right on low scores
+**Pitch:** the verdict names the gap; the caught/missed lines could also say which part overlapped. **Brief:** Goal: use `j.caught` in the tier 0 and 1 verdict. Files: `src/core/verdict.js`. **Conflicts:** none.
