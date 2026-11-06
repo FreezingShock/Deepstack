@@ -1,11 +1,22 @@
 /* Topic rooms on the home screen (roomHome.js). Colours come from <html> --rm-hue/--rm-sat/--rm-rgb/--rm-ink. */
 
+/* the room's colours are registered so they glide: setting them on <html> (paintRoomVars) shifts the fire, the room
+   light, the title and every room-tinted label together, with no new fireplace faded in */
+@property --rm-hue{syntax:'<angle>';inherits:true;initial-value:0deg}
+@property --rm-sat{syntax:'<number>';inherits:true;initial-value:1}
+@property --rm-rgb{syntax:'<number>#';inherits:true;initial-value:255,200,120}
+@property --rm-ink{syntax:'<number>#';inherits:true;initial-value:255,214,150}
+html{transition:--rm-hue var(--m-page) var(--e-cruise),--rm-sat var(--m-page) var(--e-cruise),--rm-rgb var(--m-page) var(--e-cruise),--rm-ink var(--m-page) var(--e-cruise)}
+
 /* the fire: the hearth's live flames take the room's salt colour; the room light follows */
-.hearth canvas:last-of-type{transition:filter var(--m-smooth) var(--e-cruise)}
 html[data-room] .hearth canvas:last-of-type{filter:hue-rotate(var(--rm-hue)) saturate(var(--rm-sat,1.2))}
 html[data-room] .hearth-light.hl-glow{background:
  radial-gradient(calc(var(--hl-r,900px)*1.05) calc(var(--hl-r,900px)*.8) at var(--hl-x,50%) var(--hl-y,70%),rgba(var(--rm-rgb),.32) 0,rgba(var(--rm-rgb),.14) 38%,rgba(var(--rm-rgb),0) 72%),
  radial-gradient(var(--hl-fw,380px) var(--hl-fh,80px) at var(--hl-fx,50%) var(--hl-fy,80%),rgba(var(--rm-rgb),.4) 0,rgba(var(--rm-rgb),0) 70%)}
+
+/* the Deepstack title: its gilt takes the room's hue, its glow the room's light */
+html[data-room] .home .title.wordmark{filter:hue-rotate(var(--rm-hue)) saturate(var(--rm-sat,1.2)) drop-shadow(0 1px 0 var(--c-black)) drop-shadow(0 3px 2px var(--c-black-alpha-88)) drop-shadow(0 0 26px rgba(var(--rm-rgb),.45))}
+@media(forced-colors:active){html[data-room] .home .title.wordmark{filter:none}}
 
 /* the room's name on the tagline, in the room's ink */
 html[data-room] #home .hz-title .tagline{font-style:normal}
@@ -54,13 +65,6 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
 .rm-door.go .rm-fire{opacity:1;transform:scaleY(1.5)}
 @keyframes rmFlick{0%{opacity:.7}40%{opacity:.86}100%{opacity:.74}}
 
-/* walking through a door: the room slides away from the door you took, the next one slides in from the far side */
-#home.rm-leave{animation:rmLeave var(--m-base) var(--e-cruise) forwards}
-#home.rm-enter{animation:rmEnter var(--m-smooth) var(--e-settle) both}
-#home.rm-leave[data-rm-dir=prev],#home.rm-enter[data-rm-dir=prev]{--rm-dx:-1}
-@keyframes rmLeave{to{opacity:0;transform:translateX(calc(var(--rm-dx,1)*-48px))}}
-@keyframes rmEnter{from{opacity:0;transform:translateX(calc(var(--rm-dx,1)*48px))}}
-body:has(#home.rm-leave) #rm-doors{opacity:0;transition:opacity var(--m-base) var(--e-cruise)}
 
 /* Room ledger pages (roomLedger.js) */
 .bk-spread .rl-toc li{cursor:pointer}
@@ -77,7 +81,7 @@ body:has(#home.rm-leave) #rm-doors{opacity:0;transition:opacity var(--m-base) va
 .rl-sets li.done span::after{content:' \2713'}
 .rl-here{font-style:italic;opacity:.75;margin-top:10px}
 .bk-spread .rl-enter{margin-top:12px}
-@media(prefers-reduced-motion:reduce){.rm-fire{animation:none}#home.rm-leave,#home.rm-enter{animation:none}}
+@media(prefers-reduced-motion:reduce){.rm-fire{animation:none}}
 /* the new room's doors come in with it */
 body:has(#home.rm-enter) #rm-doors{animation:rmDoorsIn var(--m-smooth) var(--e-settle) both}
 @keyframes rmDoorsIn{from{opacity:0}}
@@ -111,6 +115,4 @@ body:has(#home.rm-enter) #rm-doors{animation:rmDoorsIn var(--m-smooth) var(--e-s
 .rm-door.go .rm-leaf{transform:perspective(380px) rotateY(-88deg);transition-duration:var(--m-base)}
 .rm-door.rm-next.go .rm-leaf{transform:perspective(380px) rotateY(88deg)}
 .rm-door.go .rm-lamp{box-shadow:0 0 26px 10px rgba(var(--c),.7)}
-#home.rm-enter .hearth canvas:last-of-type{animation:rmEmbers var(--m-page) var(--e-settle) both}
-@keyframes rmEmbers{from{opacity:.2}}
-@media(prefers-reduced-motion:reduce){.rm-leaf{transition:none}#home.rm-enter .hearth canvas:last-of-type{animation:none}}
+@media(prefers-reduced-motion:reduce){.rm-leaf{transition:none}}
