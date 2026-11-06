@@ -106,7 +106,7 @@ export function introSpreads(intro){
    Returns {el, close}. */
 export const BOOK_FLY_MS=BOOK_TIMING.fly, BOOK_HOLD_MS=BOOK_TIMING.hold, BOOK_SWING_MS=BOOK_TIMING.swing;
 export const BOOK_OPEN_MS=BOOK_FLY_MS+BOOK_HOLD_MS+BOOK_SWING_MS;
-export function openBook({from,colors={},title='',spreads=null,label='',cls='',keepOnEsc=null,onFly=()=>{},onClose=()=>{}}){
+export function openBook({from,colors={},title='',spreads=null,label='',cls='',keepOnEsc=null,onFly=()=>{},onClose=()=>{},onShut=()=>{}}){
  const sp=document.createElement('div');sp.className='bk-spread'+(cls?' '+cls:'');sp.setAttribute('aria-hidden','true');
  const r=from||{left:innerWidth/2,top:innerHeight/2,width:0,height:0};
  sp.style.cssText=`--bk:${colors.bk};--bk2:${colors.bk2};--bk-gild:${colors.gild};--tex:${colors.tex||'none'};--fx:${r.left+r.width/2-innerWidth/2}px;--fy:${r.top+r.height/2-innerHeight/2}px`;
@@ -122,7 +122,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const t=(fn,ms)=>timers.push(setTimeout(fn,ms));
  /* Close: with pages the cover swings shut over them, the book slides back to its closed
     position, then flies back to where it came from. Without pages it just fades. */
- const close=()=>{if(closed)return;closed=true;timers.forEach(clearTimeout);document.removeEventListener('keydown',key,true);document.removeEventListener('pointerdown',away,true);
+ const close=()=>{if(closed)return;closed=true;onShut();timers.forEach(clearTimeout);document.removeEventListener('keydown',key,true);document.removeEventListener('pointerdown',away,true);
   if(!(spreads&&spreads.length)){sp.classList.add('out');setTimeout(()=>{sp.remove();onClose();},400);return;}
   bookSound('flip');
   const swing=sp.classList.contains('open')?T.swing:0,fly=T.flyBack;
@@ -235,10 +235,10 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
    busy=true;flying=false;root.classList.add('book-opening');el.classList.add('opening');
    /* The room comes back while the book is still flying home (not after it lands), so closing is one motion,
       and the spine it left fades in as the book settles onto it. */
-   const lift=()=>{flying=true;root.classList.remove('book-opening');setTimeout(()=>el.classList.remove('opening'),reduce?0:130);};
-   const fin=()=>{el.classList.remove('opening');root.classList.remove('book-opening');busy=false;flying=false;
+   const lift=()=>{flying=true;root.classList.remove('book-opening');root.classList.remove('book-closing');setTimeout(()=>el.classList.remove('opening'),reduce?0:130);};
+   const fin=()=>{el.classList.remove('opening');root.classList.remove('book-opening');root.classList.remove('book-closing');busy=false;flying=false;
     if(pending){const n=pending;pending=null;n();}};
-   const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onFly:lift,onClose:fin,
+   const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onFly:lift,onClose:fin,onShut:()=>root.classList.add('book-closing'),
     colors:{bk:cs.getPropertyValue('--bk'),bk2:cs.getPropertyValue('--bk2'),gild:cs.getPropertyValue('--bk-gild'),tex:cs.getPropertyValue('--tex')}});
    if(pages){bk.onPaint=(sp,idx)=>{inkPage(sp,pages.label);pages.onPaint&&pages.onPaint(sp,bk,idx);};}
    else if(intro){
