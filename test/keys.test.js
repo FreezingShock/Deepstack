@@ -50,3 +50,5 @@ test('book muted ink has 4.5:1 contrast on the darkest paper',async()=>{
  const a=L(m[1]),b=L('#d9c9a3');
  assert.ok((Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5);
 });
+
+test('in-book keys are documented',()=>{for(const k of ['O / G / R / F','[ / ]','T'])assert.ok(SHORTCUTS.some(([x])=>x===k),k);});
