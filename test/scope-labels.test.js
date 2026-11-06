@@ -35,3 +35,24 @@ test('Almanac labels its pages', () => {
   assert.match(roomTag(scopeRoom({})), /Reading Room/);
   assert.match(allTag(), /all rooms/);
 });
+
+/* CI guard: every room labels every readout, so a new room or a new row can't ship unlabelled. */
+import {ROOMS} from '../src/core/rooms.js';
+for (const r of ROOMS) {
+  test(`scope labels in ${r.id}`, () => {
+    const S = {room: r.id, rooms: {}, shelf: [{tier: 0}], rating: {hist: []}};
+    const room = scopeRoom(S);
+    assert.equal(room.id, r.id);
+    const card = ledgerHTML({streak: 1, deepest: 10, books: 2, floor: 'The Archive', room});
+    const rows = card.match(/<div class="lg-row[\s\S]*?<\/dt>/g);
+    assert.equal(rows.length, 4);
+    for (const row of rows) assert.match(row, /class="scope /, 'every Card row is tagged');
+    assert.match(rows[0], new RegExp(r.short), 'streak names the room');
+    for (const row of rows.slice(1)) assert.match(row, /all rooms/);
+    const pages = statsLeaves(base, S, ctx);
+    assert.match(pages[0], new RegExp(r.short));
+    assert.match(pages[1], new RegExp(r.short));
+    assert.match(pages[2], /scope-all/);
+    assert.match(pages[3], /scope-all/);
+  });
+}

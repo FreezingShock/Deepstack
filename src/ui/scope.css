@@ -11,4 +11,5 @@
 /* Top bar plates */
 .bg i.scope{font:600 calc(9px*var(--ts))/1 var(--label,var(--sans));font-style:normal;letter-spacing:.09em;text-transform:uppercase;margin-left:2px}
 .bg .rl-dot{margin-right:.3em}
-@media(max-width:1180px){.bg i.scope{display:none}}
+/* narrower bars keep the room's colour dot and drop the words (the tooltip still names the room) */
+@media(max-width:1180px){.bg i.scope{display:inline-flex;font-size:0;margin-left:0}.bg-deep i.scope{display:none}.bg i.scope .rl-dot{font-size:calc(11px*var(--ts));margin:0 0 0 2px}}

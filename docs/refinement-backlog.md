@@ -1918,10 +1918,10 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Each floor page gets its own small motif drawing (shelf lean, water line, red pulse).
 **Brief:** Goal: reuse `floorArt.js` motifs on `floorLeaves` pages. Files: `src/ui/floorLeaves.js`. **Conflicts:** LC1.
 
-### SL1. Show the room on the phone top bar and Card
+### [x] SL1. Show the room on the phone top bar and Card (done in the scope-labels PR: bars under 1180 px keep a room dot; the Almanac tags already show on phones; bars under 400 px still hide the plates)
 **Pitch:** On phones the streak chip drops its label and the Librarian's Card is hidden, so the "this room" tag is invisible there.
 **Brief:** Goal: on screens under 560 px show a room-coloured dot on the streak chip (tap shows "Chronicle streak"), and put the same scope tags on the Rooms book page. Files: `src/ui/topbarRail.js`, `scope.css`. **Conflicts:** none known.
 
-### SL2. Optional "all rooms" streak
+### SL2. Optional "all rooms" streak (nate to pick A, B or C: screenshots/scope-labels/sl2-options-*.png)
 **Pitch:** Each room keeps its own streak, so a 0 in the Chronicle sits next to a 5 in the Reading Room; some players will want one combined flame.
 **Brief:** Goal: a pen line on the Almanac streak page, "Any room: N days", counting a day if any room's Daily was played. Files: `src/ui/statsPages.js`, `src/core/stats.js`. **Conflicts:** TR12.
