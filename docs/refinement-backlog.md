@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Walk between rooms on desktop: the fireplace should stay put while the fire, title and labels glide to the new colour and the room and Daily lines type in. Tell me if the glide is too slow or the title tint is too strong.
+- Enter the Chronicle (or any other room) and press Descend: the candle halo, the two lanterns and the lift cage burn in the room's fire, the result card gets a rim of it, and the depth plaque names the room. The Reading Room should look exactly as before. Say if the tint is too strong or too faint.
 - Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
 - Resize the window (or rotate your phone) on home and in each menu book: the hatch tag should clear the title, Descend and the five spines should always fit, short landscape windows get one row of spines, and the background shelves (books, cobwebs, props) should stay put as you drag the window. Say which size still feels cramped. (thread: fix layout at small and odd window sizes, `node scripts/responsive.mjs`)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
@@ -1815,9 +1816,21 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On a phone the only quick room switch is seven 20 px dots on the mantel, too small to hit, or the Rooms book. The desktop has doors you walk through. A phone should let you swipe the fireplace sideways and the next room's fire slides in, with a small name label.
 **Brief:** Goal: horizontal swipe on the hearth region (and arrow keys) changes room with the same fire hand-off as the door walk; dots get 44 px hit areas and a name toast on press. Files: `src/ui/roomHome.js`, `hearth.js`. Done when: 375x667 frame strip, vertical scroll to the attic still works, reduced motion cross-fades. **Conflicts:** V3, attic scroll (#265).
 
-### TA6. The room follows you down
+### TA6. [x] The room follows you down (PR pending)
 **Pitch:** Enter the Chronicle and the home glows red, but the run screen is the same orange alcove with nothing saying where you are. The descent should carry the room: its fire colour on the candle halo, lanterns and result card edge, its name in pen on the plaque, and the lift cage showing its fire.
 **Brief:** Goal: pass the room's `rgb` and `ink` into the run alcove lighting, result card and lift, and show the room name small on the depth plaque. Files: `src/world/world.js` lights, `candleLight.js`, card css, `lift.js`. Done when: per-room run and card screenshots, the Reading Room unchanged byte for byte. **Conflicts:** Y1 (lift), W3, TR10.
+
+### TA6a. Room colour on the run's dust and sparks
+**Pitch:** The run now carries the room's fire in the halo, lanterns, card edge and lift, but the dust motes and the descent glow are still amber.
+**Brief:** Goal: tint dust motes and the descend glow with `--rm-rgb` through `src/ui/roomRun.js` (`runFire()`). Files: `src/ui/ambient.js`, `descendGlow.css`. Done when: per-room screenshots, Reading Room unchanged. **Conflicts:** TA6.
+
+### TA6b. Room name in the final page
+**Pitch:** The descent-complete page shows no room; a run in the Chronicle should end under its name and fire colour, matching the share text tag.
+**Brief:** Goal: show the room name and a fire rule on `final.js`'s page. Files: `src/ui/finalPage.css`, `src/app/final.js`. Done when: 1280 and 375 screenshots. **Conflicts:** G7.
+
+### TA6c. Fire-tinted floor rail
+**Pitch:** The floor rail on the left of a run is still amber-brown in every room; its lamp and active floor could take the room's fire.
+**Brief:** Goal: tint the active rail row and lamp from `--rm-rgb`. Files: `src/ui/topbarRail.js`, new css. Done when: screenshots per room. **Conflicts:** Y6.
 
 ### TA7. Small room visuals
 **Pitch:** (a) The Card's floor name still truncates ("The Cataco…") beside its label. (b) At 375 the attic hatch plate shows a second offset frame behind it. (c) The room dots on phones are tiny and unnamed (covered by TA5). (d) Room names in the side-door plates are good; the Reading Room one has no fire swatch.

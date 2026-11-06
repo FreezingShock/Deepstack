@@ -8,6 +8,7 @@
    Cost: nothing is drawn outside a descent, and `low` quality draws nothing at all.
    Reduced motion: no cage, rope or pulley, only a brass latch on the shelf lip that clunks open. */
 import {PALETTE} from '../theme/colors.js';
+import {cageFire} from '../ui/roomRun.js';
 import {glowSprite, stampGlow} from '../ui/glowSprite.js';
 import {liftGlow} from '../ui/glowDefs.js';
 
@@ -147,6 +148,7 @@ export function drawLift(ctx, o) {
   };
   ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(x0 + 6, top + 6, x1 - x0, bot - top); // soft drop shadow on the shelves behind
   ctx.fillStyle = 'rgba(8,5,2,.42)'; ctx.fillRect(x0, top, x1 - x0, bot - top); // the cage's dim interior reads against the shelves
+  cageFire(ctx, x0, top, x1, bot); // a topic room's fire in the cage
   ctx.strokeStyle = P.bronze41; ctx.lineWidth = 2.4; ctx.beginPath();
   for (const [ya, yb] of [[top + 8, top + 50], [bot - 62, bot - 14]]) { ctx.moveTo(x0, ya); ctx.lineTo(x1, yb); ctx.moveTo(x1, ya); ctx.lineTo(x0, yb); }
   ctx.stroke();

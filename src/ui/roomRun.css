@@ -1,0 +1,8 @@
+/* The room follows you down (TA6, src/ui/roomRun.js). Only inside a topic room, only during a run (html.run-on);
+   the Reading Room has no data-room, so none of this applies there. */
+html[data-room].run-on #depthHud::before{content:var(--rm-name);order:-1;align-self:center;margin-right:8px;padding-right:10px;border-right:1px solid rgba(var(--rm-rgb),.55);font:700 calc(10px*var(--ts)) var(--label,var(--sans));letter-spacing:.2em;color:color-mix(in srgb,rgb(var(--rm-rgb)) 42%,rgb(20,10,5));text-shadow:0 1px 0 rgba(255,235,190,.35);white-space:nowrap}
+@media(max-width:700px){html[data-room].run-on #depthHud::before{content:var(--rm-short);margin-right:6px;padding-right:8px}}
+html[data-room].run-on #depthHud{box-shadow:0 0 18px -6px rgba(var(--rm-rgb),.55)}
+html[data-room].run-on #bk .page{box-shadow:0 0 0 1px rgba(var(--rm-rgb),.55),0 0 26px -2px rgba(var(--rm-rgb),.42),inset 0 0 0 1px rgba(var(--rm-ink),.18)}
+html[data-room].run-on #bk .tierbar{border-bottom:2px solid rgba(var(--rm-rgb),.7)}
+html[data-room].run-on #bk .meter i{box-shadow:0 0 8px rgba(var(--rm-rgb),.6)}

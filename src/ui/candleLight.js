@@ -8,6 +8,7 @@
 import {addLight} from './lighting.js';
 import {glowSprite, stampGlow} from './glowSprite.js';
 import {flameState} from './candle.js';
+import {candleStops, candleKey, runFire} from './roomRun.js';
 
 const st = {on: false, x: 0, y: 0, k: 0, r: 0, at: 0};
 /** Strength now: the timer feeds us every 100 ms; when it stops (answer sent, left the run) the light fades out over half a second. */
@@ -43,7 +44,7 @@ export function registerCandleLight(t, still) {
 export function drawCandleGlow(ctx, t, still, tier) {
   const lv = live(); if (!lv) return;
   const fl = still ? 1 : 1 + .05 * Math.sin(t * 9) + .035 * Math.sin(t * 23) + .02 * Math.sin(t * 41);
-  const sp = glowSprite('candle-light', GLOW_STOPS), a = ctx.globalAlpha;
+  const fire = runFire(), sp = glowSprite(candleKey(fire), candleStops(GLOW_STOPS, fire)), a = ctx.globalAlpha; // the room's fire in a topic room, the usual warm light in the Reading Room
   ctx.globalAlpha = a * lv * st.k * fl;
   const r = st.r * (1 + (still ? 0 : .015 * Math.sin(t * 5)));
   ctx.drawImage(sp, st.x - r, st.y - r, r * 2, r * 2);
