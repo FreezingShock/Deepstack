@@ -17,6 +17,7 @@ export const SHORTCUT_GROUPS=[
  ]],
  ['In books and the dark',[
   ['← →','Turn the pages of an open book, or move between books on a result'],
+  ['/','Jump to the search line in the Shelf book'],
   ['Space / Enter / Esc','Skip the descent animation'],
   ['Page Up / Page Down','Browse up and down the shelves'],
   ['Home / End','Jump to the top / back to where you were'],

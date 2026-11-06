@@ -39,3 +39,13 @@ test('home keys open each book, descend and the attic, only on the home screen',
  assert.equal(actionFor(ev('1'),{...h,typing:true}),null);
 });
 test('every shortcut group has rows',()=>{for(const [h,r] of SHORTCUT_GROUPS){assert.ok(h&&r.length);}});
+
+test('help sheet lists the search slash',()=>assert.ok(SHORTCUTS.some(([k])=>k==='/')));
+test('book muted ink has 4.5:1 contrast on the darkest paper',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const m=/--bs-mute:(#[0-9a-f]{6})/i.exec(readFileSync(new URL('../src/ui/bookStyle.css',import.meta.url),'utf8'));
+ assert.ok(m);
+ const L=h=>{const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(v=>v<=.03928?v/12.92:((v+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2]};
+ const a=L(m[1]),b=L('#d9c9a3');
+ assert.ok((Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5);
+});

@@ -2,7 +2,7 @@
    menu books) reads as the same object: leather boards, a gilt line, ruled parchment, ink text, a ribbon.
    Panels add class "bookbox"; spreads (.bk-spread) take the page tokens. Per-book colour comes from --bk/--bk2/--bk-gild. */
 :root{
- --bs-ink:var(--c-ink);--bs-mute:var(--c-bronze-32);--bs-rule:var(--c-bronze-33-alpha-40);
+ --bs-ink:var(--c-ink);--bs-mute:#5c4d30;--bs-rule:var(--c-bronze-33-alpha-40);
  --bs-page:repeating-linear-gradient(0deg,transparent 0 27px,var(--c-bronze-33-alpha-1a) 27px 28px),linear-gradient(90deg,var(--c-brass-75),var(--c-parchment-85) 45%,var(--c-parchment-80));
  --bs-page-shadow:inset 0 0 34px var(--c-oak-24-alpha-55);
  --bs-ribbon:var(--c-blood-34);
