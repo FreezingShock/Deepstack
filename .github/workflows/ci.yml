@@ -91,11 +91,13 @@ jobs:
       - name: Smoke test and screenshot snapshots (in parallel)
         run: |
           node scripts/smoke.mjs & smoke=$!
+          SMOKE_REDUCED=1 node scripts/smoke.mjs & smokeRm=$!
           node scripts/snapshots.mjs & snaps=$!
           node scripts/text-fit.mjs & fit=$!
           node scripts/transitions.mjs & trans=$!
           rc=0
           wait $smoke || rc=1
+          wait $smokeRm || rc=1
           wait $snaps || rc=1
           wait $fit || rc=1
           wait $trans || rc=1

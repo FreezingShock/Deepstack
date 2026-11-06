@@ -35,8 +35,8 @@ const problems = [];
 const fail = msg => { problems.push(msg); };
 const T = 15000;
 
-async function newPage() {
-  const ctx = await browser.newContext({viewport: {width: 1280, height: 800}});
+async function newPage(opts = {}) {
+  const ctx = await browser.newContext({viewport: {width: 1280, height: 800}, ...(process.env.SMOKE_REDUCED ? {reducedMotion: 'reduce'} : {}), ...opts});
   const page = await ctx.newPage();
   await page.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
   page.on('pageerror', e => fail(`pageerror: ${e.message}${e.stack ? ' @ ' + e.stack.split('\n')[1]?.trim() : ''}`));
@@ -184,6 +184,37 @@ await step('unlimited descends to a finite depth', async () => {
   if (!filled) fail('Unlimited: saved book has a non-finite row count');
 });
 
+// OS "reduce animations": nothing may depend on an animation to become visible. The topic-room side doors must show and be hittable.
+await step('side doors show with reduced motion', async () => {
+  const rp = await newPage({reducedMotion: 'reduce'});
+  await rp.goto(url);
+  try { await rp.waitForFunction(() => { const d = document.querySelector('#rm-doors .rm-door'); if (!d) return false; const r = d.getBoundingClientRect(); return r.width > 40 && r.height > 40 && getComputedStyle(d.parentElement).opacity === '1' && !d.parentElement.hidden; }, null, {timeout: T}); }
+  catch { fail('side doors: not visible under prefers-reduced-motion'); }
+  // the rest of the home must also be there without any animation having run (swept: nothing else differed from full motion)
+  for (const sel of ['.hz-title', '.rm-ring .rm-dot', '.hearth', '.rm-door.rm-prev', '.rm-door.rm-next']) {
+    const vis = await rp.locator(sel).first().evaluate(el => { const r = el.getBoundingClientRect(); let op = 1; for (let n = el; n; n = n.parentElement) op *= +getComputedStyle(n).opacity; return r.width > 2 && r.height > 2 && op > 0.5; }).catch(() => false);
+    if (!vis) fail(`reduced motion: ${sel} not visible`);
+  }
+  await rp.context().close();
+});
+// The attic climb under reduced motion: it must still land (instantly), show its rows, step one row per press and come home.
+await step('attic climb with reduced motion', async () => {
+  const seed = {shelf: Array.from({length: 60}, (_, i) => ({w: 'word' + i, pos: 'noun', def: 'a thing number ' + i, answer: 'x', score: 60, tier: i % 5, mode: 'unlimited', t: 1.7e12 + i * 1e6, rows: 3, ft: 30})), sound: false};
+  const ap = await newPage({reducedMotion: 'reduce'});
+  await ap.addInitScript(sd => { try { if (!localStorage.getItem('deepstack.v1')) localStorage.setItem('deepstack.v1', JSON.stringify(sd)); } catch {} }, seed);
+  await ap.goto(url);
+  const row = () => ap.evaluate(() => +((/row (\d+) of/.exec(document.querySelector('.attic-depth')?.textContent || '') || [])[1] || 0));
+  await ap.locator('#home').waitFor({state: 'visible', timeout: T});
+  await ap.keyboard.press('ArrowUp');
+  await ap.waitForFunction(() => window.__deepstack?.World?.atticReady === true, null, {timeout: T}).catch(() => fail('attic: never finished climbing in (reduced motion)'));
+  const vis = await ap.locator('.attic-depth').first().evaluate(el => { const r = el.getBoundingClientRect(); let op = 1; for (let n = el; n; n = n.parentElement) op *= +getComputedStyle(n).opacity; return r.width > 2 && op > 0.5; }).catch(() => false);
+  if (!vis) fail('attic: row label not visible under reduced motion');
+  const r1 = await row(); await ap.keyboard.press('ArrowUp'); await ap.waitForTimeout(700);
+  if (r1 && (await row()) !== r1 + 1) fail('attic: one ArrowUp did not move exactly one row under reduced motion');
+  await ap.keyboard.press('ArrowDown'); await ap.keyboard.press('ArrowDown'); await ap.keyboard.press('ArrowDown');
+  await ap.waitForFunction(() => !document.querySelector('#home')?.classList.contains('attic-away'), null, {timeout: T}).catch(() => fail('attic: could not come home under reduced motion'));
+  await ap.context().close();
+});
 await browser.close(); server.close();
 if (problems.length) { console.error('smoke: FAILED\n - ' + [...new Set(problems)].join('\n - ')); process.exit(1); }
 console.log('smoke: ok');

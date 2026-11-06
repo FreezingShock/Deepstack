@@ -41,7 +41,7 @@ export function doorHTML(r, side) {
 let typeNext = false;
 export const typeOnNextMount = () => { typeNext = true; };
 
-let doors = null, keysOn = false, resizeOn = false, goFn = null, curRoom = HALL;
+let roObs = null, doors = null, keysOn = false, resizeOn = false, goFn = null, curRoom = HALL;
 const homeEl = () => document.getElementById('home');
 const homeIdle = () => {
   const h = homeEl();
@@ -91,6 +91,11 @@ export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = ()
   doors.innerHTML = doorHTML(prev, 'prev') + doorHTML(next, 'next');
   placeDoors();
   requestAnimationFrame(placeDoors); // after the hearth has laid the room out
+  /* the home can still be settling (fonts, hearth sizing, fade-in) after the first frame, notably when motion is
+     reduced and nothing else triggers a relayout: re-place whenever it changes size, and once more after load */
+  if (roObs) roObs.disconnect();
+  if (typeof ResizeObserver !== 'undefined') { roObs = new ResizeObserver(() => placeDoors()); roObs.observe(home); }
+  [120, 600, 1500].forEach(ms => setTimeout(placeDoors, ms));
   if (!resizeOn) { resizeOn = true; addEventListener('resize', () => requestAnimationFrame(placeDoors)); }
   if (!keysOn) {
     keysOn = true;

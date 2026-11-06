@@ -41,6 +41,11 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 
 - Pull `main` and play an Unlimited run, answering well enough for a Folio or better: depth should now count up (it was NaN with an empty world). (hotfix, Unlimited descent)
 
+### Reduced-motion audit (fix: side doors vanished with OS animations off)
+- [x] Side doors re-place on ResizeObserver + late retries; smoke.mjs now renders home under reduced motion and asserts the doors are visible (PR pending).
+- [x] RM2 Reduced-motion sweep: diffed visible elements full vs reduced motion at 1280 and 375, no other differences; smoke now checks title, ring, hearth and doors (PR #295).
+- [ ] RM3 Settings motion toggle preview: show a live "reduced" preview beside the Motion setting. Conflicts: src/ui/settings.js.
+
 ## Standard preamble (add to every brief)
 - Serves nate's patterns: overhaul not tweak, everything is a book/shelf/page, handwritten and sectioned, words fully readable, dark and mysterious, rarity is the hero, integrated not bolted on, physical and smooth motion.
 - New code in new files under `src/`, one-line hooks in `main.js`/`styles.css`. Colors from `src/theme/colors.js` tokens only (hex ratchet tests).
