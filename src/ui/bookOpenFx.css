@@ -84,3 +84,9 @@
 .bk-spread.open .bs-cover,.bk-spread.open .bs-leaf{transition-property:transform,visibility;transition-delay:0s,calc(var(--o-swing,320ms)*.85 + var(--m-quick))}
 .bk-spread.open .bs-page.l,.bk-spread.open .bs-board.l{transition:opacity var(--m-quick) calc(var(--o-swing,320ms)*.3)}
 .bk-spread.rm .cv-in,.bk-spread.rm .bs-leaf i{transition:none}
+
+/* W1: closing a home book. The room starts fading back in the moment the book begins to close (the swing, the
+   shut, the fly home) and is whole as the book lands, so it never shows a lone book on bare brick and then pops
+   in. Still hidden while the book is open; one slow cruise curve, no per-piece timing. */
+.book-opening.book-closing .hz-title,.book-opening.book-closing .hz-plaque{opacity:1;transition:opacity var(--m-page) var(--e-cruise)}
+.book-opening.book-closing .hbook:not(.opening){opacity:1;transform:none;transition:opacity var(--m-page) var(--e-cruise),transform var(--m-page) var(--e-cruise)}
