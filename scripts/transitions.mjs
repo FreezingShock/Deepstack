@@ -101,6 +101,23 @@ for (const [id, name] of [['bDaily', 'Daily'], ['bUnl', 'Unlimited'], ['bAll', '
   if (!await dlg.waitFor({state: 'visible', timeout: T}).then(() => true, () => false)) { fail(`${name}: never opened`); continue; }
   if (await page.locator('#home.book-opening').count() === 0) fail(`${name}: home not marked book-opening while open`);
   await page.keyboard.press('Escape');
+  // AT8: the closed book slides home (a transform, not an early fade): once it is flying, its opacity stays 1 until the
+  // last ~150 ms, and it flies toward the spine's own centre.
+  const flight = await page.evaluate(async id => {
+    const spine = document.getElementById(id).getBoundingClientRect(), c = [spine.left + spine.width / 2, spine.top + spine.height / 2];
+    const out = {early: 1, dist: 1e9, seen: false};
+    for (let i = 0; i < 40; i++) {
+      await new Promise(r => setTimeout(r, 20));
+      const sp = document.querySelector('.bk-spread.flyback'); if (!sp) { if (out.seen) break; continue; }
+      out.seen = true; const rect = sp.querySelector('.bs-board.r').getBoundingClientRect(), age = (out.t0 ??= performance.now());
+      if (performance.now() - age < 120) out.early = Math.min(out.early, +getComputedStyle(sp).opacity);
+      out.dist = Math.hypot(rect.left + rect.width / 2 - c[0], rect.top + rect.height / 2 - c[1]);
+    }
+    return out;
+  }, id);
+  console.log(`transitions: ${name} fly-home early opacity ${flight.early.toFixed(2)}, end distance ${flight.dist.toFixed(1)}px`);
+  if (!flight.seen) fail(`${name}: no fly-home phase seen`);
+  else if (flight.early < 0.95) fail(`${name}: book faded (${flight.early.toFixed(2)}) instead of sliding home`);
   const samples = [];
   for (let i = 0; i < 12; i++) { const s = await homeState(); samples.push(s); if (!s.shown) fail(`${name}: home hidden during close (frame ${i})`); await page.waitForTimeout(40); }
   if (samples.slice(5).some(s => s.vis < MIN_AT_200MS)) fail(`${name}: home still bare 200 ms into the close (bare brick under the flying book)`);

@@ -1645,7 +1645,7 @@ _Done in this PR: Close the book is now a `.pg-foot` link on the right page bott
 **Pitch:** The cord creak, lid knock and rungs creaking as you climb, so the way in feels as physical as it looks.
 **Brief:** Goal: three short Sfx hooks fired from `atticHome.js` (pull, arrive, descend). Files: `src/sound/`, `src/ui/atticHome.js`. **Conflicts:** sound threads.
 
-### AT8. Books return to the stack
+### AT8. [x] Books return to the stack (PR pending)
 **Pitch:** After a menu book closes it should slide back into its exact slot on the stack, with the others easing forward rather than popping.
 **Brief:** Goal: shared-element return flight and sibling stagger in `bookOpenFx`. Files: `src/ui/bookOpenFx.css`, `src/ui/homeBookEdges.css`. **Conflicts:** home book threads.
 ### V17. Floor rule on the door sign
@@ -1685,3 +1685,10 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 
 ### Y6. Top bar: floor-tinted rail
 **Pitch:** The rail's inlay and glow take on the current floor's colour as you descend. **Brief:** Goal: tint `#bar::before` and the corner glows from the floor tokens, softly, never bright. Files: `src/ui/topbarRail.css`, `src/main.js` onDepth hook.
+
+### AT8a. [x] Open flight from the exact spine
+**Pitch:** The book now slides home onto its spine and tips onto its side. Make the opening the mirror of it: the spine lifts and turns upright as it flies out, so open and close read as one object.
+**Brief:** Goal: mirror the `--sx/--sy` footprint on the way out in `openBook`. Files: `src/ui/bookOpenFx.css`, `src/ui/home.js`. **Conflicts:** home book threads, Settings book fix.
+### AT8b. [x] Spine settle nudge
+**Pitch:** When the book lands the stack could take a tiny weight bump, like setting a book down on a pile.
+**Brief:** Goal: a 2px translate on the landed spine and its neighbours, transform only. Files: `src/ui/homeBookEdges.css`. **Conflicts:** AT8a.
