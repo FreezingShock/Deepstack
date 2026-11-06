@@ -50,7 +50,7 @@ body:has(.attic-cue-home:not([hidden])) #home .hz-title,body:has(.attic-cue-home
  body .bk-spread.menu .chipgroup .chips{gap:0 9px}
  body .bk-spread.menu .chipgroup .fchip{font-size:calc(16px*var(--ts));padding-top:0;padding-bottom:2px;line-height:1.15}
  body .bk-spread.menu .chipgroup .fchip small{font-size:calc(11px*var(--ts))}
- body .bk-spread.menu .chipgroup>.kicker{font-size:calc(9px*var(--ts))}
+ body .bk-spread.menu .chipgroup>.kicker{font-size:calc(10px*var(--ts))}
 }
 /* the Daily ledger on narrow phones: a smaller hand so a page holds what it says before the turn */
 @media(max-width:420px) and (max-height:760px){body .bk-spread.menu .dly{zoom:.74}}

@@ -1,3 +1,4 @@
+import {fmtNum} from '../core/numFmt.js';
 /* The Daily book: a handwritten ledger of every daily from No. 1 to today. Pure leaf builders (tested) plus the
    registry entry for home.js BOOK_PAGES. Each day is a spread: the seven words and their definitions on the left,
    your results on the right (once played). Today's words stay sealed until you have played, so the book never
@@ -45,7 +46,7 @@ const coverLeaf=(S,today,entries,streak)=>{
  const rid=riddleDay(S,today),rs=riddleDayStreak(S&&S.riddle,today);
  return `<div class="dly"><div class="kicker">Ledger of descents · ${esc(longDate(today))}</div><h1>The Daily</h1>
   <section class="dly-sec" aria-label="Daily"><h2>Daily No. ${e.no}</h2>
-   <p class="dly-line">${e.played?`Played today: ${e.rec.depth} ft down, average ${e.rec.avg}.`:'Explain seven words, sealed until you descend.'}</p>
+   <p class="dly-line">${e.played?`Played today: ${fmtNum(e.rec.depth)} ft down, average ${e.rec.avg}.`:'Explain seven words, sealed until you descend.'}</p>
    <p class="dly-tally"><span><b>${played}</b> of ${entries.length} played</span><span><b>${streak}</b> day streak</span></p>
    <button class="dly-act pen-ink" data-act="daily">${e.played?'See today’s result':'Descend'}</button></section>
   <section class="dly-sec" aria-label="Daily Riddle"><h2>Daily Riddle</h2>
@@ -73,7 +74,7 @@ const tierColor=t=>(TIERS[t]||TIERS[0]).spine;
 export function dayLeaves(e){
  const [l,r]=baseDayLeaves(e);
  if(!e.riddle)return [l,r];
- return [l,r.replace(/<\/div>$/,`<section class="dly-sec" aria-label="Daily Riddle"><h2>Daily Riddle</h2><div class="dly-sum"><span><b>${e.riddle.solved}</b> of ${e.riddle.of} solved</span><span><b>${e.riddle.depth}</b> ft</span></div></section></div>`)];
+ return [l,r.replace(/<\/div>$/,`<section class="dly-sec" aria-label="Daily Riddle"><h2>Daily Riddle</h2><div class="dly-sum"><span><b>${e.riddle.solved}</b> of ${e.riddle.of} solved</span><span><b>${fmtNum(e.riddle.depth)}</b> ft</span></div></section></div>`)];
 }
 function baseDayLeaves(e){
  const head=`<div class="kicker">${esc(monthLabel(e.key))} · ${esc(status(e))}</div><h1>No. ${e.no}</h1><div class="dly-date">${esc(longDate(e.key))}</div>`;

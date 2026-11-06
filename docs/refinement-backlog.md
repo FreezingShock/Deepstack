@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
 - Pick a one-tap way into the Ember Log on phones (LC7): A flame tag, B fire, C labelled flame tag (recommended), D streak line under Descend. Screenshots in screenshots/ember-log-onetap/.
 - Slow-network check (perf pass): on your phone, load the site once, then toggle airplane-mode-slow or a weak connection and reload; entering another room and the first answer should no longer stall. Tell me if any room still feels slow and which (numbers in screenshots/performance/results.md).
@@ -2025,3 +2026,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### LC7. A one-tap way into the Ember Log on phones
 **Pitch:** On phones the Ember Log is two taps away (Stats, then the link); the attic hatch leaves no room for a streak chip in the rail.
 **Brief:** Goal: one tap from home, e.g. tap the hearth fire (the fire already reflects the streak). Files: `src/ui/hearth.js`, `src/ui/ledgerBooks.js`. **Conflicts:** fireplace layout threads, RA2 rail fit.
+
+### TY1. [x] (PR pending, copy and typography thread) Depth numbers and text under 10 px
+**Pitch:** Depths past 999 ft read as "1008 ft" and the small caps plates drew at 7 to 9.7 px. Every depth now takes a thousands comma (one helper, `src/core/numFmt.js`), and no text draws under 10 px at the Normal text size.
+**Brief:** Done: `src/core/numFmt.js`, depth labels in the floors, almanac, depth counter, Card, Daily ledger and share text; CSS sizes under 10 px raised to 10 px (`src/ui/*.css`); the scope tag keeps a 10 px floor. CI: `scripts/text-fit.mjs` now fails on text under 10 px or a depth without its comma, and sweeps the Almanac and Rooms too. Tests: `test/number-format.test.js`. Screenshots in screenshots/copy-typography/.
+### TY2. Tracking on uppercase home captions
+**Pitch:** The home captions (Daily, Shelf, Unlimited, Rooms, Stats) track at 0.04em, tighter than the 0.16em tier names and the plates around them, so they look cramped.
+**Brief:** Goal: one tracking value for uppercase home captions, checked at 1920 and 375 so the spines still fit. Files: `src/ui/home.css`, `src/ui/homeSpineSub.css`. **Conflicts:** home spine captions (PR #292), homeSpineSub fit.
+### TY3. One range style for floor ranges
+**Pitch:** The depth tracker writes "0–101 ft" with an en dash, while the Floors book and the Card's floor row write "0 to 101 ft". Pick one and use it on every screen.
+**Brief:** Goal: one range helper in `src/core/numFmt.js` used by `src/ui/tracker.js`, `src/ui/floorLeaves.js` and the floor banner. Files: those three files, plus a test in `test/number-format.test.js`. **Conflicts:** Card floor row (TA7), Floors book.

@@ -146,4 +146,4 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
 .rl-toc .rl-dot{position:relative;margin-right:.75em}
 .rl-toc .rl-dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;background:conic-gradient(rgb(var(--c)) calc(var(--s,0)*1turn),rgba(var(--c),.22) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1px));mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1px))}
 .rl-toc .rl-dot.nosets::after{display:none}
-.home .cb-met{margin:calc(2px*var(--ts)) 0 calc(8px*var(--ts));text-align:center;font:italic 400 calc(14px*var(--ts)) var(--serif);color:var(--rt)}
+.home .cb-met{margin:calc(2px*var(--ts)) 0 calc(10px*var(--ts));text-align:center;font:italic 400 calc(14px*var(--ts)) var(--serif);color:var(--rt)}

@@ -1,3 +1,4 @@
+import {fmtNum} from './numFmt.js';
 /* Daily Riddle: the Riddle section seeded by UTC date. Same seven words for everyone, one attempt a day.
    Results live in S.riddle.days[dayKey] (additive), with a streak derived from those keys. Pure helpers, tested without the canvas. */
 import {WORDS,GHOSTS} from './words.js';
@@ -38,5 +39,5 @@ export const riddleDayStreak=(r,today)=>currentStreak(Object.keys((r&&r.days)||{
 
 /** Share text, no emojis: number, how many were solved, then the books as blocks. */
 export function riddleDayShare(day,d,blocks='▁▂▃▄▅▆▇'){
-  return `Deepstack Daily Riddle No. ${dailyNumber(day)}\nSolved ${d.solved} of ${d.of} · depth ${d.depth} ft · average closeness ${d.avg}\n${d.books.map(b=>blocks[b.tier]).join('')}`;
+  return `Deepstack Daily Riddle No. ${dailyNumber(day)}\nSolved ${d.solved} of ${d.of} · depth ${fmtNum(d.depth)} ft · average closeness ${d.avg}\n${d.books.map(b=>blocks[b.tier]).join('')}`;
 }

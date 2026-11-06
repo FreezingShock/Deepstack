@@ -1,5 +1,5 @@
 /* Scope tags: "this room" vs "all rooms" (see scope.js). Appended, uses existing tokens. */
-.scope{display:inline-flex;align-items:center;font:600 .62em/1 var(--label,var(--sans));letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;opacity:.8}
+.scope{display:inline-flex;align-items:center;font:600 max(calc(10px*var(--ts,1)),.62em)/1 var(--label,var(--sans));letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;opacity:.8}
 .scope-all{opacity:.62}
 .scope .rl-dot{margin-right:.4em}
 /* Almanac: tags sit under each page kicker and after a ledger line's note */
@@ -7,9 +7,9 @@
 .bk-spread.menu .alm .ledger li em .scope{margin-left:6px;font-size:calc(11px*var(--ts))}
 /* Librarian's Card: the tag is a second small line under the row label */
 .home .lg-row dt{display:flex;flex-direction:column;line-height:1.05}
-.home .lg-row dt .scope{font-size:calc(8px*var(--ts));letter-spacing:.08em;margin-top:1px}
+.home .lg-row dt .scope{font-size:calc(10px*var(--ts));letter-spacing:.08em;margin-top:1px}
 /* Top bar plates */
-.bg i.scope{font:600 calc(9px*var(--ts))/1 var(--label,var(--sans));font-style:normal;letter-spacing:.09em;text-transform:uppercase;margin-left:2px}
+.bg i.scope{font:600 calc(10px*var(--ts))/1 var(--label,var(--sans));font-style:normal;letter-spacing:.09em;text-transform:uppercase;margin-left:2px}
 .bg .rl-dot{margin-right:.3em}
 /* narrower bars keep the room's colour dot and drop the words (the tooltip still names the room) */
 @media(max-width:1180px){.bg i.scope{display:inline-flex;font-size:0;margin-left:0}.bg-deep i.scope{display:none}.bg i.scope .rl-dot{font-size:calc(11px*var(--ts));margin:0 0 0 2px}}

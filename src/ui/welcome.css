@@ -31,7 +31,7 @@
 
 /* ---- the ledger: a framed board bolted to the right wall, a brass plate, a ruled page ---- */
 .home .lg-frame{padding:28px 11px 12px}
-.home .lg-plate{position:absolute;left:50%;top:6px;transform:translateX(-50%);padding:2px 9px;font:600 calc(9.5px*var(--ts))/calc(12px*var(--ts)) var(--label);letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;color:var(--c-oak-1a1208);
+.home .lg-plate{position:absolute;left:50%;top:6px;transform:translateX(-50%);padding:2px 9px;font:600 calc(10px*var(--ts))/calc(12px*var(--ts)) var(--label);letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;color:var(--c-oak-1a1208);
  border:1px solid var(--c-bronze-51);border-radius:2px;background:linear-gradient(180deg,var(--c-brass-65),var(--c-brass-62) 55%,var(--c-bronze-44));box-shadow:0 1px 1px var(--c-black-alpha-88),0 1px 0 var(--c-white-alpha-40) inset}
 .home .lg-page{margin:0;height:100%;box-sizing:border-box;padding:6px 10px 4px;display:flex;flex-direction:column;justify-content:space-around;
  background:repeating-linear-gradient(180deg,transparent 0 25px,color-mix(in srgb,var(--c-oak-4a3a22) 30%,transparent) 25px 26px),radial-gradient(120% 90% at 30% 10%,var(--c-parchment-85),var(--c-parchment-dim));
