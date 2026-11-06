@@ -1675,3 +1675,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### W5. Wayfinding in the attic
 **Pitch:** On a phone the only sign of depth is one wrapped line of text ("row 1 of 3, scroll up to go further in"). The floor rail does this job in the run; the attic has nothing like it.
 **Brief:** Goal: a slim brass marker on the side showing which row you are in, tappable to jump. Files: `src/world/atticClimb.js`. Done when: 375 and 1280 screenshots, keyboard reachable. **Conflicts:** X2, V3.
+
+### W3b. Tier moments, round two
+**Pitch:** Pamphlet to Hardbound each set the page down their own way; carry it to shelf-opened cards.
+**Brief:** Goal: call `playTierMoment` for shelf cards plus a soft per-tier cue. Files: `src/ui/tierMoment.js`, `src/app/card.js`. **Conflicts:** none.

@@ -1,0 +1,19 @@
+/* Per-tier reveal moments on the result card (see tierMoment.js). Tokens only; reduced motion shows none of it. */
+.book.tm-edge .page .tierbar{position:relative;overflow:hidden}
+/* tier-coloured edge light: the page rim lights up as the cover opens, then settles to a faint line */
+.book.tm-edge .page{animation:tmEdge var(--m-linger) var(--e-settle) both}
+@keyframes tmEdge{0%{box-shadow:0 0 0 1px var(--c-black-alpha-44)}35%{box-shadow:0 0 0 1px var(--c-black-alpha-44),0 0 26px 2px color-mix(in srgb,var(--tc) 70%,transparent)}100%{box-shadow:0 0 0 1px var(--c-black-alpha-44),0 0 10px 0 color-mix(in srgb,var(--tc) 22%,transparent)}}
+/* Pamphlet: set down, a little dip and a rule drawn under the bar */
+.book.tm-settle .page{animation:tmEdge var(--m-linger) var(--e-settle) both,tmSettle var(--m-page) var(--e-settle) both}
+@keyframes tmSettle{0%{transform:translateY(-7px) rotate(-.5deg)}60%{transform:translateY(1px) rotate(.12deg)}100%{transform:none}}
+.book.tm-settle .page .tierbar::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--c-white-alpha-99);transform-origin:left;animation:tmRule var(--m-linger) var(--e-settle) var(--m-quick) both}
+@keyframes tmRule{from{transform:scaleX(0);opacity:.9}to{transform:scaleX(1);opacity:0}}
+/* Paperback: the leaves fan open, a glint crosses the bar */
+.book.tm-unfold .page{animation:tmEdge var(--m-linger) var(--e-settle) both,tmUnfold var(--m-page) var(--e-settle) both;transform-origin:left center}
+@keyframes tmUnfold{0%{transform:perspective(900px) rotateY(7deg) scaleX(.985)}100%{transform:none}}
+/* Hardbound: pressed flat with weight */
+.book.tm-press .page{animation:tmEdge var(--m-linger) var(--e-settle) both,tmPress var(--m-page) var(--e-settle) both}
+@keyframes tmPress{0%{transform:scale(1.018)}55%{transform:scale(.996)}100%{transform:none}}
+.book.tm-unfold .page .tierbar::after,.book.tm-press .page .tierbar::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,var(--c-white-alpha-33) 50%,transparent 65%);transform:translateX(-120%);animation:tmGlint var(--m-linger) var(--e-settle) var(--m-smooth) both}
+@keyframes tmGlint{to{transform:translateX(120%)}}
+@media (prefers-reduced-motion:reduce){.book.tm-edge .page,.book.tm-edge .page .tierbar::after{animation:none}}
