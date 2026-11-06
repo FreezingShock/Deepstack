@@ -2,7 +2,7 @@ import {hintLadder,rowsAfterHints} from '../core/hints.js';
 import {verdictFor} from '../core/verdict.js';
 import {comboNeeds,comboLabel,comboMultiplier,applyCombo} from '../core/combo.js';
 import {recordBook as recordSetBook} from '../sets/sets.js';
-import {recordMet} from '../core/roomDepth.js';
+import {recordMet,recordMastery} from '../core/roomDepth.js';
 import {toastSetsDone} from '../sets/ui.js';
 import * as core from '../core/index.js';
 import {Sfx} from '../feel.js';
@@ -107,7 +107,7 @@ export async function submit(skipped){
  World.fillNiche(nicheRow,{w:w.w,pos:w.pos,answer:text,score:j.score,tier:t,ft:book.ft,verdict:book.verdict,skipped},run.results.slice());
  if(cb.chain)setTimeout(()=>Sfx.link(cb.chain),120);else if(cb.broke)setTimeout(()=>Sfx.clunk(),200); // the ledge chain gains a link or lets go
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
- if(!run.practice){recordMet(S,book);S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}save();}
+ if(!run.practice){recordMet(S,book);recordMastery(S,utc());S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}save();}
  if(!run.practice&&run.mode!=='unlimited'){S.dailyRun=snapshotRun(run);save();}
  const depth1=Math.round((World.restRow+rows)*FT);
  openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length;if(!last&&run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id));prepareWords([run.words[run.i]]).catch(()=>{});}const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
