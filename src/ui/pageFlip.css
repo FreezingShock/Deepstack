@@ -29,10 +29,20 @@
 .bs-page::before{right:100%;width:var(--edge-p,0);border-radius:2px 0 0 2px;box-shadow:inset 3px 0 3px -2px var(--c-black-alpha-66)}
 .bs-page::after{left:100%;width:var(--edge-n,0);border-radius:0 2px 2px 0;box-shadow:inset -3px 0 3px -2px var(--c-black-alpha-66)}
 .bk-spread:not(.one) .bs-page.l::after,.bk-spread:not(.one) .bs-page.r::before{display:none}
-/* --- the turn: the leaf lifts off the page, bows a little as it crosses, then lays down --- */
-@keyframes fl-next{0%{transform:rotateY(0)}16%{transform:translateZ(16px) rotateY(-16deg) skewY(-1.6deg)}58%{transform:translateZ(26px) rotateY(-118deg) skewY(1.4deg)}100%{transform:rotateY(-180deg)}}
-@keyframes fl-prev{0%{transform:rotateY(0)}16%{transform:translateZ(16px) rotateY(16deg) skewY(-1.6deg)}58%{transform:translateZ(26px) rotateY(118deg) skewY(1.4deg)}100%{transform:rotateY(180deg)}}
-@keyframes fl-shade{0%{opacity:0}45%{opacity:.75}100%{opacity:.12}}
+/* --- the turn: one unbroken rotation (a single easing, no per-keyframe stops), with the lift as its own
+   composited `translate` animation so the leaf rises off the page and lays down without mixing 3D matrices --- */
+@keyframes fl-next{from{transform:rotateY(0)}to{transform:rotateY(-180deg)}}
+@keyframes fl-prev{from{transform:rotateY(0)}to{transform:rotateY(180deg)}}
+@keyframes fl-lift{0%,100%{translate:0 0 0}50%{translate:0 0 26px}}
+@keyframes fl-shade{0%{opacity:0}50%{opacity:.7}100%{opacity:.14}}
+.bs-flip.next{animation:fl-next var(--m-page) cubic-bezier(.5,.02,.25,1) forwards,fl-lift var(--m-page) ease-in-out forwards}
+.bs-flip.prev{animation:fl-prev var(--m-page) cubic-bezier(.5,.02,.25,1) forwards,fl-lift var(--m-page) ease-in-out forwards}
+.bs-flip.one.next{animation:fl-peel var(--m-smooth) var(--e-cruise) forwards}
+.bs-flip.one.prev{animation:fl-peel var(--m-smooth) var(--e-cruise) reverse forwards}
+/* held until the new page is laid out and the leaf layer is rasterised (home.js releases it), so the first frames never stall */
+.bs-flip.hold,.bs-flip.hold .bs-face::after{animation-play-state:paused}
+.bs-flip .bs-face{contain:layout paint style}
+.bs-flip .bs-face::after{will-change:opacity;animation-timing-function:ease-in-out}
 /* the curls, edges and cue belong to open pages only: gone the moment the book is closed or closing, never over the cover */
 .bk-spread:not(.intro) .bs-corner{display:none}
 .bk-spread:not(.intro) .bs-page::before,.bk-spread:not(.intro) .bs-page::after{display:none}
