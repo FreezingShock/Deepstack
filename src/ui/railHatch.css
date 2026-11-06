@@ -1,0 +1,26 @@
+/* Y5 + Y6. The attic hatch is set into the centre of the oak rail (same grain, brass-inlay frame, recessed), and the
+   rail's inlay and corner glows follow the current floor's lamp colour (--rail-tint, set by railTint.js, eased by
+   @property so a floor change fades instead of snapping). Loaded after topbarRail.css and attic.css. */
+@property --rail-tint{syntax:"<color>";inherits:true;initial-value:rgb(255 176 77)}
+#bar{transition:--rail-tint var(--m-page) var(--e-settle)}
+#bar{
+ background:
+  radial-gradient(160px 70px at 0 0,color-mix(in srgb,var(--rail-tint) 20%,transparent),transparent 70%),
+  radial-gradient(160px 70px at 100% 0,color-mix(in srgb,var(--rail-tint) 20%,transparent),transparent 70%),
+  repeating-linear-gradient(90deg,rgba(0,0,0,.16) 0 2px,transparent 2px 31px),
+  linear-gradient(180deg,rgba(255,220,170,.07) 0 2px,transparent 2px 9px),
+  linear-gradient(180deg,var(--c-oak-34210f),var(--wood1) 40%,var(--wood2))}
+#bar::before{background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--rail-tint) 60%,var(--c-bronze-43)) 8%,color-mix(in srgb,var(--rail-tint) 55%,var(--c-bronze-44)) 50%,color-mix(in srgb,var(--rail-tint) 60%,var(--c-bronze-43)) 92%,transparent)}
+#bar::after{background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--rail-tint) 35%,transparent) 15%,color-mix(in srgb,var(--rail-tint) 12%,transparent) 50%,color-mix(in srgb,var(--rail-tint) 35%,transparent) 85%,transparent)}
+
+/* the hatch: centred in the rail's height, framed like the inlay, lid cut from the same oak */
+html .attic-cue-home{--hw:112px;--bh:var(--barH,52px);height:calc(var(--bh) + 52px)}
+html .attic-cue-home .ach-hatch{top:calc((var(--bh) - 30px)/2);height:30px;border:2px solid color-mix(in srgb,var(--rail-tint) 45%,var(--c-bronze-43));border-radius:3px;background:var(--c-oak-1a110a);
+ box-shadow:inset 0 3px 6px #000,0 1px 0 rgba(255,214,160,.14),0 0 0 1px rgba(0,0,0,.55)}
+html .attic-cue-home .ach-lid{background:repeating-linear-gradient(90deg,rgba(0,0,0,.16) 0 2px,transparent 2px 31px),linear-gradient(180deg,var(--c-oak-34210f),var(--c-oak-2b1b10) 40%,var(--c-oak-1a110a));
+ box-shadow:inset 0 1px 0 rgba(255,214,160,.16),inset 0 -2px 3px rgba(0,0,0,.5)}
+html .attic-cue-home .ach-cord{top:calc((var(--bh) + 30px)/2 + 2px)}
+html .attic-cue-home .ach-hatch::after{top:calc(100% + 2px)}
+html .attic-down .adl-frame{top:calc((var(--barH,52px) - 12px)/2)}
+.attic-beam{top:calc(var(--barH,52px) - 6px)}
+@media(max-width:560px){html .attic-cue-home{--hw:72px}}

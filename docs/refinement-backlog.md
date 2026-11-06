@@ -1680,10 +1680,10 @@ _Done in this PR: Close the book is now a `.pg-foot` link on the right page bott
 ### W1 (home close). [x] Home comes back behind the book, not after it (PR pending)
 The room (title, plaque with cabinet, card and fire, sibling spines) now fades in from the moment a home book starts to close, over one `--m-page` cruise, so it is whole by the time the book lands (`.book-closing` in `bookOpenFx.css`, `onShut` in `openBook`). Test: `test/home-close-fade.test.js`.
 
-### Y5. Top bar: hatch in the rail
+### Y5. [x] (PR pending) Top bar: hatch in the rail
 **Pitch:** The attic hatch and the depth plate could both live in the rail's centre, so the rail reads as one object. **Brief:** Goal: move the attic cue into the bar centre on home, with the same hatch-open motion. Files: `src/ui/atticHome.js`, `topbarRail.css`. **Conflicts:** attic hatch threads (#265).
 
-### Y6. Top bar: floor-tinted rail
+### Y6. [x] (PR pending) Top bar: floor-tinted rail
 **Pitch:** The rail's inlay and glow take on the current floor's colour as you descend. **Brief:** Goal: tint `#bar::before` and the corner glows from the floor tokens, softly, never bright. Files: `src/ui/topbarRail.css`, `src/main.js` onDepth hook.
 
 ### AT8a. [x] Open flight from the exact spine
@@ -1702,3 +1702,10 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### Z2c. Rain and wind answer the idle room
 **Pitch:** Long idle, the world outside should show up: a rain patter on the attic skylight, a draught that bends the candle flames.
 **Brief:** Goal: two more events in the idle director tied to the attic skylight weather and the mantel flames, same stop-on-input rule. Files: `src/ui/idleRoom.js`, `idleRoom.css`. **Conflicts:** AT10, FH3.
+### Y7. Rail answers the depth (from Y6)
+**Pitch:** The rail now takes each floor's lamp colour; the streak and deepest plates and the medallion rims could warm or cool with it too, and the floor banner could slide out of the rail.
+**Brief:** Goal: tint plate borders and medallion rims at ~25% of `--rail-tint`, never bright. Files: `src/ui/railHatch.css`. **Conflicts:** V3.
+
+### Y8. Hatch lid reacts to the fire (from Y5)
+**Pitch:** The hatch sits in the rail now; its inner glow could breathe with the hearth flame below it so the room feels connected.
+**Brief:** Goal: drive `.ach-glow` opacity from the hearth flicker value, subtle, off in reduced motion. Files: `src/ui/atticHome.js`, `src/ui/hearth.js`. **Conflicts:** hearth threads.
