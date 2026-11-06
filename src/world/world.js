@@ -19,6 +19,7 @@ import {drawLedge} from '../ui/ledge.js';
 import {placeFallen,drawFallen} from '../ui/fallenBooks.js';
 import {lyingFootprint,settleBooks,placeProp,propHalf,tiltAboutFoot} from '../ui/physics.js';
 import {drawAlcoveLanterns} from '../ui/lanterns.js';
+import {tintLamp} from '../ui/roomRun.js';
 import {lowQuality,updateAmbient,drawAmbient,resetAmbient} from '../ui/ambient.js';
 import {createPass,passCam} from '../ui/thresholdPass.js';
 import {doorSpan,drawWallMaterial,drawThreshold,drawThresholdLive,drawThresholdSign} from '../ui/thresholds.js';
@@ -34,6 +35,7 @@ import {bookDims,seedOf,shelfDims} from './bookArt.js';
 import {buildHall,drawAttic,rowCount,rowTitle} from './atticRoom.js';
 import {drawLadder,climbLight} from './atticClimb.js';
 import {drawBackStacks,resetBackStacks} from './backStacks.js';
+import {nicheWidth} from './nicheWidth.js';
 
 /* ---------- the stacks (continuous canvas world) ---------- */
 export const World=(()=>{
@@ -46,7 +48,7 @@ export const World=(()=>{
  const restCam=r=>r*RH-(H-RH-BM);
  const abn=r=>Math.max(clamp(r/190,0,1),floorAtRow(r).decay);
  const barPx=()=>52+(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat'))||0);
- function nicheBox(){const nw=Math.min(W-24,760),NT=barPx()+16,NB=H-RH-BM-10;return{x:(W-nw)/2,w:nw,t:NT,h:NB-NT,b:NB};}
+ function nicheBox(){const nw=nicheWidth(W),NT=barPx()+16,NB=H-RH-BM-10;return{x:(W-nw)/2,w:nw,t:NT,h:NB-NT,b:NB};}
  function setNicheVars(){const n=nicheBox(),r=document.documentElement.style;r.setProperty('--nx',n.x+'px');r.setProperty('--nw',n.w+'px');r.setProperty('--nt',n.t+'px');r.setProperty('--nb',(H-n.b)+'px');r.setProperty('--nook',nookMetrics(W).reserve+'px');}
  function resize(){W=innerWidth;H=innerHeight;DPR=worldDpr(W,H,Math.min(devicePixelRatio||1,Quality.params().dprMax)); // capped at ~6 MP so huge screens stay light
   cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);RH=clamp(H*.22,clamp(H*.2,70,108),172); // short windows get shorter shelves, so the room above them keeps its heightBM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);rows.clear();resetBackStacks();
@@ -203,7 +205,7 @@ export const World=(()=>{
     drawLoreGlow(ctx,b,vt);ctx.restore();}}}
  function drawNiche(row,nv,camNow,now){const t0=nv.t0;
   const n=nicheBox(),y=n.t+(row*RH-(H-RH-BM))-camNow,h=n.h,x=n.x,w=n.w;if(y>H+20||y+h<-20)return;
-  const al=clamp((now-t0)/450,0,1),a=abn(row),r=Math.min(52,w*.09),lc=floorAtRow(row).lamp;
+  const al=clamp((now-t0)/450,0,1),a=abn(row),r=Math.min(52,w*.09),lc=tintLamp(floorAtRow(row).lamp);
   ctx.save();ctx.globalAlpha=al;
   const path=()=>{ctx.beginPath();ctx.moveTo(x,y+h);ctx.lineTo(x,y+r);ctx.arc(x+r,y+r,r,Math.PI,1.5*Math.PI);ctx.lineTo(x+w-r,y);ctx.arc(x+w-r,y+r,r,1.5*Math.PI,2*Math.PI);ctx.lineTo(x+w,y+h);ctx.closePath();};
   path();const ig=ctx.createLinearGradient(0,y,0,y+h);ig.addColorStop(0,PALETTE.oak150e08);ig.addColorStop(1,PALETTE.oak0e0905);ctx.fillStyle=ig;ctx.fill();

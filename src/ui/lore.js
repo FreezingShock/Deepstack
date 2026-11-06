@@ -1,5 +1,6 @@
 import {PALETTE} from '../theme/colors.js';
 import {untilt} from './physics.js';
+import {nicheWidth} from '../world/nicheWidth.js';
 // Lore books: a few thick books on the background shelves of the descent can be clicked to
 // reveal a word and its definition. Nothing is stored per book: which books are marked, and
 // which word each holds, are pure functions of the row seed, so shelves stay identical when a
@@ -15,14 +16,14 @@ export const isLore = (b, W) => !!b && !b.lying && b.w >= MIN_WIDTH && b.seed % 
 export function loreBounds(b, W) {
   const cx = b.x + b.w / 2, bay = W / 3, i = Math.min(2, Math.max(0, Math.floor(cx / bay)));
   let lo = i * bay + 14, hi = (i + 1) * bay - 14;
-  const nw = Math.min(W - 24, 760), nx = (W - nw) / 2;
+  const nw = nicheWidth(W), nx = (W - nw) / 2;
   if (cx < nx) hi = Math.min(hi, nx - 6); else if (cx > nx + nw) lo = Math.max(lo, nx + nw + 6);
   return [lo, hi];
 }
 
 /** A lore book needs a clear margin from the pillars between bays and from the alcove frame. */
 export function loreClear(b, W, margin = 34) {
-  const [lo, hi] = loreBounds(b, W), nw = Math.min(W - 24, 760), nx = (W - nw) / 2;
+  const [lo, hi] = loreBounds(b, W), nw = nicheWidth(W), nx = (W - nw) / 2;
   if (b.x + b.w > nx - 6 && b.x < nx + nw + 6) return false; // under the alcove
   return b.x - lo >= margin && hi - (b.x + b.w) >= margin;
 }

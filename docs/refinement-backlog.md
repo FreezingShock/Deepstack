@@ -3,8 +3,12 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Open the card catalogue on the left wall of home (1000 px and wider): pull each of the eight drawers, flip the cards with Turn, cycle with the arrow keys, and check the Settings drawer. On a big window the whole room, cabinet and fire are now much bigger; say if the word alcoves being wider on big windows feels right. Tell me which drawers to add or drop (CC1 to CC3 below).
+- Look at the home plaque on your 1920 screen while mid-Daily: Continue should now have a clear gap to the Library Rules drawers and the Librarian's Card (src/ui/plaqueGap.css).
 - Walk between rooms on desktop: the fireplace should stay put while the fire, title and labels glide to the new colour and the room and Daily lines type in. Tell me if the glide is too slow or the title tint is too strong.
 - Rooms now show "X of N met" on the door plates, the room tagline and the Room Ledger page, and each room Daily never reuses a word from the last 14 days. Check the counts feel right after a few answers; small rooms (History, Math, English, Art, Anatomy at 115 to 156 words) still need TA2a to reach a month of fresh words. (thread: make every room deep enough to play)
+- Enter the Chronicle (or any other room) and press Descend: the candle halo, the two lanterns and the lift cage burn in the room's fire, the result card gets a rim of it, and the depth plaque names the room. The Reading Room should look exactly as before. Say if the tint is too strong or too faint.
+- Check the home spine captions (Daily, Shelf, Unlimited, Rooms) at 1920 and on your phone: readable, centred, nothing clipped. Say if you want the captions stacked under the title instead (PR #292).
 - Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
 - Resize the window (or rotate your phone) on home and in each menu book: the hatch tag should clear the title, Descend and the five spines should always fit, short landscape windows get one row of spines, and the background shelves (books, cobwebs, props) should stay put as you drag the window. Say which size still feels cramped. (thread: fix layout at small and odd window sizes, `node scripts/responsive.mjs`)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
@@ -1794,6 +1798,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Rotating a phone mid-descent or with a book open should keep where you were, same books, same page.
 **Brief:** Goal: resize and orientationchange keep scroll depth, attic state and the open book's page; test in `scripts/responsive.mjs` with `page.setViewportSize`. Files: `src/world/world.js`, `src/ui/bookpages.js`. **Conflicts:** AT8, attic threads.
 
+### PG1. Plaque gap guard
+**Pitch:** A test that fails if the Continue/Descend plaque ever gets within 16px of the cabinet or ledger.
+**Brief:** Goal: extend `scripts/responsive.mjs` to measure `.descend` vs `.cc-cab`/`.ledger` at 1000 to 2560 wide in daily, resume and unlimited states. Files: `scripts/responsive.mjs`. Conflicts: low.
+
+### PG2. Long label stress states
+**Pitch:** Check every plaque state (resume, played, big text sizes) at all widths for touching neighbours.
+**Brief:** Goal: screenshot sweep of plaque states with text size large; fix any contact via `plaqueGap.css`. Conflicts: low.
 ## TA. Topic rooms audit menu 2026-11-06 (after #289/#290; screenshots audit/rm-*.png; word data from public/data/rooms.json vs words.json)
 
 ### TA1. Room word lists miss the obvious and keep the odd
@@ -1828,10 +1839,46 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On a phone the only quick room switch is seven 20 px dots on the mantel, too small to hit, or the Rooms book. The desktop has doors you walk through. A phone should let you swipe the fireplace sideways and the next room's fire slides in, with a small name label.
 **Brief:** Goal: horizontal swipe on the hearth region (and arrow keys) changes room with the same fire hand-off as the door walk; dots get 44 px hit areas and a name toast on press. Files: `src/ui/roomHome.js`, `hearth.js`. Done when: 375x667 frame strip, vertical scroll to the attic still works, reduced motion cross-fades. **Conflicts:** V3, attic scroll (#265).
 
-### TA6. The room follows you down
+### TA6. [x] The room follows you down (PR pending)
 **Pitch:** Enter the Chronicle and the home glows red, but the run screen is the same orange alcove with nothing saying where you are. The descent should carry the room: its fire colour on the candle halo, lanterns and result card edge, its name in pen on the plaque, and the lift cage showing its fire.
 **Brief:** Goal: pass the room's `rgb` and `ink` into the run alcove lighting, result card and lift, and show the room name small on the depth plaque. Files: `src/world/world.js` lights, `candleLight.js`, card css, `lift.js`. Done when: per-room run and card screenshots, the Reading Room unchanged byte for byte. **Conflicts:** Y1 (lift), W3, TR10.
+
+### TA6a. Room colour on the run's dust and sparks
+**Pitch:** The run now carries the room's fire in the halo, lanterns, card edge and lift, but the dust motes and the descent glow are still amber.
+**Brief:** Goal: tint dust motes and the descend glow with `--rm-rgb` through `src/ui/roomRun.js` (`runFire()`). Files: `src/ui/ambient.js`, `descendGlow.css`. Done when: per-room screenshots, Reading Room unchanged. **Conflicts:** TA6.
+
+### TA6b. Room name in the final page
+**Pitch:** The descent-complete page shows no room; a run in the Chronicle should end under its name and fire colour, matching the share text tag.
+**Brief:** Goal: show the room name and a fire rule on `final.js`'s page. Files: `src/ui/finalPage.css`, `src/app/final.js`. Done when: 1280 and 375 screenshots. **Conflicts:** G7.
+
+### TA6c. Fire-tinted floor rail
+**Pitch:** The floor rail on the left of a run is still amber-brown in every room; its lamp and active floor could take the room's fire.
+**Brief:** Goal: tint the active rail row and lamp from `--rm-rgb`. Files: `src/ui/topbarRail.js`, new css. Done when: screenshots per room. **Conflicts:** Y6.
 
 ### TA7. Small room visuals
 **Pitch:** (a) The Card's floor name still truncates ("The Cataco…") beside its label. (b) At 375 the attic hatch plate shows a second offset frame behind it. (c) The room dots on phones are tiny and unnamed (covered by TA5). (d) Room names in the side-door plates are good; the Reading Room one has no fire swatch.
 **Brief:** Goal: fix (a) by giving the floor row the full width (label above or smaller), (b) by removing the duplicate frame, (d) by adding a tiny fire swatch. Files: `src/ui/welcome.css`, `atticHome.js`, `roomHome.js`. Done when: screenshots at 375 and 1280. **Conflicts:** X1, Y5.
+
+### SP1. [x] Readable home spine captions (PR #292)
+**Pitch:** The tiny NO. 4 / 113 / LEXICON 44 / 7 ROOMS captions on the home stacks are now 10-11px and centred on the spine. Done: `src/ui/homeSpineSub.{js,css}`.
+
+### SP2. Short Unlimited caption that always fits
+**Pitch:** "Find your rank" drops off narrow spines; a shorter caption (e.g. "Unplaced") would stay visible at 320-375px.
+**Brief:** Goal: caption text for Unlimited shortened per width so it never needs to step aside. Files: `src/ui/home.js` (badge), `src/ui/homeSpineSub.js`. **Conflicts:** fireplace layout threads.
+
+### SP3. Caption on the Shelf and Stats spines
+**Pitch:** Shelf shows its book count only when it fits; Stats has no caption at all (e.g. best streak).
+**Brief:** Goal: consistent captions on all five spines with the same fit rules. Files: `src/ui/home.js`, `src/ui/homeSpineSub.css`. **Conflicts:** SP2.
+
+## Card catalogue follow-ups (2026-11-06, card catalogue thread; the first build is done)
+- [x] CC0. Rebuild the card drawer: eight box drawers (Rules, Tiers, Scoring, Tips, Keys, Settings, Credits, About), bigger room on wide windows.
+### CC1. Cabinet on phones and very short rooms
+**Pitch:** Phones and 1000 x 560 windows show no cabinet at all, so there is no way to read the rules there.
+**Brief:** Goal: a small brass "card catalogue" tab (like the tablet bar) that fits the compact phone home without moving Descend; opens the same cards. Files: `src/ui/cabinet.css`, `src/ui/cabinet.js`, `src/ui/fit.css` hide rule. **Conflicts:** home layout and hearth threads.
+### CC2. Live drawers
+**Pitch:** Make the cabinet react to the game, not just explain it.
+**Brief:** Goal: a drawer that fills with something earned (a Tiers card that stamps each tier the first time you earn it, a Credits card for each room's word source, a small "today" card when the Daily is unplayed), plus a pull sound with weight. Files: `src/ui/cabinet.js`, `src/sound/materials.js`. **Conflicts:** sound palette threads.
+### CC3. Bigger Descend and wordmark on wide windows
+**Pitch:** The cabinet, ledger and fire grew with the room; the title and Descend plaque did not.
+**Brief:** Goal: scale `.wordmark`, the tagline and `.descend` by `--hs` (up to 1.45) without changing the fit at 1280 or below. Files: `src/ui/cabinet.css` or a new css file. **Conflicts:** the Continue plaque spacing thread (`homePlaque`).
+
