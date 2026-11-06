@@ -16,7 +16,7 @@ export function initTopbarRail({S,Sfx,doc=document}={}){
  if(!bar||!nav)return;
  /* readouts sit beside the plaque; the centre of the bar stays free for the attic hatch and the depth plate */
  const g=doc.createElement('div');g.id='barGauges';g.setAttribute('aria-label','Your record');
- g.innerHTML=`<span class="bg bg-streak" title="Daily streak">${SVG(FLAME)}<b id="bgStreak">0</b><i>day streak</i><i class="scope" id="bgStreakRoom"></i></span><span class="bg bg-deep" title="Deepest descent, all rooms">${SVG(DEEP)}<b id="bgDeep">0</b><i>ft deepest</i><i class="scope">${ALL}</i></span>`;
+ g.innerHTML=`<span class="bg bg-streak" role="button" tabindex="0" title="Daily streak">${SVG(FLAME)}<b id="bgStreak">0</b><i>day streak</i><i class="scope" id="bgStreakRoom"></i></span><span class="bg bg-deep" title="Deepest descent, all rooms">${SVG(DEEP)}<b id="bgDeep">0</b><i>ft deepest</i><i class="scope">${ALL}</i></span>`;
  doc.querySelector('#mark').after(g);
  const eR=g.querySelector('#bgStreakRoom'),eS=g.querySelector('#bgStreak'),eD=g.querySelector('#bgDeep'),gs=g.querySelector('.bg-streak');
  let rid='';const paint=()=>{const sr=scopeRoom(S);if(sr.id!==rid){rid=sr.id;eR.innerHTML=`<span class="rl-dot" style="--c:${sr.rgb}"></span>${sr.short}`;gs.title=`Daily streak in ${sr.name} (each room keeps its own)`;}const v=railValues(S,dayKey());const a=String(v.streak),b=String(v.deepest);

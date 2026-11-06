@@ -13,9 +13,15 @@ export function registerLedgerBooks({S,FLOORS,floorStartFt,today=()=>new Date().
   const row=e.target.closest&&e.target.closest('.lg-row[data-go]');if(!row)return;
   doc.getElementById(row.dataset.go)?.click();
  });
+ /* the top-bar streak chip opens the same book, and is the way in on phones where the card is hidden */
+ doc.addEventListener('click',e=>{
+  const chip=e.target.closest&&e.target.closest('.bg-streak');const row=doc.getElementById('bStreak');
+  if(!chip||!row||!doc.querySelector('#home')||doc.querySelector('#home').hidden)return;
+  const r=row.getBoundingClientRect();row.__from=r.width&&r.height?null:()=>chip.getBoundingClientRect();row.click();
+ });
  doc.addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' ')return;
-  const row=e.target.closest&&e.target.closest('.lg-row[role="button"]');if(!row)return;
+  const row=e.target.closest&&e.target.closest('.lg-row[role="button"],.bg-streak[role="button"]');if(!row)return;
   e.preventDefault();row.click();
  });
 }

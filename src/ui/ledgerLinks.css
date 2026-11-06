@@ -24,3 +24,14 @@ html[data-motion="reduce"] .home .lg-row[role="button"] dd{transition:none}
 .bk-spread.menu .emb-d.played{background:radial-gradient(circle at 40% 35%,var(--c-brass-65),var(--c-book-red));border-color:var(--c-book-red);color:var(--c-parchment-85)}
 .bk-spread.menu .emb-d.today{outline:2px solid var(--bk);outline-offset:2px;color:var(--bk)}
 .bk-spread.menu .emb-d.none{opacity:.3}
+/* The top-bar streak chip opens the Ember Log */
+.bg-streak[role="button"]{cursor:pointer;pointer-events:auto;transition:background-color var(--m-quick) var(--e-settle)}
+.bg-streak[role="button"]:hover,.bg-streak[role="button"]:focus-visible{background:color-mix(in srgb,var(--c-brass-65) 14%,transparent)}
+.bg-streak[role="button"]:focus-visible{outline:2px solid var(--c-brass-65);outline-offset:1px}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .bg-streak[role="button"]{transition:none}}
+html[data-motion="reduce"] .bg-streak[role="button"]{transition:none}
+/* Phones: the card is hidden, so the streak chip stays in the bar as the way into the Ember Log. The shortcuts button
+   (no keyboard on a phone) makes room for it. */
+@media(max-width:400px){html #barGauges:not([hidden]){display:flex}html #bKeys{display:none}}
+@media(max-width:350px){html .bg-streak i.scope{display:none}html .bg-streak{padding:0 6px}html #barGauges{gap:0}}
+@media(max-width:350px){html .plq{font-size:calc(15px*var(--ts));padding:6px 12px}html .plq::before{left:4px}html .plq::after{right:4px}}

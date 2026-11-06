@@ -252,7 +252,7 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
    const lift=()=>{flying=true;root.classList.remove('book-opening');root.classList.remove('book-closing');setTimeout(()=>el.classList.remove('opening'),reduce?0:Math.max(0,BOOK_TIMING.flyBack-170));};
    const fin=()=>{el.classList.remove('opening');if(!reduce){root.classList.add('book-landed');el.classList.add('landed');setTimeout(()=>{root.classList.remove('book-landed');el.classList.remove('landed');},300);}root.classList.remove('book-opening');root.classList.remove('book-closing');busy=false;flying=false;
     if(pending){const n=pending;pending=null;n();}};
-   const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onFly:lift,onClose:fin,onShut:()=>root.classList.add('book-closing'),
+   const bk=openBook({from:el.__from?el.__from():el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onFly:lift,onClose:fin,onShut:()=>root.classList.add('book-closing'),
     colors:{bk:cs.getPropertyValue('--bk'),bk2:cs.getPropertyValue('--bk2'),gild:cs.getPropertyValue('--bk-gild'),tex:cs.getPropertyValue('--tex')}});
    if(pages){bk.onPaint=(sp,idx)=>{inkPage(sp,pages.label);pages.onPaint&&pages.onPaint(sp,bk,idx);};}
    else if(intro){
