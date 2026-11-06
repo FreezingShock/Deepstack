@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {DRAWERS,CARD_IDS,cycle,nextState,cabinetHTML,tiersFront,scoringBack,keysFront,loadSeen,markSeen} from '../src/ui/cabinet.js';
+import {todayFront,DRAWERS,CARD_IDS,cycle,nextState,cabinetHTML,tiersFront,scoringBack,keysFront,loadSeen,markSeen} from '../src/ui/cabinet.js';
 import {ledgerHTML} from '../src/ui/welcome.js';
 import {TIERS} from '../src/core/tiers.js';
 import {COMBO_MAX} from '../src/core/combo.js';
@@ -70,4 +70,15 @@ test('niche: unchanged up to 1100 px, grows to 1100 and no further',()=>{
  assert.ok(nicheWidth(1280)>760&&nicheWidth(1280)<1000);
  assert.equal(nicheWidth(1920),1100);assert.equal(nicheWidth(3840),1100);
  assert.equal(nicheScale(760),1);assert.ok(Math.abs(nicheScale(1100)-1.447)<.01);
+});
+
+test("Today's page: begin, continue, or result and descend, with the streak",()=>{
+ const base={no:4,streak:0};
+ let h=todayFront({...base,kind:'daily',tag:'Daily No. 4',played:false});
+ assert.ok(h.includes('data-go="#bPlay"')&&h.includes('Descend')&&h.includes('No streak yet'));
+ h=todayFront({...base,streak:3,kind:'resume',tag:'Daily No. 4 · 2 of 7 written',played:false});
+ assert.ok(h.includes('Continue')&&h.includes('2 of 7 written')&&h.includes('3</b> days'));
+ h=todayFront({...base,streak:1,kind:'unlimited',tag:'x',played:true});
+ assert.ok(h.includes('data-go="#bRes"')&&h.includes('data-go="#bNext"')&&h.includes('1</b> day '));
+ assert.ok(!/About|The house/.test(cabinetHTML({steps})));
 });

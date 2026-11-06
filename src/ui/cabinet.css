@@ -152,3 +152,12 @@ html[data-motion="reduce"] .home .cc-new{animation:none}
 /* ---- a bigger title on big windows, in step with the cabinet and the fire ---- */
 [data-room=roomy] .home h1.title.wordmark{font-size:calc(70px*var(--ts)*var(--hv,1))}
 [data-room=roomy] .home .hz-title .tagline{font-size:calc(21px*var(--ts)*var(--hv,1))}
+
+/* ---- Today's page ---- */
+.home .cb-big{margin:0 0 calc(8px*var(--ts));font:500 calc(30px*var(--ts))/1.05 var(--serif);color:var(--c-book-red);text-align:center}
+.home .cb-streak b{font:500 calc(20px*var(--ts)) var(--serif);color:var(--c-book-red)}
+.home .cb-go{display:flex;justify-content:center;gap:calc(8px*var(--ts));margin-top:calc(14px*var(--ts))}
+.home .cc-go{min-height:38px;padding:0 calc(18px*var(--ts));border:1px solid var(--c-bronze-51);border-radius:2px;cursor:pointer;color:var(--c-oak-1a1208);font:600 calc(11.5px*var(--ts))/1 var(--label);letter-spacing:.18em;text-transform:uppercase;
+ background:linear-gradient(180deg,var(--c-brass-65),var(--c-brass-62) 55%,var(--c-bronze-44));box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 2px 3px var(--c-black-alpha-66);transition:filter var(--m-base)}
+.home .cc-go2{background:linear-gradient(180deg,var(--c-parchment-85),var(--c-parchment-dim))}
+.home .cc-go:hover{filter:brightness(1.1)}.home .cc-go:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:2px}
