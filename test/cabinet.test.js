@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {DRAWERS,CARD_IDS,cycle,nextState,cabinetHTML,tiersFront,scoringBack,keysFront,loadSeen,markSeen} from '../src/ui/cabinet.js';
+import {todayFront,DRAWERS,CARD_IDS,cycle,nextState,cabinetHTML,tiersFront,scoringBack,keysFront,loadSeen,markSeen} from '../src/ui/cabinet.js';
 import {ledgerHTML} from '../src/ui/welcome.js';
 import {TIERS} from '../src/core/tiers.js';
 import {COMBO_MAX} from '../src/core/combo.js';
@@ -33,9 +33,18 @@ test('state: open, swap, turn only with a back, next/prev wrap, close resets',()
 test('cards tell the truth: every tier threshold, your best tier, the combo cap, the home keys',()=>{
  const t=tiersFront(3);
  for(const x of TIERS)assert.ok(t.includes(x.name)&&t.includes('>'+x.min+'<'),x.name);
- assert.equal((t.match(/class="best"/g)||[]).length,1);
+ assert.equal((t.match(/class="best/g)||[]).length,1);
  assert.ok(scoringBack().includes('×'+COMBO_MAX));
  assert.ok(keysFront().includes('Open Rooms'));
+});
+test('live tiers: counts per tier show, tiers not yet earned are dim; a corner tab opens the same cards where the cabinet is hidden',()=>{
+ const t=tiersFront(2,[5,0,2]);
+ assert.ok(t.includes('×5')&&t.includes('×2'));
+ assert.equal((t.match(/class="[^"]*miss/g)||[]).length,5);
+ const h=cabinetHTML({steps,bestTier:2,tierCounts:[5,0,2]});
+ assert.match(h,/class="cc-tab" data-d="rules"/);
+ const c=readFileSync(new URL('../src/ui/cabinet.css',import.meta.url),'utf8');
+ assert.match(c,/max-width:560px\)\{\.home \.cc-tab\{display:grid\}/);
 });
 test('first-visit slip on Rules goes once read',()=>{
  const mem={};const st={getItem:k=>mem[k]??null,setItem:(k,v)=>{mem[k]=v;}};
@@ -61,4 +70,15 @@ test('niche: unchanged up to 1100 px, grows to 1100 and no further',()=>{
  assert.ok(nicheWidth(1280)>760&&nicheWidth(1280)<1000);
  assert.equal(nicheWidth(1920),1100);assert.equal(nicheWidth(3840),1100);
  assert.equal(nicheScale(760),1);assert.ok(Math.abs(nicheScale(1100)-1.447)<.01);
+});
+
+test("Today's page: begin, continue, or result and descend, with the streak",()=>{
+ const base={no:4,streak:0};
+ let h=todayFront({...base,kind:'daily',tag:'Daily No. 4',played:false});
+ assert.ok(h.includes('data-go="#bPlay"')&&h.includes('Descend')&&h.includes('No streak yet'));
+ h=todayFront({...base,streak:3,kind:'resume',tag:'Daily No. 4 · 2 of 7 written',played:false});
+ assert.ok(h.includes('Continue')&&h.includes('2 of 7 written')&&h.includes('3</b> days'));
+ h=todayFront({...base,streak:1,kind:'unlimited',tag:'x',played:true});
+ assert.ok(h.includes('data-go="#bRes"')&&h.includes('data-go="#bNext"')&&h.includes('1</b> day '));
+ assert.ok(!/About|The house/.test(cabinetHTML({steps})));
 });

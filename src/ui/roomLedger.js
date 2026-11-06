@@ -7,12 +7,13 @@ import {currentRoom, roomData} from '../core/roomStore.js';
 import {roomList, loadRoomLists} from '../core/roomPool.js';
 import {SETS, setStatus, bonusFt, MIN_SCORE} from '../sets/sets.js';
 import {setPageHTML} from '../sets/pages.js';
+import {roomMetLabel} from '../core/roomDepth.js';
 import {BOOK_TIMING} from './bookOpenFx.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 
 /** Pure page builder. ctx: {today, lexicon(L), words(id) -> count or 0}. Returns {leaves, at: {room: leafIndex}}. */
-export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0} = {}) {
+export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, met = () => ''} = {}) {
   const cur = currentRoom(S), st = setStatus(S), got = (S.sets && S.sets.got) || {};
   const ofRoom = id => st.map((s, i) => ({s, i})).filter(x => x.s.room === id);
   const tally = id => ofRoom(id).reduce((a, {s}) => [a[0] + (s.complete ? 1 : 0), a[1] + 1], [0, 0]);
@@ -29,7 +30,7 @@ export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0} 
   const page = r => {
     const data = roomData(S, r.id), rt = data.rating || {}, played = !!(data.daily && data.daily[today]);
     const sets = ofRoom(r.id), n = words(r.id);
-    const facts = [r.id === HALL ? 'Every word in the game' : n ? `${n} words on the shelves` : '', played ? 'Today’s Daily: done' : 'Today’s Daily: open',
+    const facts = [r.id === HALL ? 'Every word in the game' : met(r.id) || (n ? `${n} words on the shelves` : ''), played ? 'Today’s Daily: done' : 'Today’s Daily: open',
       rt.placed ? `Lexicon ${esc(lexicon(rt.L))}` : 'Unlimited: not yet ranked'].filter(Boolean);
     return `<div class="setpage rl-room" style="--c:${rgbOf(r)}"><div class="kicker">${esc(r.topic)}${r.id === HALL ? '' : ' room'} · ${esc(r.salt)} fire</div><h1>${esc(r.name)}</h1>
      <p class="note">${esc(r.blurb)}</p><div class="rl-fire" aria-hidden="true"></div>
@@ -54,7 +55,7 @@ export function roomsBook(S, {go = () => {}, today = () => '', lexicon = () => '
   if (typeof setTimeout === 'function') setTimeout(() => loadRoomLists(), 3000); // word counts for the room pages
   return {
     label: 'Room ledger',
-    spreads() { const r = roomLeaves(S, {today: today(), lexicon, words}); at = r.at; spreads = toSpreads(r.leaves); return spreads; },
+    spreads() { const r = roomLeaves(S, {today: today(), lexicon, words, met: id => roomMetLabel(S, id)}); at = r.at; spreads = toSpreads(r.leaves); return spreads; },
     onPaint(sp, api) {
       sp.querySelectorAll('.rl-toc li[data-room]').forEach(li => { li.onclick = () => { const j = Math.floor((at[li.dataset.room] || 0) / 2); if (j !== api.index) api.setSpreads(spreads, j); }; });
       sp.querySelectorAll('.rl-enter [data-room]').forEach(b => {

@@ -16,6 +16,7 @@ export const CUES = {
   hatch:   { material: 'wood',    gap: 600 },  // the attic hatch creaking
   rung:    { material: 'wood',    gap: 60 },   // a ladder rung
   knock:   { material: 'wood',    gap: 150 },  // a wooden knock (shelf, desk)
+  drawer:  { material: 'wood',    gap: 200 },  // a cabinet drawer sliding out or shut: a dry rumble on oak and a soft stop
   scrape:  { material: 'stone',   gap: 400 },  // stone dragged
   door:    { material: 'wood',    gap: 400 },  // a room door: latch, short swing, the far fire
   tick:    { material: 'brass',   gap: 70 },   // a button, lantern latch
@@ -68,6 +69,10 @@ export function createMaterials(bus, { now = () => performance.now(), fine = () 
     },
     rung: () => { tone(rnd(190, 230), 0, .09, .06, { type: 'triangle', glide: .6, attack: .003, send: .15 }); noise(.04, 'bandpass', 900, 500, .035, { q: 2, attack: .002, send: .08 }); },
     knock: () => { tone(rnd(130, 160), 0, .12, .1, { type: 'triangle', glide: .6, attack: .003, send: .2 }); noise(.05, 'lowpass', 900, 200, .06, { attack: .002, send: .1 }); },
+    drawer: () => { // oak runners: a low dry rumble that swells and fades, then the drawer meets its stop
+      noise(.3, 'lowpass', 520, 200, .075, { attack: .05, q: .7, send: .25 }); noise(.22, 'bandpass', 900, 420, .03, { at: .02, q: 1.5, attack: .06, send: .2 });
+      tone(rnd(88, 104), .22, .16, .11, { type: 'triangle', glide: .6, attack: .004, send: .22 }); noise(.05, 'lowpass', 800, 180, .06, { at: .22, attack: .002, send: .12 });
+    },
     scrape: () => noise(.5, 'bandpass', 380, 260, .06, { q: 1.4, attack: .15, send: .3 }),
     tick: () => { const f = rnd(1750, 1900); tone(f, 0, .06, .035, { type: 'triangle', attack: .002, send: .15 }); tone(f * 1.51, .005, .04, .015, { type: 'triangle', attack: .002, send: .15 }); },
     hover: () => tone(2300, 0, .035, .012, { type: 'triangle', attack: .002, send: .08 }),

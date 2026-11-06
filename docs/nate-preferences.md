@@ -39,6 +39,7 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 
 - 2026-11-05 home books: items behind an opening menu book (other books, desk props) must never show through mid-animation; the alcove behind it stays empty at every frame.
 - 2026-11-05 open menu book: "why is there a black box for the alcove when a book is open?" -> behind an open book the room stays lit (fire, brick, shelves); only items that would overlap the book hide, never a solid veil.
+- 2026-11-06 room depth: fine pulling more words from the archive to fill thin rooms; wants every room deep enough to play, so a room should not repeat its words within weeks.
 
 ## 3. How he works
 
