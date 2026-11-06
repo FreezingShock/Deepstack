@@ -4,6 +4,7 @@
 import { motionNow } from './ui/settings.js';
 import { createScribe } from './sound/scribe.js';
 import { createAmbience } from './sound/ambience.js';
+import { createRoomTone } from './sound/roomTone.js';
 import { createSting } from './sound/thresholdSting.js';
 import { createScore } from './sound/score.js';
 import { createMaterials } from './sound/materials.js';
@@ -133,6 +134,7 @@ export const Sfx = (() => {
   function stopAmbient() { timers.forEach(clearTimeout); timers = []; }
 
   const floorTone = createAmbience({ ctx: () => ctx, on: () => on, dest: () => musicBus, send: () => musicSend, noiseBuf });
+  const roomTone = createRoomTone({ ctx: () => ctx, on: () => on, dest: () => musicBus, noiseBuf }); // each topic room's own accents (src/sound/roomTone.js)
   const score = createScore({ ctx: () => ctx, on: () => on, dest: () => musicBus, send: () => musicSend }, { allowed: () => Quality.tier() !== 'low' });
   Quality.subscribe(() => score.refresh());
   const mats = createMaterials({ ctx: () => ctx, on: () => on, out, noiseBuf }, { fine: () => Quality.tier() !== 'low' });
@@ -141,6 +143,8 @@ export const Sfx = (() => {
   return {
     /** a floor door going by (key = floor key) */
     threshold: key => { if (sting.play(key)) score.duck(2.5); },
+    /** the room the player is now in (src/app/roomGo.js, src/app/home.js): its accents crossfade in */
+    room: id => roomTone.setRoom(id),
     /** candle fraction 1..0: the score thins as the flame burns down */
     candle: fr => score.setCandle(fr),
     /** one cue from the sound palette (src/sound/materials.js): turn, lift, shut, hatch, rung, knock, tick, crackle ... */
@@ -168,8 +172,8 @@ export const Sfx = (() => {
     },
     set(v) {
       on = v;
-      if (v) { init(); if (!ctx) return; ctx.resume(); amb.gain.linearRampToValueAtTime(.07, ctx.currentTime + 1.5); setHum(); startAmbient(); floorTone.enable(true); floorTone.setDepth(depth); score.enable(true); score.setDepth(depth); }
-      else { stopAmbient(); floorTone.enable(false); score.enable(false); if (ctx) { amb.gain.linearRampToValueAtTime(0, ctx.currentTime + .4); setHum(); } }
+      if (v) { init(); if (!ctx) return; ctx.resume(); amb.gain.linearRampToValueAtTime(.07, ctx.currentTime + 1.5); setHum(); startAmbient(); floorTone.enable(true); roomTone.enable(true); floorTone.setDepth(depth); score.enable(true); score.setDepth(depth); }
+      else { stopAmbient(); floorTone.enable(false); roomTone.enable(false); score.enable(false); if (ctx) { amb.gain.linearRampToValueAtTime(0, ctx.currentTime + .4); setHum(); } }
     },
     /** depth in feet; drives hum pitch/level and how often drips and footsteps occur */
     setDepth(ft) { if (Math.abs(ft - depth) < 8) return; depth = ft; setHum(); floorTone.setDepth(ft); score.setDepth(ft); },

@@ -55,6 +55,7 @@ export function showHome(opts){
  bindDeskProps(ui.home,{sfx:Sfx});
  const hearth=mountHearth(ui.home,{sfx:Sfx,mood:hearthMood(S,st.streak),reuse:!!held});
  mountIdleRoom(ui.home,{sfx:Sfx,hearth});
+ Sfx.room(currentRoom(S)); // this room's accents (no-op when the room is already the one playing)
  mountRoomHome(ui.home,{room:currentRoom(S),go:goRoom,openLedger:()=>$('#bRooms')&&$('#bRooms').click(),met:id=>roomMetLabel(S,id)});
  setBookSfx(n=>n==="whoosh"?Sfx.cue("lift"):n==="thud"?Sfx.cue("shut"):n==="flip"?Sfx.cue("turn"):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
