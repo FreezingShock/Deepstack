@@ -26,3 +26,10 @@ export function travelMs(rows, reduced = false) {
   const ms = TRAVEL_MIN_MS + Math.sqrt(d) * 55;
   return Math.round(Math.min(TRAVEL_MAX_MS, Math.max(TRAVEL_MIN_MS, ms)));
 }
+
+// Return trip home: players have already seen the shelves, so it is much shorter than a descent.
+export function ascendMs(rows, reduced = false) {
+  if (reduced) return RM_MS;
+  const d = Math.abs(rows) || 0;
+  return Math.round(Math.min(1200, Math.max(650, 650 + Math.sqrt(d) * 40)));
+}

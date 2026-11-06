@@ -8,7 +8,7 @@ import {worldCovered,frameInterval} from '../ui/canvasCover.js';
 import {Quality} from '../ui/quality.js';
 import {worldDpr} from '../ui/dprCap.js';
 import {Feel,Sfx} from '../feel.js';
-import {travelEase,travelMs} from '../ui/camMotion.js';
+import {travelEase,travelMs,ascendMs} from '../ui/camMotion.js';
 import {deepProps,deepWall,deepProp} from '../ui/floorArt.js';
 import {pullX as pullXAt} from '../core/pull.js';
 import {liftGeom,liftEnvelope,drawLift} from './lift.js';
@@ -381,6 +381,6 @@ export const World=(()=>{
   nextRows(){const n=nicheBox();return Math.ceil((H-BM-n.t)/RH);},
   glide(row,ms){return new Promise(res=>{const c0=cam,c1=restCam(row);rest={t0:performance.now(),ms:RM?200:(ms||travelMs(Math.abs(c0-c1)/RH)),c0,c1,done:()=>{restRow=row;res();}};});},
   release(){if(!st)return;taken.add(st.row);rows.delete(st.row*2);restRow=st.row;cam=restCam(restRow);st=null;},
-  ascend(){return new Promise(res=>{const c0=cam,c1=restCam(0),dist=Math.abs(c0-c1)/RH;rest={t0:performance.now(),ms:travelMs(dist,RM),c0,c1,done:()=>{restRow=0;res();}};});},
+  ascend(){return new Promise(res=>{const c0=cam,c1=restCam(0),dist=Math.abs(c0-c1)/RH;let off=()=>{};const fin=()=>{off();restRow=0;res();};rest={t0:performance.now(),ms:ascendMs(dist,RM),c0,c1,done:fin};const skip=e=>{if(rest&&rest.done===fin&&(e.type!=='keydown'||!e.repeat))rest.t0=-1e9;};addEventListener('keydown',skip);addEventListener('pointerdown',skip);off=()=>{removeEventListener('keydown',skip);removeEventListener('pointerdown',skip);};});},
   get stActive(){return !!st;},get descending(){return !!st&&st.phase!=='hold';}
  };})();
