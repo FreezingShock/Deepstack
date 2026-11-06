@@ -1903,3 +1903,26 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### CC5. Tall-screen alcove breathing
 **Pitch:** On 1440p+ tall windows the alcove spans many rows; add a mid-wall detail.
 **Brief:** Goal: for windows over 1200 px tall, add a small plaque or ladder on the side shelves at the alcove's mid height. Files: new css/js only. **Conflicts:** none known.
+
+## RA. Round-2 room audit 2026-11-06 (after #303; screenshots audit/x-*.png and y-*.png)
+
+### RA1. Phone room home hides Unlimited and Stats
+**Pitch:** In a topic room at 375x667 the extra "N of M met" line and Daily line push the fire down, and the Unlimited and Stats spines slide under the shelf (Reading Room is fine). **Brief:** Goal: pull the room's two caption lines into one row or tighten the fire's top margin so all four spines stay visible down to 360x640. Files: `src/ui/roomHome.js`, new `src/ui/roomHomeFit.css`. Screens: audit/x-room-home-375.png vs x-home-375.png. **Conflicts:** CC1, TR7.
+
+### RA2. Attic gauge sits on the Mute button on phones
+**Pitch:** On every phone screen the ATTIC gauge covers the mute button (the dots show behind it), so you cannot mute from the home or any book. **Brief:** Goal: move the gauge into the free space left of Keys or shrink it, keeping the hatch tag hanging from it. Files: `src/ui/topbarRail.js` css. Screens: x-home-375.png. **Conflicts:** none.
+
+### RA3. Depth plaque overlaps the top bar on phones
+**Pitch:** During a run the depth plaque (and "CHRONICLE | DEPTH") hangs 30px over the bar's bottom rail and clips the mute button. **Brief:** Goal: drop it below the rail and keep the room name from widening it. Screens: y-hall-run-375.png, x-room-run-375.png. **Conflicts:** TA6a.
+
+### RA4. Shelf filter rows crowd on phones
+**Pitch:** The ROOM and RARITY rows wrap with the colour dots under the labels and the squiggle under "All" cutting through the next line; "Longest word" drops to its own line under a squiggle. **Brief:** Goal: a two-column chip grid with the dot inline and no squiggle on wrapped rows. Screens: x-room-shelf-375.png. **Conflicts:** TR7.
+
+### RA5. Room Ledger shows met counts, not just sets
+**Pitch:** Every room line says "0/3 sets" but the door plates already know "5 of 156 met"; the ledger should say how far into each room you are. **Brief:** Goal: add a thin progress bar and "5 of 156" beside each room line, on phone and desktop. Files: `src/ui/roomLedger.js`. Screens: x-rooms-375.png. **Conflicts:** TA2c, TA3.
+
+### RA6. Almanac and Lexicon show the room you are standing in
+**Pitch:** In the Chronicle the Almanac says "0 days running, no descents yet" while the top bar says 5 day streak and 300 ft deepest: the page and the bar disagree and nothing says which scope each shows. **Brief:** Goal: a room label on each stats page ("The Chronicle" vs "All rooms") and agree the bar with it. Screens: x-room-stats-1280.png, y-home-1280.png. **Conflicts:** TA3 (started), TR8.
+
+### RA7. Today drawer cycles every room but opens on the wrong one
+**Pitch:** The Today card opens on "No. 7 of 7" in the Reading Room; it should open on the room you are in and show that room's colour. **Brief:** Goal: start on the current room, tint the heading with the room's ink. Screens: y-drawer-today-1280.png. **Conflicts:** CC2.
