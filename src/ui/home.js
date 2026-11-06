@@ -54,7 +54,7 @@ import {currentRoom} from '../core/roomStore.js';
 export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>'',today=''}){
  const ctx={lexicon,dailyNo:no,played:!!d,today},pq=plaqueState({S,played:!!d,no,today,lexicon});
  /* library furniture built into the niche walls: a card-catalogue cabinet (rules) and the borrower's ledger (welcome.css) */
- const rules=cabinetHTML({steps:HOME_STEPS,bestTier:S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1),tierCounts:S.shelf.reduce((a,b)=>{const t=b.tier|0;a[t]=(a[t]|0)+1;return a;},[]),seen:loadSeen()});
+ const rules=cabinetHTML({steps:HOME_STEPS,bestTier:S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1),today:{no,kind:pq.kind,tag:pq.tag,streak:st.streak|0,played:!!d},tierCounts:S.shelf.reduce((a,b)=>{const t=b.tier|0;a[t]=(a[t]|0)+1;return a;},[]),seen:loadSeen()});
  const slip=ledgerHTML({streak:st.streak,deepest:st.deepest,books:S.shelf.length,floor:floorName||'',floorKey:floorKey||'',tierInk:tierInk||''});
  const book=l=>{const b=l.badge?l.badge(S,ctx):'';const c=HOME_BOOK_COLORS[l.color]||HOME_BOOK_COLORS.brown;
   return `<li><button class="hbook" data-tex="${l.tex||'leather'}" id="${l.id}"${l.note?` title="${esc(l.note)}"`:''} style="--bk:${c[0]};--bk2:${c[1]};--bk-gild:${c[2]}"><span class="hb-pages" aria-hidden="true"></span><span class="hb-spine"><i class="hb-band" aria-hidden="true"></i><span class="hb-t">${esc(l.label)}${b?` <small>${esc(b)}</small>`:''}</span><i class="hb-band" aria-hidden="true"></i></span></button></li>`;};

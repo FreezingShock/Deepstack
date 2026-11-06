@@ -1875,7 +1875,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### CC1. Cabinet on phones and very short rooms — DONE (corner brass tab, this PR)
 **Pitch:** Phones and 1000 x 560 windows show no cabinet at all, so there is no way to read the rules there.
 **Brief:** Goal: a small brass "card catalogue" tab (like the tablet bar) that fits the compact phone home without moving Descend; opens the same cards. Files: `src/ui/cabinet.css`, `src/ui/cabinet.js`, `src/ui/fit.css` hide rule. **Conflicts:** home layout and hearth threads.
-### CC2. Live drawers — partly done: Tiers shows how many books of each tier you hold and dims unearned tiers; a Daily card and a pull sound with weight are still open
+### CC2. Live drawers — DONE: Tiers shows books held per tier; a Today drawer shows the Daily's state with Descend/Continue/Result buttons; drawers have their own wood `drawer` sound
 **Pitch:** Make the cabinet react to the game, not just explain it.
 **Brief:** Goal: a drawer that fills with something earned (a Tiers card that stamps each tier the first time you earn it, a Credits card for each room's word source, a small "today" card when the Daily is unplayed), plus a pull sound with weight. Files: `src/ui/cabinet.js`, `src/sound/materials.js`. **Conflicts:** sound palette threads.
 ### CC3. Bigger wordmark and tagline on wide windows — DONE (Descend itself left alone: the cabinet width is fitted to it)
