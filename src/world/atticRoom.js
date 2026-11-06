@@ -42,8 +42,11 @@ export function planRows(items,W,{maxRows=60}={}){
     /* the sign and its piles stand as one group, centred under the light: a short row (a month with one pile) sits in
        the beam instead of hugging the left wall, and the sign stays right beside its first pile */
     const off=first&&cap>0?1:0,slots=take.length+(first?1:0),g0=W/2-slots*pileW/2+pileW/2;
-    take.forEach((p,j)=>{p.x=g0+(j+off)*pileW;p.w=pileW;p.kind=KINDS[(n++*3+si)%KINDS.length];});
-    rows.push({sec:si,title:s.title,count:s.items.length,sign:first?{x:g0+(off&&take.length?pileW*.06:0),w:pileW}:null,piles:take});
+    /* a short row on an odd section is mirrored (pile left, sign right) so neighbouring month signs never stack in one
+       column and hide each other */
+    const mirror=first&&off&&si%2===1&&take.length===1;
+    take.forEach((p,j)=>{p.x=g0+(mirror?j:j+off)*pileW;p.w=pileW;p.kind=KINDS[(n++*3+si)%KINDS.length];});
+    rows.push({sec:si,title:s.title,count:s.items.length,sign:first?{x:mirror?g0+take.length*pileW-pileW*.06:g0+(off&&take.length?pileW*.06:0),w:pileW}:null,piles:take});
    }
    first=false;if(k>=piles.length)break;
   }

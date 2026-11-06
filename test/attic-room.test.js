@@ -27,7 +27,7 @@ test('W2: a row is one group centred under the light, with its sign beside its f
   for(const r of rows){
    const xs=[...(r.sign?[r.sign.x]:[]),...r.piles.map(p=>p.x)];
    assert.ok(Math.abs((Math.min(...xs)+Math.max(...xs))/2-W/2)<pileW*.1,'group centred');
-   if(r.sign&&r.piles.length)assert.ok(r.piles[0].x-r.sign.x<=pileW*1.01,'sign touches its first pile');
+   if(r.sign&&r.piles.length)assert.ok(Math.abs(r.piles[0].x-r.sign.x)<=pileW*1.01,'sign touches its first pile');
   }
  }
 });
