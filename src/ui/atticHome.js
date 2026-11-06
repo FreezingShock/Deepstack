@@ -5,6 +5,7 @@
 import {World} from '../world/world.js';
 import {Sfx} from '../feel.js';
 import {atticAll,atticTidy} from '../core/attic.js';
+import {fitRail,initRailFit} from './railFit.js';
 import './attic.css';
 
 let cue=null,down=null,home=null,count=0,wired=false,depthEl=null,pulling=0;
@@ -43,6 +44,7 @@ function paintCue(){
  if(!cue.firstChild)cue.innerHTML='<span class="ach-hatch" aria-hidden="true"><span class="ach-glow"></span><span class="ach-lid"><span class="ach-word">Attic</span></span></span>'
   +'<span class="ach-cord" aria-hidden="true"><span class="ach-rope"></span><span class="ach-tag"><b></b></span></span>';
  cue.querySelector('.ach-tag b').textContent=count;
+ fitRail();
  cue.setAttribute('aria-label',`Pull the cord and climb up to the attic: ${count} ${count===1?'book':'books'}`);
 }
 /* After a book is dusted off: re-list what the attic holds and refresh the entrance. */
@@ -64,7 +66,7 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
   homeEl.after(cue,down,beam); // siblings of #home, so CSS hides them whenever home is hidden
   cue.onclick=()=>open();down.onclick=()=>close();
 }
- paintCue();
+ paintCue();initRailFit();
  World.setAttic(false,{instant:true});World.onAttic(sync);sync(false);
  World.onAtticMove(rideHome);
  if(!wired){wired=true;
