@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Look at the home plaque on your 1920 screen while mid-Daily: Continue should now have a clear gap to the Library Rules drawers and the Librarian's Card (src/ui/plaqueGap.css).
 - Walk between rooms on desktop: the fireplace should stay put while the fire, title and labels glide to the new colour and the room and Daily lines type in. Tell me if the glide is too slow or the title tint is too strong.
 - Enter the Chronicle (or any other room) and press Descend: the candle halo, the two lanterns and the lift cage burn in the room's fire, the result card gets a rim of it, and the depth plaque names the room. The Reading Room should look exactly as before. Say if the tint is too strong or too faint.
 - Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
@@ -1794,6 +1795,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Rotating a phone mid-descent or with a book open should keep where you were, same books, same page.
 **Brief:** Goal: resize and orientationchange keep scroll depth, attic state and the open book's page; test in `scripts/responsive.mjs` with `page.setViewportSize`. Files: `src/world/world.js`, `src/ui/bookpages.js`. **Conflicts:** AT8, attic threads.
 
+### PG1. Plaque gap guard
+**Pitch:** A test that fails if the Continue/Descend plaque ever gets within 16px of the cabinet or ledger.
+**Brief:** Goal: extend `scripts/responsive.mjs` to measure `.descend` vs `.cc-cab`/`.ledger` at 1000 to 2560 wide in daily, resume and unlimited states. Files: `scripts/responsive.mjs`. Conflicts: low.
+
+### PG2. Long label stress states
+**Pitch:** Check every plaque state (resume, played, big text sizes) at all widths for touching neighbours.
+**Brief:** Goal: screenshot sweep of plaque states with text size large; fix any contact via `plaqueGap.css`. Conflicts: low.
 ## TA. Topic rooms audit menu 2026-11-06 (after #289/#290; screenshots audit/rm-*.png; word data from public/data/rooms.json vs words.json)
 
 ### TA1. Room word lists miss the obvious and keep the odd

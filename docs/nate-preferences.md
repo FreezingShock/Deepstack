@@ -70,6 +70,7 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-04 world: asked for wall mounts and a reading stand (backlog E, via 'physically makes sense') -> every hung or held object needs a visible support; nate also wants threads to keep the backlog, his to-do list and preferences updated automatically.
 - 2026-11-05 attic entrance: "overhaul this Attic button and make it more centralized and less of like a button and an attic entrance" -> doors and ways in should be objects in the room (centred, in-world), not UI pills; they stay real buttons underneath for keyboard use (thread: attic entrance)
 - 2026-11-06 sizing: "fix sizing issues at different widths and heights, also all the books being reset and randomized when changing window height and width" -> resizing must never reshuffle the world (seed every decoration from its row, never from the window), and every menu and home composition must fit the window with no overflow or overlap (thread: fix layout at small and odd window sizes)
+- 2026-11-06 Continue plaque: "its kinda close to the drawer" -> the Continue/Descend plaque always keeps a clear, even gap (about 28px at 1000 to 2560 wide) to the Library Rules cabinet and Librarian's Card; long sub-lines shrink the plaque spacing, never the gap.
 
 ## Changelog
 - 2026-11-04 initial version from project chat history.
