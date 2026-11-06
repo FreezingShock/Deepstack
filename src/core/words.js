@@ -44,3 +44,6 @@ export const BANK=[
 ['floccinaucinihilipilification','noun',9.9,'The action or habit of estimating something as worthless.','His ___ of modern art got him thrown out of the gallery.',[['judging as worthless',.55,'worthless, worth, value, valueless, useless, nothing, insignificant, trivial, unimportant, meaningless, pointless, no value, rubbish, junk'],['the habit or act of estimating',.45,'estimating, judging, habit, belittle, belittling, dismiss, dismissing, act, assess, regard, regarding, considering, deeming, practice, tendency, action']],'']
 ];
 export const WORDS=BANK.map((b,i)=>({id:i,w:b[0],pos:b[1],d:b[2],def:b[3],hint:b[4],concepts:b[5],opp:b[6]}));
+
+/** Blocked words (see blocklist.js), kept only so the seeded Daily's random stream matches what it was before they were dropped. Never asked. */
+export const GHOSTS=[];

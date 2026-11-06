@@ -29,13 +29,18 @@ const stemKey = w => w.slice(0, 5);
  * Picks one word near `target`, avoiding near-duplicates of words already in the run
  * (same first five letters: dermal/dermatitis). `pool` is the sorted word pool.
  */
-export function pickRampWord(pool, target, usedIds, usedWords, rng, jitter = .35) {
+export function pickRampWord(pool, target, usedIds, usedWords, rng, jitter = .35, ghosts = []) {
   const seenStems = new Set(usedWords.map(stemKey));
-  let best = null, bk = Infinity;
+  let best = null, bk = Infinity, g = 0;
+  // `ghosts` are blocked words that used to sit in the pool. They draw from the rng exactly as before (never win),
+  // so the schedule for every other word stays the same after a word is removed. Both lists are sorted by word.
+  const burn = upTo => { for (; g < ghosts.length && (upTo === null || ghosts[g].w < upTo); g++) if (!seenStems.has(stemKey(ghosts[g].w))) rng(); };
   for (const w of pool) {
+    burn(w.w);
     if (usedIds.has(w.id) || seenStems.has(stemKey(w.w))) continue;
     const k = Math.abs(w.d - target) + rng() * jitter;
     if (k < bk) { bk = k; best = w; }
   }
+  burn(null);
   return best;
 }

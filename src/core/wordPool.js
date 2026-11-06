@@ -1,10 +1,11 @@
 // Builds the playable word pool from public/data/words.json (see scripts/build-words.mjs).
 // Curated words keep their hand-written entry (definition, hint, concept lists) from BANK;
 // generated words get a quality filter, because raw Wiktionary glosses are not all fair to ask.
-import {BANK, WORDS} from './words.js';
+import {BANK, WORDS, GHOSTS} from './words.js';
 import {hashStr} from './daily.js';
 import {stem, match} from '../scorer/lexical.js';
 import {isSpecialist, effectiveDifficulty} from './difficulty.js';
+import {isBlocked} from './blocklist.js';
 
 const POS_OK = new Set(['noun', 'verb', 'adjective', 'adverb']);
 // Glosses that only point at another word, or describe a form rather than a meaning.
@@ -35,7 +36,8 @@ export function selfReferential(word, def) {
 }
 
 /** Why a generated entry is not fit to ask, or null if it is. */
-export function rejectReason(e) {
+export function rejectReason(e, ignoreBlock = false) {
+  if (!ignoreBlock && isBlocked(e.w, e.def)) return 'blocked';
   if (!POS_OK.has(e.pos)) return 'pos';
   if (!/^[a-z]{4,16}$/.test(e.w)) return 'shape';
   const def = clean(e.def || '');
@@ -59,7 +61,7 @@ const bankWord = new Map(BANK.map((b, i) => [b[0], i]));
 
 /** @param {{words:Array}} data parsed words.json */
 export function buildPool(data) {
-  const out = [], seen = new Set();
+  const out = [], seen = new Set(), ghosts = [];
   for (const e of data.words) {
     if (seen.has(e.w)) continue;
     const bi = bankWord.get(e.w);
@@ -68,7 +70,11 @@ export function buildPool(data) {
       out.push({id: bi, w: b[0], pos: b[1], d: b[2], def: b[3], hint: b[4], concepts: b[5], opp: b[6], curated: true});
       seen.add(e.w); continue;
     }
-    if (rejectReason(e)) continue;
+    if (rejectReason(e)) {
+      // Blocked words stay in the seeded Daily's random stream (see pickRampWord) so dropping one never reshuffles a day.
+      if (rejectReason(e, true) === null) ghosts.push({id: hashStr('w:' + e.w), w: e.w, d: effectiveDifficulty(e.d, e.t)});
+      continue;
+    }
     const w = {id: hashStr('w:' + e.w), w: e.w, pos: e.pos, d: effectiveDifficulty(e.d, e.t), def: clean(e.def), hint: e.hint || null, concepts: [], opp: '', curated: false};
     if (!w.hint) w.hint = templateHint(w);
     out.push(w); seen.add(e.w);
@@ -78,7 +84,10 @@ export function buildPool(data) {
     out.push({id: i, w: b[0], pos: b[1], d: b[2], def: b[3], hint: b[4], concepts: b[5], opp: b[6], curated: true});
   }
   // Stable order so seeded daily picks are identical on every device.
-  return out.sort((a, b) => a.w < b.w ? -1 : a.w > b.w ? 1 : 0);
+  const byWord = (a, b) => a.w < b.w ? -1 : a.w > b.w ? 1 : 0;
+  out.sort(byWord);
+  Object.defineProperty(out, 'ghosts', {value: ghosts.sort(byWord), enumerable: false});
+  return out;
 }
 
 let loading = null;
@@ -91,6 +100,7 @@ export function loadWords(url = (import.meta.env?.BASE_URL || '/') + 'data/words
       const pool = buildPool(await r.json());
       if (pool.length < 500) throw new Error('word list too small');
       WORDS.length = 0; WORDS.push(...pool);
+      GHOSTS.length = 0; GHOSTS.push(...(pool.ghosts || []));
       return {ok: true, count: pool.length};
     } catch (err) {
       console.warn('Using built-in word bank:', err);
