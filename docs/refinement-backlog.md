@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Walk between rooms on desktop: the fireplace should stay put while the fire, title and labels glide to the new colour and the room and Daily lines type in. Tell me if the glide is too slow or the title tint is too strong.
 - Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
 - Resize the window (or rotate your phone) on home and in each menu book: the hatch tag should clear the title, Descend and the five spines should always fit, short landscape windows get one row of spines, and the background shelves (books, cobwebs, props) should stay put as you drag the window. Say which size still feels cramped. (thread: fix layout at small and odd window sizes, `node scripts/responsive.mjs`)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
@@ -1754,6 +1755,18 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### [x] TR9. Door walk polish (TR7-TR9 PR: plank doors stand ajar, open wider on hover, swing open when taken; new fire comes up from embers; `door` sound cue)
 **Pitch:** Make walking through a door feel like a place: the door you take swings open, the new fire flares up from embers as the room slides in, and a soft footstep and latch sound plays.
 **Brief:** Goal: richer `rm-leave`/`rm-enter` keyframes, a `door` cue in `src/sound/materials.js`; keep it under 600 ms and transform/opacity only. **Conflicts:** sound threads, hearth.
+
+### [x] TR13. Room switch as a colour shift (PR pending)
+**Pitch:** Walking to another room keeps the same fireplace: fire, light, the Deepstack title and labels glide to the new room's colours, then the room line and Daily line type themselves in. No whole-room slide or fade; works under reduced motion.
+**Brief:** Done in `src/app/roomGo.js`, `src/ui/roomHome.{js,css}`, `src/ui/typewrite.js`. **Conflicts:** hearth, doors-under-reduced-motion thread.
+
+### TR14. Tint the Descend plaque and book spines by room
+**Pitch:** The colour glide also reaches the Descend plaque trim and the home book spines in a faint wash of the room's fire, so the whole room feels lit by it.
+**Brief:** Goal: read `--rm-rgb` in `homePlaque` and spine css. **Conflicts:** home, spines threads.
+
+### TR15. Fire catches when you arrive
+**Pitch:** On arrival the flames flare once and a few new-colour sparks fly as the colours settle.
+**Brief:** Goal: `hearth.pop()` after `goRoom` settles. **Conflicts:** hearth.
 
 ### TR10. A room's own shelf in the world
 **Pitch:** When you stand in a room, the background shelves behind the fireplace hold that room's books, their spines lit faintly in the room's fire colour, so the room feels stocked with its own words.

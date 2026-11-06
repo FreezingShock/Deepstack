@@ -3,15 +3,22 @@
    Phones and narrow windows switch rooms from the Rooms book instead (src/ui/roomLedger.js); there the ring of lights
    opens that book. Called after every home render (src/app/home.js) with go(id, dir) doing the walk (src/app/roomGo.js). */
 import {ROOMS, HALL, roomById, neighbours, rgbOf} from '../core/rooms.js';
+import {typewrite} from './typewrite.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const DOOR_MIN_W = 1000, DOOR_MIN_GAP = 124;
 const ink = r => (r.ink || r.rgb).join(',');
 
 /** Room colours on <html>: the hearth's live fire, the room light and every room-tinted label read these. */
-export function paintRoomVars(room, root = document.documentElement) {
+let hallT = 0;
+export function paintRoomVars(room, root = document.documentElement, {settle = false} = {}) {
   const r = roomById(room);
-  if (r.id === HALL) delete root.dataset.room; else root.dataset.room = r.id;
+  clearTimeout(hallT);
+  /* the colours are registered properties (roomHome.css) so they glide; going back to the Reading Room keeps the
+     room's tint rules on until the glide has finished, then drops them */
+  if (r.id !== HALL) root.dataset.room = r.id;
+  else if (settle && root.dataset.room) hallT = setTimeout(() => { delete root.dataset.room; }, 700);
+  else delete root.dataset.room;
   root.style.setProperty('--rm-hue', r.hue + 'deg');
   root.style.setProperty('--rm-sat', String(r.sat || 1));
   root.style.setProperty('--rm-rgb', rgbOf(r));
@@ -29,6 +36,10 @@ export function doorHTML(r, side) {
  <span class="rm-arch" aria-hidden="true"><i class="rm-fire"></i><i class="rm-lamp"></i><i class="rm-boards"></i><i class="rm-leaf"></i><i class="rm-arrow">${side === 'prev' ? '‹' : '›'}</i></span>
  <span class="rm-spill" aria-hidden="true"></span></button>`;
 }
+
+/** The next mount (the home redrawn after a walk to another room) types the room's lines instead of just showing them. */
+let typeNext = false;
+export const typeOnNextMount = () => { typeNext = true; };
 
 let doors = null, keysOn = false, resizeOn = false, goFn = null, curRoom = HALL;
 const homeEl = () => document.getElementById('home');
@@ -57,6 +68,7 @@ export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = ()
   if (tl && r.id !== HALL) tl.innerHTML = `<span class="rm-name">${esc(r.name)}</span> <em>· ${esc(r.motto)}</em>`;
   const tag = home.querySelector('.daily-tag');
   if (tag && r.id !== HALL) tag.textContent = `${r.topic} · ${tag.textContent}`;
+  if (typeNext) { typeNext = false; typewrite(tl, {delay: 60}); typewrite(tag, {delay: 140}); }
   /* the ring of room lights: where you are among all of them; on phones it opens the Rooms book */
   const title = home.querySelector('.hz-title');
   if (title) {
