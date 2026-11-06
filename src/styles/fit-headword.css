@@ -1,0 +1,3 @@
+/* One line per headword; src/ui/fitHeadword.js shrinks the font to fit. */
+#stage .word{flex-wrap:nowrap;overflow-wrap:normal;word-break:normal}
+.page h2,.cover .cw{white-space:nowrap;overflow-wrap:normal;word-break:normal}

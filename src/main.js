@@ -8,6 +8,7 @@ import './core/combo.js';
 import './theme/tokens.css';
 import './ui/motion.css';
 import './styles/index.css';
+import './ui/fitHeadword.js';
 import './ui/canvasCover.js';
 import './ui/dprCap.js';
 import './sets/sets.js';
