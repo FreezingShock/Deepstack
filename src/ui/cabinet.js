@@ -25,9 +25,9 @@ export function rulesBack(){
  return `<dl class="cb-defs"><div><dt>Daily</dt><dd>Seven shared words, once a day. Keeps your streak.</dd></div><div><dt>Unlimited</dt><dd>Words matched to you. Each answer moves your rank.</dd></div><div><dt>Practice</dt><dd>Rehearse the Daily. Nothing is recorded.</dd></div><div><dt>Rooms</dt><dd>Seven topic rooms, each with its own Daily and rank.</dd></div></dl>`;
 }
 /** Seven tiers: colour, name, rarity and the score that earns it. best (a tier id, or -1) gets a brass marker. */
-export function tiersFront(best=-1){
- const rows=TIERS.map(t=>`<li${t.id===best?' class="best"':''}><i class="cc-dot" style="background:${t.spine}" aria-hidden="true"></i><span class="tn">${esc(t.name)}</span><span class="tr">${esc(t.rar)}</span><b>${t.min}</b>${t.id===best?'<em>your best</em>':''}</li>`).join('');
- return `<ul class="cb-tiers" aria-label="Score needed for each tier">${rows}</ul>`+note('Score is closeness to the real meaning, out of 100.');
+export function tiersFront(best=-1,counts=[]){
+ const rows=TIERS.map(t=>{const n=counts[t.id]|0;return `<li class="${t.id===best?'best':''}${n?'':' miss'}"><i class="cc-dot" style="background:${t.spine}" aria-hidden="true"></i><span class="tn">${esc(t.name)}${n?` <small>×${n}</small>`:''}</span><span class="tr">${esc(t.rar)}</span><b>${t.min}</b>${t.id===best?'<em>your best</em>':''}</li>`;}).join('');
+ return `<ul class="cb-tiers" aria-label="Score needed for each tier">${rows}</ul>`+note(counts.some(Boolean)?'Dim tiers are still to be earned. Score is closeness to the real meaning, out of 100.':'Score is closeness to the real meaning, out of 100.');
 }
 export function scoringFront(){
  const h=Object.entries({sentence:'In a sentence',synonym:'A neighbour',opening:'How it begins'}).map(([k,l])=>`<li><span>${l}</span><b>−${HINT_COST[k]*FT_PER_ROW} ft</b></li>`).join('');
@@ -66,7 +66,7 @@ export function aboutFront(){
 /** id, plate (drawer label), title/sub (card head), front/back (HTML builders), kind: 'card' or 'action'. */
 export const DRAWERS=[
  {id:'rules',plate:'Rules',title:'How to play',sub:'Please observe',front:ctx=>rulesFront(ctx.steps),back:rulesBack,backTitle:'Ways to play',backSub:'Choose your descent'},
- {id:'tiers',plate:'Tiers',title:'Tiers of books',sub:'What an answer earns',front:ctx=>tiersFront(ctx.bestTier)},
+ {id:'tiers',plate:'Tiers',title:'Tiers of books',sub:'What an answer earns',front:ctx=>tiersFront(ctx.bestTier,ctx.tierCounts)},
  {id:'scoring',plate:'Scoring',title:'How you are judged',sub:'Closeness, not spelling',front:scoringFront,back:scoringBack,backTitle:'Combos',backSub:'Keep the chain unbroken'},
  {id:'tips',plate:'Tips',title:'A strong answer',sub:'Five small habits',front:tipsFront},
  {id:'keys',plate:'Keys',title:'Keys of the library',sub:'At the library',front:keysFront,back:keysBack,backTitle:'Keys, continued',backSub:'On a word, and anywhere'},
@@ -83,9 +83,9 @@ export const SEEN_KEY='deepstack.cabinet.v1';
 export function loadSeen(storage=globalThis.localStorage){try{const o=JSON.parse(storage.getItem(SEEN_KEY)||'{}');return o&&typeof o==='object'&&o.seen&&typeof o.seen==='object'?o.seen:{};}catch{return {};}}
 export function markSeen(id,storage=globalThis.localStorage){try{const seen={...loadSeen(storage),[id]:1};storage.setItem(SEEN_KEY,JSON.stringify({seen}));}catch{}}
 
-/** The whole cabinet. ctx: {steps:[{h,p}], bestTier:-1..6, seen:{id:1}}. */
+/** The whole cabinet. ctx: {steps:[{h,p}], bestTier:-1..6, tierCounts:[books per tier], seen:{id:1}}. */
 export function cabinetHTML(ctx){
- const c={steps:[],bestTier:-1,seen:{},...ctx};
+ const c={steps:[],bestTier:-1,tierCounts:[],seen:{},...ctx};
  const drawers=DRAWERS.map(d=>{
   const tint=d.id==='tiers'&&c.bestTier>=0?`<i class="cc-tint" style="background:${TIERS[c.bestTier].spine}" aria-hidden="true"></i>`:'';
   const fresh=d.id==='rules'&&!c.seen.rules?'<i class="cc-new" aria-hidden="true">new</i>':'';
@@ -101,6 +101,7 @@ export function cabinetHTML(ctx){
  }).join('');
  return `<aside class="cat-card" data-open="" aria-label="Card catalogue">
  <div class="cc-cab"><div class="cc-top" data-prop-slot="bell"></div><div class="cc-run"><div class="cc-plate-head" aria-hidden="true">Card catalogue</div><div class="cc-grid">${drawers}</div></div></div>
+ <button type="button" class="cc-tab" data-d="rules" aria-haspopup="dialog" aria-label="Card catalogue: rules, tiers, keys and more" title="Card catalogue"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="1.8" width="12" height="3.6" rx=".6"/><rect x="2" y="6.2" width="12" height="3.6" rx=".6"/><rect x="2" y="10.6" width="12" height="3.6" rx=".6"/></g></svg></button>
  <div class="cc-scrim" aria-hidden="true"></div>${cards}
 </aside>`;
 }
@@ -128,7 +129,9 @@ export function initCabinet({doc=document,sfx={}}={}){
  const fit=cab=>{const sl=cab.dataset.open&&slotOf(cab,cab.dataset.open);if(!sl)return;
   const h=sl.querySelector('.cc-flip').offsetHeight||1,w=sl.offsetWidth||1,vw=doc.defaultView.innerWidth,vh=doc.defaultView.innerHeight;
   cab.style.setProperty('--cs',String(Math.max(.55,Math.min(1,(vh-36)/h,(vw-24)/w)).toFixed(3)));};
- const where=(cab,id)=>{const dr=cab.querySelector(`.cc-drawer[data-d="${id}"]`);if(!dr)return;const r=dr.getBoundingClientRect(),pl=(cab.closest('.hz-plaque')||cab).getBoundingClientRect();
+ /* the control a card comes from: its drawer, or the corner tab where the cabinet is not shown (phones, short rooms) */
+ const anchor=(cab,id)=>{const dr=cab.querySelector(`.cc-drawer[data-d="${id}"]`);return dr&&dr.offsetParent!==null?dr:cab.querySelector('.cc-tab');};
+ const where=(cab,id)=>{const dr=anchor(cab,id);if(!dr)return;const r=dr.getBoundingClientRect(),pl=(cab.closest('.hz-plaque')||cab).getBoundingClientRect();
   cab.style.setProperty('--from-x',Math.round(r.left+r.width/2-(pl.left+pl.width/2))+'px');cab.style.setProperty('--from-y',Math.round(r.top+r.height/2-(pl.top+pl.height/2))+'px');};
  const apply=(cab,st,dir=0)=>{
   const prev=cab.dataset.open||'';
@@ -150,14 +153,14 @@ export function initCabinet({doc=document,sfx={}}={}){
  const focusCard=(cab,id)=>{const sl=slotOf(cab,id);if(!sl)return;let n=0;/* the faces become visible a beat after the card lands, so retry until focus sticks */
   const go=()=>{const f=sl.querySelector(sl.dataset.face==='1'?'.cc-back .cc-flipbtn':'.cc-front .cc-flipbtn')||sl.querySelector('.cc-front .cc-next');if(!f||sl.dataset.s!=='on')return;f.focus({preventScroll:true});if(doc.activeElement!==f&&++n<12)setTimeout(go,60);};setTimeout(go,30);};
  const closeCab=cab=>{const id=cab.dataset.open;apply(cab,nextState(read(cab),'close'));cue('slip');
-  const dr=id&&cab.querySelector(`.cc-drawer[data-d="${id}"]`);if(dr)dr.focus({preventScroll:true});};
+  const dr=id&&anchor(cab,id);if(dr)dr.focus({preventScroll:true});};
  const open=(cab,id,dir=0)=>{const st=read(cab),was=st.open;apply(cab,nextState(was?{...st,open:''}:st,'open',id),dir);
   cue(was?'turn':'slip');if(!was)setTimeout(()=>cue('knock'),90);
   try{markSeen(id);}catch{}cab.querySelector('.cc-new')?.remove();
   focusCard(cab,id);};
  doc.addEventListener('click',e=>{
   const cab=e.target.closest&&e.target.closest('.cat-card');if(!cab)return;
-  const dr=e.target.closest('.cc-drawer');
+  const dr=e.target.closest('.cc-drawer,.cc-tab');
   if(dr){
    if(dr.dataset.act){const t=doc.querySelector(dr.dataset.act);if(t){cue('knock');t.click();}return;}
    const id=dr.dataset.d;if(cab.dataset.open===id)closeCab(cab);else open(cab,id);return;}

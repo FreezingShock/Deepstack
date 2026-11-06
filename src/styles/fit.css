@@ -18,7 +18,7 @@ body:has(.attic-cue-home:not([hidden])) #home .hz-title,body:has(.attic-cue-home
 }
 /* short windows (landscape phones, a browser pushed small): one row of spines under a slim title, no caption */
 @media(max-height:480px) and (min-aspect-ratio:1/1){
- #home .home .hz-title .tagline,#home .home .hz-plaque .next,#home .home .hz-plaque .stats,#home .home .cat-card,#home .home .ledger,#home .home .how{display:none}
+ #home .home .hz-title .tagline,#home .home .hz-plaque .next,#home .home .hz-plaque .stats,#home .home .cc-cab,#home .home .ledger,#home .home .how{display:none}
  #home .home .hz-title .title{font-size:calc(30px*var(--ts,1));margin:0}
  #home .home .hz-title{padding-top:12px!important}
  #home .home .descend{padding-top:7px;padding-bottom:7px}
