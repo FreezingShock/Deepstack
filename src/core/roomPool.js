@@ -13,7 +13,10 @@ export function captureFullPool() { ALL = WORDS.slice(); ALLG = GHOSTS.slice(); 
 export const fullPool = () => ALL || WORDS;
 export const fullGhosts = () => ALLG || GHOSTS;
 export function setRoomLists(lists) { LISTS = lists && typeof lists === 'object' ? lists : null; }
-export const roomList = id => (LISTS && Array.isArray(LISTS[id]) ? LISTS[id] : null);
+let EXTRA = {};
+/** Words a room always holds on top of its list (its sets' words, src/sets/sets.js), as {room: [words]}. */
+export function setRoomExtras(map) { EXTRA = map && typeof map === 'object' ? map : {}; }
+export const roomList = id => (LISTS && Array.isArray(LISTS[id]) ? (EXTRA[id] ? [...new Set([...LISTS[id], ...EXTRA[id]])] : LISTS[id]) : null);
 export const activePoolRoom = () => cur;
 
 /** Narrows WORDS to room `id` (or restores every word for the Reading Room). Returns the pool size. */

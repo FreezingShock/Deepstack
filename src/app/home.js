@@ -21,6 +21,9 @@ import {trendHTML} from '../ui/lexiconTrend.js';
 import {mountHearth} from '../ui/hearth.js';
 import {hearthMood} from '../ui/hearthMood.js';
 import {mountIdleRoom} from '../ui/idleRoom.js';
+import {mountRoomHome} from '../ui/roomHome.js';
+import {currentRoom} from '../core/roomStore.js';
+import {goRoom} from './roomGo.js';
 
 /* ---------- home ---------- */
 export let cdTimer=0;
@@ -48,6 +51,7 @@ export function showHome(){
  bindDeskProps(ui.home,{sfx:Sfx});
  const hearth=mountHearth(ui.home,{sfx:Sfx,mood:hearthMood(S,st.streak)});
  mountIdleRoom(ui.home,{sfx:Sfx,hearth});
+ mountRoomHome(ui.home,{room:currentRoom(S),go:goRoom,openLedger:()=>$('#bRooms')&&$('#bRooms').click()});
  setBookSfx(n=>n==="whoosh"?Sfx.cue("lift"):n==="thud"?Sfx.cue("shut"):n==="flip"?Sfx.cue("turn"):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;

@@ -115,7 +115,7 @@ await page.waitForFunction(() => !window.__deepstack?.World?.atticOpen && ['.hz-
 // mostly there. Before W1 they sat at 0 until ~360 ms, a lone book on bare brick; that now fails.
 const MIN_AT_200MS = 0.05, MIN_AT_END = 0.5;
 const bare = a => a.length ? Math.min(...a).toFixed(2) : 'n/a';
-for (const [id, name] of [['bDaily', 'Daily'], ['bUnl', 'Unlimited'], ['bAll', 'Shelf'], ['bSets', 'Sets'], ['bStats', 'Stats']]) {
+for (const [id, name] of [['bDaily', 'Daily'], ['bUnl', 'Unlimited'], ['bAll', 'Shelf'], ['bRooms', 'Rooms'], ['bStats', 'Stats']]) {
   const btn = page.locator('#' + id);
   if (!(await btn.count())) { fail(`${name}: book missing from home`); continue; }
   const dlg = page.locator('[role=dialog].intro').first();

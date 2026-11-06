@@ -36,7 +36,7 @@ export const SHORTCUT_GROUPS=[
 export const SHORTCUTS=SHORTCUT_GROUPS.flatMap(g=>g[1]);
 
 /* home-screen keys: key -> selector of the control it presses */
-export const HOME_KEYS={'1':'#bDaily',d:'#bDaily','2':'#bUnl',u:'#bUnl','3':'#bAll',s:'#bAll','4':'#bSets','5':'#bStats',',':'#bSettings',a:'.attic-cue-home'};
+export const HOME_KEYS={'1':'#bDaily',d:'#bDaily','2':'#bUnl',u:'#bUnl','3':'#bAll',s:'#bAll','4':'#bRooms',r:'#bRooms','5':'#bStats',',':'#bSettings',a:'.attic-cue-home'};
 
 export const isTyping=t=>!!(t&&t.closest&&t.closest('input,textarea,select,[contenteditable="true"]'));
 

@@ -11,7 +11,7 @@ test('six sets give six distinct ring-only crests', () => {
 });
 
 test('set leaves wear their crest by index, wax when complete (source pin; ui.js pulls in css)', () => {
-  const src = readFileSync(new URL('../src/sets/ui.js', import.meta.url), 'utf8');
+  const src = readFileSync(new URL('../src/sets/ui.js', import.meta.url), 'utf8') + readFileSync(new URL('../src/sets/pages.js', import.meta.url), 'utf8');
   assert.match(src, /st\.map\(\(s, i\) =>[^]*crestHTML\(i, s\.complete\)/);
   assert.match(src, /crest\$\{done \? ' wax' : ''\}/);
 });
