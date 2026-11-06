@@ -1,0 +1,12 @@
+/* Folded shelf filters (shelfGroups.js). Appended after the book menu rules; the fold button spans the whole row. */
+.bk-spread.menu .chipgroup[data-fold]>.kicker{display:none}
+.bk-spread.menu .chipgroup[data-fold]{display:block;margin-top:0}
+.bk-spread.menu .chipgroup[data-fold] .chips{display:none;padding:2px 0 8px 0}
+.bk-spread.menu .chipgroup[data-fold].open .chips{display:flex;flex-wrap:wrap;gap:4px 8px}
+.bk-spread.menu .chipgroup .fold{all:unset;box-sizing:border-box;display:flex;align-items:baseline;gap:10px;width:100%;min-height:36px;padding:4px 2px;cursor:pointer;border-bottom:1px dotted var(--rule,rgba(0,0,0,.25))}
+.bk-spread.menu .chipgroup .fold:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.bk-spread.menu .chipgroup .fold .fk{flex:none;width:4.2em;font:600 calc(10px*var(--ts)) var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.bk-spread.menu .chipgroup .fold .fv{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(17px*var(--ts))}
+.bk-spread.menu .chipgroup .fold i{flex:none;width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.6;transition:transform .15s}
+.bk-spread.menu .chipgroup.open .fold i{transform:rotate(-135deg) translateY(-2px)}
+@media (prefers-reduced-motion:reduce){.bk-spread.menu .chipgroup .fold i{transition:none}}

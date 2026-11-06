@@ -1883,7 +1883,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** The cabinet, ledger and fire grew with the room; the title and Descend plaque did not.
 **Brief:** Goal: scale `.wordmark`, the tagline and `.descend` by `--hs` (up to 1.45) without changing the fit at 1280 or below. Files: `src/ui/cabinet.css` or a new css file. **Conflicts:** the Continue plaque spacing thread (`homePlaque`).
 
-### TA8. Weed the last wrong-room words out of the room lists
+### TA8. [x] (PR pending) Weed the last wrong-room words out of the room lists
 **Pitch:** After TA1 about one word in six is still off (racism in the Anatomy Theatre, tramp in the Chronicle, blueberry in the Gallery) because Wiktionary tags the sense loosely and the meaning check is MiniLM, not a person.
 **Brief:** Goal: print each room's 500 words as a one-line-each review sheet (`node scripts/room-audit.mjs --noise` already lists untagged ones), cull by eye into `scripts/data/room-excludes.json`, rebuild, keep the anchor guard green. Files: `scripts/data/room-excludes.json`, `scripts/build-room-words.mjs`. **Conflicts:** TA1 (done), TA2.
 
@@ -1919,16 +1919,16 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 
 ## RA. Round-2 room audit 2026-11-06 (after #303; screenshots audit/x-*.png and y-*.png)
 
-### RA1. Phone room home hides Unlimited and Stats
+### RA1. [x] (PR pending) Phone room home hides Unlimited and Stats
 **Pitch:** In a topic room at 375x667 the extra "N of M met" line and Daily line push the fire down, and the Unlimited and Stats spines slide under the shelf (Reading Room is fine). **Brief:** Goal: pull the room's two caption lines into one row or tighten the fire's top margin so all four spines stay visible down to 360x640. Files: `src/ui/roomHome.js`, new `src/ui/roomHomeFit.css`. Screens: audit/x-room-home-375.png vs x-home-375.png. **Conflicts:** CC1, TR7.
 
 ### RA2. Attic gauge sits on the Mute button on phones
 **Pitch:** On every phone screen the ATTIC gauge covers the mute button (the dots show behind it), so you cannot mute from the home or any book. **Brief:** Goal: move the gauge into the free space left of Keys or shrink it, keeping the hatch tag hanging from it. Files: `src/ui/topbarRail.js` css. Screens: x-home-375.png. **Conflicts:** none.
 
-### RA3. Depth plaque overlaps the top bar on phones
+### RA3. [x] (PR pending) Depth plaque overlaps the top bar on phones
 **Pitch:** During a run the depth plaque (and "CHRONICLE | DEPTH") hangs 30px over the bar's bottom rail and clips the mute button. **Brief:** Goal: drop it below the rail and keep the room name from widening it. Screens: y-hall-run-375.png, x-room-run-375.png. **Conflicts:** TA6a.
 
-### RA4. Shelf filter rows crowd on phones
+### RA4. [x] (PR pending, filters fold to one line each) Shelf filter rows crowd on phones
 **Pitch:** The ROOM and RARITY rows wrap with the colour dots under the labels and the squiggle under "All" cutting through the next line; "Longest word" drops to its own line under a squiggle. **Brief:** Goal: a two-column chip grid with the dot inline and no squiggle on wrapped rows. Screens: x-room-shelf-375.png. **Conflicts:** TR7.
 
 ### RA5. Room Ledger shows met counts, not just sets

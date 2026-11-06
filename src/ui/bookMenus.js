@@ -4,6 +4,7 @@ import {chunk,esc,toSpreads} from './bookpages.js';
 import {statsLeaves} from './statsPages.js';
 export {statsLeaves};
 import {penMark,penPlay} from './penInk.js';
+import {foldGroups} from './shelfGroups.js';
 import {BAY_MODES,bayGroups,pileEdges,ladderSide} from './shelfBays.js';
 import {roomCounts} from '../core/shelfRooms.js';
 import {ROOMS,rgbOf} from '../core/rooms.js';
@@ -87,6 +88,7 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOOR
   const fq=root.querySelector('#fq');
   /* typing repaints only the results page; the search box and the rest of the left page stay untouched */
   if(fq)fq.oninput=()=>{fQ=fq.value;ctl.setSpreads(toSpreads(build()),0,'r');const c=root.querySelector('[data-count]');if(c)c.textContent=countText;};
+  foldGroups(root);
   penPlay(root);
   root.querySelectorAll('.sbook').forEach(im=>{
    const open=()=>{hideTip();const pull=()=>{im.classList.remove('pulled');const items=list.map(x=>x.b),b=S.shelf[+im.dataset.i];openCard(b,{fresh:false,nav:{items,i:items.indexOf(b)}});};
