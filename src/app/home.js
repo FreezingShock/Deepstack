@@ -25,6 +25,7 @@ import {mountRoomHome} from '../ui/roomHome.js';
 import {roomMetLabel} from '../core/roomDepth.js';
 import {currentRoom} from '../core/roomStore.js';
 import {goRoom} from './roomGo.js';
+import {fillTodayMet} from '../ui/todayMet.js';
 
 /* ---------- home ---------- */
 export let cdTimer=0;
@@ -35,7 +36,7 @@ export function showHome(opts){
  const d=S.daily[utc()],st=computeStats(S,utc());World.setShelf(S.shelf);
  ui.home.hidden=false;ui.home.className=keep?'center':'center fadein';
  ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),today:utc(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:'',floorKey:S.bestFloor?FLOORS[S.bestFloor].key:'',tierInk:(()=>{const t=S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1);return t>=0?core.TIERS?.[t]?.ink||'':''})(),lexicon:core.lexicon});
- paintJudge(modelStatus());
+ paintJudge(modelStatus());fillTodayMet(S);
  if(!keep){World.clearNiches();World.openNiche(0,{label:'',books:[]});}
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));

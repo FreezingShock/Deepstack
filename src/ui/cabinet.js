@@ -66,8 +66,8 @@ export function todayFront(t){
  const streak=t.streak>0?`<p class="cb-streak"><b>${t.streak}</b> ${t.streak===1?'day':'days'} in a row. ${t.played?'Tonight’s candle is lit.':'Write today’s to light the next candle.'}</p>`:note('No streak yet. Write today’s Daily to light the first candle.');
  const go=t.played?`<div class="cb-go"><button type="button" class="cc-go" data-go="#bRes">Today’s result</button><button type="button" class="cc-go cc-go2" data-go="#bNext">Descend</button></div>`
   :`<div class="cb-go"><button type="button" class="cc-go" data-go="#bPlay">${t.kind==='resume'?'Continue':'Descend'}</button></div>`;
- const room=t.room?`<p class="cb-room"><i aria-hidden="true"></i>${esc(t.room.name)}</p>`:'';
- return room+`<p class="cb-big">Daily No. ${esc(t.no)}</p>`+para(line)+streak+go;
+ const room=t.room?`<p class="cb-room"><i aria-hidden="true"></i>${esc(t.room.name)}</p>`:'',met=t.room?`<p class="cb-met"${t.room.met?'':' hidden'}>${esc(t.room.met||'')}</p>`:'';
+ return room+`<p class="cb-big">Daily No. ${esc(t.no)}</p>`+para(line)+streak+met+go;
 }
 /* ---------- the drawers ---------- */
 /** id, plate (drawer label), title/sub (card head), front/back (HTML builders), kind: 'card' or 'action'. */

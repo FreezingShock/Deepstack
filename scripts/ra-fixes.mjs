@@ -59,10 +59,13 @@ for (const room of Object.keys(ROOMS)) {
         const others = ['#mark', '#barGauges', '#barNav button'].flatMap(s => [...document.querySelectorAll(s)]).filter(vis).map(e => ({id: e.id || e.className || e.tagName, ...box(e)}));
         const snd = document.querySelector('#bSound'), sb = snd && box(snd);
         const hit = sb && document.elementFromPoint((sb.l + sb.r) / 2, (sb.t + sb.b) / 2);
-        return {hatch: vis(hatch) ? box(hatch) : null, others, sound: sb, tap: !!(hit && snd.contains(hit)), sw: document.documentElement.scrollWidth};
+        const fl = document.querySelector('.ach-flame'), gone = !vis(document.querySelector('#barGauges'));
+        return {flame: fl && vis(fl) ? box(fl) : null, needFlame: gone, hatch: vis(hatch) ? box(hatch) : null, others, sound: sb, tap: !!(hit && snd.contains(hit)), sw: document.documentElement.scrollWidth};
       });
       if (!m.hatch) problems.push(`${tag}: attic hatch not shown`);
       else for (const o of m.others) if (m.hatch.l < o.r && m.hatch.r > o.l && m.hatch.t < o.b && m.hatch.b > o.t) problems.push(`${tag}: attic hatch sits on "${o.id}"`);
+      if (m.needFlame && !m.flame) problems.push(`${tag}: streak plate is hidden but the flame tag is not shown (RA9)`);
+      if (m.flame) { if (m.flame.r > w + 0.5) problems.push(`${tag}: flame tag runs off the screen`); for (const o of m.others) if (m.flame.l < o.r && m.flame.r > o.l && m.flame.t < o.b && m.flame.b > o.t) problems.push(`${tag}: flame tag sits on "${o.id}"`); }
       if (!m.sound || m.sound.l < 0 || m.sound.r > w + 0.5) problems.push(`${tag}: Mute is missing or off the rail`);
       else if (!m.tap) problems.push(`${tag}: Mute cannot be tapped (something covers it)`);
       if (m.sw > w) problems.push(`${tag}: page scrolls sideways`);
@@ -78,14 +81,15 @@ for (const room of Object.keys(ROOMS)) {
       if (w < 1000) for (let i = 0; i < 8 && (await page.evaluate(() => document.querySelector('.cat-card').dataset.open)) !== 'today'; i++) { await page.keyboard.press('ArrowRight'); await page.waitForTimeout(250); }
       await page.waitForTimeout(700);
       const t = await page.evaluate(() => {
-        const no = document.querySelector('#cc-today .cc-front .cc-no'), big = document.querySelector('#cc-today .cb-big'), kick = document.querySelector('#cc-today .cb-room');
-        return {no: no && no.textContent, big: big && getComputedStyle(big).color, kick: kick && kick.textContent, open: document.querySelector('.cat-card').dataset.open};
+        const no = document.querySelector('#cc-today .cc-front .cc-no'), big = document.querySelector('#cc-today .cb-big'), met = document.querySelector('#cc-today .cb-met'), kick = document.querySelector('#cc-today .cb-room');
+        return {met: met && met.textContent, no: no && no.textContent, big: big && getComputedStyle(big).color, kick: kick && kick.textContent, open: document.querySelector('.cat-card').dataset.open};
       });
       if (t.open !== 'today') problems.push(`${tag}: could not open the Today card`);
       else {
         if (!t.no || /^No\. \d+ of \d+$/.test(t.no)) problems.push(`${tag}: Today card still reads "${t.no}"`);
         else if (t.no !== ROOMS[room]) problems.push(`${tag}: Today card names "${t.no}", expected "${ROOMS[room]}"`);
         if (!t.kick || !t.kick.includes(ROOMS[room])) problems.push(`${tag}: Today card does not name the room on its face ("${t.kick}")`);
+        if (!t.met || !/(\d+ of \d+ met|\d+ words? met)/.test(t.met)) problems.push(`${tag}: Today card has no met line ("${t.met}") (RA8)`);
         if (t.big === 'rgb(158, 46, 34)' || !t.big) problems.push(`${tag}: Today card is not in the room's colour (${t.big})`);
       }
       await page.keyboard.press('Escape'); await page.waitForTimeout(500);
@@ -93,12 +97,13 @@ for (const room of Object.keys(ROOMS)) {
       await page.evaluate(() => document.getElementById('bRooms').click());
       await page.waitForSelector('.rl-toc li', {timeout: T});
       await page.waitForFunction(() => [...document.querySelectorAll('.rl-toc li:not([data-room="hall"]) b')].every(b => /\d+ of \d+ met/.test(b.textContent)), null, {timeout: T}).catch(() => {});
-      const rows = await page.evaluate(() => [...document.querySelectorAll('.rl-toc li')].map(li => { const b = li.querySelector('b'), d = li.querySelector('.rl-dot'); const r = b.getBoundingClientRect(), pg = li.closest('.pg-in, .page, .bk-spread').getBoundingClientRect(); return {room: li.dataset.room, txt: b.textContent, f: d.style.getPropertyValue('--f'), bg: getComputedStyle(d).backgroundImage, clip: r.right > pg.right + 1 || b.scrollWidth > b.clientWidth + 1}; }));
+      const rows = await page.evaluate(() => [...document.querySelectorAll('.rl-toc li')].map(li => { const b = li.querySelector('b'), d = li.querySelector('.rl-dot'); const r = b.getBoundingClientRect(), pg = li.closest('.pg-in, .page, .bk-spread').getBoundingClientRect(); return {ring: getComputedStyle(d, '::after').display !== 'none', s: d.style.getPropertyValue('--s'), title: li.title, room: li.dataset.room, txt: b.textContent, f: d.style.getPropertyValue('--f'), bg: getComputedStyle(d).backgroundImage, clip: r.right > pg.right + 1 || b.scrollWidth > b.clientWidth + 1}; }));
       if (rows.length !== 7) problems.push(`${tag}: Room Ledger lists ${rows.length} rooms, expected 7`);
       for (const r of rows) {
         const ok = r.room === 'hall' ? /^\d+ words? met$/.test(r.txt) : /^\d+ of \d+ met$/.test(r.txt);
         if (!ok) problems.push(`${tag}: Room Ledger row "${r.room}" says "${r.txt}" instead of a met count`);
         if (!/conic-gradient/.test(r.bg)) problems.push(`${tag}: Room Ledger row "${r.room}" has no filling swatch`);
+        if (r.room !== 'hall' && (!r.ring || r.s === '' || !/sets complete/.test(r.title))) problems.push(`${tag}: Room Ledger row "${r.room}" has no sets ring or tooltip (RA10)`);
         if (r.clip) problems.push(`${tag}: Room Ledger row "${r.room}" count is clipped`);
         const m = /^(\d+) of (\d+) met$/.exec(r.txt);
         if (m && Math.abs(+r.f - Math.min(1, m[1] / m[2])) > 0.01) problems.push(`${tag}: Room Ledger row "${r.room}" swatch fill ${r.f} does not match "${r.txt}"`);
