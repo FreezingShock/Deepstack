@@ -52,11 +52,12 @@ for (const [w, h] of SIZES) {
     const ok = await page.evaluate(i => { const e = document.getElementById(i); if (!e) return false; e.click(); return true; }, id);
     if (!ok) continue;
     await page.waitForTimeout(1100);
-    const b = await page.evaluate(() => { const e = document.querySelector('.bk-spread'); if (!e) return null; const r = e.getBoundingClientRect(); return {l: r.left, t: r.top, r: r.right, b: r.bottom, sw: document.documentElement.scrollWidth, sb: [...document.querySelectorAll('.bk-spread .pg-in')].some(p => p.scrollHeight > p.clientHeight + 2 && getComputedStyle(p).overflowY === 'scroll')}; });
+    const b = await page.evaluate(() => { const e = document.querySelector('.bk-spread'); if (!e) return null; const r = e.getBoundingClientRect(); return {l: r.left, t: r.top, r: r.right, b: r.bottom, sw: document.documentElement.scrollWidth, cut: [...document.querySelectorAll('.bk-spread .pg-in')].some(p => { const pb = p.getBoundingClientRect().bottom; return getComputedStyle(p).overflowY === 'hidden' && [...p.children].some(k => getComputedStyle(k).position !== 'absolute' && k.getBoundingClientRect().height > 0 && k.getBoundingClientRect().bottom > pb + 2); })}; });
     if (!b) bad(`${id} did not open`);
     else {
       if (b.l < -1 || b.r > w + 1 || b.b > h + 1) bad(`${id} spills outside the window`);
       if (b.sw > w) bad(`${id} makes the page scroll sideways`);
+      if (b.cut) bad(`${id}: a page's writing runs past the page and is cut off`);
     }
     await page.screenshot({path: `${OUT}/${id}-${tag}.png`});
     await page.keyboard.press('Escape'); await page.waitForTimeout(700);

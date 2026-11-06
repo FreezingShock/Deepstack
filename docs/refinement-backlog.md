@@ -1746,11 +1746,12 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Brief:** Goal: `SETS` gains a `room` field (default `hall`), Sets book filters by room, Shelf tabs, Stats page. Files: `src/sets/sets.js`, `src/sets/ui.js`, shelf filters, stats pages. Done when: existing set progress untouched (`S.sets` shape unchanged), tests per room. **Conflicts:** TR1, Almanac, shelf threads.
 
 
-### RS1. Stand-alone phone layout for the Unlimited and Daily books
+### RS1. [x] Stand-alone phone layout for the Unlimited and Daily books (done in the same thread: #283)
+
 **Pitch:** The menu books fit at every size now, but on a 320 px phone they still show one page at a time with long lists clipped under "turn the page"; give the Shelf rarity list and the Daily list a phone-sized rhythm so nothing is cut.
 **Brief:** Goal: at 320 to 414 px wide, no handwritten line is clipped or overlapped by the page-turn hint on any menu book page; extend `scripts/responsive.mjs` to assert it. Files: `src/ui/pageFit.js`, `src/ui/bookpages.css`, `scripts/responsive.mjs`. **Conflicts:** menu book threads.
 
-### RS2. A fireplace that scales down instead of vanishing
+### RS2. [x] A fireplace that scales down instead of vanishing (done in the same thread: #283)
 **Pitch:** On short phones (360x640 and under) the fire now gives way to a plain wall; a tiny framed hearth would keep the room's heart.
 **Brief:** Goal: a minimal hearth (arch, glow, no mantel candles) at heights where `planFlow` returns null, still without overlapping Descend. Files: `src/ui/hearth.js` (`planFlow`, `layout`). **Conflicts:** FH2, FH3.
 

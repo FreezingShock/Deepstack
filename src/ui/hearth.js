@@ -40,7 +40,7 @@ export function planWide({W, H, taglineBottom, descendTop, tagBottom}) {
 }
 /** Narrow rooms: the fireplace hangs under the streak mantel's beam (home-local box) and is `h` tall. */
 export function planFlow({W, beam, h}) {
-  if (!beam || h < 56) return null;
+  if (!beam || h < 42) return null;
   const FW = Math.min(W * .66, h * 1.55, 340);
   const mantel = {x: W / 2 - FW * .57, y: beam.y, w: FW * 1.14, h: Math.max(9, beam.h)};
   return {mode: 'flow', mantel, SR: {x: W / 2 - FW / 2, y: mantel.y + mantel.h - 1, w: FW, h}};
@@ -128,7 +128,7 @@ function createHearth(home, sfx, mood) {
   const touched = [];
   // custom properties (--x) go through setProperty; undo puts back whatever was there (the home tier's own --hz-* values)
   const setStyle = (el, k, v) => { if (!el) return; const cp = k[0] === '-'; touched.push([el, k, cp ? el.style.getPropertyValue(k) : '']); if (cp) el.style.setProperty(k, v); else el.style[k] = v; };
-  const undo = () => { for (const [el, k, was] of touched.splice(0).reverse()) { if (k[0] === '-') { if (was) el.style.setProperty(k, was); else el.style.removeProperty(k); } else el.style[k] = ''; } home.classList.remove('hearth-wide', 'hearth-flow', 'hearth-narrow', 'hearth-compact', 'hearth-bare'); };
+  const undo = () => { for (const [el, k, was] of touched.splice(0).reverse()) { if (k[0] === '-') { if (was) el.style.setProperty(k, was); else el.style.removeProperty(k); } else el.style[k] = ''; } home.classList.remove('hearth-wide', 'hearth-flow', 'hearth-narrow', 'hearth-compact', 'hearth-bare', 'hearth-tiny'); };
 
   /* ----- layout ----- */
   function layout() {
@@ -192,6 +192,8 @@ function createHearth(home, sfx, mood) {
       if (h < 76) { home.classList.add('hearth-compact'); setStyle(home, '--hz-book', '24px'); setStyle(home, '--hz-g', '3px'); h = solve(); }
       // very short: the "Daily No. N" caption under Descend repeats the book titles, so it gives way too
       if (h < 76 && tag) { setStyle(tag, 'display', 'none'); h = solve(); }
+      // still too small for a fire worth drawing: shrink the title, caption and spines (see fit.css) so a small fireplace stays instead of going
+      if (h < 60) { const h0 = h; home.classList.add('hearth-tiny'); setStyle(home, '--hz-book', '22px'); h = solve(); if (h < h0) { home.classList.remove('hearth-tiny'); setStyle(home, '--hz-book', '24px'); h = solve(); } }
       plan = home.scrollHeight - home.clientHeight > 1 ? null : planFlow({W, beam: loc(beamEl), h}); // still overflowing after every squeeze: go without the fire
       if (!plan) { undo(); home.classList.add('hearth-bare'); layer.hidden = true; return; } // no room for a fire worth drawing: drop the empty mantel too so the room still fits
     }
