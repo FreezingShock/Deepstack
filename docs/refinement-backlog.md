@@ -2042,14 +2042,17 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Done:** PR pending (draft). Placement is open: see "What nate needs to do".
 
 ### ST2. Reach Settings from a phone's card catalogue
+**Status:** waiting on the placement pick. Option A or C already opens Settings from the phone's gear, so this is only needed if B is chosen.
 **Pitch:** The card catalogue and its Settings drawer exist only on desktop, so on a phone the Settings book is reachable only from the gear.
 **Brief:** Goal: a phone player can open Settings in one tap from home, in the way nate picks (see ST1 placement). Files: `src/ui/cabinet.js`, `src/ui/topbarRail.js`. Done when: a phone test taps the chosen entry and the book opens. **Touches:** settings, home. **Conflicts:** card catalogue and rail threads.
 
-### ST3. Motion changes take effect without a reload
+### [x] ST3. Motion changes take effect without a reload
+**Done:** `src/ui/settings.js` keeps a live flag (`motionNow()`, `onMotionChange`), refreshed on the Motion setting and on the OS preference. `src/app/util.js` exports `RM` as a live binding, and `feel.js` and `lanterns.js` read the flag per call. Tests in `test/motion-live.test.js`; smoke checks Calm applies at once. Not checked by eye on the candle, dust and book-opening effects.
 **Pitch:** Changing Motion only settles the candle, dust and book-opening effects on the next page load, so the setting feels broken until then.
 **Brief:** Files: `src/ui/motion.js`, `src/ui/candle.js`, `src/ui/atticDust.js`, `src/ui/bookOpenFx.js` (read `reducedMotion()` per use, or re-read on change). Done when: switching Calm in the settings book stops those effects at once, with a test that flips the setting. **Touches:** settings, book opening. **Conflicts:** book-opening and attic threads.
 
-### ST4. Hear a level while dragging Music or Effects
+### [x] ST4. Hear a level while dragging Music or Effects
+**Done:** letting go of Effects plays a page turn at its level, and Music plays a short soft tone through the Music bus. Silent when Sound is off (`Sfx.preview` in `src/feel.js`, wired in `src/ui/topbar.js`).
 **Pitch:** The Music and Effects sliders give no sound while you drag, so players guess the level.
 **Brief:** Files: `src/ui/settingsBook.js`, `src/feel.js`. Done when: letting go of the Effects slider plays one short page turn at that level, and the Music slider plays a short room tone at its level, with nothing when Sound is off. **Touches:** settings, sound. **Conflicts:** sound palette threads.
 ### SH1. [x] Shareable Daily result card (per room, Share button)
