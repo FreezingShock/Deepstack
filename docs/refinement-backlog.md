@@ -1605,7 +1605,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The first paint still ships a 392 KB (151 KB gzip) main chunk and 235 KB css, spread over hundreds of small modules; the biggest are hearth.js, world.js, thresholds.js and atticRoom.js.
 **Brief:** Goal: lazy-load the attic room drawing and other below-the-fold canvas code behind idle time, and split rarely used css, without changing any animation. Files: `src/world/atticRoom.js`, `src/world/world.js`, `src/ui/lazyScreens.js`. Done when: `?perf` first-load numbers drop and the smoke test passes. **Conflicts:** PF1, PF2, AT13.
 
-### K1. Shortcuts inside the books [x] (`/` search, `?` in books; chips and date jump still open)
+### K1. Shortcuts inside the books [x] (`/` search, `?` in books; O/G/R/F chips, [ ] months, T today, Home/End and PageUp/Down pages)
 **Pitch:** Home keys now open every book, but inside a book you can only turn pages and close it.
 **Brief:** Goal: in the Shelf, Stats and Daily books add keys for search focus (`/`), filter chips and jumping to a date. Files: `src/ui/bookMenus.js`, `src/ui/keysCore.js`. Done when: listed in the `?` page. **Conflicts:** V10, T-series.
 

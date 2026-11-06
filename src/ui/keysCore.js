@@ -18,9 +18,13 @@ export const SHORTCUT_GROUPS=[
  ['In books and the dark',[
   ['← →','Turn the pages of an open book, or move between books on a result'],
   ['/','Jump to the search line in the Shelf book'],
+  ['Home / End','First or last page of an open book'],
+  ['O / G / R / F','In the Shelf: change sort, bay, rarity, or show favourites (hold Alt while the search line has focus)'],
+  ['[ / ]','In the Daily calendar: previous or next month'],
+  ['T','In the Daily calendar: open today'],
   ['Space / Enter / Esc','Skip the descent animation'],
   ['Page Up / Page Down','Browse up and down the shelves'],
-  ['Home / End','Jump to the top / back to where you were'],
+  ['Home / End','Out on the shelves: jump to the top / back to where you were'],
   ['↑ ↓','Climb into the attic and back down the ladder'],
  ]],
  ['Anywhere',[

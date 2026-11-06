@@ -51,11 +51,24 @@ export function initKeys({doc=document}={}){
    return;
   }
   const wordScreen=!!stage&&!stage.hidden&&!!$('#hint');
-  /* inside an open menu book: / jumps to its search line, ? still opens the key page */
-  if(!isTyping(e.target)&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!panelsOpen()&&$('.bk-spread')){
+  /* inside an open menu book: / jumps to the search line, ? opens the key page, and chips and months answer to letters
+     (Alt + letter while the search line has focus, which it does when the Shelf opens) */
+  const inBook=!panelsOpen()&&!!$('.bk-spread');
+  const typingNow=isTyping(e.target);
+  if(inBook&&!e.ctrlKey&&!e.metaKey&&(typingNow?e.altKey&&e.target.id==='fq':!e.altKey)){
    const q=$('.bk-spread #fq');
-   if(e.key==='/'&&q){e.preventDefault();q.focus();q.select();return;}
-   if(e.key==='?'){e.preventDefault();openHelp();return;}
+   if(!typingNow&&e.key==='/'&&q){e.preventDefault();q.focus();q.select();return;}
+   if(!typingNow&&e.key==='?'){e.preventDefault();openHelp();return;}
+   const step=sel=>{const cs=[...doc.querySelectorAll('.bk-spread '+sel)].filter(c=>!c.disabled);if(!cs.length)return false;
+    const i=cs.findIndex(c=>c.getAttribute('aria-pressed')==='true');cs[(i+1)%cs.length].click();return true;};
+   const k=e.code&&/^Key[A-Z]$/.test(e.code)?e.code.slice(3).toLowerCase():(e.key||'').toLowerCase();let hit=false;
+   if(k==='o')hit=step('.fchip[data-s]');
+   else if(k==='g')hit=step('.fchip[data-g]');
+   else if(k==='r')hit=step('.fchip[data-t]');
+   else if(k==='f'){const b=$('.bk-spread #ffav');if(b&&!b.disabled){b.click();hit=true;}}
+   else if(!typingNow&&(k==='['||k===']')){const n=doc.querySelectorAll('.bk-spread .cal-nav');const b=n[k==='['?0:1];if(b&&!b.disabled){b.click();hit=true;}}
+   else if(!typingNow&&k==='t'){const b=$('.bk-spread .cal-d.today');if(b){b.click();hit=true;}}
+   if(hit){e.preventDefault();return;}
   }
   const home=!!$('#home')&&!$('#home').hidden&&!$('#home').closest('[hidden]');
   const a=actionFor(e,{typing:isTyping(e.target),modal:modalOpen(),wordScreen,home});
