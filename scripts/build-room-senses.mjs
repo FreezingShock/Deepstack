@@ -2,7 +2,7 @@
 // "Also means" shows them (the shape src/scorer/senses.js already reads: words.<w>.alt = [[pos, gloss]]).
 //   node scripts/build-room-senses.mjs --kaikki dump.jsonl        (run after scripts/build-room-words.mjs)
 // A room word's main definition is the room's sense, so the other senses (including the everyday one the main list would
-// have used) become alts. Existing alt/syn entries are kept; only new glosses are appended (up to 4 alts per word).
+// have used) become alts. Existing alt/syn entries are kept; only new glosses are appended (up to 3 alts per word).
 // Homophones are not added: they share no meaning, so the judge has nothing to score them against.
 import {createReadStream, readFileSync, writeFileSync} from 'node:fs';
 import {createInterface} from 'node:readline';
@@ -29,14 +29,14 @@ for await (const line of createInterface({input: createReadStream(kaikki)})) {
 let added = 0, touched = 0;
 for (const [w, def] of mainDef) {
   const have = sen.words[w]?.alt || [];
-  const fresh = pickAlts(entries.get(w) || [], def, 4, w).filter(a => !have.some(h => h[1] === a[1]));
-  const alt = [...have, ...fresh].slice(0, 4);
+  const fresh = pickAlts(entries.get(w) || [], def, 3, w).filter(a => !have.some(h => h[1] === a[1]));
+  const alt = [...have, ...fresh].slice(0, 3);
   if (fresh.length) { sen.words[w] = {...(sen.words[w] || {}), alt}; added += fresh.length; touched++; }
 }
 for (const [w, x] of Object.entries(extras)) {
   const alt = sen.words[w]?.alt || [];
   const fresh = x.alt.filter(a => !alt.some(h => h[1] === a[1]));
-  if (fresh.length) sen.words[w] = {...(sen.words[w] || {}), alt: [...fresh, ...alt].slice(0, 4)};
+  if (fresh.length) sen.words[w] = {...(sen.words[w] || {}), alt: [...fresh, ...alt].slice(0, 3)};
 }
 writeFileSync(out, JSON.stringify(sen));
 console.log(`room senses: ${added} new alternate senses on ${touched} words (${Object.keys(sen.words).length} words in ${out})`);

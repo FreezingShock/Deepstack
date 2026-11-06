@@ -57,7 +57,7 @@ test('room words carry their other senses in senses.json (the shape the judge re
     const alt = SEN[w]?.alt;
     if (!alt) continue;
     withAlt++;
-    assert.ok(alt.length <= 4, w);
+    assert.ok(alt.length <= 3, w);
     for (const [pos, g] of alt) { assert.match(pos, /^(noun|verb|adjective|adverb)$/); assert.ok(g.length >= 10, `${w}: ${g}`); }
   }
   assert.ok(withAlt / total > 0.4, `${withAlt}/${total} room words have other senses`);
