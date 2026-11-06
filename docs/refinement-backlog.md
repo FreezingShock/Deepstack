@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
 - Pick a one-tap way into the Ember Log on phones (LC7): A flame tag, B fire, C labelled flame tag (recommended), D streak line under Descend. Screenshots in screenshots/ember-log-onetap/.
 - Slow-network check (perf pass): on your phone, load the site once, then toggle airplane-mode-slow or a weak connection and reload; entering another room and the first answer should no longer stall. Tell me if any room still feels slow and which (numbers in screenshots/performance/results.md).
 - Phone check for the three audit fixes (RA2/RA5/RA7): the attic hatch should now sit between the wordmark and the buttons with Mute fully tappable (on very narrow phones the keyboard button hides and the wordmark shrinks a little; Keys is still in the card catalogue). Open the Rooms book (each row says "N of M met" and its swatch fills), and open the Today card in a few rooms (the footer names the room and the card takes its colour). Tell me if you would rather keep the keyboard button and lose the streak plate instead.
@@ -1531,17 +1532,29 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: shrink the file (see backlog item 80) and keep `loadWords()` output identical; the service worker (#243) then caches it. Done when: tests pass unchanged and gzip size drops. **Touches:** Performance, data. **Conflicts:** `scripts/build-words.mjs`.
 
 
-### PF5. Judge data off the main thread
+### PF5. [x] (deep perf PR: relations + senses live in `src/scorer/lexWorker.js`; 10.5 s of long tasks to ~1.5 s at 4x CPU, page heap 18.7 to ~8 MB) Judge data off the main thread
 **Pitch:** relations.json (3.9 MB) and senses.json (3.1 MB) are parsed on the page's thread when the judge warms; on a 4x slower phone that is a visible hitch. Parsing and the synonym lookups could live in the judge worker, and both files could drop entries no room or answer ever reaches.
 **Brief:** Goal: move relation/sense loading and lookups into `src/scorer/worker.js` (or shrink the files in `scripts/build-relations.mjs` / `build-senses.mjs`) with identical scores. Done when: `scripts/judge-eval.mjs` scores unchanged, long tasks during warm-up drop in `scripts/perf-budget.mjs`. **Touches:** Performance, scorer. **Conflicts:** PF3, scorer threads.
 
-### PF6. Lighter room walk on slow phones
+### PF6. [x] (deep perf PR: the fireplace keeps its painted bricks when only the tagline changes; worst walk frame ~950 to ~300 ms) Lighter room walk on slow phones
 **Pitch:** At 4x CPU the walk between rooms logs about 50 long frames (3.5 s of them); the fire, title and label glide is the busiest moment on home.
 **Brief:** Goal: profile the room walk (`#303`), cut per-frame work (cached gradients, fewer layers), keep the look. Done when: long-task total during a walk is halved in `scripts/perf-budget.mjs` and `room-switch.mjs` still passes. **Touches:** Performance, hearth. **Conflicts:** room threads.
 
-### PF7. Put phone traces in CI
+### PF7. [x] (deep perf PR: perf-budget and perf-memory save Chrome traces + JSON to the perf-traces CI artifact on failure) Put phone traces in CI
 **Pitch:** The budget guard only prints numbers; keeping a trace of the slowest room on failure would make the next regression a five-minute fix.
 **Brief:** Goal: on budget failure upload a Chrome trace and the JSON from `perf-budget.mjs` as a CI artifact. Done when: a deliberately blown budget produces the artifact. **Touches:** CI. **Conflicts:** none.
+
+### PF8. Shrink the judge's word data
+**Pitch:** relations.json and senses.json (7 MB) now load in a worker, but the worker still holds every entry in memory. Most entries are words no room, answer or definition ever reaches; nate wants little memory use.
+**Brief:** Goal: drop unreachable entries in `scripts/build-relations.mjs` / `build-senses.mjs` (keep any word a player could type that has synonyms), identical `judge-eval` scores. Done when: files and worker heap shrink, eval unchanged. **Touches:** data, scorer. **Conflicts:** scorer threads.
+
+### PF9. Boot word pool off the main thread
+**Pitch:** Building the word pool from words.json is still the longest task on a slow phone (~0.9 s at 4x CPU) right as home appears.
+**Brief:** Goal: precompute the pool's reject reasons at build time (or build it in a worker), same pool and same Daily words. Files: `src/core/wordPool.js`, `scripts/build-words.mjs`. Done when: `perf-memory` boot worst task halves, daily tests unchanged. **Touches:** performance. **Conflicts:** PF3.
+
+### PF10. Real-phone check of low power mode
+**Pitch:** Headless numbers can't show iOS Low Power Mode (30 fps cap) or a real GPU. A quick on-device pass would confirm the quality step-down and the reduced-motion idle rate feel right.
+**Brief:** Goal: with `?perf`, record home, a room walk and a run on a phone in Low Power Mode and with Reduce Motion; tune `src/ui/quality.js` thresholds if it steps down too eagerly. Done when: numbers in screenshots/performance/. **Touches:** quality. **Conflicts:** none.
 
 ### UB4. Mark the rank bands on the Lexicon pen line
 **Pitch:** The pen line under the rank shows direction but not what a rise means; faint ticks where Bookworm, Wordsmith and so on begin would let a player see the next rank approaching.

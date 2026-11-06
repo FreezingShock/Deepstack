@@ -10,9 +10,11 @@ export function bookDims(b,rh){const hs=((b.w||'a').charCodeAt(0)*13+(b.w||'a').
 export function shelfDims(b,rh){const d=bookDims(b,rh),f=fitSpine(b.w||'',{baseH:d.h,baseW:d.w,maxH:Math.round(rh-22),top:b.tier>=5?16:0});return{w:f.w,h:f.h,fit:{fs:f.fs,lh:f.lh,top:f.top}};}
 export const seedOf=b=>hashStr(b.w+(b.t||''))&0xffff;
 export const urlCache=new Map();
-export function spineURL(b,rh=110){const k=b.w+'|'+b.tier+'|'+rh+'|'+Quality.tier();if(urlCache.has(k))return urlCache.get(k);
+// Each entry is a PNG data URL (tens of KB). Kept most-recent-first and capped: a long session used to keep every spine it ever drew.
+export const URL_CAP=240;
+export function spineURL(b,rh=110){const k=b.w+'|'+b.tier+'|'+rh+'|'+Quality.tier();if(urlCache.has(k)){const v=urlCache.get(k);urlCache.delete(k);urlCache.set(k,v);return v;}
  const d=shelfDims(b,rh),pw=d.w+16,ph=d.h+30,cv=document.createElement('canvas');cv.width=pw*2;cv.height=ph*2;const c=cv.getContext('2d');c.scale(2,2);c.translate(pw/2,d.h+8);
  bookArt(c,{w:d.w,h:d.h,fit:d.fit,tier:b.tier,seed:seedOf(b),word:b.w,ribbon:b.tier>=1||seedOf(b)%3===0?RIBBONS[seedOf(b)%RIBBONS.length]:null},0);
- const r={url:cv.toDataURL(),w:pw,h:ph};urlCache.set(k,r);return r;}
+ const r={url:cv.toDataURL(),w:pw,h:ph};urlCache.set(k,r);if(urlCache.size>URL_CAP)urlCache.delete(urlCache.keys().next().value);return r;}
 export const spineImg=(b,i,src,rh=110,scale=1)=>{const s=spineURL(b,rh);return `<img src="${s.url}" width="${s.w*scale}" height="${s.h*scale}" alt="${esc(b.w)}, ${TIERS[b.tier].name}" data-i="${i}" data-src="${src}" data-tip="${esc(b.w)} · ${TIERS[b.tier].name} · ${b.score}">`;};
 if(document.fonts&&document.fonts.load)Promise.all(['16px "IM Fell English"','16px Newsreader','24px "Fuzzy Bubbles"','600 14px Cinzel','16px "Special Elite"'].map(f=>document.fonts.load(f))).then(()=>{urlCache.clear();resetSpineMeasure();}).catch(()=>{});

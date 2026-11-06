@@ -128,7 +128,7 @@ function createHearth(home, sfx, mood) {
   const lights = roomLight(), glowEl = lights[1];
   const setVar = (k, v) => { for (const el of lights) el.style.setProperty(k, v); };
   let G = null, W = 0, H = 0, DPR = 1, cLit = null, cLogsB = null, cLogsF = null, cF = null, gF = null, BB = null, FB = null;
-  let raf = 0, dead = false, seed = 7;
+  let raf = 0, dead = false, seed = 7, paintKey = '', hlK = '';
   const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296, rr = (a, b) => a + (b - a) * rnd();
   const touched = [];
   // custom properties (--x) go through setProperty; undo puts back whatever was there (the home tier's own --hz-* values)
@@ -206,19 +206,30 @@ function createHearth(home, sfx, mood) {
     layer.hidden = false;
     G = {...plan, ...deriveHearth(plan.SR), wide, TLB: loc(tagline).b, hr};
     DPR = Math.min(devicePixelRatio || 1, Quality.params().dprMax || 2);
+    // Same geometry as the last paint (a room walk types the tagline letter by letter and the observers fire on every
+    // letter): the bricks, logs and fire are already right, so keep them and the fire keeps burning without a hitch.
+    // Repainting here was ~1 s of main thread per walk at 4x CPU (PF6).
+    const key = JSON.stringify([W, H, DPR, {...plan, lift: 0, shelfW: 0}, G.TLB, Quality.params().name]); // lift/shelfW only move DOM, never paint
+    if (key === paintKey && cLit) { paintLight(); kick(); return; }
+    paintKey = key;
     for (const c of [cStatic, cAnim]) { c.width = Math.ceil(W * DPR); c.height = Math.ceil(H * DPR); c.style.width = W + 'px'; c.style.height = H + 'px'; }
-    const off = () => { const c = doc.createElement('canvas'); c.width = Math.ceil(W * DPR); c.height = Math.ceil(H * DPR); const g = c.getContext('2d'); g.scale(DPR, DPR); return [c, g]; };
-    let gS = cStatic.getContext('2d'); gS.setTransform(DPR, 0, 0, DPR, 0, 0);
-    let gL; [cLit, gL] = off();
-    seed = 7; drawStatic(gS, false); seed = 7; drawStatic(gL, true);
-    let gB, gFr; [cLogsB, gB] = off(); [cLogsF, gFr] = off(); drawLogs(gB, gFr);
-    const fw = Math.ceil(G.OP.w / 2) + 4, fh = Math.ceil((G.OP.h + G.OP.arch) / 2) + 4;
-    cF = doc.createElement('canvas'); cF.width = fw * DPR; cF.height = fh * DPR; gF = cF.getContext('2d'); gF.scale(DPR, DPR); G.fw = fw; G.fh = fh;
     const {OP, HEARTH, mantel} = G;
     const x0 = Math.max(0, Math.floor(Math.min(mantel.x, HEARTH.x) - 4)), x1 = Math.min(W, Math.ceil(Math.max(mantel.x + mantel.w, HEARTH.x + HEARTH.w) + 4));
     const y0 = Math.max(0, Math.floor(wide ? G.TLB : mantel.y - 40)), y1 = Math.min(H, Math.ceil(HEARTH.y + HEARTH.h + 2));
     BB = {x: x0, y: y0, w: x1 - x0, h: y1 - y0};
     FB = {x: Math.floor(OP.x), y: Math.floor(OP.y - OP.arch), w: Math.ceil(OP.w) + 1, h: Math.ceil(OP.h + OP.arch) + 1};
+    // Offscreen layers only as big as the box each frame copies from (the lit wall: BB, the logs: FB), not the whole room:
+    // three full-room bitmaps were ~50 MB at 1280x800 on a 2x screen. The origin sits on a device pixel, so every brick
+    // rasterises exactly as it did on the full-size canvas.
+    const off = box => { const c = doc.createElement('canvas'), ox = Math.floor(box.x * DPR), oy = Math.floor(box.y * DPR);
+      c.width = Math.max(1, Math.ceil((box.x + box.w) * DPR) - ox); c.height = Math.max(1, Math.ceil((box.y + box.h) * DPR) - oy); c.ox = ox; c.oy = oy;
+      const g = c.getContext('2d'); g.setTransform(DPR, 0, 0, DPR, -ox, -oy); return [c, g]; };
+    let gS = cStatic.getContext('2d'); gS.setTransform(DPR, 0, 0, DPR, 0, 0);
+    let gL; [cLit, gL] = off(BB);
+    seed = 7; drawStatic(gS, false); seed = 7; drawStatic(gL, true);
+    let gB, gFr; [cLogsB, gB] = off(FB); [cLogsF, gFr] = off(FB); drawLogs(gB, gFr);
+    const fw = Math.ceil(G.OP.w / 2) + 4, fh = Math.ceil((G.OP.h + G.OP.arch) / 2) + 4;
+    cF = doc.createElement('canvas'); cF.width = fw * DPR; cF.height = fh * DPR; gF = cF.getContext('2d'); gF.scale(DPR, DPR); G.fw = fw; G.fh = fh;
     buildFire();
     paintLight();
     kick();
@@ -493,9 +504,9 @@ function createHearth(home, sfx, mood) {
     I = rm ? 1 + flare * .4 : fireIntensity(t, hover, flare);
     const g = cAnim.getContext('2d'); g.setTransform(DPR, 0, 0, DPR, 0, 0); g.clearRect(0, 0, W, H);
     g.globalAlpha = clamp(.5 + .42 * (I - .85) / .5, .3, 1);
-    g.drawImage(cLit, BB.x * DPR, BB.y * DPR, BB.w * DPR, BB.h * DPR, BB.x, BB.y, BB.w, BB.h);
+    g.drawImage(cLit, BB.x * DPR - cLit.ox, BB.y * DPR - cLit.oy, BB.w * DPR, BB.h * DPR, BB.x, BB.y, BB.w, BB.h);
     g.globalAlpha = 1;
-    g.drawImage(cLogsB, FB.x * DPR, FB.y * DPR, FB.w * DPR, FB.h * DPR, FB.x, FB.y, FB.w, FB.h);
+    g.drawImage(cLogsB, FB.x * DPR - cLogsB.ox, FB.y * DPR - cLogsB.oy, FB.w * DPR, FB.h * DPR, FB.x, FB.y, FB.w, FB.h);
     g.globalCompositeOperation = 'lighter';
     for (const L of LOGS) for (let k = 0; k <= 4; k++) { const u = k / 4, x = mix(L.x0, L.x1, u), y = mix(L.y0, L.y1, u) + L.r * .6; g.globalAlpha = clamp((.18 + .14 * S(t * 3 + k * 1.7 + L.x0) / 1.75) * I, 0, 1); g.drawImage(EMBER, x - L.r * 2.4, y - L.r * 1.6, L.r * 4.8, L.r * 3.2); }
     g.globalAlpha = clamp(.55 * I * (.7 + .3 * MH), 0, 1); g.drawImage(EMBER, FIRE.cx - FIRE.w * .7, FIRE.base - OP.h * .32, FIRE.w * 1.4, OP.h * (.3 + .32 * MH));
@@ -510,7 +521,7 @@ function createHearth(home, sfx, mood) {
     g.save(); archPath(g, OP); g.clip(); g.globalCompositeOperation = 'lighter';
     g.drawImage(cF, OP.x - 4, OP.y - OP.arch - 4, G.fw * 2, G.fh * 2);
     g.restore(); g.globalCompositeOperation = 'source-over';
-    g.drawImage(cLogsF, FB.x * DPR, FB.y * DPR, FB.w * DPR, FB.h * DPR, FB.x, FB.y, FB.w, FB.h);
+    g.drawImage(cLogsF, FB.x * DPR - cLogsF.ox, FB.y * DPR - cLogsF.oy, FB.w * DPR, FB.h * DPR, FB.x, FB.y, FB.w, FB.h);
     g.globalCompositeOperation = 'lighter';
     { const L = LOGS[2]; for (let k = 1; k < 6; k++) { const x = mix(L.x0, L.x1, k / 6), y = L.y0 - L.r * .7; g.globalAlpha = clamp((.22 + .16 * S(t * 2.6 + k * 2.3) / 1.75) * I, 0, 1); g.drawImage(EMBER, x - L.r * 2, y - L.r * 1.1, L.r * 4, L.r * 2.2); } }
     g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
@@ -537,7 +548,7 @@ function createHearth(home, sfx, mood) {
       g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
     }
     void mantel;
-    if (glowEl) glowEl.style.setProperty('--hl-k', clamp((.7 + .08 * MH) + (I - 1) * 1.6, .5, 1).toFixed(3));
+    if (glowEl) { const k = clamp((.7 + .08 * MH) + (I - 1) * 1.6, .5, 1).toFixed(2); if (k !== hlK) { hlK = k; glowEl.style.setProperty('--hl-k', k); } } // a full-screen blend layer: restyle only when the step shows
     try { Quality.sample(now); } catch (e) {}
     if (!rm || flare > 0) raf = requestAnimationFrame(frame);
   }

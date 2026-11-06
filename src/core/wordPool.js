@@ -71,9 +71,11 @@ export function buildPool(data) {
       out.push({id: bi, w: b[0], pos: b[1], d: b[2], def: b[3], hint: b[4], concepts: b[5], opp: b[6], curated: true});
       seen.add(e.w); continue;
     }
-    if (rejectReason(e)) {
+    const why = rejectReason(e);
+    if (why) {
       // Blocked words stay in the seeded Daily's random stream (see pickRampWord) so dropping one never reshuffles a day.
-      if (rejectReason(e, true) === null) ghosts.push({id: hashStr('w:' + e.w), w: e.w, d: effectiveDifficulty(e.d, e.t)});
+      // (Only 'blocked' can turn null when the blocklist is ignored: every later check is the same either way.)
+      if (why === 'blocked' && rejectReason(e, true) === null) ghosts.push({id: hashStr('w:' + e.w), w: e.w, d: effectiveDifficulty(e.d, e.t)});
       continue;
     }
     const w = {id: hashStr('w:' + e.w), w: e.w, pos: e.pos, d: effectiveDifficulty(e.d, e.t), def: clean(e.def), hint: e.hint || null, concepts: [], opp: '', curated: false};
