@@ -200,6 +200,11 @@ await step('settings: sliders save and reset asks first', async () => {
   await sp.locator('#sMus').evaluate(el => { el.value = 40; el.dispatchEvent(new Event('input')); });
   const music = await sp.evaluate(() => JSON.parse(localStorage.getItem('deepstack.settings.v1')).music);
   if (music !== 0.4) fail(`settings: Music slider saved ${music}, expected 0.4`);
+  // Motion applies at once, with no reload (ST3); letting go of a slider samples its bus without an error (ST4)
+  await sp.evaluate(() => document.querySelector('[data-motion-choice="reduce"]').click());
+  const motion = await sp.evaluate(() => document.documentElement.dataset.motion + '/' + JSON.parse(localStorage.getItem('deepstack.settings.v1')).motion);
+  if (motion !== 'reduce/reduce') fail(`settings: Calm did not apply at once (${motion})`);
+  await sp.evaluate(() => document.getElementById('sMus').dispatchEvent(new Event('change')));
   await sp.evaluate(() => document.getElementById('sReset').click());
   await sp.evaluate(() => document.getElementById('scKeep').click());
   if (!(await sp.evaluate(() => localStorage.getItem('deepstack.v1')))) fail('settings: Keep Library erased the save');

@@ -42,6 +42,25 @@ export function reducedMotion(s=loadSettings(),mq=()=>globalThis.matchMedia&&mat
  return systemReduces(mq);
 }
 
+/* Live motion flag (ST3). Modules that used to read reducedMotion() once at load now read motionNow(); the flag is
+   refreshed when the Motion setting changes or the OS preference flips, so a change lands without a reload. */
+const motionListeners=new Set();
+let liveRM=null;
+/** Recompute the live flag from the settings (or the given ones, for tests) and tell every listener. */
+export function refreshMotion(s=loadSettings(),mq){
+ liveRM=mq===undefined?reducedMotion(s):reducedMotion(s,mq);
+ motionListeners.forEach(fn=>{try{fn(liveRM);}catch(e){}});
+ return liveRM;
+}
+/** Current reduced-motion flag: cheap to read per frame, always in step with the settings. */
+export function motionNow(){return liveRM===null?refreshMotion():liveRM;}
+/** Call fn(reduced) whenever the flag changes. Returns an unsubscribe. */
+export function onMotionChange(fn){motionListeners.add(fn);return()=>motionListeners.delete(fn);}
+try{
+ const mq=globalThis.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)');
+ if(mq&&mq.addEventListener)mq.addEventListener('change',()=>refreshMotion());
+}catch(e){}
+
 /** Mirror settings onto <html> data attributes; CSS does the rest. */
 export function applySettings(s,doc=globalThis.document){
  if(!doc)return;

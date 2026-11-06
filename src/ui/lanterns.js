@@ -3,18 +3,17 @@ import {PALETTE} from '../theme/colors.js';
    One damped-pendulum state per lantern, stepped inside the existing canvas frame (no extra rAF, no DOM,
    no layout reads). The cursor pushes a lantern as it nears or sweeps past, and the glow warms with
    proximity and swing. prefers-reduced-motion / the in-game setting: lanterns hang still. */
-import {reducedMotion} from './settings.js';
+import {motionNow} from './settings.js';
 import {drawBolt, drawWallShadow} from './mounts.js';
 import {addLight} from './lighting.js';
 
-const RM = reducedMotion();
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const ptr = {x: -1e4, y: -1e4, vx: 0, vy: 0, t: 0, on: false, step: 0};
 const states = new Map();
 let bound = false;
 
 function bind() {
-  if (bound || RM || typeof window === 'undefined') return;
+  if (bound || typeof window === 'undefined') return; // bind once; motion is checked per frame
   bound = true;
   addEventListener('pointermove', e => {
     const t = performance.now(), dt = Math.max(8, t - ptr.t);
@@ -43,7 +42,7 @@ export function drawLantern(ctx, o) {
   const dt = clamp((now - s.last) / 1000, 0, .05); s.last = now;
   const sway = s.ph, fk = .75 + .25 * Math.sin(now / 95 + sway) + .08 * Math.sin(now / 37 + sway);
   let hot = 0;
-  if (!RM) {
+  if (!motionNow()) {
     // world position of the lantern body (screen coords) for the cursor test
     const cx = ax - Math.sin(s.th) * d, cy = ay + Math.cos(s.th) * d;
     const dx = cx - ptr.x, dy = cy - ptr.y, dist = Math.hypot(dx, dy);
@@ -61,7 +60,7 @@ export function drawLantern(ctx, o) {
     s.hot += (f - s.hot) * Math.min(1, dt * 6);
     hot = clamp(s.hot + Math.min(.35, Math.abs(s.w) * .12), 0, 1);
   }
-  const th = RM ? 0 : s.th, lean = RM ? 0 : clamp(-s.w * 1.4, -3, 3);
+  const th = motionNow() ? 0 : s.th, lean = motionNow() ? 0 : clamp(-s.w * 1.4, -3, 3);
   const heat = 1 + .5 * hot;
   ctx.save();
   ctx.translate(ax, ay);
@@ -72,7 +71,7 @@ export function drawLantern(ctx, o) {
   drawBolt(ctx, -4.6, 0, 1.2); drawBolt(ctx, 4.6, 0, 1.2);
   ctx.rotate(th);
   // chain: bows against the swing so it reads as flexible, links alternate face-on / edge-on
-  const bow = RM ? 0 : clamp(s.w * 4, -7, 7), n = Math.max(4, Math.round(len / 6));
+  const bow = motionNow() ? 0 : clamp(s.w * 4, -7, 7), n = Math.max(4, Math.round(len / 6));
   const px = t => 2 * (1 - t) * t * bow, py = t => 3 + (len - 3) * t;
   ctx.lineCap = 'round';
   ctx.strokeStyle = PALETTE.oak17; ctx.lineWidth = 2.6; ctx.beginPath();

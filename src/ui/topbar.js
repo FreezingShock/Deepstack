@@ -6,7 +6,7 @@ import './panelBook.css';
 import './settingsBook.css';
 import {Quality,PREFS} from './quality.js';
 import {openPanelBook} from './panelBook.js';
-import {loadSettings,saveSettings,applySettings,reducedMotion,systemReduces} from './settings.js';
+import {loadSettings,saveSettings,applySettings,reducedMotion,systemReduces,refreshMotion} from './settings.js';
 import {settingsPages} from './settingsBook.js';
 import {eraseProgress} from './progressReset.js';
 
@@ -32,7 +32,7 @@ export function initTopbar({Sfx,doc=document}={}){
  applySettings(st,doc);
  Sfx&&Sfx.volume(st.volume);
  Sfx&&Sfx.levels(st.music,st.effects);
- const set=patch=>{st={...st,...patch};saveSettings(st);applySettings(st,doc);if('volume' in patch&&Sfx)Sfx.volume(st.volume);if(('music' in patch||'effects' in patch)&&Sfx)Sfx.levels(st.music,st.effects);};
+ const set=patch=>{st={...st,...patch};saveSettings(st);applySettings(st,doc);if('volume' in patch&&Sfx)Sfx.volume(st.volume);if(('music' in patch||'effects' in patch)&&Sfx)Sfx.levels(st.music,st.effects);if('motion' in patch)refreshMotion(st);};
 
  addEventListener('deepstack:set-volume',e=>{set({volume:e.detail});dispatchEvent(new CustomEvent('deepstack:volume',{detail:e.detail}));});
  /* ---- the plaque and buttons ---- */
@@ -101,10 +101,11 @@ export function initTopbar({Sfx,doc=document}={}){
   root.querySelectorAll('[data-motion-choice]').forEach(b=>b.onclick=()=>{set({motion:b.dataset.motionChoice});mark('[data-motion-choice]','motionChoice',st.motion);});
   root.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{Quality.setPref(b.dataset.q);mark('[data-q]','q',Quality.pref());});
   root.querySelectorAll('[data-text]').forEach(b=>b.onclick=()=>{set({text:b.dataset.text});mark('[data-text]','text',st.text);});
-  const slide=(id,apply)=>{const el=$(id);if(!el)return;el.oninput=()=>{const n=+el.value;$('#o'+id.slice(2)).textContent=n+'%';el.setAttribute('aria-valuetext',n+' percent');apply(n/100);};};
+  /* kind: the bus to sample when the slider is let go (ST4), so the level can be heard before the next sound */
+  const slide=(id,apply,kind)=>{const el=$(id);if(!el)return;el.oninput=()=>{const n=+el.value;$('#o'+id.slice(2)).textContent=n+'%';el.setAttribute('aria-valuetext',n+' percent');apply(n/100);};if(kind)el.onchange=()=>{Sfx&&Sfx.preview&&Sfx.preview(kind);};};
   slide('#sVol',v=>{dispatchEvent(new CustomEvent('deepstack:volume',{detail:v}));set({volume:v});});
-  slide('#sMus',v=>set({music:v}));
-  slide('#sFx',v=>set({effects:v}));
+  slide('#sMus',v=>set({music:v}),'music');
+  slide('#sFx',v=>set({effects:v}),'effects');
   /* Progress: the reset asks first. Keep is the default focus; Erase clears the save and reloads into an empty library. */
   const confirm=$('#sConfirm'),reset=$('#sReset');
   const row=$('#sDangerRow');
