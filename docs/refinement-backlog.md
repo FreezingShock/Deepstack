@@ -1581,7 +1581,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Sound is off by default and the open sound items are many small threads (door stings, hatch creak, ladder rungs, page turns, fire, cover thuds). One pass would give them a single set of recipes so nothing sounds like a different game.
 **Brief:** Goal: a sound palette doc (materials: paper, leather, wood, stone, brass) and every open sound item built from it. Files: `src/sound/`. Done when: every UI motion has a sound mapped, mute and quality settings respected. **Conflicts:** FH2, AE5, AT3, D1a, D1b, 103, BS1, R6, N9b.
 
-### V10. Keyboard and screen reader pass
+### V10. Keyboard and screen reader pass (partly done: shortcuts shipped; contrast and focus-ring audit open, see K2)
 **Pitch:** The world is rich but tiers are told mainly by colour, pen text sits on cream at low contrast, and focus rings are not checked across the books and the attic.
 **Brief:** Goal: audit with the a11y test plus a manual keyboard walk: visible focus ring everywhere, tier name always in text, contrast at 4.5:1 for handwritten body text on paper. Files: styles, `test/a11y.test.js` additions. Done when: report of findings fixed. **Conflicts:** T-series, any css thread.
 
@@ -1600,3 +1600,11 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### V14. A judge fairness report
 **Pitch:** The judge is the heart of the game and nate cannot see its mistakes. A script that runs 300 wrong, vague and right answers across the Daily pool and writes a table of surprises (wrong word scores 40+, good answer under 20).
 **Brief:** Files: extend `scripts/judge-bench.mjs`, output to `notes/judge-report.md`. Done when: runs offline in under a minute, top 20 surprises listed with words. **Conflicts:** J3, G3.
+
+### K1. Shortcuts inside the books
+**Pitch:** Home keys now open every book, but inside a book you can only turn pages and close it.
+**Brief:** Goal: in the Shelf, Stats and Daily books add keys for search focus (`/`), filter chips and jumping to a date. Files: `src/ui/bookMenus.js`, `src/ui/keysCore.js`. Done when: listed in the `?` page. **Conflicts:** V10, T-series.
+
+### K2. Contrast and focus-ring audit
+**Pitch:** Finish the rest of V10: handwriting-on-paper contrast at 4.5:1 and focus rings across the attic and books.
+**Brief:** Goal: a manual keyboard walk plus `test/a11y.test.js` additions. Files: `src/ui/a11y.css`. **Conflicts:** any css thread.
