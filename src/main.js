@@ -122,6 +122,8 @@ import './ui/alsoMeans.css';
 import './ui/textScale.css';
 import './ui/cabinet.css';
 import './ui/auditFixes.css';
+import './ui/shelfGroups.css';
+import './ui/phonePolish.css';
 import './ui/dailyBind.css';
 import {deferAfterPaint} from './core/boot.js';
 import {$,$$,RM,clamp} from './app/util.js';

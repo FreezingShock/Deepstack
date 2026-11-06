@@ -563,7 +563,7 @@ function createHearth(home, sfx, mood) {
   const onDown = e => { if (busy(e)) return; const [x, y] = toLocal(e); if (inFire(x, y)) stoke(); };
   addEventListener('pointermove', onMove, {passive: true}); doc.addEventListener('pointerleave', onLeave); addEventListener('pointerdown', onDown, {passive: true});
   let pend = 0; const relayout = () => { if (!pend) pend = requestAnimationFrame(() => { pend = 0; layout(); }); };
-  const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(relayout) : null; if (ro) ro.observe(home);
+  const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(relayout) : null; if (ro) { ro.observe(home); for (const part of home.querySelectorAll('.hz-title, .hz-plaque')) ro.observe(part); } // a room's caption lines change these without resizing #home, and the fit must be solved again (phone rooms lost their bottom spines)
   addEventListener('resize', relayout);
   const mo = new MutationObserver(() => { syncLit(); if (!layer.hidden && !G && !home.hidden) relayout(); kick(); });
   mo.observe(home, {attributes: true, attributeFilter: ['hidden', 'class']});

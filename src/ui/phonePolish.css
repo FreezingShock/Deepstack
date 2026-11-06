@@ -1,0 +1,12 @@
+/* Phone polish (round-2 audit RA1/RA3 and nate's phone feedback). Appended last; touches phones only. */
+@media(max-width:700px){
+ /* the depth plaque hangs under the top bar: the rail's centring translate had dragged it up over the buttons */
+ #depthHud{transform:translateX(-50%)!important}
+}
+@media(max-width:640px){
+ /* the answer card: the placeholder fits on one line beside the quill instead of wrapping into the ruled lines */
+ .slip textarea::placeholder{font-size:calc(17px*var(--ts));line-height:calc(24px*var(--ts));white-space:nowrap;text-overflow:ellipsis}
+ /* the candle stands on a small oak ledge bracketed to the card's edge instead of floating beside it */
+ #stage.center .slipwrap::after{content:"";position:absolute;left:calc(100% - 12px);bottom:-5px;width:58px;height:9px;border-radius:2px 2px 3px 3px;pointer-events:none;z-index:0;
+  background:linear-gradient(#6b4a2a,#3b2814 70%,#26190c);box-shadow:0 5px 8px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,226,170,.28)}
+}
