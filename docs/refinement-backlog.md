@@ -1593,7 +1593,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The shelf caps at 300 books but every test seeds a handful. Shelf, attic and Sets with a full save are the place a polished game can quietly stutter.
 **Brief:** Goal: a seeded 300-book save in the snapshot and perf scripts, fix whatever is slow (shelf render, attic piles, search). Files: `scripts/perf.mjs`, `test/`. Done when: numbers in the PR, no jank over 50 ms. **Conflicts:** PF1, AT13.
 
-### V13. Judge shows an unrelated sense of a related word
+### V13. [x] (PR #262, narrow fix: a synonym that is part of another listed synonym is hidden; part-of-speech formatting untouched) Judge shows an unrelated sense of a related word
 **Pitch:** For "cabaret" the card's "Also means" lists "club: a heavy object, often a stick..." because nightclub contains "club". That is a bad look on a screen that is supposed to teach.
 **Brief:** Goal: only show related-word senses that share a relation with the target (synonym or hypernym link), cap at two, and give every line the same part-of-speech format ("noun" tag on all or none). Files: `src/scorer/`, card block. Done when: test with cabaret, bank, bark. **Conflicts:** J2, 91, 92, 93.
 
