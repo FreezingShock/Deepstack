@@ -26,6 +26,7 @@ import {goRoom} from './app/roomGo.js';
 import './ui/results.js';
 import './ui/results.css';
 import './ui/finalPage.css';
+import './ui/dailyShare.css';
 import './ui/card.css';
 import './ui/bookCard.css';
 import './ui/cardFit.js';
