@@ -1589,7 +1589,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** `dist/assets` holds two identical-size copies of transformers.web (579 KB each) next to a 392 KB main chunk and 235 KB css. The first load is heavier than it needs to be, and the Vite chunk-size warning is on every build.
 **Brief:** Goal: share one chunk between the worker and the main thread or load the judge only when a run starts; add manualChunks. Files: `vite.config.js`, `src/scorer/*`. Done when: build warning gone or silenced on purpose, `?perf` first-load numbers before and after. **Conflicts:** PF1, PF2, 39.
 
-### V12. Three hundred books
+### V12. [x] (PR pending) Three hundred books
 **Pitch:** The shelf caps at 300 books but every test seeds a handful. Shelf, attic and Sets with a full save are the place a polished game can quietly stutter.
 **Brief:** Goal: a seeded 300-book save in the snapshot and perf scripts, fix whatever is slow (shelf render, attic piles, search). Files: `scripts/perf.mjs`, `test/`. Done when: numbers in the PR, no jank over 50 ms. **Conflicts:** PF1, AT13.
 
@@ -1612,3 +1612,11 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### K2. Contrast and focus-ring audit
 **Pitch:** Finish the rest of V10: handwriting-on-paper contrast at 4.5:1 and focus rings across the attic and books.
 **Brief:** Goal: a manual keyboard walk plus `test/a11y.test.js` additions. Files: `src/ui/a11y.css`. **Conflicts:** any css thread.
+
+### V17. Pre-render the first attic rows before the climb
+**Pitch:** With 300 books the first climb now costs about 50 ms instead of 190 ms, but only because sprites warm in idle; a player who climbs in the first three seconds still pays it.
+**Brief:** Goal: build the hall and first rows from the save while the home book is closing, or paint the first frame with plain slabs and swap sprites in. Files: `src/world/atticRoom.js`, `src/ui/atticHome.js`. Done when: `node scripts/stress300.mjs` shows no task over 50 ms with the warm-up wait set to 0. **Conflicts:** AT13, PF1.
+
+### V18. Stress test on a phone-sized GPU profile
+**Pitch:** The 300-book script runs in software-rendered headless Chromium, so it finds stalls but not GPU limits.
+**Brief:** Goal: run `scripts/stress300.mjs` with CPU 4x throttle and 375x667 and record the numbers beside `perf.mjs`. Files: `scripts/stress300.mjs`. Done when: a `--throttle` flag and a table in the PR. **Conflicts:** PF1.

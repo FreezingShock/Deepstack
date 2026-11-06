@@ -340,6 +340,11 @@ export const World=(()=>{
  return{
   setShelf(b){shelf=b;},hits:()=>hits,
   /* the attic: a room above the top shelves. setAttic(true) climbs into it from home. */
+  /* Idle-time warm-up so the first climb does not stall: step 0 builds the cached hall, step 1 draws the first rows of piles
+     onto a throwaway canvas, which fills the spine and dust sprite caches. Safe to call any time; no-op when the attic is empty. */
+  prewarmAttic(step){if(!atticItems.length||atticT>0||typeof document==='undefined')return;
+   const A=Math.round(H-40),k=W+'x'+A+'x'+DPR;if(!room||roomKey!==k){room=buildHall(W,A,DPR);roomKey=k;}
+   if(step>0){const cv=document.createElement('canvas');cv.width=cv.height=2;drawAttic(cv.getContext('2d'),room,{W,A,ry:0,items:atticItems,TIERS,vt:0,RM:true,lit:1,H,scroll:0});}},
   setAtticItems(l){atticItems=l||[];atticSGoal=clamp(atticSGoal,0,Math.max(0,rowsN()-1));},
   /* how many rows the attic has, and which one you are at */
   get atticRows(){return rowsN();},

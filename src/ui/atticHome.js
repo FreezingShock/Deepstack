@@ -4,9 +4,10 @@
    the whole session; bindAtticHome only refreshes what they say. */
 import {World} from '../world/world.js';
 import {atticAll,atticTidy} from '../core/attic.js';
+import {deferAfterPaint} from '../core/boot.js';
 import './attic.css';
 
-let cue=null,down=null,home=null,count=0,wired=false,depthEl=null,pulling=0;
+let warmed=false,cue=null,down=null,home=null,count=0,wired=false,depthEl=null,pulling=0;
 const PULL_MS=520; // cord pull + lid swing + light on the panel, then the climb starts
 const reduced=()=>{const r=document.documentElement,m=r.getAttribute('data-motion');return m==='reduce'||(m!=='full'&&matchMedia('(prefers-reduced-motion:reduce)').matches);};
 const ui=()=>({live:!!home&&!home.hidden&&home.isConnected&&World.canAttic&&!document.querySelector('.bk-spread,[role=dialog]:not([hidden]),#cardlayer.on')});
@@ -51,6 +52,7 @@ export function bindAtticHome(homeEl,{shelf=[]}={}){
  home=homeEl;
  const items=atticTidy(atticAll(shelf));count=items.length;
  World.setAtticItems(items);
+ if(items.length&&!warmed){warmed=true;deferAfterPaint(()=>{World.prewarmAttic(0);return deferAfterPaint(()=>World.prewarmAttic(1),1500);},1500).catch(()=>{});}
  if(!depthEl){depthEl=document.createElement('div');depthEl.className='attic-depth';depthEl.hidden=true;depthEl.setAttribute('aria-live','polite');homeEl.after(depthEl);}
  World.onAtticRow(showSection);
  if(!cue){
