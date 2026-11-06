@@ -235,7 +235,7 @@ export const BOOK_PAGES={};
 export function bookify(root,{wait=BOOK_OPEN_MS}={}){
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
  let busy=false,flying=false,pending=null;
- root.querySelectorAll('.hbook').forEach(el=>{
+ root.querySelectorAll('.hbook,.lg-row#bFloors').forEach(el=>{
   const go=el.onclick;if(!go&&!BOOK_PAGES[el.id])return;
   el.onclick=e=>{
    if(busy){if(!el.classList.contains('opening'))pending=()=>el.onclick(e);return;}

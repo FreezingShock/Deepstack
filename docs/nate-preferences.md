@@ -147,3 +147,5 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 room switching (tested): the whole fireplace must never disappear or reset elements; only gradient-tween the colours; typewriter reveals from the centre out.
 - 2026-11-06 room switching, plaque: the main box (Continue / Descend / Descend Unlimited) must not disappear between rooms; its words type from the centre out and the button itself glides to its new position and size.
 - 2026-11-06 room switching guard: nate wants regressions in room switching caught automatically (every route, fire/tagline/Card/badges together) and "new changes as well": fix what the guard finds now.
+- 2026-11-06 Librarian's Card: likes how it looks; wants every row interactive (Floor opens a book about each floor, Books and Deepest go to Stats, Streak opens something new) and asked for recommendations.
+- 2026-11-06 decisions: "provide a lot of screenshots if you want me to decide something" (new rule): every option at desktop and phone sizes, open and in context on the real screen.

@@ -10,6 +10,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Rooms now show "X of N met" on the door plates, the room tagline and the Room Ledger page, and each room Daily never reuses a word from the last 14 days. Check the counts feel right after a few answers; small rooms (History, Math, English, Art, Anatomy at 115 to 156 words) still need TA2a to reach a month of fresh words. (thread: make every room deep enough to play)
 - Enter the Chronicle (or any other room) and press Descend: the candle halo, the two lanterns and the lift cage burn in the room's fire, the result card gets a rim of it, and the depth plaque names the room. The Reading Room should look exactly as before. Say if the tint is too strong or too faint.
 - Check the home spine captions (Daily, Shelf, Unlimited, Rooms) at 1920 and on your phone: readable, centred, nothing clipped. Say if you want the captions stacked under the title instead (PR #292).
+- Librarian's Card (LC1): on desktop, click Deepest or Books on the card (opens Stats) and Floor (opens the new Floors book). Then pick what Streak should open: 1 Ember Log (calendar + next milestone), 2 Milestone stamps, 3 Streak insurance (hours left).
 - Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
 - Resize the window (or rotate your phone) on home and in each menu book: the hatch tag should clear the title, Descend and the five spines should always fit, short landscape windows get one row of spines, and the background shelves (books, cobwebs, props) should stay put as you drag the window. Say which size still feels cramped. (thread: fix layout at small and odd window sizes, `node scripts/responsive.mjs`)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
@@ -1808,7 +1809,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Brief:** Goal: screenshot sweep of plaque states with text size large; fix any contact via `plaqueGap.css`. Conflicts: low.
 ## TA. Topic rooms audit menu 2026-11-06 (after #289/#290; screenshots audit/rm-*.png; word data from public/data/rooms.json vs words.json)
 
-### TA1. Room word lists miss the obvious and keep the odd
+### TA1. [x] Room word lists miss the obvious and keep the odd (PR #299: built here; scripts/build-room-words.mjs -> public/data/room-words.json, 3,000 room-sense entries; anchors 88-97% per room, was 21-46%)
 **Pitch:** Measured against the main word list, the room lists leave out on-topic words and keep off-topic ones. Math has furlong, gallon, litre, quark, aperture and approximately, but not theorem, integer, equation, algebra, calculus, axiom, matrix, exponent or polynomial (all in the pool). History is mostly war and ships (quiver, scabbard, schooner, starboard) and misses renaissance, dynasty, feudal, treaty, pharaoh, medieval. English misses metaphor, simile, irony, alliteration. Art misses sculpture, fresco, tapestry, mural. Science misses photosynthesis, molecule, electron, velocity. Body & Sport holds board and card games (checkmate, rummy, trump, backgammon).
 **Brief:** Goal: a repeatable audit script (`scripts/room-audit.mjs`) with a hand-written anchor list per room (about 40 must-have words) reporting misses and a sample of suspected noise, then fix `scripts/build-rooms.mjs` (labels, thresholds, per-room include/exclude lists) until every anchor is in and the noise is gone. Done when: audit table in the PR, rooms.json rebuilt, tests pin the anchors. **Touches:** room data only. **Conflicts:** TR5, TR4.
 
@@ -1883,6 +1884,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** The cabinet, ledger and fire grew with the room; the title and Descend plaque did not.
 **Brief:** Goal: scale `.wordmark`, the tagline and `.descend` by `--hs` (up to 1.45) without changing the fit at 1280 or below. Files: `src/ui/cabinet.css` or a new css file. **Conflicts:** the Continue plaque spacing thread (`homePlaque`).
 
+### TA8. Weed the last wrong-room words out of the room lists
+**Pitch:** After TA1 about one word in six is still off (racism in the Anatomy Theatre, tramp in the Chronicle, blueberry in the Gallery) because Wiktionary tags the sense loosely and the meaning check is MiniLM, not a person.
+**Brief:** Goal: print each room's 500 words as a one-line-each review sheet (`node scripts/room-audit.mjs --noise` already lists untagged ones), cull by eye into `scripts/data/room-excludes.json`, rebuild, keep the anchor guard green. Files: `scripts/data/room-excludes.json`, `scripts/build-room-words.mjs`. **Conflicts:** TA1 (done), TA2.
+
+### TA9. [x] (senses half done in this PR: scripts/build-room-senses.mjs) A room's word shows the room's own hint and "also means"
+**Pitch:** The Observatory now asks for the science sense of a word, but the "also means" strip and the clue still come from the main list's sense.
+**Brief:** Goal: for words in `room-words.json`, drive the clue, hint and "also means" line from the room entry so the whole card agrees with the definition. Files: `src/core/roomPool.js`, `src/ui/alsoMeans.js`. **Conflicts:** TA1 (done).
 
 ### SC1. Partial-answer verdicts follow the score — DONE (this PR)
 **Pitch:** "someones speaking patterns" for prose scored 5 (+21 ft) but the line said "Nothing here points at the meaning yet." Tier 0 answers with 3+ points now get "Close in spirit, but it misses the core: <gist of the definition>." (`src/core/verdict.js`).
@@ -1905,3 +1913,15 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### RS2. Phone ring of lights hit areas and the ledger page
 **Pitch:** On a phone the ledger contents list used to leave the Reading Room's page on the hidden right-hand side; it now lands on the right page, but the 20 px dots still open the book rather than walking.
 **Brief:** Goal: 44 px hit areas for the dots and a name toast on press; the guard already covers the ledger route. **Touches:** `roomHome.js`, css. **Conflicts:** TA5.
+### LC1. Librarian's Card rows open books (done in this PR)
+**Pitch:** Each card row is a doorway: Floor to the Floors book, Books and Deepest to Stats.
+**Brief:** Goal: Streak row opens something new once nate picks. Files: `src/ui/ledgerBooks.js`, `src/ui/floorLeaves.js`. **Conflicts:** fireplace/mantel layout thread.
+### LC2. Streak row opens the Ember Log
+**Pitch:** Streak opens a book with a 5-week grid of days played, best streak and the next milestone as an empty stamp.
+**Brief:** Goal: new `bStreak` BOOK_PAGES entry using Daily history in S.daily; row gets `id="bStreak"`. Files: new `src/ui/streakLeaves.js`. **Conflicts:** LC1.
+### LC3. Card rows show a tooltip with detail
+**Pitch:** Hover Books for your rarest tier, Deepest for the floor it reached.
+**Brief:** Goal: richer `title` per row in `ledgerHTML`. Files: `src/ui/welcome.js`. **Conflicts:** LC1.
+### LC4. Floors book page art
+**Pitch:** Each floor page gets its own small motif drawing (shelf lean, water line, red pulse).
+**Brief:** Goal: reuse `floorArt.js` motifs on `floorLeaves` pages. Files: `src/ui/floorLeaves.js`. **Conflicts:** LC1.
