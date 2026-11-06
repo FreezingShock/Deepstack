@@ -1779,3 +1779,33 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### RS3. Orientation change keeps the camera and open book
 **Pitch:** Rotating a phone mid-descent or with a book open should keep where you were, same books, same page.
 **Brief:** Goal: resize and orientationchange keep scroll depth, attic state and the open book's page; test in `scripts/responsive.mjs` with `page.setViewportSize`. Files: `src/world/world.js`, `src/ui/bookpages.js`. **Conflicts:** AT8, attic threads.
+
+## TA. Topic rooms audit menu 2026-11-06 (after #289/#290; screenshots audit/rm-*.png; word data from public/data/rooms.json vs words.json)
+
+### TA1. Room word lists miss the obvious and keep the odd
+**Pitch:** Measured against the main word list, the room lists leave out on-topic words and keep off-topic ones. Math has furlong, gallon, litre, quark, aperture and approximately, but not theorem, integer, equation, algebra, calculus, axiom, matrix, exponent or polynomial (all in the pool). History is mostly war and ships (quiver, scabbard, schooner, starboard) and misses renaissance, dynasty, feudal, treaty, pharaoh, medieval. English misses metaphor, simile, irony, alliteration. Art misses sculpture, fresco, tapestry, mural. Science misses photosynthesis, molecule, electron, velocity. Body & Sport holds board and card games (checkmate, rummy, trump, backgammon).
+**Brief:** Goal: a repeatable audit script (`scripts/room-audit.mjs`) with a hand-written anchor list per room (about 40 must-have words) reporting misses and a sample of suspected noise, then fix `scripts/build-rooms.mjs` (labels, thresholds, per-room include/exclude lists) until every anchor is in and the noise is gone. Done when: audit table in the PR, rooms.json rebuilt, tests pin the anchors. **Touches:** room data only. **Conflicts:** TR5, TR4.
+
+### TA2. How deep each room really is
+**Pitch:** Four rooms hold 115 to 146 words. A Daily uses 7, so a small room repeats its words within a few weeks, and an Unlimited player who keeps playing will start meeting the same words. Nothing shows how much of a room you have explored.
+**Brief:** Goal: (a) measure repeat rate for a simulated 60-day Daily and a 200-word Unlimited in each room; (b) show "47 of 118 met" per room on the Room Ledger page and the door plate; (c) decide a floor on list size and widen lists that fall short (with TA1). Files: `src/core/roomPool.js`, `roomLedger.js`, door plate. Done when: report plus the counter. **Conflicts:** TA1, TR12, Z1.
+
+### TA3. Which numbers are per room, and do they agree
+**Pitch:** In the Chronicle the top bar and Almanac show "0 day streak" next to "300 ft deepest", and the Card shows Books 13 and Floor from your whole shelf, while streak and Dailies are the room's own. Nothing says which is which, and an unsynced number would be a bug that a player reads as lost progress.
+**Brief:** Goal: a script that seeds a save with two rooms (different Dailies, streaks, ratings, shelf books) and checks every readout in every room: top bar chips, Card, Almanac, Lexicon, Shelf counts and room tabs, Daily book calendar, share text, spine badges, Room Ledger. Fix mismatches and label shared versus room numbers in a few pen words ("all rooms", "this room"). Files: `roomStore.js`, `statsPages.js`, `welcome.js`, `topbar.js`. Done when: the table of readouts per room is in the PR and tested. **Conflicts:** TR8, TR12.
+
+### TA4. Switching rooms by every route
+**Pitch:** There are four ways into a room (a side door on desktop, the Room Ledger, the dots above the fire, keyboard shortcuts) plus reload and leaving mid-run. Each could leave a different residue: a flash of the old fire, the old tagline, a stale Card, the wrong spine badges, the old room after a reload mid-Daily.
+**Brief:** Goal: a frame-capture check (like `scripts/transitions-guard`) that enters every room by every route, at 375 and 1280, and asserts within 150 ms: fire hue, tagline, Card, Daily plaque text and badges all match the new room; reload mid-run returns to the same room and word. Files: new `scripts/rooms-guard.mjs`. Done when: runs in CI under 30 s. **Conflicts:** W4 guard, V10 keys.
+
+### TA5. Swipe the hearth to change room on phones
+**Pitch:** On a phone the only quick room switch is seven 20 px dots on the mantel, too small to hit, or the Rooms book. The desktop has doors you walk through. A phone should let you swipe the fireplace sideways and the next room's fire slides in, with a small name label.
+**Brief:** Goal: horizontal swipe on the hearth region (and arrow keys) changes room with the same fire hand-off as the door walk; dots get 44 px hit areas and a name toast on press. Files: `src/ui/roomHome.js`, `hearth.js`. Done when: 375x667 frame strip, vertical scroll to the attic still works, reduced motion cross-fades. **Conflicts:** V3, attic scroll (#265).
+
+### TA6. The room follows you down
+**Pitch:** Enter the Chronicle and the home glows red, but the run screen is the same orange alcove with nothing saying where you are. The descent should carry the room: its fire colour on the candle halo, lanterns and result card edge, its name in pen on the plaque, and the lift cage showing its fire.
+**Brief:** Goal: pass the room's `rgb` and `ink` into the run alcove lighting, result card and lift, and show the room name small on the depth plaque. Files: `src/world/world.js` lights, `candleLight.js`, card css, `lift.js`. Done when: per-room run and card screenshots, the Reading Room unchanged byte for byte. **Conflicts:** Y1 (lift), W3, TR10.
+
+### TA7. Small room visuals
+**Pitch:** (a) The Card's floor name still truncates ("The Cataco…") beside its label. (b) At 375 the attic hatch plate shows a second offset frame behind it. (c) The room dots on phones are tiny and unnamed (covered by TA5). (d) Room names in the side-door plates are good; the Reading Room one has no fire swatch.
+**Brief:** Goal: fix (a) by giving the floor row the full width (label above or smaller), (b) by removing the duplicate frame, (d) by adding a tiny fire swatch. Files: `src/ui/welcome.css`, `atticHome.js`, `roomHome.js`. Done when: screenshots at 375 and 1280. **Conflicts:** X1, Y5.
