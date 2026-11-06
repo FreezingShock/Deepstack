@@ -1612,3 +1612,14 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### K2. Contrast and focus-ring audit [x] (book muted ink 4.5:1, focus rings on books, calendar, home books, attic; real screen reader untested)
 **Pitch:** Finish the rest of V10: handwriting-on-paper contrast at 4.5:1 and focus rings across the attic and books.
 **Brief:** Goal: a manual keyboard walk plus `test/a11y.test.js` additions. Files: `src/ui/a11y.css`. **Conflicts:** any css thread.
+
+### AT6. Attic and home transition overhaul (done, thread: attic transition)
+- [x] Rows locked until the attic is fully in; one notch is one row; a down scroll turns round mid-pull or mid-climb and returns home from the first row; slim ladder (canvas and the "Down the ladder" hatch); home book rims and an eased sibling fade when a book opens. PR: attic transition overhaul.
+
+### AT7. Sound for the hatch and ladder
+**Pitch:** The cord creak, lid knock and rungs creaking as you climb, so the way in feels as physical as it looks.
+**Brief:** Goal: three short Sfx hooks fired from `atticHome.js` (pull, arrive, descend). Files: `src/sound/`, `src/ui/atticHome.js`. **Conflicts:** sound threads.
+
+### AT8. Books return to the stack
+**Pitch:** After a menu book closes it should slide back into its exact slot on the stack, with the others easing forward rather than popping.
+**Brief:** Goal: shared-element return flight and sibling stagger in `bookOpenFx`. Files: `src/ui/bookOpenFx.css`, `src/ui/homeBookEdges.css`. **Conflicts:** home book threads.

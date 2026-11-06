@@ -38,6 +38,7 @@ import './ui/deskProps.css';
 import './ui/mantel.css';
 import './ui/hearth.css';
 import './ui/menuWear.css';
+import './ui/homeBookEdges.css';
 import {initRulesCard} from './ui/welcome.js';
 initRulesCard();
 import './ui/bookOpenFx.js';
