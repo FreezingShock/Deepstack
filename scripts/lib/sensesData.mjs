@@ -6,7 +6,7 @@ const POS = {noun: 'noun', verb: 'verb', adj: 'adjective', adv: 'adverb'};
 const BAD = new Set(['obsolete', 'archaic', 'dialectal', 'dialect', 'offensive', 'vulgar', 'slang', 'derogatory', 'ethnic-slur', 'rare', 'nonstandard', 'misspelling', 'abbreviation', 'initialism', 'form-of', 'alt-of', 'dated', 'historical', 'proscribed']);
 const FORM = /^(alternative|alternate|obsolete|archaic|dated|rare|misspelling|plural|singular|past|present|simple|third-person|comparative|superlative|inflection|nonstandard|eye dialect|abbreviation|initialism|acronym|synonym|clipping|contraction)\b|\b(of|form of|spelling of|variant of)\s+\S+\.?$/i;
 const stems = t => new Set(t.toLowerCase().split(/[^a-z]+/).filter(x => x.length >= 3 && !STOP.has(x) && !FILL.has(x)).map(stem));
-const overlap = (a, b) => { const A = stems(a), B = stems(b); let n = 0; for (const x of A) if (B.has(x)) n++; return n ? n / Math.min(A.size, B.size) : 0; };
+export const overlap = (a, b) => { const A = stems(a), B = stems(b); let n = 0; for (const x of A) if (B.has(x)) n++; return n ? n / Math.min(A.size, B.size) : 0; };
 
 /** Usable glosses of one kaikki entry as [pos, gloss]. */
 export function usable(entry) {

@@ -6,7 +6,7 @@
 // Homophones are not added: they share no meaning, so the judge has nothing to score them against.
 import {createReadStream, readFileSync, writeFileSync} from 'node:fs';
 import {createInterface} from 'node:readline';
-import {pickAlts} from './lib/sensesData.mjs';
+import {pickAlts, overlap} from './lib/sensesData.mjs';
 
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i > 0 ? process.argv[i + 1] : d; };
 const kaikki = arg('kaikki'), out = arg('out', 'public/data/senses.json');
@@ -14,6 +14,7 @@ if (!kaikki) { console.error('need --kaikki'); process.exit(1); }
 const read = p => JSON.parse(readFileSync(new URL(p, import.meta.url)));
 const rooms = read('../public/data/room-words.json').rooms;
 const sen = JSON.parse(readFileSync(out));
+const mainList = new Map(read('../public/data/words.json').words.map(e => [e.w, [e.pos, e.def]]));
 const extras = read('./data/sense-extras.json').words;
 
 const mainDef = new Map();
@@ -33,6 +34,17 @@ for (const [w, def] of mainDef) {
   const alt = [...have, ...fresh].slice(0, 3);
   if (fresh.length) { sen.words[w] = {...(sen.words[w] || {}), alt}; added += fresh.length; touched++; }
 }
+// Where the room's sense is not the main list's ("calculus": the maths, not "Calculation"), the everyday sense becomes an accepted
+// other meaning, and the synonyms (which were built for that everyday sense) stop showing under the room's definition (rs).
+let swapped = 0;
+for (const [w, def] of mainDef) {
+  const m = mainList.get(w); if (!m || overlap(m[1], def) >= .6) continue;
+  const e = sen.words[w] || (sen.words[w] = {}), alt = e.alt || [];
+  if (m[1].length <= 120 && !alt.some(a => a[1] === m[1])) e.alt = [[m[0], m[1]], ...alt].slice(0, 3);
+  if (e.syn?.length) e.rs = 1;
+  swapped++;
+}
+console.log(`${swapped} room words use a different sense from the main list`);
 for (const [w, x] of Object.entries(extras)) {
   const alt = sen.words[w]?.alt || [];
   const fresh = x.alt.filter(a => !alt.some(h => h[1] === a[1]));

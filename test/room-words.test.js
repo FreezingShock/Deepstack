@@ -63,3 +63,14 @@ test('room words carry their other senses in senses.json (the shape the judge re
   assert.ok(withAlt / total > 0.4, `${withAlt}/${total} room words have other senses`);
   assert.ok(SEN.prose.alt.some(a => /ordinary/i.test(a[1])));
 });
+
+test('in a room, "also means" shows the everyday sense and hides synonyms built for it (rs)', async () => {
+  const {meaningRows} = await import('../src/ui/alsoMeans.js');
+  const SEN = read('../public/data/senses.json').words;
+  const roomDef = RW.rooms.math.find(e => e[0] === 'calculus')[2];
+  const inRoom = meaningRows({w: 'calculus', def: roomDef, room: 'math'}, SEN);
+  assert.ok(inRoom.length && inRoom.every(r => !r.syn), JSON.stringify(inRoom));
+  assert.ok(inRoom.some(r => /calculation/i.test(r.g)), 'the everyday sense is still explained');
+  const hall = meaningRows({w: 'calculus', def: 'Calculation; computation.'}, SEN);
+  assert.ok(hall.some(r => r.syn), 'the Reading Room keeps its synonyms');
+});
