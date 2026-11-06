@@ -1834,11 +1834,11 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** "117 of 118 met" is a good moment: the door plate could glow or the ledger page could say the room is mastered.
 **Brief:** Goal: a small flourish on the plate and the ledger page at 100% met, not a popup. Files: `src/ui/roomHome.js`, `roomHome.css`, `roomLedger.js`. **Conflicts:** TR9.
 
-### TA2d. Show which words are left in a room
+### [x] TA2d. Show which words are left in a room (done)
 **Pitch:** "402 of 413 met" is a tease; nate could tap the count and see the 11 words he has not met yet, as a page in the Room Ledger.
 **Brief:** Goal: a "Not yet met" page per room listing the unmet words (words only, no definitions). Files: `src/ui/roomLedger.js`, `src/core/roomDepth.js` (`metWords` already has the sets). **Conflicts:** TR12.
 
-### TA2e. Mastered rooms in the Almanac
+### [x] TA2e. Mastered rooms in the Almanac (done)
 **Pitch:** A room at 100% should be remembered somewhere: a small "Rooms mastered" line on the Rooms stats page with the date it was completed.
 **Brief:** Goal: store `S.metAt = {room: isoDate}` the first time a room reaches 100% and show it on the Rooms Almanac page. Files: `src/core/roomDepth.js`, `src/ui/roomStats.js`. **Conflicts:** none.
 

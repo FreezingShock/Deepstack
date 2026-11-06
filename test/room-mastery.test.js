@@ -41,3 +41,39 @@ test('the glint is opacity and transform only and is off under reduced motion', 
   assert.doesNotMatch(frames.replace(/opacity:[\d.]+|transform:[^;}]+/g, ''), /[a-z-]+:[^;}]+/);
   assert.match(css, /prefers-reduced-motion:reduce\)\{[^}]*animation:none/);
 });
+
+import {setRoomLists, setRoomEntries, setRoomExtras} from '../src/core/roomPool.js';
+import {unmetWords, recordMastery} from '../src/core/roomDepth.js';
+import {masteredLine} from '../src/ui/roomStats.js';
+import {UNMET_SHOW} from '../src/ui/roomLedger.js';
+
+test('unmetWords lists what is left, and recordMastery stamps a room once, the day it was completed', () => {
+  setRoomEntries(null); setRoomExtras({});
+  setRoomLists({math: ['ratio', 'prime', 'sum'], history: Array.from({length: 200}, (_, i) => 'h' + i)});
+  const S = {shelf: [], met: {ratio: 1, prime: 1}};
+  assert.deepEqual(unmetWords(S, 'math'), ['sum']);
+  assert.deepEqual(unmetWords(S, 'art'), [], 'a room without a list has nothing to show');
+  assert.deepEqual(recordMastery(S, '2026-11-06'), []);
+  assert.equal(S.metAt.math, undefined);
+  S.met.sum = 1;
+  assert.deepEqual(recordMastery(S, '2026-11-07'), ['math']);
+  assert.deepEqual(recordMastery(S, '2026-11-09'), []);
+  assert.equal(S.metAt.math, '2026-11-07', 'the first day stays');
+  assert.deepEqual(unmetWords(S, 'math'), []);
+});
+
+test('the Rooms Almanac names mastered rooms and survives damaged data', () => {
+  assert.match(masteredLine({}), /No room mastered yet/);
+  assert.match(masteredLine({metAt: []}), /No room mastered yet/);
+  assert.match(masteredLine({metAt: {history: 'garbage'}}), /No room mastered yet/);
+  assert.match(masteredLine({metAt: {math: '2026-11-07'}}), /Mastered: .*\(Nov 7\)/);
+});
+
+test('the Room ledger lists the words still to meet only when a room is nearly done', () => {
+  const left = n => Array.from({length: n}, (_, i) => 'w' + i);
+  const html = n => roomLeaves({shelf: []}, {unmet: id => (id === 'history' ? left(n) : [])}).leaves.join('');
+  assert.match(html(7), /rl-unmet/); assert.match(html(7), /7 to go/); assert.match(html(7), /<span>w0<\/span> <span>w1<\/span>/);
+  assert.match(html(UNMET_SHOW), /rl-unmet/);
+  assert.doesNotMatch(html(UNMET_SHOW + 1), /rl-unmet/);
+  assert.doesNotMatch(html(0), /rl-unmet/);
+});
