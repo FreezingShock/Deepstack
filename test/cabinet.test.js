@@ -33,9 +33,18 @@ test('state: open, swap, turn only with a back, next/prev wrap, close resets',()
 test('cards tell the truth: every tier threshold, your best tier, the combo cap, the home keys',()=>{
  const t=tiersFront(3);
  for(const x of TIERS)assert.ok(t.includes(x.name)&&t.includes('>'+x.min+'<'),x.name);
- assert.equal((t.match(/class="best"/g)||[]).length,1);
+ assert.equal((t.match(/class="best/g)||[]).length,1);
  assert.ok(scoringBack().includes('×'+COMBO_MAX));
  assert.ok(keysFront().includes('Open Rooms'));
+});
+test('live tiers: counts per tier show, tiers not yet earned are dim; a corner tab opens the same cards where the cabinet is hidden',()=>{
+ const t=tiersFront(2,[5,0,2]);
+ assert.ok(t.includes('×5')&&t.includes('×2'));
+ assert.equal((t.match(/class="[^"]*miss/g)||[]).length,5);
+ const h=cabinetHTML({steps,bestTier:2,tierCounts:[5,0,2]});
+ assert.match(h,/class="cc-tab" data-d="rules"/);
+ const c=readFileSync(new URL('../src/ui/cabinet.css',import.meta.url),'utf8');
+ assert.match(c,/max-width:560px\)\{\.home \.cc-tab\{display:grid\}/);
 });
 test('first-visit slip on Rules goes once read',()=>{
  const mem={};const st={getItem:k=>mem[k]??null,setItem:(k,v)=>{mem[k]=v;}};

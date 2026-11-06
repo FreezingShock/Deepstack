@@ -1859,13 +1859,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 
 ## Card catalogue follow-ups (2026-11-06, card catalogue thread; the first build is done)
 - [x] CC0. Rebuild the card drawer: eight box drawers (Rules, Tiers, Scoring, Tips, Keys, Settings, Credits, About), bigger room on wide windows.
-### CC1. Cabinet on phones and very short rooms
+### CC1. Cabinet on phones and very short rooms — DONE (corner brass tab, this PR)
 **Pitch:** Phones and 1000 x 560 windows show no cabinet at all, so there is no way to read the rules there.
 **Brief:** Goal: a small brass "card catalogue" tab (like the tablet bar) that fits the compact phone home without moving Descend; opens the same cards. Files: `src/ui/cabinet.css`, `src/ui/cabinet.js`, `src/ui/fit.css` hide rule. **Conflicts:** home layout and hearth threads.
-### CC2. Live drawers
+### CC2. Live drawers — partly done: Tiers shows how many books of each tier you hold and dims unearned tiers; a Daily card and a pull sound with weight are still open
 **Pitch:** Make the cabinet react to the game, not just explain it.
 **Brief:** Goal: a drawer that fills with something earned (a Tiers card that stamps each tier the first time you earn it, a Credits card for each room's word source, a small "today" card when the Daily is unplayed), plus a pull sound with weight. Files: `src/ui/cabinet.js`, `src/sound/materials.js`. **Conflicts:** sound palette threads.
-### CC3. Bigger Descend and wordmark on wide windows
+### CC3. Bigger wordmark and tagline on wide windows — DONE (Descend itself left alone: the cabinet width is fitted to it)
 **Pitch:** The cabinet, ledger and fire grew with the room; the title and Descend plaque did not.
 **Brief:** Goal: scale `.wordmark`, the tagline and `.descend` by `--hs` (up to 1.45) without changing the fit at 1280 or below. Files: `src/ui/cabinet.css` or a new css file. **Conflicts:** the Continue plaque spacing thread (`homePlaque`).
 

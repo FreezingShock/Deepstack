@@ -4,7 +4,8 @@
    Both scale with --hs (how much wider than the old 760 px niche the room is) and --hv (the same, for height).
    Loaded after home.css. All motion uses the shared --m-* / --e-* presets, which collapse when motion is reduced. */
 .home .hz-plaque{position:relative}
-.home .cat-card{display:none}
+.home .cat-card{display:block}
+.home .cc-cab{display:none}
 .home .cat-card,.home .ledger{--fw:calc(366px*var(--hs,1) - 186px);--fh:calc(236px*var(--hv,1));--wall:calc(-46px*var(--hs,1))}
 .home .ledger{display:none}
 [data-room=cozy] .home .cat-card,[data-room=cozy] .home .ledger{--fh:calc(208px*var(--hv,1))}
@@ -54,7 +55,7 @@
 @keyframes lg-jolt{35%{transform:translateY(3px)}}
 /* ---- where each shows ---- */
 @media(min-width:1000px){
- [data-room=roomy] .home .cat-card,[data-room=cozy] .home .cat-card,[data-room=snug] .home .cat-card{display:block}
+ [data-room=roomy] .home .cc-cab,[data-room=cozy] .home .cc-cab,[data-room=snug] .home .cc-cab{display:block}
  [data-room=roomy] .home .ledger,[data-room=cozy] .home .ledger,[data-room=snug] .home .ledger{display:block}
 }
 @media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .lg-row dd{animation:none}}
