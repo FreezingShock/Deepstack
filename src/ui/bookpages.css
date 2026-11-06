@@ -12,7 +12,7 @@
 .bk-spread.menu .rule{border:0;border-top:1px solid var(--rule);margin:14px 0}
 /* controls on parchment */
 .bk-spread.menu #fq{width:100%;box-sizing:border-box;background:transparent;border:0;border-bottom:1.5px solid var(--c-oak-4a3a22-alpha-88);border-radius:0;color:var(--bk);padding:2px 2px 0;font:500 calc(28px*var(--ts))/1.3 var(--bs-hand);caret-color:var(--bk);-webkit-appearance:none;appearance:none}
-.bk-spread.menu #fq::placeholder{color:var(--mute);opacity:.55}
+.bk-spread.menu #fq::placeholder{color:var(--mute);opacity:1}
 .bk-spread.menu #fq:focus{outline:0;border-bottom-color:var(--bk)}
 .bk-spread.menu #fq::-webkit-search-cancel-button{display:none}
 /* filters: plain handwritten words; the chosen one is underlined with a pen stroke */

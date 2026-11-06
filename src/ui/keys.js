@@ -25,7 +25,8 @@ export function initKeys({doc=document}={}){
  };
  if(stage)new MutationObserver(tag).observe(stage,{childList:true,attributes:true,attributeFilter:['hidden']});
 
- const modalOpen=()=>!!panel||['#cardlayer','#all','#stats','#topPanel'].some(s=>{const m=$(s);return m&&!m.hidden;})||!!$('.bk-spread');
+ const panelsOpen=()=>!!panel||['#cardlayer','#all','#stats','#topPanel'].some(s=>{const m=$(s);return m&&!m.hidden;});
+ const modalOpen=()=>panelsOpen()||!!$('.bk-spread');
 
  function closeHelp(){
   if(!panel)return;panel.remove();panel=null;
@@ -50,6 +51,12 @@ export function initKeys({doc=document}={}){
    return;
   }
   const wordScreen=!!stage&&!stage.hidden&&!!$('#hint');
+  /* inside an open menu book: / jumps to its search line, ? still opens the key page */
+  if(!isTyping(e.target)&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!panelsOpen()&&$('.bk-spread')){
+   const q=$('.bk-spread #fq');
+   if(e.key==='/'&&q){e.preventDefault();q.focus();q.select();return;}
+   if(e.key==='?'){e.preventDefault();openHelp();return;}
+  }
   const home=!!$('#home')&&!$('#home').hidden&&!$('#home').closest('[hidden]');
   const a=actionFor(e,{typing:isTyping(e.target),modal:modalOpen(),wordScreen,home});
   if(!a)return;

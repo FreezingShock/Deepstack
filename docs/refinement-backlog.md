@@ -1581,7 +1581,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Sound is off by default and the open sound items are many small threads (door stings, hatch creak, ladder rungs, page turns, fire, cover thuds). One pass would give them a single set of recipes so nothing sounds like a different game.
 **Brief:** Goal: a sound palette doc (materials: paper, leather, wood, stone, brass) and every open sound item built from it. Files: `src/sound/`. Done when: every UI motion has a sound mapped, mute and quality settings respected. **Conflicts:** FH2, AE5, AT3, D1a, D1b, 103, BS1, R6, N9b.
 
-### V10. Keyboard and screen reader pass (partly done: shortcuts shipped; contrast and focus-ring audit open, see K2)
+### V10. Keyboard and screen reader pass (done: #258 shortcuts, K1/K2 follow-up)
 **Pitch:** The world is rich but tiers are told mainly by colour, pen text sits on cream at low contrast, and focus rings are not checked across the books and the attic.
 **Brief:** Goal: audit with the a11y test plus a manual keyboard walk: visible focus ring everywhere, tier name always in text, contrast at 4.5:1 for handwritten body text on paper. Files: styles, `test/a11y.test.js` additions. Done when: report of findings fixed. **Conflicts:** T-series, any css thread.
 
@@ -1605,10 +1605,10 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The first paint still ships a 392 KB (151 KB gzip) main chunk and 235 KB css, spread over hundreds of small modules; the biggest are hearth.js, world.js, thresholds.js and atticRoom.js.
 **Brief:** Goal: lazy-load the attic room drawing and other below-the-fold canvas code behind idle time, and split rarely used css, without changing any animation. Files: `src/world/atticRoom.js`, `src/world/world.js`, `src/ui/lazyScreens.js`. Done when: `?perf` first-load numbers drop and the smoke test passes. **Conflicts:** PF1, PF2, AT13.
 
-### K1. Shortcuts inside the books
+### K1. Shortcuts inside the books [x] (`/` search, `?` in books; chips and date jump still open)
 **Pitch:** Home keys now open every book, but inside a book you can only turn pages and close it.
 **Brief:** Goal: in the Shelf, Stats and Daily books add keys for search focus (`/`), filter chips and jumping to a date. Files: `src/ui/bookMenus.js`, `src/ui/keysCore.js`. Done when: listed in the `?` page. **Conflicts:** V10, T-series.
 
-### K2. Contrast and focus-ring audit
+### K2. Contrast and focus-ring audit [x] (book muted ink 4.5:1, focus rings on books, calendar, home books, attic; real screen reader untested)
 **Pitch:** Finish the rest of V10: handwriting-on-paper contrast at 4.5:1 and focus rings across the attic and books.
 **Brief:** Goal: a manual keyboard walk plus `test/a11y.test.js` additions. Files: `src/ui/a11y.css`. **Conflicts:** any css thread.
