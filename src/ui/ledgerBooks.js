@@ -17,7 +17,7 @@ export function registerLedgerBooks({S,FLOORS,floorStartFt,today=()=>new Date().
  doc.addEventListener('click',e=>{
   const chip=e.target.closest&&e.target.closest('.bg-streak');const row=doc.getElementById('bStreak');
   if(!chip||!row||!doc.querySelector('#home')||doc.querySelector('#home').hidden)return;
-  const r=row.getBoundingClientRect();row.__from=r.width&&r.height?null:()=>chip.getBoundingClientRect();row.click();
+  const r=row.getBoundingClientRect();row.__from=r.width&&r.height?null:()=>{row.__from=null;return chip.getBoundingClientRect();};row.click();
  });
  doc.addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' ')return;

@@ -1,6 +1,6 @@
-// Ember Log guard: the Librarian's Card Streak row (desktop) and the top-bar streak chip (phones, where the card is
-// hidden) must both open the Ember Log, in every room, with and without reduced motion, and the chip must never overlap
-// the bar's buttons at 320 / 375 px. The book's streak must be the room's own streak. Drives the built app in headless
+// Ember Log guard: the Librarian's Card Streak row (desktop), the top-bar streak chip (wide screens) and the Almanac's
+// "The Ember Log" link (phones, where the card is hidden and the attic hatch leaves no room for the chip) must all open
+// the Ember Log, in every room, with and without reduced motion. The book's streak must be the room's own streak. Drives the built app in headless
 // Chromium; skips (exit 0) without a browser. Run after `npm run build`.
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
@@ -32,31 +32,32 @@ const problems = [];
 const fail = m => { if (problems.length < 30) problems.push(m); };
 const today = new Date().toISOString().slice(0, 10);
 const STREAK = {hall: 2, history: 7, math: 3, science: 5, english: 4, art: 11, body: 9};
-const seedFor = room => {
+const seedFor = (room, bestFloor = 1) => {
   const rooms = Object.fromEntries(ROOMS.filter(r => r.id !== HALL).map(r => [r.id, {daily: {}, rating: undefined, streak: {last: today, n: STREAK[r.id]}}]));
-  return {shelf: [], sound: false, bestFloor: 1, streak: {last: today, n: STREAK.hall}, rooms, room};
+  return {shelf: [], sound: false, bestFloor, streak: {last: today, n: STREAK.hall}, rooms, room};
 };
 
-async function run(label, {width, height, reduce, room, via}) {
+async function run(label, {width, height, reduce, room, via, bestFloor = 1}) {
   const ctx = await browser.newContext({viewport: {width, height}, reducedMotion: reduce ? 'reduce' : 'no-preference'});
   const page = await ctx.newPage();
   page.on('pageerror', e => fail(`${label}: page error ${e.message}`));
   await page.route('**/*', r => BLOCKED.test(r.request().url()) ? r.abort() : r.continue());
-  await page.addInitScript(s => localStorage.setItem('deepstack.v1', JSON.stringify(s)), seedFor(room));
+  await page.addInitScript(s => localStorage.setItem('deepstack.v1', JSON.stringify(s)), seedFor(room, bestFloor));
   await page.goto(url);
   try {
-    const sel = via === 'row' ? '.lg-row#bStreak' : '.bg-streak';
-    await page.waitForSelector(sel, {state: 'visible', timeout: 15000});
-    await page.waitForTimeout(1500);
-    if (via === 'chip') { // the chip must clear the bar's buttons
-      const bad = await page.evaluate(() => {
-        const c = document.querySelector('.bg-streak').getBoundingClientRect();
-        return [...document.querySelectorAll('#barNav button, #mark')].filter(b => b.offsetParent).map(b => b.getBoundingClientRect())
-          .some(r => r.left < c.right - 1 && r.right > c.left + 1 && r.top < c.bottom - 1 && r.bottom > c.top + 1);
-      });
-      if (bad) fail(`${label}: streak chip overlaps the top bar buttons`);
+    if (via === 'stats') { // phones: Stats book, then the link on its Almanac page
+      await page.waitForSelector('#bStats', {state: 'visible', timeout: 15000});
+      await page.waitForTimeout(1500);
+      await page.click('#bStats', {timeout: 5000});
+      await page.waitForSelector('.bk-spread .alm-ember', {state: 'visible', timeout: 8000});
+      await page.waitForTimeout(reduce ? 200 : 1200);
+      await page.click('.alm-ember', {timeout: 5000});
+    } else {
+      const sel = via === 'row' ? '.lg-row#bStreak' : '.bg-streak';
+      await page.waitForSelector(sel, {state: 'visible', timeout: 15000});
+      await page.waitForTimeout(1500);
+      await page.click(sel, {timeout: 5000});
     }
-    await page.click(sel, {timeout: 5000});
     await page.waitForSelector('.bk-spread .emb', {timeout: 8000});
     await page.waitForTimeout(reduce ? 200 : 1500);
     const t = await page.evaluate(() => (document.querySelector('.bk-spread .emb') || {}).textContent || '');
@@ -68,11 +69,12 @@ async function run(label, {width, height, reduce, room, via}) {
 
 for (const r of ROOMS) {
   await run(`desktop ${r.id}`, {width: 1280, height: 800, reduce: false, room: r.id, via: 'row'});
-  await run(`phone ${r.id}`, {width: 375, height: 740, reduce: false, room: r.id, via: 'chip'});
+  await run(`phone ${r.id}`, {width: 375, height: 740, reduce: false, room: r.id, via: 'stats'});
 }
+await run('desktop chip', {width: 1280, height: 800, reduce: false, room: 'history', via: 'chip'});
 await run('desktop reduced motion', {width: 1280, height: 800, reduce: true, room: 'art', via: 'row'});
-await run('phone 375 reduced motion', {width: 375, height: 740, reduce: true, room: 'body', via: 'chip'});
-await run('phone 320', {width: 320, height: 640, reduce: false, room: 'math', via: 'chip'});
+await run('phone 375 reduced motion', {width: 375, height: 740, reduce: true, room: 'body', via: 'stats'});
+await run('phone 320', {width: 320, height: 640, reduce: false, room: 'math', via: 'stats'});
 
 await browser.close(); server.close();
 if (problems.length) { console.error('ember-log: FAILED\n' + problems.join('\n')); process.exit(1); }

@@ -14,7 +14,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Rooms now show "X of N met" on the door plates, the room tagline and the Room Ledger page, and each room Daily never reuses a word from the last 14 days. Check the counts feel right after a few answers; after TA1 every room holds 300 to 800 words, so a Daily word now returns after a month or more. (thread: make every room deep enough to play)
 - Enter the Chronicle (or any other room) and press Descend: the candle halo, the two lanterns and the lift cage burn in the room's fire, the result card gets a rim of it, and the depth plaque names the room. The Reading Room should look exactly as before. Say if the tint is too strong or too faint.
 - Check the home spine captions (Daily, Shelf, Unlimited, Rooms) at 1920 and on your phone: readable, centred, nothing clipped. Say if you want the captions stacked under the title instead (PR #292).
-- Librarian's Card (LC1, LC2): on desktop click Streak (Ember Log), Floor (Floors book), Books or Deepest (Stats). On a phone (or any width) tap the flame chip in the top bar to open the Ember Log; at 320 px the Deepstack plaque shrinks a little to make room, and the shortcuts button is hidden under 400 px.
+- Librarian's Card (LC1, LC2): on desktop click Streak (Ember Log), Floor (Floors book), Books or Deepest (Stats). On a phone open the Stats book: the streak section of its first page has a "The Ember Log →" link that opens it (the card is hidden on phones and the attic hatch leaves no room for a streak chip). On wide screens the Streak row on the card and the flame chip in the top bar both open it.
 - Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
 - Resize the window (or rotate your phone) on home and in each menu book: the hatch tag should clear the title, Descend and the five spines should always fit, short landscape windows get one row of spines, and the background shelves (books, cobwebs, props) should stay put as you drag the window. Say which size still feels cramped. (thread: fix layout at small and odd window sizes, `node scripts/responsive.mjs`)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
@@ -1981,9 +1981,12 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Each room keeps its own streak, so a 0 in the Chronicle sits next to a 5 in the Reading Room; some players will want one combined flame.
 **Brief:** Goal: a pen line on the Almanac streak page, "Any room: N days", counting a day if any room's Daily was played. Files: `src/ui/statsPages.js`, `src/core/stats.js`. **Conflicts:** TR12.
 
-### LC5. [x] Ember Log from the top-bar streak chip and on phones (#313)
+### LC5. [x] Ember Log on phones via the Almanac link, and from the top-bar chip on wide screens (#313)
 **Pitch:** The card is hidden on phones, so the streak chip in the top bar should open the Ember Log too.
 **Brief:** Goal: chip click opens `#bStreak` via the same BOOK_PAGES entry. Files: `src/ui/topbar.js`. **Conflicts:** topbar threads.
 ### LC6. Milestone stamps on the Ember Log
 **Pitch:** Earned milestones (3, 7, 14, 30, 100) get inked stamps on a third page.
 **Brief:** Goal: derive stamps from Daily history with no new saved fields. Files: `src/ui/streakLeaves.js`. **Conflicts:** LC2.
+### LC7. A one-tap way into the Ember Log on phones
+**Pitch:** On phones the Ember Log is two taps away (Stats, then the link); the attic hatch leaves no room for a streak chip in the rail.
+**Brief:** Goal: one tap from home, e.g. tap the hearth fire (the fire already reflects the streak). Files: `src/ui/hearth.js`, `src/ui/ledgerBooks.js`. **Conflicts:** fireplace layout threads, RA2 rail fit.

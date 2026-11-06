@@ -78,7 +78,7 @@ export function crossSection(FLOORS,floorStartFt,deepest,reached){
 
 export function statsLeaves(st,S,{TIERS,FLOORS,floorStartFt}){
  const hist=(S&&S.rating&&S.rating.hist)||[],shelf=(S&&S.shelf)||[];
- if(!st.runs&&!hist.length&&!shelf.length)return [`<div class="alm"><h1>The Almanac</h1><div class="kicker">Not yet opened</div>${emptyBlock('ledger','Finish your first Daily and the almanac fills in.')}</div>`,
+ if(!st.runs&&!hist.length&&!shelf.length)return [`<div class="alm"><h1>The Almanac</h1><div class="kicker">Not yet opened</div>${emptyBlock('ledger','Finish your first Daily and the almanac fills in.')}<button class="alm-ember" type="button">The Ember Log →</button></div>`,
   `<div class="alm"><h1>The Depths</h1><div class="kicker">A cross-section, down to 0 ft</div><div class="scopes">${allTag()}</div>${crossSection(FLOORS,floorStartFt,0,(S&&S.bestFloor)||0)}</div>`];
  const tally=tallyMarks(st.streak||0),rm=scopeRoom(S),mine=roomTag(rm),all=allTag(),any=anyRoomStreak(S);
  const line=(l,v,sub)=>`<li><span>${l}</span><b>${v}</b>${sub?`<em>${sub}</em>`:''}</li>`;
@@ -92,6 +92,7 @@ export function statsLeaves(st,S,{TIERS,FLOORS,floorStartFt}){
   `<div class="alm"><h1>The Almanac</h1><div class="kicker">Kept by hand</div><div class="scopes">${mine}</div>
    <h2>The streak</h2>
    <div class="tally" role="img" aria-label="${st.streak} day streak">${tally.html||'<span class="hand dim">No days inked yet.</span>'}${tally.over?`<span class="hand dim">+${tally.over} more</span>`:''}</div>
+   <button class="alm-ember" type="button">The Ember Log →</button>
    <div class="dual"><div><span class="k">${esc(rm.short)}</span><p class="hand">${st.streak} ${st.streak===1?'day':'days'} running</p><small>best ${st.bestStreak}</small></div><div><span class="k">Any room</span><p class="hand">${any.n} ${any.n===1?'day':'days'}</p><small>best ${any.best}</small></div></div>
    <ul class="ledger">${line('Deepest dive',st.deepest+' ft',(st.deepestDay?fmtDay(st.deepestDay)+' ':'')+all)}${line(st.runs===1?'Daily played':'Dailies played',st.runs,(st.totalFt||0).toLocaleString()+' ft in total')}${line('Average closeness',st.avg,st.answered+' answered')}</ul>
    ${st.best?`<p class="bestbook">Closest answer: <b>${esc(st.best.w)}</b>, ${st.best.score}/100 · <span style="color:${TIERS[st.best.tier].spine}">${TIERS[st.best.tier].name}</span></p>`:''}</div>`,
