@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
 - Pull `main` and look at the fire: it now burns low on a 0 streak and roars after a few weeks, and its sparks take the colour of your last book's tier (aqua after an Apocrypha, red after a Grimoire). At 375x667 and 800x900 the fireplace now shows, with the Daily and Unlimited spines still on screen. Say if the low 0-streak fire feels too dim.
 - Open the Unlimited book at your window size and on your phone: a big Descend button (Find my rank before you are placed) now sits under your rank, with "Place me again" quietly beneath. Say if it reads clearly. (Unlimited pages, UB1)
 - Look at the top centre of home: the "↑ The attic · 36" pill is now a trapdoor in the ceiling beam with a swaying pull cord and a brass tag holding the count. Hover or Tab to it, press Enter, and say if it reads as an entrance and not a button (thread: attic entrance).
@@ -1541,3 +1542,61 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### G8b. Phones show the menu books [x] (PR #254)
 **Pitch:** At 375x667 the hearth plus plaque push the Daily/Unlimited spines below the fold; only Shelf peeks in, so the Practice section and the spine badges (done / resume / Lexicon) are easy to miss on a phone.
 **Brief:** Goal: a phone layout that keeps the two play spines visible under the plaque. Files: `src/ui/hearth.js`, `src/styles/home-plaque.css`. Done when: 375x667 screenshot shows Daily and Unlimited spines. **Touches:** HOME. **Conflicts:** FH4 (no hearth at small sizes), any home thread.
+
+## V. Audit menu 2026-11-06 (fresh run of main at 375x667, 1280x800, 1640x900; screenshots in screenshots/audit/r2-*.png)
+
+### V1. Small visual bugs from the audit (one PR)
+**Pitch:** Five rough edges a player sees in the first minute. (a) Result card foot reads "+21 FT · 21 FT" (the same number twice) and ends "6/100•" with a dangling bar. (b) On the Shelf book at 1280 the "turn the page" note overlaps the bottom of the Hardbound bay. (c) On the 375 run screen the slip placeholder "In your own words…" wraps to three lines. (d) In the attic the "Down the ladder" label sits to the right of the two cords. (e) Placeholder grey on the cream slip is low contrast.
+**Brief:** Files: `src/app/card.js`, shelf book css, `src/ui/atticHome.js`, run slip css. Done when: 375/1280 screenshots show each fixed, text-fit sweep still passes. **Touches:** card, shelf, attic, run. **Conflicts:** 16, 91, G14.
+
+### V2. Phone run screen that uses the width
+**Pitch:** At 375x667 the slip is narrow with the candle squeezed beside it, the depth pill crowds the top bar, and the floor rail hugs the left edge with its cap clipped. The run screen is the game; on a phone it should feel as roomy as the desktop alcove.
+**Brief:** Goal: slip full width, candle moves to the alcove ledge below or beside the Hint/Skip row, depth pill sits clear of the top bar, floor rail becomes a slim tab that expands on tap. Files: run/alcove css, `src/ui/floorRail.js`. Done when: 375x667 and 360x640 screenshots, keyboard open still leaves the slip visible. **Touches:** RUN, MAIN css. **Conflicts:** 142, 22b, LM4.
+
+### V3. Floor rail that gets out of the way
+**Pitch:** On desktop the Stacks-to-Abyss rail sits on top of the left shelves at all times and its first dot is cut by the window edge. It should be a slim brass tab that unfolds when you hover it or when you cross a floor.
+**Brief:** Files: floor rail css/js. Done when: closed it is a 28px tab fully inside the window, opens with the shared motion curve, reduced motion shows it static. **Conflicts:** V2, D2, F1.
+
+### V4. A new save's home says nothing yet, in the world's voice
+**Pitch:** A fresh Librarian's Card shows rings that read as the letter O ("Deepest O ft") and the Daily book says "0 of 4 played" and "0 day streak". First impressions should read as an empty ledger waiting for ink.
+**Brief:** Goal: zero states in handwriting ("not yet", "no descents", "the first line is yours"), ring glyphs only for real zeros after play. Files: `src/ui/ledger*.js`, daily book page 1. Done when: fresh-save screenshots at 375/1280. **Touches:** HOME, DAILY. **Conflicts:** Q7, G1, H3.
+
+### V5. Shelf book: search first, controls second
+**Pitch:** The left page packs Sort (6 options), Bay (6), Show and Rarity under the search line. It is a settings form on paper. Keep "Find a word" and the rarity dots; fold Sort and Bay into one pen-written "arrange by..." line that opens a small slip.
+**Brief:** Files: shelf book page builder. Done when: left page has at most two rows of controls at rest, every current option still reachable by keyboard, tests updated not deleted. **Conflicts:** 11, 82, 83.
+
+### V6. A bookplate to share
+**Pitch:** The share text is fine (no emojis, nate's rule) but the Daily deserves a shareable picture: a pen-written bookplate with the date, the seven tier spines and the depth, rendered on a canvas.
+**Brief:** Goal: "Copy bookplate" next to "Copy result" on the Daily final screen; text stays the default. Files: new `src/ui/bookplate.js`. Done when: PNG at 1080x1350, no emojis, works offline, test checks the canvas size. **Touches:** final screen. **Conflicts:** G7, 28.
+
+### V7. Floors that change how a word feels (not just how it looks)
+**Pitch:** Floors already change the room. Let each one also change one small rule so descending feels different, ready for the topic zones: Catacombs candle burns a little faster, the Sunken Vault smears the ink of the word's first letters until you type, the Hollow whispers an extra hint after skipping.
+**Brief:** Goal: one optional modifier per floor, shown as a line on the floor door, off for the Daily so it stays fair. Files: new `src/core/floorRules.js`, hook in `run.js`. Done when: tests pin each modifier, Daily unaffected, Settings can turn them off. **Conflicts:** G10, G11, F1, 142.
+
+### V8. Streak ribbon (one save per week)
+**Pitch:** A missed day deletes a long streak, which punishes a casual player. A ribbon bookmark you earn after seven straight days lets one miss slide, and it is shown on the Card.
+**Brief:** Files: `src/core/streak.js`, Card. Done when: tests for miss with and without ribbon, additive save field `ribbon`, wording on the Card. nate decides whether to ship it (it softens the streak). **Conflicts:** R2 stamps, H3.
+
+### V9. One sound language
+**Pitch:** Sound is off by default and the open sound items are many small threads (door stings, hatch creak, ladder rungs, page turns, fire, cover thuds). One pass would give them a single set of recipes so nothing sounds like a different game.
+**Brief:** Goal: a sound palette doc (materials: paper, leather, wood, stone, brass) and every open sound item built from it. Files: `src/sound/`. Done when: every UI motion has a sound mapped, mute and quality settings respected. **Conflicts:** FH2, AE5, AT3, D1a, D1b, 103, BS1, R6, N9b.
+
+### V10. Keyboard and screen reader pass
+**Pitch:** The world is rich but tiers are told mainly by colour, pen text sits on cream at low contrast, and focus rings are not checked across the books and the attic.
+**Brief:** Goal: audit with the a11y test plus a manual keyboard walk: visible focus ring everywhere, tier name always in text, contrast at 4.5:1 for handwritten body text on paper. Files: styles, `test/a11y.test.js` additions. Done when: report of findings fixed. **Conflicts:** T-series, any css thread.
+
+### V11. Duplicate model code in the build
+**Pitch:** `dist/assets` holds two identical-size copies of transformers.web (579 KB each) next to a 392 KB main chunk and 235 KB css. The first load is heavier than it needs to be, and the Vite chunk-size warning is on every build.
+**Brief:** Goal: share one chunk between the worker and the main thread or load the judge only when a run starts; add manualChunks. Files: `vite.config.js`, `src/scorer/*`. Done when: build warning gone or silenced on purpose, `?perf` first-load numbers before and after. **Conflicts:** PF1, PF2, 39.
+
+### V12. Three hundred books
+**Pitch:** The shelf caps at 300 books but every test seeds a handful. Shelf, attic and Sets with a full save are the place a polished game can quietly stutter.
+**Brief:** Goal: a seeded 300-book save in the snapshot and perf scripts, fix whatever is slow (shelf render, attic piles, search). Files: `scripts/perf.mjs`, `test/`. Done when: numbers in the PR, no jank over 50 ms. **Conflicts:** PF1, AT13.
+
+### V13. Judge shows an unrelated sense of a related word
+**Pitch:** For "cabaret" the card's "Also means" lists "club: a heavy object, often a stick..." because nightclub contains "club". That is a bad look on a screen that is supposed to teach.
+**Brief:** Goal: only show related-word senses that share a relation with the target (synonym or hypernym link), cap at two, and give every line the same part-of-speech format ("noun" tag on all or none). Files: `src/scorer/`, card block. Done when: test with cabaret, bank, bark. **Conflicts:** J2, 91, 92, 93.
+
+### V14. A judge fairness report
+**Pitch:** The judge is the heart of the game and nate cannot see its mistakes. A script that runs 300 wrong, vague and right answers across the Daily pool and writes a table of surprises (wrong word scores 40+, good answer under 20).
+**Brief:** Files: extend `scripts/judge-bench.mjs`, output to `notes/judge-report.md`. Done when: runs offline in under a minute, top 20 surprises listed with words. **Conflicts:** J3, G3.
