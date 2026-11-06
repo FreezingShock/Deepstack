@@ -129,11 +129,12 @@ await step('descend and play one word', async () => {
   if (!(await page.locator('#cardlayer').innerText()).trim()) fail('result card was blank');
   // the reveal animation owns the card until the verdict shows; closing it earlier is a separate race
   await page.locator('#vd.on').waitFor({state: 'attached', timeout: T}).catch(() => fail('result verdict never revealed'));
+  await page.locator('#go:not(.gated)').waitFor({state: 'attached', timeout: T}); // the Next word ribbon must finish filling first
   await realClick(page, '#go', 'result card continue button');
   await page.locator('#stage .wlabel', {hasText: 'Word 2'}).waitFor({state: 'visible', timeout: T}).catch(() => fail('did not reach word 2'));
 });
 
-// 2b. Enter pressed the moment the card appears (mid-reveal) must close it cleanly and move on, not throw
+// 2b. Enter pressed the moment the card appears (mid-reveal) is ignored; once the ribbon has filled it closes the card cleanly
 await step('close result card mid-reveal', async () => {
   if (await page.locator('#stage .wlabel', {hasText: 'Word 2'}).count() === 0) return;
   await realClick(page, '#ans', 'answer box');
@@ -142,6 +143,11 @@ await step('close result card mid-reveal', async () => {
   const card = page.locator('#cardlayer:not([hidden])');
   for (let i = 0; i < 40 && !(await card.count()); i++) { await page.keyboard.press('Space'); await page.waitForTimeout(250); }
   if (!(await card.count())) { fail('no result card after answering word 2'); throw new Error('stop'); }
+  await page.keyboard.press('Enter'); // too early: the card ignores it
+  if (!(await page.locator('#cardlayer:not([hidden])').count())) fail('Enter closed the card mid-reveal');
+  await page.locator('#vd.on').waitFor({state: 'attached', timeout: T});
+  await page.locator('#go:not(.gated)').waitFor({state: 'attached', timeout: T});
+  await page.waitForTimeout(100);
   await page.keyboard.press('Enter');
   await page.locator('#stage .wlabel', {hasText: 'Word 3'}).waitFor({state: 'visible', timeout: T}).catch(() => fail('did not reach word 3 after closing the card early'));
   await page.waitForTimeout(1500); // let the abandoned reveal timers fire; any throw lands in pageerror

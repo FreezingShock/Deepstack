@@ -1,0 +1,7 @@
+/* Next word button: a ribbon fills like cooling wax before the card accepts Enter or a click (src/ui/nextGate.js) */
+.go.gated{position:relative;overflow:hidden;cursor:progress}
+.go.gated::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--c-amber-ffb84d-alpha-88,#ffb84d);transform-origin:left;transform:scaleX(0);opacity:.85}
+.go.gated.fill::after{transform:scaleX(1);transition:transform .5s linear}
+.go.gated:not(.fill){opacity:.55}
+.go.gated.fill{opacity:.8;transition:opacity .5s linear}
+@media (prefers-reduced-motion:reduce){.go.gated.fill::after{transition:none;transform:scaleX(1)}}

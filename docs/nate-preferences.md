@@ -133,3 +133,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 book close (AT8): asked that closed books slide back into the stack and "this should be very smooth" -> a returning object travels to where it came from (never a fade) and lands on its own footprint; 60fps, transform and opacity only.
 - 2026-11-06 top bar: picked Y5/Y6 ("hatch into the rail", "floor-tinted rail") -> the rail should read as one carved object: hatch inset in it, colour shifts soft and slow, never bright.
 - 2026-11-06 headwords: long words wrapped mid-word ("unconstitutio / nal") -> a headword is always one line; shrink the font to fit, never break inside a word.
+- 2026-11-06 result card (Z3): picked "Enter skips the result card" -> pressing or holding Enter must never skip a result unread; a short wax ribbon on Next word gates input (thread: stop Enter skipping the result card)

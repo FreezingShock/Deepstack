@@ -151,7 +151,8 @@ initCurios({world:World,canvas:cvEl,enabled:()=>!World.busy,...initCurioFx({S,sa
 onModelStatus(paintJudge);
 addEventListener('keydown',e=>{
  if(!$('#cardlayer').hidden&&cardOpts&&cardOpts.nav&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){const b=$(e.key==='ArrowLeft'?'#cprev':'#cnext');if(b&&!b.disabled){e.preventDefault();b.click();}return;}
- if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'){e.preventDefault();closeCard();return;}
+ if(!$('#cardlayer').hidden&&cardOpts&&e.key==='Enter'&&e.repeat){e.preventDefault();return;}/* a held Enter never skips a card */
+ if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'){e.preventDefault();if(!e.repeat)closeCard();return;}
  if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
  if(World.descending&&(e.key===' '||e.key==='Escape'||e.key==='Enter')){e.preventDefault();World.skipDown();}
 });

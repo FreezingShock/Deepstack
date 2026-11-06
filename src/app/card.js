@@ -12,11 +12,13 @@ import {FX} from './fx.js';
 import {countUp} from './chrome.js';
 import {alsoAcceptedHTML} from '../ui/alsoAccepted.js';
 import {fillMeans} from '../ui/alsoMeans.js';
+import {makeGate,GATE_MS} from '../ui/nextGate.js';
+export const gate=makeGate();
 
 /* ---------- result card ---------- */
 export let cardOpts=null;
 export function openCard(b,opts={}){
- cardOpts=opts;const T=TIERS[b.tier],L=$('#cardlayer');
+ cardOpts=opts;if(opts.fresh&&opts.onNext)gate.hold();else gate.open();const T=TIERS[b.tier],L=$('#cardlayer');
  L.innerHTML=`<div class="book t${b.tier}" id="bk" style="--tc:${T.spine};--ti:${T.ink};--tf:${[PALETTE.ash13,PALETTE.ash13,PALETTE.white,PALETTE.white,PALETTE.ash13,PALETTE.white,PALETTE.ash13][b.tier]}">
   <div class="halo" id="halo"></div>
   <div class="page">
@@ -46,16 +48,17 @@ export function openCard(b,opts={}){
  L.hidden=false;requestAnimationFrame(()=>L.classList.add('on'));
  fillMeans(L,b);
  const bk=$('#bk');stampCover(bk.querySelector('.cover'),b.w,b.tier);stampPage(bk.querySelector('.page'),b.w,b.tier);
- if(opts.fresh){const pl0=revealPlan(b.tier);bk.classList.add('rvc');const cvv=coverLockVars(pl0.cover,RM),dl=RM?0:pl0.cover.delay;for(const k in cvv)bk.style.setProperty(k,cvv[k]);setTimeout(async()=>{Sfx.paper();/* the closure comes undone first; the sting, shake and burst land when the cover starts to swing (Apocrypha's burst starts at once: it implodes first) */const at=(fn,ms)=>ms>0?setTimeout(()=>{if(cardOpts===opts)fn();},ms):fn();if(pl0.sound.sting)at(()=>Sfx.sting(b.tier),dl);if(pl0.shake)at(()=>Feel.shake(pl0.shake.amp,pl0.shake.ms),dl);if(pl0.slow)at(()=>Feel.slowmo(pl0.slow.scale,pl0.slow.ms),dl);bk.classList.add('open');{const pl=playReveal(L,b.tier,T.spine,RM);if(pl.ink)bk.classList.add('rv-ink');if(pl.pulse)bk.classList.add('rv-pulse');}at(()=>{const rc=bk.getBoundingClientRect();FX.reveal(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier);const hh=$('#halo');if(hh)hh.classList.add('go');},b.tier>=6?0:dl);await sleep(380+pl0.cover.delay);if(cardOpts!==opts)return;Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);if(cardOpts!==opts)return;$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.settle(rc.left+rc.width/2,rc.top+80,b.tier);}$('#go').focus();},220);}
+ if(opts.fresh){const pl0=revealPlan(b.tier);bk.classList.add('rvc');const cvv=coverLockVars(pl0.cover,RM),dl=RM?0:pl0.cover.delay;for(const k in cvv)bk.style.setProperty(k,cvv[k]);setTimeout(async()=>{Sfx.paper();/* the closure comes undone first; the sting, shake and burst land when the cover starts to swing (Apocrypha's burst starts at once: it implodes first) */const at=(fn,ms)=>ms>0?setTimeout(()=>{if(cardOpts===opts)fn();},ms):fn();if(pl0.sound.sting)at(()=>Sfx.sting(b.tier),dl);if(pl0.shake)at(()=>Feel.shake(pl0.shake.amp,pl0.shake.ms),dl);if(pl0.slow)at(()=>Feel.slowmo(pl0.slow.scale,pl0.slow.ms),dl);bk.classList.add('open');{const pl=playReveal(L,b.tier,T.spine,RM);if(pl.ink)bk.classList.add('rv-ink');if(pl.pulse)bk.classList.add('rv-pulse');}at(()=>{const rc=bk.getBoundingClientRect();FX.reveal(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier);const hh=$('#halo');if(hh)hh.classList.add('go');},b.tier>=6?0:dl);await sleep(380+pl0.cover.delay);if(cardOpts!==opts)return;Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);if(cardOpts!==opts)return;$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.settle(rc.left+rc.width/2,rc.top+80,b.tier);}armGo();$('#go').focus();},220);}
  else if(RM||opts.stepped){bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
  else{/* a card from the shelf opens like a book: the cover swings over, then the page is read */requestAnimationFrame(()=>requestAnimationFrame(()=>{if(cardOpts===opts)bk.classList.add('open');}));setTimeout(()=>{if(cardOpts===opts)$('#go').focus();},360);}
- $('#go').onclick=closeCard;
+ function armGo(){if(!(opts.fresh&&opts.onNext)||cardOpts!==opts)return;const g=$('#go');if(!g)return;gate.start(RM?0:GATE_MS);if(RM){return;}g.classList.add('gated');requestAnimationFrame(()=>requestAnimationFrame(()=>g.classList.add('fill')));setTimeout(()=>{if(cardOpts===opts)g.classList.remove('gated','fill');},GATE_MS);}
+ $('#go').onclick=e=>{if(!gate.ready()||(e&&e.detail===0&&e.repeat))return;closeCard();};
  if(opts.shelve)opts.shelve.wire(bk);
  const fv=$('#cfav');if(fv)fv.onclick=()=>{b.fav=!b.fav;if(!b.fav)delete b.fav;save();fv.setAttribute('aria-pressed',!!b.fav);fv.textContent=b.fav?'★ Favourite':'☆ Mark as favourite';};
  if(opts.nav){const step=n=>openCard(opts.nav.items[opts.nav.i+n],{...opts,stepped:true,nav:{...opts.nav,i:opts.nav.i+n}});$('#cprev').onclick=()=>step(-1);$('#cnext').onclick=()=>step(1);}
  L.onclick=e=>{if(e.target===L&&!opts.onNext)closeCard();};
 }
-export function closeCard(){const L=$('#cardlayer');const o=cardOpts;cardOpts=null;
+export function closeCard(){if(!gate.ready())return;const L=$('#cardlayer');const o=cardOpts;cardOpts=null;
  /* a shelf card swings shut before the layer fades; fresh results and reduced motion fade as before */
  const swing=!RM&&o&&!o.fresh&&!o.stepped&&!L.classList.contains('shutting')&&L.querySelector('#bk.open:not(.gone)');
  if(swing){L.classList.add('shutting');L.querySelector('#bk').classList.remove('open');}
