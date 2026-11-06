@@ -1889,7 +1889,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** After TA1 about one word in six is still off (racism in the Anatomy Theatre, tramp in the Chronicle, blueberry in the Gallery) because Wiktionary tags the sense loosely and the meaning check is MiniLM, not a person.
 **Brief:** Goal: print each room's 500 words as a one-line-each review sheet (`node scripts/room-audit.mjs --noise` already lists untagged ones), cull by eye into `scripts/data/room-excludes.json`, rebuild, keep the anchor guard green. Files: `scripts/data/room-excludes.json`, `scripts/build-room-words.mjs`. **Conflicts:** TA1 (done), TA2.
 
-### TA9. [x] (senses half done in this PR: scripts/build-room-senses.mjs) A room's word shows the room's own hint and "also means"
+### TA9. [x] (PR pending; senses via scripts/build-room-senses.mjs) A room's word shows the room's own hint and "also means"
 **Pitch:** The Observatory now asks for the science sense of a word, but the "also means" strip and the clue still come from the main list's sense.
 **Brief:** Goal: for words in `room-words.json`, drive the clue, hint and "also means" line from the room entry so the whole card agrees with the definition. Files: `src/core/roomPool.js`, `src/ui/alsoMeans.js`. **Conflicts:** TA1 (done).
 

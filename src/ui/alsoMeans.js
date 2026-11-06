@@ -11,7 +11,7 @@ export function meaningRows(b, sen) {
   const main = String(b.def || '').toLowerCase();
   const alt = (s.alt || []).filter(a => a[1].toLowerCase() !== main).slice(0, 2).map(([pos, g]) => ({k: pos, g}));
   // A synonym that is only a piece of another listed synonym ("club" inside "nightclub") is a different word's sense: skip it.
-  const all = s.syn || [];
+  const all = s.rs && b.room ? [] : (s.syn || []); // rs: the synonyms were built for the main list's sense, not this room's
   const part = w => all.some(([o]) => o !== w && o.length > w.length && (o.endsWith(w) || o.startsWith(w)));
   const syn = all.filter(([w]) => !part(w)).slice(0, 2).map(([w, g]) => ({k: w, g, syn: true}));
   return [...alt, ...syn];
