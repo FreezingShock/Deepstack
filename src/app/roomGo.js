@@ -3,7 +3,6 @@
    Daily line type themselves in. Nothing slides or fades in as a new room. */
 import {S} from './state.js';
 import {ui} from './chrome.js';
-import {RM} from './util.js';
 import {Sfx} from '../feel.js';
 import {enterRoom} from './rooms.js';
 import {showHome} from './home.js';
@@ -11,7 +10,6 @@ import {currentRoom} from '../core/roomStore.js';
 import {roomIndex,ROOMS} from '../core/rooms.js';
 import {paintRoomVars,typeOnNextMount} from '../ui/roomHome.js';
 
-const SHIFT_MS=360; // the doors' fresh arches fade in over --m-smooth
 let busy=false;
 /** Direction of the shorter way round the ring from the current room to `id`: 1 next (rightwards), -1 previous. */
 export function ringDir(from,to){const n=ROOMS.length,d=((roomIndex(to)-roomIndex(from))%n+n)%n;return d<=n/2?1:-1;}
@@ -19,15 +17,12 @@ export async function goRoom(id,dir){
  const from=currentRoom(S);
  if(busy||id===from)return false;
  busy=true;
- const home=ui.home,still=RM||home.hidden;
- try{
+  try{
   Sfx.cue&&Sfx.cue('door');
   paintRoomVars(id,undefined,{settle:true}); // the fire, the light, the title and the labels glide to the new colours; the fireplace itself stays
   typeOnNextMount();
   await enterRoom(id);
-  showHome();
-  home.classList.remove('fadein'); // no fade-in of a whole new room: only the words type
-  if(!still){home.classList.add('rm-enter');setTimeout(()=>home.classList.remove('rm-enter'),SHIFT_MS+40);}
+  showHome({keep:true}); // the home is redrawn around the same burning fire and the same wall; only the words type
  }finally{busy=false;}
  return true;
 }

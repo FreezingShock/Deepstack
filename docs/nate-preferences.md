@@ -144,3 +144,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06: tiny spine captions on the home stacks (NO. 4, 113, LEXICON 44, 7 ROOMS) are unacceptable; text must be readable, vertically centred, never clipped or ellipsized.
 - 2026-11-06 scoring feedback: the score, depth gain and feedback line must agree (a partial answer like "someones speaking patterns" for prose must not read "nothing here points at the meaning"); every word, including multi-definition ones, should accept its valid senses.
 - 2026-11-06 alcove position: the alcove must sit vertically centred with half a row of books above and below on every resolution, home and in the run (after each answer, results); it looked off at the top with a full row below on a windowed 1920x1080.
+- 2026-11-06 room switching (tested): the whole fireplace must never disappear or reset elements; only gradient-tween the colours; typewriter reveals from the centre out.
