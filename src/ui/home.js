@@ -166,7 +166,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   noteTurned(sp);
   if(reduce||!sp.classList.contains('intro')){idx=j;side=s2;paint();return;}
   bookSound('flip');
-  const next=d>0,leaf=document.createElement('div');leaf.className='bs-flip '+(next?'next':'prev')+(one?' one':'');
+  const next=d>0,leaf=document.createElement('div');leaf.className='bs-flip hold '+(next?'next':'prev')+(one?' one':'');
   const face=(cls,html)=>`<div class="bs-face ${cls} bs-page" inert>${html}</div>`;
   const L=sp.querySelector('.bs-page.l'),R=sp.querySelector('.bs-page.r');
   const cur=one?(side==='r'?R:L):(next?R:L);                      /* the page being lifted */
@@ -186,7 +186,10 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   }
   leaf.innerHTML=face('front',front)+(one?'':face('back',back));
   sp.appendChild(leaf);sp.classList.add('flipping',next?'flip-next':'flip-prev');
-  flying={leaf,done,t:setTimeout(settle,FLIP_MS+40)};
+  /* the heavy work (page swap, layout, leaf raster) lands in this frame; the sweep starts a frame later */
+  const go=()=>{if(leaf.isConnected)leaf.classList.remove('hold');};
+  requestAnimationFrame(()=>requestAnimationFrame(go));
+  flying={leaf,done,t:setTimeout(settle,FLIP_MS+120)};
   leaf.addEventListener('animationend',e=>{if(e.target===leaf)settle();});
  };
  /* swipe on the open book: a mostly horizontal drag turns the page */
