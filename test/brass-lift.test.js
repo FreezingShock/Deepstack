@@ -53,3 +53,10 @@ test('the carried book sits inside the cage on its floor, scaled to fit', () => 
     assert.ok(b.s >= 1 && 123 * b.s < g.ch && 36 * b.s < g.cw);
   }
 });
+
+test('exit: the cage rises up the rope and fades near the top', () => {
+  const a = liftEnvelope({phase: 'exit', pull: 0, H: 700}), b = liftEnvelope({phase: 'exit', pull: .5, H: 700}), c = liftEnvelope({phase: 'exit', pull: 1, H: 700});
+  assert.equal(a.dip, 0); assert.equal(a.alpha, 1);
+  assert.ok(b.dip < a.dip && c.dip < b.dip && c.dip <= -700 * .7);
+  assert.equal(c.alpha, 0);
+});

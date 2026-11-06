@@ -37,7 +37,7 @@ export function cageBook(g, bh) {
 
 /** What the lift shows for a descent state. phase: 'down' | 'settle' | 'pull' | 'hold' | 'exit' (cage leaves; pull = 0..1).
  *  u: glide progress 0..1; settle/pull: 0..1 progress of those phases. Returns {alpha, latch, dip, full}. */
-export function liftEnvelope({phase, u = 0, settle = 0, pull = 0, rm = false, quality = 'high'}) {
+export function liftEnvelope({phase, u = 0, settle = 0, pull = 0, rm = false, quality = 'high', H = 700}) {
   const none = {alpha: 0, latch: 0, dip: 0, full: false, latchOnly: false};
   if (quality === 'low' || !phase) return none;
   if (phase === 'hold' && rm) return none;
@@ -48,7 +48,10 @@ export function liftEnvelope({phase, u = 0, settle = 0, pull = 0, rm = false, qu
   }
   if (phase === 'down') return {alpha: smooth(u / 0.1), latch: 0, dip: 0, full: true, latchOnly: false};
   if (phase === 'settle') return {alpha: 1, latch: latchOpen(settle), dip: landDip(settle), full: true, latchOnly: false};
-  if (phase === 'exit') return {alpha: 1 - smooth(pull), latch: 1, dip: 0, full: true, latchOnly: false};
+  if (phase === 'exit') { // the cage climbs back up its rope (slow start, then away), fading near the top
+    const k = clamp(pull, 0, 1);
+    return {alpha: 1 - smooth((k - .55) / .45), latch: 1, dip: 0 - (k * k * .6 + smooth(k) * .4) * H * .75, full: true, latchOnly: false};
+  }
   return {alpha: 1, latch: 1, dip: 0, full: true, latchOnly: false}; // pull and hold: the cage stays around the book
 }
 

@@ -8,6 +8,7 @@ import {worldCovered,frameInterval} from '../ui/canvasCover.js';
 import {Quality} from '../ui/quality.js';
 import {worldDpr} from '../ui/dprCap.js';
 import {Feel,Sfx} from '../feel.js';
+import {DUR} from '../ui/motion.js';
 import {travelEase,travelMs,ascendMs} from '../ui/camMotion.js';
 import {deepProps,deepWall,deepProp} from '../ui/floorArt.js';
 import {pullX as pullXAt} from '../core/pull.js';
@@ -39,7 +40,7 @@ import {drawBackStacks,resetBackStacks} from './backStacks.js';
 export const World=(()=>{
  const cv=$('#world');let ctx=cv.getContext('2d');const ctx0=ctx;let building=false;const bmpPool=[];
  let W=0,H=0,DPR=1,RH=150,BM=20,rows=new Map(),taken=new Set(),cam=0,restRow=0,st=null,dust=[],vt=0,last=performance.now();
- let leaving=null,eyeCam=0,atticMove=null,atticYLast=0,atticT=0,atticGoal=0,atticCb=null,atticItems=[],room=null,roomKey='',atticS=0,atticSGoal=0,atticSAt=0,atticSCb=null,atticSecI=-1,atticA=0;
+ const LEAVE_S=DUR.page/1000;let leaving=null,carried=null,eyeCam=0,atticMove=null,atticYLast=0,atticT=0,atticGoal=0,atticCb=null,atticItems=[],room=null,roomKey='',atticS=0,atticSGoal=0,atticSAt=0,atticSCb=null,atticSecI=-1,atticA=0;
  let shelf=[],hits=[],ledgeCb=null,onDepth=null,gaugeCb=null,niches=new Map(),boff=0,btgt=0,wasB=false,browseCb=null;
  const ZS=[0,.14,.3,.46,.62,.78,.92];
  let rowsKey=null,rowsVal=0;const rowsN=()=>{if(rowsKey!==atticItems||rowsW!==W){rowsKey=atticItems;rowsW=W;rowsVal=rowCount(atticItems,W);}return rowsVal;};let rowsW=0;
@@ -246,7 +247,7 @@ export const World=(()=>{
   if(st){
    if(st.phase==='down'){const u=Math.min(1,st.t/st.dur);st.t+=dt*(st.skip?6:1);camNow=passCam(st.cam0+(st.cam1-st.cam0)*travelEase(u),u,RH,H,RM);st.prog=u;doorsPassed(camNow,now);if(u>=1){st.phase='settle';st.pt=0;Sfx.land();}}
    if(st.phase==='settle'){st.pt+=dt*(st.skip?6:1);camNow=st.cam1;st.prog=1;settle=Math.min(1,st.pt/.3);if(settle>=1){st.phase='pull';st.pt=0;Sfx.paper();}}
-   if(st.phase==='pull'||st.phase==='hold'){camNow=st.cam1;settle=1;if(st.phase==='pull')st.pt+=dt*(st.skip?6:1);pull=Math.min(1,st.pt/.7);if(st.phase==='pull'&&pull>=1){st.phase='hold';const r=st.res;st.res=null;r&&r();}}
+   if(st.phase==='pull'||st.phase==='hold'){camNow=st.cam1;settle=1;if(st.phase==='pull')st.pt+=dt*(st.skip?6:1);pull=Math.min(1,st.pt/.7);if(st.phase==='pull'&&pull>=1){st.phase='hold';if(!RM&&Quality.params().name!=='low')Sfx.cue('shut');const r=st.res;st.res=null;r&&r();}}
    cam=camNow;boff=btgt=0;
   }else if(rest){const u=Math.min(1,(now-rest.t0)/rest.ms),e=travelEase(u);cam=passCam(rest.c0+(rest.c1-rest.c0)*e,u,RH,H,RM);doorsPassed(cam,now);if(u>=1){const f=rest.done;rest=null;f&&f();}camNow=cam;boff=btgt=0;}
   else{pass.idle();boff=RM||Math.abs(btgt-boff)<.5?btgt:boff+(btgt-boff)*Math.min(1,rdt*14);camNow=cam+boff+(RM||boff?0:Math.sin(vt*.5)*1.5);}
@@ -281,9 +282,10 @@ export const World=(()=>{
   for(const [nr,nv] of niches)drawNiche(nr,nv,camNow,now);
   drawLoreGlows(top,bot,camNow);
   if(ledgeCb){const cn=niches.get(restRow);ledgeCb(!st&&!rest&&cn&&cn.hit&&cn.books?cn.hit:null,cn&&cn.books);}
-  let lenv=null,lgeom=null;
+  let lenv=null,lgeom=null;carried=null;
   if(st){const n=nicheBox();lgeom=liftGeom(W,H,n.w);lenv=liftEnvelope({phase:st.phase,u:st.prog,settle,pull,rm:RM,quality:Quality.params().name});drawLift(ctx,{W,H,cam:camNow,cam0:st.cam0,vt,geom:lgeom,baseX:pullX(st.row),baseY:tgt?tgt.base:H*.7,env:lenv});} // the brass lift: rope, pulley and cage ride the camera glide, then hold the book while it is read
-  else if(leaving){leaving.t+=dt;if(leaving.t>=.3)leaving=null;else{const n=nicheBox();drawLift(ctx,{W,H,cam:camNow,cam0:leaving.cam0,vt,geom:liftGeom(W,H,n.w),baseX:0,baseY:0,env:liftEnvelope({phase:'exit',pull:leaving.t/.3,rm:RM,quality:Quality.params().name})});}} // the cage lets go once the card is closed
+  else if(leaving){leaving.t+=dt;if(leaving.t>=LEAVE_S)leaving=null;else{const n=nicheBox(),lg=liftGeom(W,H,n.w),p=leaving.t/LEAVE_S,env=liftEnvelope({phase:'exit',pull:p,rm:RM,quality:Quality.params().name,H});drawLift(ctx,{W,H,cam:camNow,cam0:leaving.cam0,vt,geom:lg,baseX:0,baseY:0,env});
+   const bh=RH*.82,cb=cageBook(lg,bh);ctx.save();ctx.globalAlpha=env.alpha;ctx.translate(cb.x,cb.y+env.dip);ctx.scale(cb.s,cb.s);bookArt(ctx,{w:36,h:bh,tier:leaving.tier,seed:leaving.seed,word:leaving.word,held:true,ribbon:leaving.tier>=1?RIBBONS[leaving.tier%5]:null},vt);ctx.restore();drawLiftFront(ctx,{env,geom:lg});}} // the cage rises away with the book once the card is closed
   // pulled-out target
   if(st&&tgt){const T=TIERS[st.tier],e=pull*pull*(3-2*pull),bw=36,bh=RH*.82;const bx=pullX(st.row),by0=tgt.base; // seated in the gap genRow leaves in the target shelf, never floating above it
   const cy=H*.5;const inCage=!!(lenv&&lenv.full);const cb=inCage?cageBook(lgeom,bh):null; // in the cage the book rides into it and rests on its floor
@@ -295,7 +297,7 @@ export const World=(()=>{
    const lg0=e>0&&!cb?lecternGeom(px,py,bw,bh,s,RM?1:e):null;if(lg0)drawLecternBack(ctx,lg0,RM?1:Math.min(1,e*1.6)); // the stand rises with the pull; reduced motion shows it already raised
    ctx.save();ctx.translate(px,py);ctx.scale(s,s);bookArt(ctx,{w:bw,h:bh,tier:st.tier,seed:st.seed,word:st.word,held:true,ribbon:st.tier>=1?RIBBONS[st.tier%5]:null},vt);ctx.restore();
    if(lg0)drawLecternLip(ctx,lg0,RM?1:Math.min(1,e*1.6));
-   if(cb)drawLiftFront(ctx,{env:lenv,geom:lgeom});}
+   if(cb){drawLiftFront(ctx,{env:lenv,geom:lgeom});carried={x:px,y:py-bh*s/2,h:bh*s};}}
   // darkness / lamp (shrinks with abandonment)
   const lx=W/2,ly=H*.5,lr=Math.hypot(W,H)*(.6-.2*a)*atm.lampR;
   {const aq=Math.round(a*48)/48;stampGlow(ctx,glowSprite(...lampGlow(aq)),lx,ly,lr);fillOutside(ctx,W,H,lx,ly,lr,`rgba(3,2,2,${.93+.06*aq})`);} // cached sprite, a quantised to 1/48
@@ -384,7 +386,8 @@ export const World=(()=>{
   skipDown(){if(st)st.skip=true;},
   nextRows(){const n=nicheBox();return Math.ceil((H-BM-n.t)/RH);},
   glide(row,ms){return new Promise(res=>{const c0=cam,c1=restCam(row);rest={t0:performance.now(),ms:RM?200:(ms||travelMs(Math.abs(c0-c1)/RH)),c0,c1,done:()=>{restRow=row;res();}};});},
-  release(){if(!st)return;if(!RM&&st.phase!=='down')leaving={t:0,cam0:st.cam0};taken.add(st.row);rows.delete(st.row*2);restRow=st.row;cam=restCam(restRow);st=null;},
+  release(){if(!st)return;if(!RM&&st.phase!=='down')leaving={t:0,cam0:st.cam0,tier:st.tier,seed:st.seed,word:st.word};if(leaving)Sfx.cue('lift');taken.add(st.row);rows.delete(st.row*2);restRow=st.row;cam=restCam(restRow);st=null;},
   ascend(){return new Promise(res=>{const c0=cam,c1=restCam(0),dist=Math.abs(c0-c1)/RH;let off=()=>{};const fin=()=>{off();restRow=0;res();};rest={t0:performance.now(),ms:ascendMs(dist,RM),c0,c1,done:fin};const skip=e=>{if(rest&&rest.done===fin&&(e.type!=='keydown'||!e.repeat))rest.t0=-1e9;};addEventListener('keydown',skip);addEventListener('pointerdown',skip);off=()=>{removeEventListener('keydown',skip);removeEventListener('pointerdown',skip);};});},
+  get carriedBook(){return st&&st.phase==='hold'?carried:null;}, // where the cage holds the book on screen (centre x, y and height), for the card to grow out of
   get stActive(){return !!st;},get descending(){return !!st&&st.phase!=='hold';}
  };})();
