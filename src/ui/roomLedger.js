@@ -26,7 +26,8 @@ export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, 
     const [d, n] = tally(r.id), m = r.id === HALL ? '' : met(r.id), mm = /(\d+) of (\d+)/.exec(m);
     const f = mm && +mm[2] ? Math.min(1, +mm[1] / +mm[2]).toFixed(3) : 0;
     const right = r.id === HALL ? `${shelfWords} ${shelfWords === 1 ? 'word' : 'words'} met` : m || `${d}/${n} sets`;
-    return `<li class="${r.id === cur ? 'here' : ''}" data-room="${r.id}" style="--c:${rgbOf(r)}"><span><i class="rl-dot" style="--f:${r.id === HALL ? (shelfWords ? 1 : 0) : f}" aria-hidden="true"></i>${esc(r.name)}${r.id === cur ? ' (here)' : ''}</span><b>${esc(right)}</b></li>`;
+    const sf = n ? (d / n).toFixed(3) : 0, tip = `${right}${r.id === HALL ? '' : `, ${d} of ${n} sets complete`}`;
+    return `<li class="${r.id === cur ? 'here' : ''}" data-room="${r.id}" style="--c:${rgbOf(r)}" title="${esc(tip)}"><span><i class="rl-dot${r.id === HALL ? ' nosets' : ''}" style="--f:${r.id === HALL ? (shelfWords ? 1 : 0) : f};--s:${sf}" aria-hidden="true"></i>${esc(r.name)}${r.id === cur ? ' (here)' : ''}</span><b>${esc(right)}</b></li>`;
   }).join('');
   leaves.push(`<h1>Room ledger</h1><div class="kicker">${ROOMS.length} rooms · ${ROOMS.length} fires</div>
    <p class="note">Every room keeps its own words, its own Daily, its own Lexicon and its own sets. Your shelf and stats come with you.</p>
