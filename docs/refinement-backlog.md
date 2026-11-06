@@ -1889,3 +1889,10 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** nate: multi-definition words and homophones might not be added; answers that fit a real sense should score. **Brief:** Goal: each new word gets its other senses in `public/data/senses.json` (`alt: [[pos, gloss]]`); the scorer already reads them. Files: `scripts/build-senses.mjs`, data only. **Conflicts:** room word lists thread.
 ### SC3. Show what the answer did get right on low scores
 **Pitch:** the verdict names the gap; the caught/missed lines could also say which part overlapped. **Brief:** Goal: use `j.caught` in the tier 0 and 1 verdict. Files: `src/core/verdict.js`. **Conflicts:** none.
+### CC4. Half-row bands as a living edge
+**Pitch:** The half rows above and below the alcove are now deliberate; make them feel alive.
+**Brief:** Goal: let a few books in the top and bottom bands react (a book tilts toward the cursor, a lamp glow spills on the bottom plank). Files: a new `src/ui/bandLife.js`. **Conflicts:** `world.js` draw loop, ambient.js.
+
+### CC5. Tall-screen alcove breathing
+**Pitch:** On 1440p+ tall windows the alcove spans many rows; add a mid-wall detail.
+**Brief:** Goal: for windows over 1200 px tall, add a small plaque or ladder on the side shelves at the alcove's mid height. Files: new css/js only. **Conflicts:** none known.

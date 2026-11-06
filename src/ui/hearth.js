@@ -165,6 +165,7 @@ function createHearth(home, sfx, mood) {
       const candles = q('.mantel-row');
       if (getComputedStyle(mantelEl).display === 'none') { setStyle(mantelEl, 'display', 'block'); setStyle(candles, 'display', 'none'); }
       home.classList.add('hearth-flow');
+      setStyle(mantelEl, 'transition', 'none'); // reduced motion gives every property a 0.01ms transition, and the solver below would measure stale margins
       // room under the mantel: the mantel's own headroom plus whatever is left above the stacks, at most 230
       const stacksTop = () => shelves.length ? Math.min(...shelves.map(s => loc(s).y)) : H;
       const bottom = () => loc(tag && tag.style.display !== 'none' ? tag : descend).b;

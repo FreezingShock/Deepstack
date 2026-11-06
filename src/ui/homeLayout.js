@@ -8,7 +8,7 @@ export const HOME_TIERS=[
  {name:'roomy',min:600,gap:20,bookH:46,steps:true,stats:true},
  {name:'cozy',min:460,gap:15,bookH:38,steps:true,stats:false},
  {name:'snug',min:380,gap:11,bookH:34,steps:false,stats:false},
- {name:'tight',min:0,gap:8,bookH:30,steps:false,stats:false},
+ {name:'tight',min:0,gap:3,bookH:28,steps:false,stats:false},
 ];
 export function homeTier(h){return HOME_TIERS.find(t=>h>=t.min)||HOME_TIERS[HOME_TIERS.length-1];}
 /* bigger text counts as a shorter room, so the tier drops optional strips instead of overflowing */
