@@ -116,3 +116,6 @@ body:has(#home.rm-enter) #rm-doors{animation:rmDoorsIn var(--m-smooth) var(--e-s
 .rm-door.rm-next.go .rm-leaf{transform:perspective(380px) rotateY(88deg)}
 .rm-door.go .rm-lamp{box-shadow:0 0 26px 10px rgba(var(--c),.7)}
 @media(prefers-reduced-motion:reduce){.rm-leaf{transition:none}}
+/* "47 of 118 met": how much of a room the player has seen (TA2) */
+.rm-plate .rm-met{font-style:normal;opacity:.8;letter-spacing:.04em;margin-top:2px}
+.hz-title .tagline .rm-met{font-size:.7em;font-style:normal;opacity:.75;letter-spacing:.04em;white-space:nowrap}
