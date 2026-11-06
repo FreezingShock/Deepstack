@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Look at the Daily book after a fresh Daily: the dated tab is now a stitched cloth flag with a brass eyelet. Say if the dye is too muted or too loud for a low tier.
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
 - Pull `main` and look at the fire: it now burns low on a 0 streak and roars after a few weeks, and its sparks take the colour of your last book's tier (aqua after an Apocrypha, red after a Grimoire). At 375x667 and 800x900 the fireplace now shows, with the Daily and Unlimited spines still on screen. Say if the low 0-streak fire feels too dim.
 - Open the Unlimited book at your window size and on your phone: a big Descend button (Find my rank before you are placed) now sits under your rank, with "Place me again" quietly beneath. Say if it reads clearly. (Unlimited pages, UB1)
@@ -1726,3 +1727,11 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### Headword fit follow-ups
 **Pitch:** Headwords now shrink to fit on one line; the same fit rule could cover the shelf spine plaques and Daily result words.
 **Brief:** Goal: reuse `src/ui/fitHeadword.js` selectors for any remaining word label that still wraps. Files: that selector list only. **Conflicts:** result page threads.
+
+### Daily tab: wear and weeks
+**Pitch:** The dated flag could fray a little by the end of a streak week, and a missed day could leave a faded flag from yesterday.
+**Brief:** Goal: age the `.dly-tab` by streak/day without new state. Files: `src/ui/dailyBind.css` and `placeDailyTab` only. **Conflicts:** streak threads.
+
+### Daily tab: tier materials
+**Pitch:** Low tiers get plain cloth, Codex and above get gilt stitching or a leather tab, so the flag shows rarity like the books.
+**Brief:** Goal: per-tier material classes on `.dly-tab`, in the muted palette. Files: `src/ui/dailyBind.css`. **Conflicts:** tier frame threads.

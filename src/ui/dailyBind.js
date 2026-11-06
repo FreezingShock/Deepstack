@@ -24,7 +24,7 @@ export function placeDailyTab(home,d,day,{animate=false}={}){
  const book=home&&home.querySelector('#bDaily');if(!book||!d||binding&&!animate)return null;
  book.querySelector('.dly-tab')?.remove();
  const t=document.createElement('span');t.className='dly-tab';t.setAttribute('aria-hidden','true');
- t.textContent=tabLabel(day);t.style.setProperty('--tab',(TIERS[d.best]||TIERS[0]).spine);
+ const lb=document.createElement('b');lb.textContent=tabLabel(day);t.appendChild(lb);t.style.setProperty('--tab',(TIERS[d.best]||TIERS[0]).spine);
  if(animate)t.classList.add('pre');
  book.appendChild(t);
  if(animate)requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.remove('pre')));
