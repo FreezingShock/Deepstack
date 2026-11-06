@@ -24,7 +24,10 @@ function setProgress(loaded, total) {
 
 function mainThread() {
   return (async () => {
-    const {loadEngine} = await import('./engine.js');
+    // Reuse the worker bundle (it exports loadEngine and stays inert off a worker thread) instead of a second copy of transformers.js.
+    const {default: bundle} = await import('./worker.js?worker&url');
+    await import(/* @vite-ignore */ bundle);
+    const loadEngine = globalThis.__deepstackLoadEngine;
     const files = {};
     const eng = await loadEngine(absBase(), e => {
       if (e.status !== 'progress' || !e.file || !e.total) return;

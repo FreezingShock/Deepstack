@@ -1585,7 +1585,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The world is rich but tiers are told mainly by colour, pen text sits on cream at low contrast, and focus rings are not checked across the books and the attic.
 **Brief:** Goal: audit with the a11y test plus a manual keyboard walk: visible focus ring everywhere, tier name always in text, contrast at 4.5:1 for handwritten body text on paper. Files: styles, `test/a11y.test.js` additions. Done when: report of findings fixed. **Conflicts:** T-series, any css thread.
 
-### V11. Duplicate model code in the build
+### V11. [x] Duplicate model code in the build (PR pending: one transformers.js copy, warning silenced on purpose; first-paint bytes were already lazy for the model, so the win is deploy size; main chunk 392 KB is spread thin, see V15 below)
 **Pitch:** `dist/assets` holds two identical-size copies of transformers.web (579 KB each) next to a 392 KB main chunk and 235 KB css. The first load is heavier than it needs to be, and the Vite chunk-size warning is on every build.
 **Brief:** Goal: share one chunk between the worker and the main thread or load the judge only when a run starts; add manualChunks. Files: `vite.config.js`, `src/scorer/*`. Done when: build warning gone or silenced on purpose, `?perf` first-load numbers before and after. **Conflicts:** PF1, PF2, 39.
 
@@ -1600,3 +1600,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### V14. A judge fairness report
 **Pitch:** The judge is the heart of the game and nate cannot see its mistakes. A script that runs 300 wrong, vague and right answers across the Daily pool and writes a table of surprises (wrong word scores 40+, good answer under 20).
 **Brief:** Files: extend `scripts/judge-bench.mjs`, output to `notes/judge-report.md`. Done when: runs offline in under a minute, top 20 surprises listed with words. **Conflicts:** J3, G3.
+
+### V15. Trim the main chunk
+**Pitch:** The first paint still ships a 392 KB (151 KB gzip) main chunk and 235 KB css, spread over hundreds of small modules; the biggest are hearth.js, world.js, thresholds.js and atticRoom.js.
+**Brief:** Goal: lazy-load the attic room drawing and other below-the-fold canvas code behind idle time, and split rarely used css, without changing any animation. Files: `src/world/atticRoom.js`, `src/world/world.js`, `src/ui/lazyScreens.js`. Done when: `?perf` first-load numbers drop and the smoke test passes. **Conflicts:** PF1, PF2, AT13.
