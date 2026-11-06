@@ -93,10 +93,12 @@ jobs:
           node scripts/smoke.mjs & smoke=$!
           node scripts/snapshots.mjs & snaps=$!
           node scripts/text-fit.mjs & fit=$!
+          node scripts/transitions.mjs & trans=$!
           rc=0
           wait $smoke || rc=1
           wait $snaps || rc=1
           wait $fit || rc=1
+          wait $trans || rc=1
           exit $rc
       - name: Upload snapshot diffs
         if: failure()
