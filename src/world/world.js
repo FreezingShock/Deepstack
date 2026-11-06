@@ -348,10 +348,13 @@ export const World=(()=>{
   onAtticRow(f){atticSCb=f;},
   /* move along the room by `n` rows (fractions from a wheel). Returns false when already at the first row and settled,
      so the caller can leave the attic. */
-  atticGo(n){if(atticGoal!==1)return false;const mx=Math.max(0,rowsN()-1),g=clamp(atticSGoal+clamp(n,-1,1),0,mx),now2=performance.now();
-   if(Math.abs(g-atticSGoal)>=.5&&now2-atticSAt<260)return true;
-   if(g===atticSGoal){const hold=n<0&&atticSGoal===0&&now2-atticSAt<450;if(hold)atticSAt=now2;return hold;}
-   atticSGoal=g;atticSAt=now2;return true;},
+  atticGo(n){if(atticGoal!==1)return false;
+   if(atticT<1)return true; // still climbing in: no row changes until the attic is fully in (swallowed, so the caller does nothing)
+   const mx=Math.max(0,rowsN()-1),cur=Math.round(atticSGoal),g=clamp(cur+(n<0?-1:1),0,mx);
+   if(g===cur)return false; // already at the end of the room in that direction
+   if(Math.abs(atticS-atticSGoal)>.3)return true; // still gliding to the last row: one row per move
+   atticSGoal=g;atticSAt=performance.now();return true;},
+  get atticReady(){return atticGoal===1&&atticT>=1;},
   atticStep(n){return World.atticGo(n);},
   get canAttic(){return !st&&!rest&&restRow===0;},
   get atticOpen(){return atticGoal===1;},
