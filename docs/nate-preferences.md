@@ -151,3 +151,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 decisions: "provide a lot of screenshots if you want me to decide something" (new rule): every option at desktop and phone sizes, open and in context on the real screen.
 - 2026-11-06 stats scope: picked "TA3" from the audit, wants numbers clearly labelled as this room versus all rooms (the 0 day streak beside 300 ft deepest in the Chronicle confused).
 - 2026-11-06 Almanac streak: picked option B (this room and any room as two tallies side by side).
+- 2026-11-06 verification rule: every visual fix is checked at 375 and desktop, with reduced motion on, in every room (seed the longest case so the bug truly reproduces), and gets a CI fit or snapshot guard.

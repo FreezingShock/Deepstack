@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - On your phone, open the Rooms book, tap a room in the contents list (try the Reading Room): it now turns to that room's page. CI also walks every room by door, keys, dots and the book on every push (TA4).
+- Look at the Card's Floor row (try the Catacombs and the Sunken Vault), the attic ladder at phone width, and the fire swatch on the side-door plates (TA7, PR #305 + follow-up). Also note: side doors were missing under reduced motion until this PR; check they now show on first load with Reduce motion on.
 - Switch to the Chronicle on desktop: the top bar plates and Librarian's Card now tag Streak with the room and Deepest/Books/Floor with "all rooms"; open Stats and check the pen tags under each page title. Say if the wording or size is off.
 - Open the card catalogue on the left wall of home (1000 px and wider): pull each of the eight drawers, flip the cards with Turn, cycle with the arrow keys, and check the Settings drawer. On a big window the whole room, cabinet and fire are now much bigger; say if the word alcoves being wider on big windows feels right. Tell me which drawers to add or drop (CC1 to CC3 below).
 - Look at the home plaque on your 1920 screen while mid-Daily: Continue should now have a clear gap to the Library Rules drawers and the Librarian's Card (src/ui/plaqueGap.css).
@@ -1861,6 +1862,18 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### TA7. [x] Small room visuals (this PR)
 **Pitch:** (a) The Card's floor name still truncates ("The Cataco…") beside its label. (b) At 375 the attic hatch plate shows a second offset frame behind it. (c) The room dots on phones are tiny and unnamed (covered by TA5). (d) Room names in the side-door plates are good; the Reading Room one has no fire swatch.
 **Brief:** Goal: fix (a) by giving the floor row the full width (label above or smaller), (b) by removing the duplicate frame, (d) by adding a tiny fire swatch. Files: `src/ui/welcome.css`, `atticHome.js`, `roomHome.js`. Done when: screenshots at 375 and 1280. **Conflicts:** X1, Y5.
+
+### TA7a. Door plates say how deep each room is by colour
+**Pitch:** The new fire swatch on a door plate could fill with the room's "X of N met" so you see progress before walking through.
+**Brief:** Goal: swatch ring fills by met/total. Files: `src/ui/roomHome.js`, `roomHome.css`, `scripts/room-visuals.mjs` (extend the guard). **Conflicts:** TA2.
+
+### TA7b. Doors and Card checked on every viewport in CI
+**Pitch:** `scripts/room-visuals.mjs` now covers 375 and 1280 only; add 800, 1000 (door threshold) and 1920 so a layout shift never hides the doors again.
+**Brief:** Goal: widen VIEWS. Files: `scripts/room-visuals.mjs`. **Conflicts:** none.
+
+### TA7c. Long room names on the door plate
+**Pitch:** "The Anatomy Theatre" wraps to two lines beside its swatch; a tighter plate or smaller caps would keep it to one.
+**Brief:** Goal: one-line plates at 1000-1280. Files: `src/ui/roomHome.css`. **Conflicts:** X1.
 
 ### SP1. [x] Readable home spine captions (PR #292)
 **Pitch:** The tiny NO. 4 / 113 / LEXICON 44 / 7 ROOMS captions on the home stacks are now 10-11px and centred on the spine. Done: `src/ui/homeSpineSub.{js,css}`.
