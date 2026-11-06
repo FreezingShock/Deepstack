@@ -16,6 +16,8 @@ import {backfillFloors} from './core/attic.js';
 import {dustCardOpts} from './ui/atticDust.js';
 import {roomsBook} from './ui/roomLedger.js';
 import './ui/roomHome.css';
+import './ui/roomRun.css';
+import {initRoomRun} from './ui/roomRun.js';
 import {goRoom} from './app/roomGo.js';
 import './ui/results.js';
 import './ui/results.css';
@@ -128,6 +130,7 @@ backfillFloors(S);
 function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);Sfx.set(S.sound);}
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
 initA11y();
+initRoomRun();
 initKeys();
 initTopbar({Sfx});initTopbarRail({S,Sfx});installUiSounds(Sfx);
 watchHomeLayout(ui.home);

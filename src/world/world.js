@@ -19,6 +19,7 @@ import {drawLedge} from '../ui/ledge.js';
 import {placeFallen,drawFallen} from '../ui/fallenBooks.js';
 import {lyingFootprint,settleBooks,placeProp,propHalf,tiltAboutFoot} from '../ui/physics.js';
 import {drawAlcoveLanterns} from '../ui/lanterns.js';
+import {tintLamp} from '../ui/roomRun.js';
 import {lowQuality,updateAmbient,drawAmbient,resetAmbient} from '../ui/ambient.js';
 import {createPass,passCam} from '../ui/thresholdPass.js';
 import {doorSpan,drawWallMaterial,drawThreshold,drawThresholdLive,drawThresholdSign} from '../ui/thresholds.js';
@@ -203,7 +204,7 @@ export const World=(()=>{
     drawLoreGlow(ctx,b,vt);ctx.restore();}}}
  function drawNiche(row,nv,camNow,now){const t0=nv.t0;
   const n=nicheBox(),y=n.t+(row*RH-(H-RH-BM))-camNow,h=n.h,x=n.x,w=n.w;if(y>H+20||y+h<-20)return;
-  const al=clamp((now-t0)/450,0,1),a=abn(row),r=Math.min(52,w*.09),lc=floorAtRow(row).lamp;
+  const al=clamp((now-t0)/450,0,1),a=abn(row),r=Math.min(52,w*.09),lc=tintLamp(floorAtRow(row).lamp);
   ctx.save();ctx.globalAlpha=al;
   const path=()=>{ctx.beginPath();ctx.moveTo(x,y+h);ctx.lineTo(x,y+r);ctx.arc(x+r,y+r,r,Math.PI,1.5*Math.PI);ctx.lineTo(x+w-r,y);ctx.arc(x+w-r,y+r,r,1.5*Math.PI,2*Math.PI);ctx.lineTo(x+w,y+h);ctx.closePath();};
   path();const ig=ctx.createLinearGradient(0,y,0,y+h);ig.addColorStop(0,PALETTE.oak150e08);ig.addColorStop(1,PALETTE.oak0e0905);ctx.fillStyle=ig;ctx.fill();
