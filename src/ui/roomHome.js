@@ -26,7 +26,7 @@ export function ringHTML(cur) {
 export function doorHTML(r, side) {
   return `<button type="button" class="rm-door rm-${side}" data-room="${r.id}" style="--c:${rgbOf(r)};--ci:${ink(r)}" aria-label="${side === 'prev' ? 'Previous' : 'Next'} room: ${esc(r.name)}, ${esc(r.topic)}" title="${esc(r.name)} (${side === 'prev' ? '[' : ']'})">
  <span class="rm-plate"><b>${esc(r.name)}</b><small>${esc(r.topic)}</small></span>
- <span class="rm-arch" aria-hidden="true"><i class="rm-fire"></i><i class="rm-lamp"></i><i class="rm-boards"></i><i class="rm-arrow">${side === 'prev' ? '‹' : '›'}</i></span>
+ <span class="rm-arch" aria-hidden="true"><i class="rm-fire"></i><i class="rm-lamp"></i><i class="rm-boards"></i><i class="rm-leaf"></i><i class="rm-arrow">${side === 'prev' ? '‹' : '›'}</i></span>
  <span class="rm-spill" aria-hidden="true"></span></button>`;
 }
 
@@ -86,6 +86,7 @@ export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = ()
       if ((e.key !== '[' && e.key !== ']') || e.ctrlKey || e.metaKey || e.altKey || !homeIdle()) return;
       if (e.target && e.target.closest && e.target.closest('input,textarea,select,[contenteditable]')) return;
       const n = neighbours(curRoom); e.preventDefault();
+      const dr = doors && !doors.hidden && doors.querySelector(e.key === '[' ? '.rm-prev' : '.rm-next'); if (dr) dr.classList.add('go');
       goFn(e.key === '[' ? n.prev.id : n.next.id, e.key === '[' ? -1 : 1);
     });
   }

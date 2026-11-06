@@ -17,6 +17,7 @@ export const CUES = {
   rung:    { material: 'wood',    gap: 60 },   // a ladder rung
   knock:   { material: 'wood',    gap: 150 },  // a wooden knock (shelf, desk)
   scrape:  { material: 'stone',   gap: 400 },  // stone dragged
+  door:    { material: 'wood',    gap: 400 },  // a room door: latch, short swing, the far fire
   tick:    { material: 'brass',   gap: 70 },   // a button, lantern latch
   hover:   { material: 'brass',   gap: 160, fine: true },
   crackle: { material: 'fire',    gap: 120, fine: true },
@@ -59,6 +60,11 @@ export function createMaterials(bus, { now = () => performance.now(), fine = () 
       o.connect(f); f.connect(g); bus.out(g, .3); o.start(t); lfo.start(t); o.stop(t + .9); lfo.stop(t + .9);
       live++; o.onended = () => { live = Math.max(0, live - 1); };
       tone(78, .78, .25, .09, { glide: .6, send: .3 }); noise(.09, 'lowpass', 600, 150, .07, { at: .78, send: .2 });
+    },
+    door: () => { // a brass latch lifts, the door swings on a short creak, and the far room's fire breathes in
+      tone(rnd(1500, 1650), 0, .05, .03, { type: 'triangle', attack: .002, send: .15 }); noise(.03, 'bandpass', 2600, 1800, .03, { q: 2, attack: .002 });
+      noise(.32, 'bandpass', 520, 300, .045, { at: .05, q: 4, attack: .08, send: .25 });
+      noise(.5, 'lowpass', 700, 220, .05, { at: .14, q: .6, attack: .2, send: .35 });
     },
     rung: () => { tone(rnd(190, 230), 0, .09, .06, { type: 'triangle', glide: .6, attack: .003, send: .15 }); noise(.04, 'bandpass', 900, 500, .035, { q: 2, attack: .002, send: .08 }); },
     knock: () => { tone(rnd(130, 160), 0, .12, .1, { type: 'triangle', glide: .6, attack: .003, send: .2 }); noise(.05, 'lowpass', 900, 200, .06, { attack: .002, send: .1 }); },

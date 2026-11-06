@@ -11,12 +11,13 @@ import {toSpreads} from './bookpages.js';
 import {shelfBook,statsBook} from './bookMenus.js';
 import {dailyBook} from './dailyBook.js';
 import {curioLeaves} from './curioLog.js';
+import {roomStatsLeaves} from './roomStats.js';
 
 export function buildBookPages({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc,utc,computeStats,floorAtFt,wordsReady,wordsLoaded}){
  const sb=statsBook({S,st:()=>computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt});
  return {
   bAll:shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOORS,reduceMotion:()=>RM}),
   bDaily:{...dailyBook({S,today:utc,streak:()=>computeStats(S,utc()).streak,wordsReady,wordsLoaded}),keepOnEsc},
-  bStats:{...sb,spreads:()=>[...sb.spreads(),...toSpreads(curioLeaves(S,r=>floorAtFt(r*FT),r=>Math.round(r*FT)))],keepOnEsc}
+  bStats:{...sb,spreads:()=>[...sb.spreads(),...toSpreads(roomStatsLeaves(S,{today:utc(),computeStats,lexicon:core.lexicon})),...toSpreads(curioLeaves(S,r=>floorAtFt(r*FT),r=>Math.round(r*FT)))],keepOnEsc}
  };
 }
