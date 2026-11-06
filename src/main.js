@@ -52,6 +52,7 @@ import './ui/camMotion.js';
 import {initA11y} from './ui/a11y.js';
 import {initKeys} from './ui/keys.js';
 import {initTopbar} from './ui/topbar.js';
+import {initTopbarRail} from './ui/topbarRail.js';
 import './ui/settings.js';
 import {initTransitions} from './ui/transitions.js';
 import './ui/screenFx.js';
@@ -122,7 +123,7 @@ function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
 initA11y();
 initKeys();
-initTopbar({Sfx});installUiSounds(Sfx);
+initTopbar({Sfx});initTopbarRail({S,Sfx});installUiSounds(Sfx);
 watchHomeLayout(ui.home);
 World.onLedge(initLedge({tiers:TIERS,canActivate:()=>ui.stage.hidden&&$('#cardlayer').hidden,onOpen:b=>openCard(b,{fresh:false}),showTip,hideTip}));
 const browse=initBrowse({world:World,floors:FLOORS,startOf:floorStartFt,ft:FT,rm:RM});

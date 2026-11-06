@@ -1677,3 +1677,9 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: a slim brass marker on the side showing which row you are in, tappable to jump. Files: `src/world/atticClimb.js`. Done when: 375 and 1280 screenshots, keyboard reachable. **Conflicts:** X2, V3.
 ### W1 (home close). [x] Home comes back behind the book, not after it (PR pending)
 The room (title, plaque with cabinet, card and fire, sibling spines) now fades in from the moment a home book starts to close, over one `--m-page` cruise, so it is whole by the time the book lands (`.book-closing` in `bookOpenFx.css`, `onShut` in `openBook`). Test: `test/home-close-fade.test.js`.
+
+### Y5. Top bar: hatch in the rail
+**Pitch:** The attic hatch and the depth plate could both live in the rail's centre, so the rail reads as one object. **Brief:** Goal: move the attic cue into the bar centre on home, with the same hatch-open motion. Files: `src/ui/atticHome.js`, `topbarRail.css`. **Conflicts:** attic hatch threads (#265).
+
+### Y6. Top bar: floor-tinted rail
+**Pitch:** The rail's inlay and glow take on the current floor's colour as you descend. **Brief:** Goal: tint `#bar::before` and the corner glows from the floor tokens, softly, never bright. Files: `src/ui/topbarRail.css`, `src/main.js` onDepth hook.
