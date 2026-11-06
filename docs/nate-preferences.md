@@ -148,3 +148,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 room switching, plaque: the main box (Continue / Descend / Descend Unlimited) must not disappear between rooms; its words type from the centre out and the button itself glides to its new position and size.
 - 2026-11-06 Librarian's Card: likes how it looks; wants every row interactive (Floor opens a book about each floor, Books and Deepest go to Stats, Streak opens something new) and asked for recommendations.
 - 2026-11-06 decisions: "provide a lot of screenshots if you want me to decide something" (new rule): every option at desktop and phone sizes, open and in context on the real screen.
+- 2026-11-06 stats scope: picked "TA3" from the audit, wants numbers clearly labelled as this room versus all rooms (the 0 day streak beside 300 ft deepest in the Chronicle confused).

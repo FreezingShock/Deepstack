@@ -25,7 +25,7 @@ export function roomStatsLeaves(S, ctx) {
   const played = rows.filter(x => x.runs || x.lex !== null);
   const top = rows.filter(x => x.lex !== null).sort((a, b) => b.L - a.L)[0];
   const left = `<div class="alm rs"><h1>The Rooms</h1><div class="kicker">${played.length} of ${rows.length} rooms visited \u00b7 you are in ${esc((rows.find(x => x.here) || rows[0]).r.short)}</div>
-   <p class="note">Every room keeps its own Daily and streak. The pages before this one are for the room you stand in.</p>
+   <p class="note">Every room keeps its own Daily and streak. The streak, Dailies and Lexicon pages before this are for the room you stand in; the Collection and Depths cover all rooms.</p>
    <table class="rs-t"><thead><tr><th>Room</th><th title="Daily streak">Streak</th><th title="Dailies played">Dailies</th><th title="Deepest Daily">Deepest</th><th title="Books on your shelf">Books</th></tr></thead>
    <tbody>${rows.map(x => `<tr class="${x.here ? 'here' : ''}"><td>${name(x)}</td><td>${x.streak}</td><td>${x.runs}</td><td>${x.deepest ? x.deepest + ' ft' : '–'}</td><td>${x.books}</td></tr>`).join('')}</tbody></table></div>`;
   const right = `<div class="alm rs"><h1>Side by side</h1><div class="kicker">${top ? `Strongest: ${esc(top.r.name)}` : 'No room ranked yet'}</div>
