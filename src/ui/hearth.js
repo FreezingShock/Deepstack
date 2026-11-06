@@ -29,8 +29,10 @@ export const WIDE_MIN = 1000;
 /** Wide rooms. W,H: the niche box. tagBottom/taglineBottom/descendTop: home-local y of the Daily caption, tagline and
     plaque top. Returns the stacks' width, how far Descend moves up, and the surround and mantel boxes. */
 export function planWide({W, H, taglineBottom, descendTop, tagBottom}) {
-  const FW = clamp(W * .36, 250, 330), inner = W - 28;
-  const shelfW = Math.min(228, (inner - FW - 20) / 2);
+  /* a niche wider than the old 760 px (big windows) gets a bigger fire and stacks, in step with the cabinet and ledger */
+  const big = clamp((W - 760) / 300, 0, 1);
+  const FW = clamp(W * (.36 + .07 * big), 250, 330 + Math.max(0, W - 760) * .4), inner = W - 28;
+  const shelfW = Math.min(228 + 50 * big, (inner - FW - 20) / 2);
   const lift = clamp(descendTop - (taglineBottom + 44), 0, 80);
   const floorY = H - 2, beamTop0 = tagBottom - lift + 52;
   const beamTop = Math.max(beamTop0, floorY - FW * 1.3 - 10);

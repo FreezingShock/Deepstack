@@ -14,7 +14,8 @@ test('two props, one per piece of furniture: bell on the cabinet, stamp on the l
 });
 test('props mount into the furniture slots and stamp the ledger', () => {
   const w = readFileSync(new URL('../src/ui/welcome.js', import.meta.url), 'utf8');
-  assert.match(w, /data-prop-slot="bell"/);
+  const cab = readFileSync(new URL('../src/ui/cabinet.js', import.meta.url), 'utf8');
+  assert.match(cab, /data-prop-slot="bell"/);
   assert.match(w, /data-prop-slot="stamp"/);
   const css = readFileSync(new URL('../src/ui/deskProps.css', import.meta.url), 'utf8');
   assert.match(css, /\.dp\{position:absolute;bottom:calc\(100% - 2px\)/);

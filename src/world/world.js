@@ -35,6 +35,7 @@ import {bookDims,seedOf,shelfDims} from './bookArt.js';
 import {buildHall,drawAttic,rowCount,rowTitle} from './atticRoom.js';
 import {drawLadder,climbLight} from './atticClimb.js';
 import {drawBackStacks,resetBackStacks} from './backStacks.js';
+import {nicheWidth} from './nicheWidth.js';
 
 /* ---------- the stacks (continuous canvas world) ---------- */
 export const World=(()=>{
@@ -47,7 +48,7 @@ export const World=(()=>{
  const restCam=r=>r*RH-(H-RH-BM);
  const abn=r=>Math.max(clamp(r/190,0,1),floorAtRow(r).decay);
  const barPx=()=>52+(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat'))||0);
- function nicheBox(){const nw=Math.min(W-24,760),NT=barPx()+16,NB=H-RH-BM-10;return{x:(W-nw)/2,w:nw,t:NT,h:NB-NT,b:NB};}
+ function nicheBox(){const nw=nicheWidth(W),NT=barPx()+16,NB=H-RH-BM-10;return{x:(W-nw)/2,w:nw,t:NT,h:NB-NT,b:NB};}
  function setNicheVars(){const n=nicheBox(),r=document.documentElement.style;r.setProperty('--nx',n.x+'px');r.setProperty('--nw',n.w+'px');r.setProperty('--nt',n.t+'px');r.setProperty('--nb',(H-n.b)+'px');r.setProperty('--nook',nookMetrics(W).reserve+'px');}
  function resize(){W=innerWidth;H=innerHeight;DPR=worldDpr(W,H,Math.min(devicePixelRatio||1,Quality.params().dprMax)); // capped at ~6 MP so huge screens stay light
   cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);RH=clamp(H*.22,clamp(H*.2,70,108),172); // short windows get shorter shelves, so the room above them keeps its heightBM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);rows.clear();resetBackStacks();
