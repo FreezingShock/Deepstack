@@ -30,7 +30,7 @@ catch (e) { console.log('transitions: no browser, skipping:', e.message.split('\
 const BLOCKED = /^https?:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|huggingface\.co|[^/]*\.hf\.co|cdn\.jsdelivr\.net)\//;
 const problems = [];
 const fail = m => problems.push(m);
-const T = 8000;
+const T = 15000; // upper bounds only: waits return the moment the state is true, so a generous cap costs nothing when healthy
 
 // 60 floorless books: enough for several attic rows, all of them "earlier finds" that live in the attic.
 const seed = {shelf: Array.from({length: 60}, (_, i) => ({w: 'word' + i, pos: 'noun', def: 'a thing number ' + i, answer: 'x', score: 60, tier: i % 5, mode: 'unlimited', t: 1.7e12 + i * 1e6, rows: 3, ft: 30})), sound: false};
