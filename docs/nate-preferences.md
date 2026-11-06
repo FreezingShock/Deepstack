@@ -154,3 +154,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 Almanac streak: picked option B (this room and any room as two tallies side by side).
 - 2026-11-06 verification rule: every visual fix is checked at 375 and desktop, with reduced motion on, in every room (seed the longest case so the bug truly reproduces), and gets a CI fit or snapshot guard.
 - 2026-11-06 initiative: "what else can you polish right now, start it if you think its important enough" -> pick the next audit items that matter and start them without a menu; cover the whole feature in one pass (thread: RA2/RA5/RA7).
+- 2026-11-06 Librarian's Card: picked option 1, the Ember Log, for the Streak row (calendar plus next milestone).

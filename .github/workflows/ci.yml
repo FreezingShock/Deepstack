@@ -97,6 +97,7 @@ jobs:
           node scripts/room-switch.mjs & rooms=$!
           node scripts/room-visuals.mjs & rvis=$!
           node scripts/ra-fixes.mjs & rafix=$!
+          node scripts/ember-log.mjs & ember=$!
           rc=0
           wait $smoke || rc=1
           wait $snaps || rc=1
@@ -105,6 +106,7 @@ jobs:
           wait $rooms || rc=1
           wait $rvis || rc=1
           wait $rafix || rc=1
+          wait $ember || rc=1
           exit $rc
       - name: Upload snapshot diffs
         if: failure()
