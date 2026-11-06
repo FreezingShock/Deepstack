@@ -48,3 +48,18 @@ test('a room plays its own sense of a word, and the Reading Room is untouched', 
   assert.equal(WORDS.length, full.length);
   setRoomEntries(null);
 });
+
+test('room words carry their other senses in senses.json (the shape the judge reads), including the hand-added prose sense', () => {
+  const SEN = read('../public/data/senses.json').words;
+  let withAlt = 0, total = 0;
+  for (const r of topicRooms) for (const [w] of RW.rooms[r.id]) {
+    total++;
+    const alt = SEN[w]?.alt;
+    if (!alt) continue;
+    withAlt++;
+    assert.ok(alt.length <= 4, w);
+    for (const [pos, g] of alt) { assert.match(pos, /^(noun|verb|adjective|adverb)$/); assert.ok(g.length >= 10, `${w}: ${g}`); }
+  }
+  assert.ok(withAlt / total > 0.4, `${withAlt}/${total} room words have other senses`);
+  assert.ok(SEN.prose.alt.some(a => /ordinary/i.test(a[1])));
+});

@@ -1,0 +1,6 @@
+{
+  "_why": "Senses Wiktionary lacks or buries, added by hand to the words' alt lists (merged by scripts/build-room-senses.mjs).",
+  "words": {
+    "prose": {"alt": [["noun", "Ordinary written or spoken language, as opposed to verse or poetry; speech or writing without rhyme or metre."]]}
+  }
+}
