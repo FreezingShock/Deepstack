@@ -1667,3 +1667,21 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### W5. Wayfinding in the attic
 **Pitch:** On a phone the only sign of depth is one wrapped line of text ("row 1 of 3, scroll up to go further in"). The floor rail does this job in the run; the attic has nothing like it.
 **Brief:** Goal: a slim brass marker on the side showing which row you are in, tappable to jump. Files: `src/world/atticClimb.js`. Done when: 375 and 1280 screenshots, keyboard reachable. **Conflicts:** X2, V3.
+
+## Y. From nate's own examples (2026-11-06): niche, animation-feel and overhaul items
+
+### Y1. The lift carries your book into the cage and you read it there
+**Pitch:** After a word, the brass lift that takes you down makes the new book simply disappear. The book should be picked up (by the crane or hand on the rope), placed in the cage, ride down with you, and be opened there so reading the result card feels like the cage delivering it.
+**Brief:** Goal: the earned book travels from the niche into the lift cage (grab, lift, set down inside, cage latch closes), the cage descends, and the result card opens out of the book in the cage. Files: `src/world/lift.js`, `src/app/run.js`, card reveal (`src/app/card.js`, `revealRecipes`). Done when: frame strip at 0/300/600/900/1200 ms for each tier, reduced motion skips to the card, no flash when the book vanishes, uniform motion curves. **Touches:** RUN, MAIN card hook. **Conflicts:** W3, R2, 16, V9 sounds.
+
+### Y2. Book page switch that is smooth
+**Pitch:** Turning pages in the menu books looks choppy: the leaf jumps between states instead of sweeping.
+**Brief:** Goal: profile the page turn (layout thrash, image decode, shadow repaint), move the leaf and shadow to transform/opacity only, pre-render the next spread, and measure frame time before and after with `?perf`. Files: `src/ui/pageFlip.js`, `pageFlip.css`, book builders. Done when: p95 frame under 20 ms on a 4x CPU-throttled run, no visible hitch on 10 consecutive turns. **Conflicts:** BS1, P1, P2, V10 keys.
+
+### Y3. Descent to home in half the time
+**Pitch:** Leaving a run (or finishing a descent) and coming back to the home page takes too long; the player waits through the whole lift-up and fade.
+**Brief:** Goal: cut the return to under ~1.2 s total, skippable by a keypress or tap, with the home fading in underneath rather than after. Files: `src/app/final.js`, `src/app/home.js`, `src/world/lift.js`. Done when: timing table before and after for Daily end, Unlimited end and mid-run leave. **Touches:** HOME, RUN. **Conflicts:** W1, Y1.
+
+### Y4. Top bar overhaul
+**Pitch:** The top bar (Deepstack plate, Sound, Credits, Settings, attic hatch) is functional but does not feel like part of the game. Not a hamburger menu: a bar that belongs to the library.
+**Brief:** Goal: redesign as part of the room (a brass rail or card-catalogue rail), with room for streak/depth readouts, a keys hint, and the attic hatch, hover and press feedback in the shared motion language, phone layout that does not crowd. Files: `src/ui/topbar.js`, `topbar.css`, `src/styles/`. nate to review two mockups before it ships. Done when: 375/1280/1640 screenshots, all existing buttons and keys unchanged. **Touches:** every screen. **Conflicts:** V3, V10 shortcuts, attic hatch.
