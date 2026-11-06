@@ -1,7 +1,7 @@
 /* Fit: the home room at small and odd window sizes. Appended last so it wins over earlier layers without reordering them. */
 /* the attic hatch hangs a short cord and a brass tag just below the top bar; the title starts under the tag, never behind it */
 .attic-cue-home .ach-cord{height:16px}
-body:has(.attic-cue-home:not([hidden])) #home .hz-title,body:has(.attic-cue-home:not([hidden])) #home.hearth-compact .hz-title{padding-top:var(--cue-pad,6px)}
+body:has(.attic-cue-home:not([hidden])) #home .hz-title,body:has(.attic-cue-home:not([hidden])) #home.hearth-compact .hz-title{padding-top:var(--cue-pad,10px)}
 /* the room's grid track may shrink below its content, so nothing can push the stacks past the niche */
 .center>.sheet.home{grid-template-columns:minmax(0,1fr)}
 #home .home .hz{min-width:0}
@@ -20,7 +20,7 @@ body:has(.attic-cue-home:not([hidden])) #home .hz-title,body:has(.attic-cue-home
 @media(max-height:480px) and (min-aspect-ratio:1/1){
  #home .home .hz-title .tagline,#home .home .hz-plaque .next,#home .home .hz-plaque .stats,#home .home .cat-card,#home .home .ledger,#home .home .how{display:none}
  #home .home .hz-title .title{font-size:calc(30px*var(--ts,1));margin:0}
- #home .home .hz-title{padding-top:2px!important}
+ #home .home .hz-title{padding-top:12px!important}
  #home .home .descend{padding-top:7px;padding-bottom:7px}
  #home .home .d-t{font-size:calc(19px*var(--ts,1))}
  #home .home .hsecs{flex-wrap:wrap;gap:2px 8px;padding:6px 0 2px}
