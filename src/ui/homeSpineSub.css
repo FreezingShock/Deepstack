@@ -2,6 +2,6 @@
    spine's midline. homeSpineSub.js shrinks the label until title + caption fit, so nothing clips or ellipsizes. */
 #home .hb-t{display:flex;align-items:center;justify-content:center;gap:.5em;text-overflow:clip;line-height:1}
 #home .home .hb-t small,#home.hearth-narrow .hb-t small,#home.hearth-compact .hb-t small,html:not([data-text="normal"]) #home .hb-t small{
- display:inline-block;flex:none;margin:0;padding-top:.12em;font:700 max(10px,.72em)/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;color:var(--c-parchment-alpha-cc);text-shadow:0 1px 0 var(--c-black-alpha-99)}
+ display:inline-block;flex:none;margin:0;padding-top:.12em;font:700 max(calc(10px*var(--ts,1)),.72em)/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;color:var(--c-parchment-alpha-cc);text-shadow:0 1px 0 var(--c-black-alpha-99)}
 @media(max-height:480px) and (min-aspect-ratio:1/1){#home .home .hb-t small{display:none}}
 #home .home .hb-t.sub-off small{display:none}
