@@ -51,6 +51,11 @@ const BLOCKED = /^https?:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|hugging
 const T = 15000;
 const SIZES = ['normal', 'large', 'xlarge'];
 const VIEWS = [{name: '375', width: 375, height: 700}, {name: '1280', width: 1280, height: 800}];
+// Every size at the two common widths, plus the narrowest phone and the widest monitor at Normal.
+const COMBOS = [...VIEWS.flatMap(view => SIZES.map(size => ({view, size}))),
+  {view: {name: '320', width: 320, height: 640}, size: 'normal'}, {view: {name: '1920', width: 1920, height: 1080}, size: 'normal'}];
+// Every topic room: its own fire, names and Daily on the home page and in a run, at phone and wide widths.
+const ROOM_IDS = ['history', 'math', 'science', 'english', 'art', 'body'];
 const problems = [];
 
 async function scan(page, tag) {
@@ -59,7 +64,7 @@ async function scan(page, tag) {
   for (const h of await page.evaluate(findTiny, MIN_PX)) problems.push(`${tag}: ${h.el} "${h.text}": ${h.why}`);
 }
 
-for (const view of VIEWS) for (const size of SIZES) {
+for (const {view, size} of COMBOS) {
   const ctx = await browser.newContext({viewport: {width: view.width, height: view.height}});
   await ctx.addInitScript(s => { try { localStorage.setItem('deepstack.settings.v1', JSON.stringify({text: s, motion: 'reduce'})); } catch {} }, size);
   const page = await ctx.newPage();
@@ -107,6 +112,32 @@ for (const view of VIEWS) for (const size of SIZES) {
   await ctx.close();
 }
 
+// Each topic room: home (its fire, title, tagline, Daily line) and a run (its words, depth HUD and floor list).
+for (const view of [{name: '375', width: 375, height: 700}, {name: '1920', width: 1920, height: 1080}]) for (const room of ROOM_IDS) {
+  const ctx = await browser.newContext({viewport: {width: view.width, height: view.height}});
+  await ctx.addInitScript(([r, s]) => {
+    try {
+      localStorage.setItem('deepstack.settings.v1', JSON.stringify({text: s, motion: 'reduce'}));
+      if (!localStorage.getItem('deepstack.v1')) localStorage.setItem('deepstack.v1', JSON.stringify({room: r}));
+    } catch {}
+  }, [room, 'normal']);
+  const page = await ctx.newPage();
+  await page.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
+  const tag = (scene) => `${view.name}px room ${room} ${scene}`;
+  const run = async (scene, fn) => { try { await fn(); } catch (e) { problems.push(`${tag(scene)}: could not reach this screen (${e.message.split('\n')[0]})`); } };
+  await page.goto(url, {waitUntil: 'load'});
+  await run('home', async () => { await page.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T}); await scan(page, tag('home')); });
+  await run('run', async () => {
+    await page.locator('#home.book-opening').waitFor({state: 'detached', timeout: T}).catch(() => {});
+    await page.locator('#bPlay, #bUnl').first().click({timeout: T});
+    const primary = page.locator('[role=dialog].intro button.bs-primary:not([data-act])').first();
+    if (await primary.count()) await primary.click({timeout: T});
+    await page.locator('#stage .word').waitFor({state: 'visible', timeout: T});
+    await scan(page, tag('run'));
+  });
+  await ctx.close();
+}
+
 await browser.close(); server.close();
 if (problems.length) { console.error(`text-fit: FAILED (${problems.length})\n - ` + [...new Set(problems)].join('\n - ')); process.exit(1); }
-console.log('text-fit: ok (home, settings, shelf, almanac, rooms, run x normal/large/xlarge x 375/1280; text at least 10px; depths formatted)');
+console.log('text-fit: ok (home, settings, shelf, almanac, rooms, run at 320/375/1280/1920 and every topic room; text at least 10px; small caps tracked; depths formatted)');

@@ -79,7 +79,7 @@ export function crossSection(FLOORS,floorStartFt,deepest,reached){
 
 export function statsLeaves(st,S,{TIERS,FLOORS,floorStartFt}){
  const hist=(S&&S.rating&&S.rating.hist)||[],shelf=(S&&S.shelf)||[];
- if(!st.runs&&!hist.length&&!shelf.length)return [`<div class="alm"><h1>The Almanac</h1><div class="kicker">Not yet opened</div>${emptyBlock('ledger','Finish your first Daily and the almanac fills in.')}<button class="alm-ember" type="button">The Ember Log →</button></div>`,
+ if(!st.runs&&!hist.length&&!shelf.length)return [`<div class="alm"><h1>The Almanac</h1><div class="kicker">Not yet opened</div>${emptyBlock('ledger','Finish your first Daily and the Almanac fills in.')}<button class="alm-ember" type="button">The Ember Log →</button></div>`,
   `<div class="alm"><h1>The Depths</h1><div class="kicker">A cross-section, down to 0 ft</div><div class="scopes">${allTag()}</div>${crossSection(FLOORS,floorStartFt,0,(S&&S.bestFloor)||0)}</div>`];
  const tally=tallyMarks(st.streak||0),rm=scopeRoom(S),mine=roomTag(rm),all=allTag(),any=anyRoomStreak(S);
  const line=(l,v,sub)=>`<li><span>${l}</span><b>${v}</b>${sub?`<em>${sub}</em>`:''}</li>`;

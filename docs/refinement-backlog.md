@@ -2030,7 +2030,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### TY1. [x] (PR pending, copy and typography thread) Depth numbers and text under 10 px
 **Pitch:** Depths past 999 ft read as "1008 ft" and the small caps plates drew at 7 to 9.7 px. Every depth now takes a thousands comma (one helper, `src/core/numFmt.js`), and no text draws under 10 px at the Normal text size.
 **Brief:** Done: `src/core/numFmt.js`, depth labels in the floors, almanac, depth counter, Card, Daily ledger and share text; CSS sizes under 10 px raised to 10 px (`src/ui/*.css`); the scope tag keeps a 10 px floor. CI: `scripts/text-fit.mjs` now fails on text under 10 px or a depth without its comma, and sweeps the Almanac and Rooms too. Tests: `test/number-format.test.js`. Screenshots in screenshots/copy-typography/.
-### TY2. Tracking on uppercase home captions
+### TY2. [x] (PR #326 follow-up) Tracking on uppercase home captions
 **Pitch:** The home captions (Daily, Shelf, Unlimited, Rooms, Stats) track at 0.04em, tighter than the 0.16em tier names and the plates around them, so they look cramped.
 **Brief:** Goal: one tracking value for uppercase home captions, checked at 1920 and 375 so the spines still fit. Files: `src/ui/home.css`, `src/ui/homeSpineSub.css`. **Conflicts:** home spine captions (PR #292), homeSpineSub fit.
 ### TY3. One range style for floor ranges
