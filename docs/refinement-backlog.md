@@ -1722,3 +1722,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** If a word or definition still feels wrong, a quiet "Skip this word" mark on the book page hides it on this device.
 **Brief:** Goal: additive `S.hiddenWords`, filtered at pick time. Files: new `src/core/hiddenWords.js`, one hook in the result page. **Conflicts:** result page threads, Daily (hidden words must not change the seeded Daily).
 
+
+### Headword fit follow-ups
+**Pitch:** Headwords now shrink to fit on one line; the same fit rule could cover the shelf spine plaques and Daily result words.
+**Brief:** Goal: reuse `src/ui/fitHeadword.js` selectors for any remaining word label that still wraps. Files: that selector list only. **Conflicts:** result page threads.
