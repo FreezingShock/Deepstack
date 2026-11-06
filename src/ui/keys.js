@@ -2,6 +2,9 @@
    calls initKeys(). Shortcuts click existing buttons, so game logic is not
    touched. */
 import './keys.css';
+import './keysBook.css';
+import {openPanelBook} from './panelBook.js';
+import './panelBook.css';
 import {SHORTCUT_GROUPS,isTyping,actionFor} from './keysCore.js';
 
 export function initKeys({doc=document}={}){
@@ -28,28 +31,21 @@ export function initKeys({doc=document}={}){
  const panelsOpen=()=>!!panel||['#cardlayer','#all','#stats','#topPanel'].some(s=>{const m=$(s);return m&&!m.hidden;});
  const modalOpen=()=>panelsOpen()||!!$('.bk-spread');
 
- function closeHelp(){
-  if(!panel)return;panel.remove();panel=null;
-  const o=opener;opener=null;if(o&&o.isConnected)o.focus({preventScroll:true});
- }
+ function closeHelp(){if(panel)panel.close();}
+ /* The key page is a two-page book like Settings and Credits (openPanelBook): the room is hidden behind it and the
+    book handles Esc, outside presses and page turns itself. */
  function openHelp(){
   if(panel)return;
   opener=doc.activeElement&&doc.activeElement!==doc.body?doc.activeElement:null;
-  panel=doc.createElement('div');panel.className='keyhelp';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','kh-t');
-  const groups=SHORTCUT_GROUPS.map(([h,rows])=>`<h3>${h}</h3><dl>${rows.map(([k,d])=>`<div><dt>${k.split(' / ').map(x=>`<kbd>${x}</kbd>`).join(' or ')}</dt><dd>${d}</dd></div>`).join('')}</dl>`).join('');
-  panel.innerHTML=`<div class="khbox"><h2 id="kh-t">Keys of the library</h2><p class="khsub">Press <kbd>?</kbd> any time you are not typing.</p>${groups}<button type="button" class="btn" id="khClose">Close</button></div>`;
-  doc.body.appendChild(panel);
-  panel.addEventListener('click',e=>{if(e.target===panel)closeHelp();});
-  panel.querySelector('#khClose').onclick=closeHelp;
-  panel.querySelector('#khClose').focus({preventScroll:true});
+  const grp=([h,rows])=>`<h3 class="kh-h">${h}</h3><dl class="kh-dl">${rows.map(([k,d])=>`<div><dt>${k.split(' / ').map(x=>`<kbd>${x}</kbd>`).join(' or ')}</dt><dd>${d}</dd></div>`).join('')}</dl>`;
+  const G=SHORTCUT_GROUPS,right=G.find(g=>g[0].startsWith('In books')),left=G.filter(g=>g!==right);
+  const from=$('#bKeys')||opener;
+  panel=openPanelBook({from,title:'Keys of the library',label:'Keys',kicker:'Press ? any time you are not typing',left:left.map(grp).join(''),right:right?grp(right):'',
+   onClose:()=>{panel=null;const o=opener||from;opener=null;if(o&&o.isConnected)o.focus({preventScroll:true});}});
  }
 
  doc.addEventListener('keydown',e=>{
-  if(panel){
-   if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();closeHelp();}
-   else if(e.key==='Tab'){e.preventDefault();panel.querySelector('#khClose').focus();}
-   return;
-  }
+  if(panel){if(e.key==='?')e.preventDefault();return;}
   const wordScreen=!!stage&&!stage.hidden&&!!$('#hint');
   /* inside an open menu book: / jumps to the search line, ? opens the key page, and chips and months answer to letters
      (Alt + letter while the search line has focus, which it does when the Shelf opens) */
