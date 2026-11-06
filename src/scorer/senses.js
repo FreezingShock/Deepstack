@@ -1,5 +1,6 @@
 // Other meanings of a word and the meanings of its synonyms (public/data/senses.json, built by scripts/build-senses.mjs).
 // The judge accepts them too (at a small discount) and the book shows them under the main definition.
+import {dataUrl} from '../core/dataUrl.js';
 let SEN = null; // word -> {alt:[[pos,gloss]], syn:[[synonym,gloss]]}
 
 export const setSenses = obj => { SEN = obj || null; };
@@ -7,7 +8,7 @@ export const sensesOf = (w, sen = SEN) => sen?.[w] || null;
 
 let loading = null;
 /** Fetches senses.json once. Resolves false (never throws) when missing, so the judge still works without it. */
-export function loadSenses(url = (import.meta.env?.BASE_URL || '/') + 'data/senses.json') {
+export function loadSenses(url = dataUrl('senses.json')) {
   return loading ||= (async () => {
     try {
       const r = await fetch(url);

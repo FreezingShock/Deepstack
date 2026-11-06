@@ -7,6 +7,7 @@ import {HALL} from './rooms.js';
 import {hashStr} from './daily.js';
 import {effectiveDifficulty} from './difficulty.js';
 import {templateHint} from './wordPool.js';
+import {dataUrl} from './dataUrl.js';
 
 let ALL = null, ALLG = null, LISTS = null, ENTRIES = null, cur = HALL;
 export const MIN_ROOM_WORDS = 40; // a smaller list (a failed or stale rooms.json) falls back to every word
@@ -58,11 +59,14 @@ export function applyRoomPool(id) {
 export const roomSeed = () => (cur === HALL ? '' : cur + '-');
 
 let loading = null;
-export function loadRoomLists(url = (import.meta.env?.BASE_URL || '/') + 'data/rooms.json') {
+export function loadRoomLists(url = dataUrl('rooms.json'), entriesUrl = dataUrl('room-words.json')) {
   return loading ||= (async () => {
+    // Both files at once (they used to be fetched one after the other, doubling the wait on a slow connection).
+    const entries = fetch(entriesUrl).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+    entries.catch(() => {}); // handled below; keeps a failure from being reported as unhandled while the lists load
     try { const r = await fetch(url); if (!r.ok) throw new Error('HTTP ' + r.status); setRoomLists((await r.json()).rooms); }
     catch (e) { console.warn('Topic room lists unavailable:', e); return false; }
-    try { const r = await fetch(url.replace('rooms.json', 'room-words.json')); if (r.ok) setRoomEntries((await r.json()).rooms); }
+    try { setRoomEntries((await entries).rooms); }
     catch (e) { console.warn('Topic room entries unavailable (using the main definitions):', e); }
     return true;
   })();

@@ -8,7 +8,7 @@ setRoomExtras(SETS.reduce((m,s)=>((m[s.room]||=[]).push(...s.words),m),{}));
 
 export const {TIERS,tierOf,WORDS,hashStr,mulberry,levelUpdate,levelTitle,pickWord,dailyWords,loadWords,computeStats,FLOORS,FT,floorAtRow,floorAtFt,floorStartFt,atmosphereAt,msUntilNextDaily,fmtCountdown}=core;
 /* topic rooms: once every word is in, keep a copy of the full pool and narrow to the room the player was last in */
-export const wordsReady=deferAfterPaint(()=>loadWords()).then(async r=>{captureFullPool();if(currentRoom(S)!=='hall'){await loadRoomLists();applyRoomPool(currentRoom(S));}return r;});
+export const wordsReady=deferAfterPaint(()=>{const inRoom=currentRoom(S)!=='hall';return Promise.all([loadWords(),inRoom&&loadRoomLists()]).then(([r])=>r);}).then(r=>{captureFullPool();if(currentRoom(S)!=='hall'){applyRoomPool(currentRoom(S));}return r;}); // a saved topic room's lists download beside the word list
 export let wordsLoaded=false;
 wordsReady.then(()=>{wordsLoaded=true;},()=>{wordsLoaded=true;});
 /* storage */

@@ -6,6 +6,7 @@ import {hashStr} from './daily.js';
 import {stem, match} from '../scorer/lexical.js';
 import {isSpecialist, effectiveDifficulty} from './difficulty.js';
 import {isBlocked} from './blocklist.js';
+import {dataUrl} from './dataUrl.js';
 
 const POS_OK = new Set(['noun', 'verb', 'adjective', 'adverb']);
 // Glosses that only point at another word, or describe a form rather than a meaning.
@@ -92,7 +93,7 @@ export function buildPool(data) {
 
 let loading = null;
 /** Replaces the contents of WORDS in place (references stay valid). Falls back to the 38-word bank on failure. */
-export function loadWords(url = (import.meta.env?.BASE_URL || '/') + 'data/words.json') {
+export function loadWords(url = dataUrl('words.json')) {
   return loading ||= (async () => {
     try {
       const r = await fetch(url);
