@@ -131,7 +131,7 @@ async function walk(page, how, from, to, act, {viewport = 'desktop'} = {}) {
     const group = [['tagline', roomOfText(v.tagline)], ['ring', v.ring[0]], ['badge', v.badge == null ? null : (ROOMS.find(r => r.id !== HALL && v.badge.includes(r.short)) || {id: HALL}).id],
       ['Card streak', v.streak ? (Object.entries(STREAK).find(([, n]) => new RegExp(`(^|\\D)${n}(\\D|$)`).test(v.streak)) || [null])[0] : null]].filter(([, r]) => r);
     const ids = new Set(group.map(([, r]) => r));
-    if (ids.size > 1) fail(`${name}: frame ${i}: parts disagree (${group.map(([k, r]) => k + '=' + r).join(', ')})`);
+    if (ids.size > 1) fail(`${name}: frame ${i}: [streak "${v.streak}"] parts disagree (${group.map(([k, r]) => k + '=' + r).join(', ')})`);
     for (const r of ids) { if (r !== from && r !== to) fail(`${name}: frame ${i}: showed a third room, ${r}`); }
     if (ids.has(from)) sawFrom = true; if (ids.has(to)) sawTo = true;
     if (v.hearthTag && v.hearthTag !== tag) fail(`${name}: frame ${i}: fireplace rebuilt`);
@@ -213,6 +213,38 @@ const cur = page => page.evaluate(() => (window.__deepstack.S.room) || 'hall');
     // and a walk still works afterwards
     await idle(page);
     await walk(page, 'door next (after mid-run reload)', id, neighbours(id).next.id, () => page.locator('#rm-doors .rm-next').click({timeout: T}));
+    at = neighbours(id).next.id;
+  }
+  // RS1: the run and its card wear the room's fire. In a topic room the depth plaque names the room, the lamp-lit card
+  // rim and the plaque glow carry its colour; in the Reading Room none of that is added.
+  for (const id of ['history', 'body', 'hall']) {
+    const r = ROOMS.find(x => x.id === id);
+    if (at !== id) { await idle(page); await walk(page, 'dot (before run)', at, id, () => page.locator(`#home .rm-ring .rm-dot[data-room="${id}"]`).click({timeout: T})); at = id; }
+    await page.evaluate(() => window.__deepstack.startDaily(false)).catch(() => {});
+    await page.waitForFunction(() => !!window.__deepstack.run && document.documentElement.classList.contains('run-on'), null, {timeout: T}).catch(() => fail(`run in ${id}: never started`));
+    // open a result card the way an answer would (the judge is not needed to look at the card's rim)
+    await page.evaluate(() => window.__deepstack.openCard({w: 'lantern', pos: 'noun', def: 'a case with a light inside it', answer: 'lamp', score: 62, tier: 3, mode: 'daily', rows: 3, ft: 30, t: Date.now()})).catch(() => {});
+    await page.waitForFunction(() => document.querySelector('#bk .page'), null, {timeout: T}).catch(() => fail(`run in ${id}: the card never appeared`));
+    await page.waitForTimeout(500);
+    if (!(await page.locator('#bk .page').count())) { await page.reload({waitUntil: 'load'}); continue; }
+    const v = await page.evaluate(() => {
+      const html = document.documentElement, cs = getComputedStyle(document.querySelector('#bk .page')), hud = document.querySelector('#depthHud');
+      return {room: html.dataset.room || 'hall', name: html.style.getPropertyValue('--rm-name'), rim: cs.boxShadow, plaque: hud ? getComputedStyle(hud, '::before').content : '', glow: hud ? getComputedStyle(hud).boxShadow : ''};
+    });
+    const [cr, cg, cb] = r.rgb, col = `rgb(${cr}, ${cg}, ${cb})`, rgba = new RegExp(`rgba\\(${cr}, ${cg}, ${cb}, `);
+    if (v.room !== id) fail(`run in ${id}: html says ${v.room}`);
+    if (id === HALL) {
+      if (v.name) fail('run in the Reading Room: a room name was added to the plaque');
+      if (rgba.test(v.rim) || /rgba?\((235|70|240), /.test(v.rim)) fail(`run in the Reading Room: the card rim carries a topic fire (${v.rim.slice(0, 60)})`);
+    } else {
+      if (!v.name.includes(r.name.toUpperCase())) fail(`run in ${id}: plaque name "${v.name}"`);
+      if (!v.plaque.includes(r.name.toUpperCase())) fail(`run in ${id}: plaque shows ${v.plaque}`);
+      if (!rgba.test(v.rim) && !v.rim.includes(col)) fail(`run in ${id}: card rim is not ${col} (${v.rim.slice(0, 80)})`);
+      if (!rgba.test(v.glow) && !v.glow.includes(col)) fail(`run in ${id}: depth plaque glow is not ${col} (${v.glow.slice(0, 80)})`);
+    }
+    await page.reload({waitUntil: 'load'});
+    await page.waitForFunction(() => document.querySelector('#home .rm-ring') && document.querySelector('.hearth'), null, {timeout: T}).catch(() => fail(`after run in ${id}: home never mounted`));
+    await settled(page, id);
   }
   await page.context().close();
 }

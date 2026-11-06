@@ -1906,11 +1906,11 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On 1440p+ tall windows the alcove spans many rows; add a mid-wall detail.
 **Brief:** Goal: for windows over 1200 px tall, add a small plaque or ladder on the side shelves at the alcove's mid height. Files: new css/js only. **Conflicts:** none known.
 
-### RS1. Per-room run and result card guard
+### RS1. [x] Per-room run and result card guard (PR pending)
 **Pitch:** The room-switch guard stops at the home. The run alcove, the lift and the result card also wear the room's fire (TA6), and a stale colour there would only show after a Descend.
 **Brief:** Goal: extend `scripts/room-switch.mjs` to start a Daily in two rooms and assert the halo, lanterns, plaque name and card rim match the room, and the Reading Room stays unchanged. Done when: runs under 20 s extra in CI. **Touches:** scripts only. **Conflicts:** none.
 
-### RS2. Phone ring of lights hit areas and the ledger page
+### RS2. [x] Phone ring of lights hit areas (PR pending)
 **Pitch:** On a phone the ledger contents list used to leave the Reading Room's page on the hidden right-hand side; it now lands on the right page, but the 20 px dots still open the book rather than walking.
 **Brief:** Goal: 44 px hit areas for the dots and a name toast on press; the guard already covers the ledger route. **Touches:** `roomHome.js`, css. **Conflicts:** TA5.
 ### LC1. Librarian's Card rows open books (done in this PR)
