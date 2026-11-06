@@ -15,6 +15,7 @@ import {ruleFor,limitFor,loadEnabled,WHISPER_AT_MS} from '../core/floorRules.js'
 import {seatCandle} from '../ui/candle.js';
 import {writeInRun} from '../ui/runWriteIn.js';
 import {paintHintControls,hintSlipHtml} from '../ui/hintSlips.js';
+import {showFirstNote,clearFirstNote} from '../ui/firstNotes.js';
 import {feedbackData} from '../core/feedback.js';
 import {runLedgeHTML} from '../ui/runLedge.js';
 import {currentRoom} from '../core/roomStore.js';
@@ -71,21 +72,22 @@ export function showWord(){
   <div class="row" style="margin-top:6px"><button class="btn" id="hint"></button><button class="btn" id="skip">Skip</button><span class="keys"><kbd>Enter</kbd> to submit</span></div></div>`;
  World.openNiche(World.restRow,{label:['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});
  writeInRun(el);seatCandle(el,run.limit);
+ {const rn=run;setTimeout(()=>{if(run===rn&&!rn.busy)showFirstNote(S,'slip',save);},900);} // first word only: a seen flag keeps it to once per player
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
  attachInk(ta);
- ta.oninput=()=>{Sfx.quill();const wd=$('.word.smeared');if(wd)wd.classList.remove('smeared');const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
+ ta.oninput=()=>{Sfx.quill();clearFirstNote('slip');const wd=$('.word.smeared');if(wd)wd.classList.remove('smeared');const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
  run.ladder=hintLadder(w);run.hintN=0;paintHintBtn();
  $('#hint').onclick=useHint;$('#skip').onclick=()=>submit(true);
  clearInterval(timerId);
- timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;Sfx.candle(fr);f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);paintRun(left,run.limit);if(run.rule&&run.rule.whisper&&!run.whispered&&left<=WHISPER_AT_MS)whisper();if(left<=0)submit(!$('#ans').value.trim());},100);
+ timerId=setInterval(()=>{if(!run||run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;Sfx.candle(fr);f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);if(left<10000)showFirstNote(S,'candle',save);paintRun(left,run.limit);if(run.rule&&run.rule.whisper&&!run.whispered&&left<=WHISPER_AT_MS)whisper();if(left<=0)submit(!$('#ans').value.trim());},100);
 }
 function whisper(){run.whispered=true;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;const hl=$('#hl');
  if(hl){hl.insertAdjacentHTML('beforeend',hintSlipHtml(n,run.words[run.i].w,0,run.hintN));requestAnimationFrame(()=>hl.classList.add('on'));}paintHintBtn(true);}
 export function paintHintBtn(spent){paintHintControls(document,run,FT,spent);}
 export function useHint(){if(!run||run.busy)return;const n=run.ladder[run.hintN];if(!n)return;run.hintN++;const free=!!run.freeHint;run.freeHint=false;if(!free)run.hintSpent=(run.hintSpent||0)+n.cost;
  const hl=$('#hl');
- hl.insertAdjacentHTML('beforeend',hintSlipHtml(n,run.words[run.i].w,free?0:n.cost*FT|0,run.hintN));Sfx.flip&&Sfx.flip();requestAnimationFrame(()=>hl.classList.add('on'));paintHintBtn(true);$('#ans').focus({preventScroll:true});}
+ hl.insertAdjacentHTML('beforeend',hintSlipHtml(n,run.words[run.i].w,free?0:n.cost*FT|0,run.hintN));Sfx.flip&&Sfx.flip();requestAnimationFrame(()=>hl.classList.add('on'));if(free)showFirstNote(S,'hint',save);paintHintBtn(true);$('#ans').focus({preventScroll:true});}
 export async function submit(skipped){
  if(!run||run.busy)return;const w=run.words[run.i];let text=$('#ans').value.trim();
  if(!skipped&&!text){const f=$('#fld');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');return;}
