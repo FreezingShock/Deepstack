@@ -1858,7 +1858,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** The floor rail on the left of a run is still amber-brown in every room; its lamp and active floor could take the room's fire.
 **Brief:** Goal: tint the active rail row and lamp from `--rm-rgb`. Files: `src/ui/topbarRail.js`, new css. Done when: screenshots per room. **Conflicts:** Y6.
 
-### TA7. Small room visuals
+### TA7. [x] Small room visuals (this PR)
 **Pitch:** (a) The Card's floor name still truncates ("The Cataco…") beside its label. (b) At 375 the attic hatch plate shows a second offset frame behind it. (c) The room dots on phones are tiny and unnamed (covered by TA5). (d) Room names in the side-door plates are good; the Reading Room one has no fire swatch.
 **Brief:** Goal: fix (a) by giving the floor row the full width (label above or smaller), (b) by removing the duplicate frame, (d) by adding a tiny fire swatch. Files: `src/ui/welcome.css`, `atticHome.js`, `roomHome.js`. Done when: screenshots at 375 and 1280. **Conflicts:** X1, Y5.
 
