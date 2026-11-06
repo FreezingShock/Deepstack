@@ -1,0 +1,37 @@
+/* Fit: the home room at small and odd window sizes. Appended last so it wins over earlier layers without reordering them. */
+/* the attic hatch hangs a short cord and a brass tag just below the top bar; the title starts under the tag, never behind it */
+.attic-cue-home .ach-cord{height:16px}
+body:has(.attic-cue-home:not([hidden])) #home .hz-title,body:has(.attic-cue-home:not([hidden])) #home.hearth-compact .hz-title{padding-top:var(--cue-pad,6px)}
+/* the room's grid track may shrink below its content, so nothing can push the stacks past the niche */
+.center>.sheet.home{grid-template-columns:minmax(0,1fr)}
+#home .home .hz{min-width:0}
+/* narrow phones (down to 320): less side padding, a Descend that fits, spines a size down */
+@media(max-width:420px){
+ #home.center{padding-left:8px;padding-right:8px}
+ #home .home .descend{min-width:0;max-width:100%;box-sizing:border-box;gap:10px;padding:11px 26px 11px 22px}
+ #home .home .d-t{font-size:min(calc(22px*var(--ts,1)),6.4vw);letter-spacing:.16em;padding-left:.16em}
+ #home .home .hz-title .title{font-size:min(calc(40px*var(--ts,1)),12vw)}
+ #home .home .hz-title .tagline{font-size:min(calc(16px*var(--ts,1)),4.6vw)}
+ #home .home .hsecs{gap:0 6px;max-width:100%}
+ #home .home .hshelf{min-width:0}
+ #home .home .hb-t small{display:none}
+}
+/* short windows (landscape phones, a browser pushed small): one row of spines under a slim title, no caption */
+@media(max-height:480px) and (min-aspect-ratio:1/1){
+ #home .home .hz-title .tagline,#home .home .hz-plaque .next,#home .home .hz-plaque .stats,#home .home .cat-card,#home .home .ledger,#home .home .how{display:none}
+ #home .home .hz-title .title{font-size:calc(30px*var(--ts,1));margin:0}
+ #home .home .hz-title{padding-top:2px!important}
+ #home .home .descend{padding-top:7px;padding-bottom:7px}
+ #home .home .d-t{font-size:calc(19px*var(--ts,1))}
+ #home .home .hsecs{flex-wrap:wrap;gap:2px 8px;padding:6px 0 2px}
+ #home .home .hsecs{flex-wrap:nowrap;gap:6px}
+ #home .home .hshelf{flex:none;width:auto;flex-direction:row;gap:6px}
+ #home .home .hshelf li{width:min(112px,calc((100vw - 64px)/5))}
+ #home .home .hbook{height:24px}
+ #home .home .hb-t{font-size:calc(10px*var(--ts,1));letter-spacing:.02em;padding:0;text-overflow:clip}
+ #home .home .hb-t small{display:none}
+}
+@media(max-height:360px) and (min-aspect-ratio:1/1){#home.center{padding-top:8px;padding-bottom:10px}#home{--hz-g:3px!important}#home .home .hz-title .title{font-size:calc(26px*var(--ts,1));line-height:1}#home .home .hsecs{padding-top:2px;padding-bottom:0}#home .home .hbook{height:22px}#home .home .descend{padding-top:4px;padding-bottom:4px}#home .home .d-t{font-size:calc(17px*var(--ts,1))}#home .home .hz-title .title{font-size:calc(24px*var(--ts,1))}}
+#home.hearth-bare .mantel{display:none}
+/* short portrait phones without room for a fire: the caption goes and the spines stand a size down */
+@media(max-height:520px) and (max-aspect-ratio:1/1){#home.hearth-bare .hz-plaque .next{display:none}#home.hearth-bare .hbook{height:26px}#home.hearth-bare .hz-title .title{font-size:calc(34px*var(--ts,1))}}

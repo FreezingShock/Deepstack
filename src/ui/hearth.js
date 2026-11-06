@@ -128,7 +128,7 @@ function createHearth(home, sfx, mood) {
   const touched = [];
   // custom properties (--x) go through setProperty; undo puts back whatever was there (the home tier's own --hz-* values)
   const setStyle = (el, k, v) => { if (!el) return; const cp = k[0] === '-'; touched.push([el, k, cp ? el.style.getPropertyValue(k) : '']); if (cp) el.style.setProperty(k, v); else el.style[k] = v; };
-  const undo = () => { for (const [el, k, was] of touched.splice(0).reverse()) { if (k[0] === '-') { if (was) el.style.setProperty(k, was); else el.style.removeProperty(k); } else el.style[k] = ''; } home.classList.remove('hearth-wide', 'hearth-flow', 'hearth-narrow', 'hearth-compact'); };
+  const undo = () => { for (const [el, k, was] of touched.splice(0).reverse()) { if (k[0] === '-') { if (was) el.style.setProperty(k, was); else el.style.removeProperty(k); } else el.style[k] = ''; } home.classList.remove('hearth-wide', 'hearth-flow', 'hearth-narrow', 'hearth-compact', 'hearth-bare'); };
 
   /* ----- layout ----- */
   function layout() {
@@ -192,8 +192,8 @@ function createHearth(home, sfx, mood) {
       if (h < 76) { home.classList.add('hearth-compact'); setStyle(home, '--hz-book', '24px'); setStyle(home, '--hz-g', '3px'); h = solve(); }
       // very short: the "Daily No. N" caption under Descend repeats the book titles, so it gives way too
       if (h < 76 && tag) { setStyle(tag, 'display', 'none'); h = solve(); }
-      plan = planFlow({W, beam: loc(beamEl), h});
-      if (!plan) { undo(); layer.hidden = true; return; }
+      plan = home.scrollHeight - home.clientHeight > 1 ? null : planFlow({W, beam: loc(beamEl), h}); // still overflowing after every squeeze: go without the fire
+      if (!plan) { undo(); home.classList.add('hearth-bare'); layer.hidden = true; return; } // no room for a fire worth drawing: drop the empty mantel too so the room still fits
     }
     layer.hidden = false;
     G = {...plan, ...deriveHearth(plan.SR), wide, TLB: loc(tagline).b, hr};
