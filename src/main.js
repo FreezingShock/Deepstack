@@ -8,12 +8,15 @@ import './core/combo.js';
 import './theme/tokens.css';
 import './ui/motion.css';
 import './styles/index.css';
+import './ui/fitHeadword.js';
 import './ui/canvasCover.js';
 import './ui/dprCap.js';
 import './sets/sets.js';
 import {backfillFloors} from './core/attic.js';
 import {dustCardOpts} from './ui/atticDust.js';
-import {setsBook} from './sets/ui.js';
+import {roomsBook} from './ui/roomLedger.js';
+import './ui/roomHome.css';
+import {goRoom} from './app/roomGo.js';
 import './ui/results.js';
 import './ui/results.css';
 import './ui/finalPage.css';
@@ -38,6 +41,7 @@ import './ui/welcome.css';
 import './ui/deskProps.css';
 import './ui/mantel.css';
 import './ui/hearth.css';
+import './ui/idleRoom.css';
 import './ui/menuWear.css';
 import './ui/homeBookEdges.css';
 import {initRulesCard} from './ui/welcome.js';
@@ -52,6 +56,8 @@ import './ui/camMotion.js';
 import {initA11y} from './ui/a11y.js';
 import {initKeys} from './ui/keys.js';
 import {initTopbar} from './ui/topbar.js';
+import {initTopbarRail} from './ui/topbarRail.js';
+import {tintRail} from './ui/railTint.js';
 import './ui/settings.js';
 import {initTransitions} from './ui/transitions.js';
 import './ui/screenFx.js';
@@ -107,6 +113,10 @@ import './ui/alsoAccepted.css';
 import './ui/alsoMeans.css';
 import './ui/textScale.css';
 import './ui/auditFixes.css';
+<<<<<<< HEAD
+=======
+import './ui/dailyBind.css';
+>>>>>>> origin/main
 import {deferAfterPaint} from './core/boot.js';
 import {$,$$,RM,clamp} from './app/util.js';
 import {FLOORS,FT,S,TIERS,WORDS,computeStats,dailyWords,floorAtFt,floorStartFt,hashStr,save,utc,wordsLoaded,wordsReady} from './app/state.js';
@@ -122,12 +132,12 @@ function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
 initA11y();
 initKeys();
-initTopbar({Sfx});installUiSounds(Sfx);
+initTopbar({Sfx});initTopbarRail({S,Sfx});installUiSounds(Sfx);
 watchHomeLayout(ui.home);
 World.onLedge(initLedge({tiers:TIERS,canActivate:()=>ui.stage.hidden&&$('#cardlayer').hidden,onOpen:b=>openCard(b,{fresh:false}),showTip,hideTip}));
 const browse=initBrowse({world:World,floors:FLOORS,startOf:floorStartFt,ft:FT,rm:RM});
 World.onDepth(v=>{browse.update(v);const e=$('#dnum');if(e.textContent!==String(v))e.textContent=v;
- const f=floorAtFt(v);$('#dfloor').textContent=f.id?f.name:'';
+ const f=floorAtFt(v);$('#dfloor').textContent=f.id?f.name:'';tintRail(f);
  if(run&&f.id>run.floor){run.floor=f.id;S.bestFloor=Math.max(S.bestFloor,f.id);announceFloor(f);}});
 ui.gauge.innerHTML=TIERS.map(t=>`<div data-t="${t.id}" style="color:${t.spine}"><span>${t.name}</span><i></i></div>`).join('');
 World.onGauge((zi,st)=>{$$('div',ui.gauge).forEach(d=>{const id=+d.dataset.t;d.classList.toggle('on',id===zi);d.classList.toggle('passed',id<zi);d.style.display=id<=st.tier?'':'none';});});
@@ -152,7 +162,7 @@ addEventListener('keydown',e=>{
 });
 /* ---------- shelf, sets and stats: pages of the menu books (src/ui/bookMenus.js, home.js BOOK_PAGES) ---------- */
 const bookOpenCard=()=>!$('#cardlayer').hidden;
-BOOK_PAGES.bSets={...setsBook(S),keepOnEsc:bookOpenCard};
+BOOK_PAGES.bRooms={...roomsBook(S,{go:id=>goRoom(id),today:utc,lexicon:core.lexicon}),keepOnEsc:bookOpenCard};
 lazyBooks({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,utc,computeStats,floorAtFt,wordsReady,wordsLoaded:()=>wordsLoaded});
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();

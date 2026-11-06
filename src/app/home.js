@@ -12,6 +12,7 @@ import {World} from '../world/world.js';
 import {$} from './util.js';
 import {setRun,startDaily,startUnlimited} from './run.js';
 import {showFinal} from './final.js';
+import {placeDailyTab} from '../ui/dailyBind.js';
 import {startRiddle,startTodayRiddle} from './riddle.js';
 import {bindAtticHome} from '../ui/atticHome.js';
 import {bindDeskProps} from '../ui/deskProps.js';
@@ -19,6 +20,10 @@ import {rankHTML} from '../ui/lexiconRank.js';
 import {trendHTML} from '../ui/lexiconTrend.js';
 import {mountHearth} from '../ui/hearth.js';
 import {hearthMood} from '../ui/hearthMood.js';
+import {mountIdleRoom} from '../ui/idleRoom.js';
+import {mountRoomHome} from '../ui/roomHome.js';
+import {currentRoom} from '../core/roomStore.js';
+import {goRoom} from './roomGo.js';
 
 /* ---------- home ---------- */
 export let cdTimer=0;
@@ -41,9 +46,12 @@ export function showHome(){
  BOOK_ACTS.practice=()=>startDaily(true);BOOK_ACTS.riddle=startRiddle;BOOK_ACTS.dailyRiddle=startTodayRiddle;BOOK_ACTS.daily=()=>d?showFinal(d,true):startDaily(false);
  
  bookify(ui.home);applyHomeTier(ui.home);
+ placeDailyTab(ui.home,d,utc());
  bindAtticHome(ui.home,{shelf:S.shelf});
  bindDeskProps(ui.home,{sfx:Sfx});
- mountHearth(ui.home,{sfx:Sfx,mood:hearthMood(S,st.streak)});
+ const hearth=mountHearth(ui.home,{sfx:Sfx,mood:hearthMood(S,st.streak)});
+ mountIdleRoom(ui.home,{sfx:Sfx,hearth});
+ mountRoomHome(ui.home,{room:currentRoom(S),go:goRoom,openLedger:()=>$('#bRooms')&&$('#bRooms').click()});
  setBookSfx(n=>n==="whoosh"?Sfx.cue("lift"):n==="thud"?Sfx.cue("shut"):n==="flip"?Sfx.cue("turn"):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;

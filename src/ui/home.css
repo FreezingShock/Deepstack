@@ -276,3 +276,6 @@
 [data-room=tight] .home .descend{padding-top:9px;padding-bottom:9px}
 [data-room=tight] .home .d-t,[data-room=snug] .home .d-t{font-size:calc(22px*var(--ts))}
 @media(max-width:700px){.home .hz-plaque .stats{display:none}.home .hbook{height:min(var(--hz-book,38px),34px)}}
+/* Close the book sits on the spread's bottom edge of the right page, apart from any mode button (X3) */
+.pg-foot{margin-top:auto;padding-top:6px;display:flex;justify-content:flex-start;flex:none}
+.pg-sec{flex:0 1 auto}

@@ -3,6 +3,8 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
+- Resize the window (or rotate your phone) on home and in each menu book: the hatch tag should clear the title, Descend and the five spines should always fit, short landscape windows get one row of spines, and the background shelves (books, cobwebs, props) should stay put as you drag the window. Say which size still feels cramped. (thread: fix layout at small and odd window sizes, `node scripts/responsive.mjs`)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
 - Pull `main` and look at the fire: it now burns low on a 0 streak and roars after a few weeks, and its sparks take the colour of your last book's tier (aqua after an Apocrypha, red after a Grimoire). At 375x667 and 800x900 the fireplace now shows, with the Daily and Unlimited spines still on screen. Say if the low 0-streak fire feels too dim.
 - Open the Unlimited book at your window size and on your phone: a big Descend button (Find my rank before you are placed) now sits under your rank, with "Place me again" quietly beneath. Say if it reads clearly. (Unlimited pages, UB1)
@@ -1617,7 +1619,13 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** At 375 the attic footer says "scroll up to go further in" (phones swipe) and wraps to three lines on a dark band, while the "Down the ladder" label touches the lantern tag. Copy that names an input (scroll, click, Enter) should follow the device.
 **Brief:** Goal: one helper that picks scroll/swipe, click/tap, and hides key hints on touch; use it in the attic hint and run hints; keep the label clear of the lantern at 375. Files: new `src/ui/inputCopy.js`, attic hint. Done when: 375 screenshot, test pins wording per input type. **Conflicts:** V10 (shortcuts), AE4.
 
+<<<<<<< HEAD
 ### X3. "Close the book" belongs to the whole book
+=======
+### [x] X3. "Close the book" belongs to the whole book
+
+_Done in this PR: Close the book is now a `.pg-foot` link on the right page bottom edge, in every menu book._
+>>>>>>> origin/main
 **Pitch:** In the Unlimited book the handwritten "Close the book" sits under the Riddle button on the right page, so it reads as part of Riddle. It closes both halves.
 **Brief:** Goal: move it to the spread's bottom edge (or a ribbon) in every menu book so it is always in the same place. Files: book page builders, `bookpages.css`. Done when: all menu books at 1280 and 375. **Conflicts:** P1, 104 follow-ups.
 
@@ -1643,7 +1651,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The cord creak, lid knock and rungs creaking as you climb, so the way in feels as physical as it looks.
 **Brief:** Goal: three short Sfx hooks fired from `atticHome.js` (pull, arrive, descend). Files: `src/sound/`, `src/ui/atticHome.js`. **Conflicts:** sound threads.
 
-### AT8. Books return to the stack
+### AT8. [x] Books return to the stack (PR pending)
 **Pitch:** After a menu book closes it should slide back into its exact slot on the stack, with the others easing forward rather than popping.
 **Brief:** Goal: shared-element return flight and sibling stagger in `bookOpenFx`. Files: `src/ui/bookOpenFx.css`, `src/ui/homeBookEdges.css`. **Conflicts:** home book threads.
 ### V17. Floor rule on the door sign
@@ -1675,6 +1683,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### W5. Wayfinding in the attic
 **Pitch:** On a phone the only sign of depth is one wrapped line of text ("row 1 of 3, scroll up to go further in"). The floor rail does this job in the run; the attic has nothing like it.
 **Brief:** Goal: a slim brass marker on the side showing which row you are in, tappable to jump. Files: `src/world/atticClimb.js`. Done when: 375 and 1280 screenshots, keyboard reachable. **Conflicts:** X2, V3.
+<<<<<<< HEAD
 
 ## Y. From nate's own examples (2026-11-06): niche, animation-feel and overhaul items
 
@@ -1711,3 +1720,135 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### Z4. Seven books bound into the Daily
 **Pitch:** Finishing a Daily ends on a results screen. It should end with the librarian binding your seven books: they slide into the Daily book, a dated tab sticks out of its spine, and the Daily spine on home now shows today's tier colours.
 **Brief:** Goal: a 2 s end-of-Daily scene from the final screen back to home where the seven earned spines fly into the Daily book on the stack and a dated tab appears. Files: `src/app/final.js`, home Daily spine. Done when: frame strip, skippable, reduced motion jumps to the result. **Conflicts:** Y1, Y3, W1, 62, 63.
+=======
+### W1 (home close). [x] Home comes back behind the book, not after it (PR pending)
+The room (title, plaque with cabinet, card and fire, sibling spines) now fades in from the moment a home book starts to close, over one `--m-page` cruise, so it is whole by the time the book lands (`.book-closing` in `bookOpenFx.css`, `onShut` in `openBook`). Test: `test/home-close-fade.test.js`.
+
+### Y5. [x] (PR pending) Top bar: hatch in the rail
+**Pitch:** The attic hatch and the depth plate could both live in the rail's centre, so the rail reads as one object. **Brief:** Goal: move the attic cue into the bar centre on home, with the same hatch-open motion. Files: `src/ui/atticHome.js`, `topbarRail.css`. **Conflicts:** attic hatch threads (#265).
+
+### Y6. [x] (PR pending) Top bar: floor-tinted rail
+**Pitch:** The rail's inlay and glow take on the current floor's colour as you descend. **Brief:** Goal: tint `#bar::before` and the corner glows from the floor tokens, softly, never bright. Files: `src/ui/topbarRail.css`, `src/main.js` onDepth hook.
+
+### AT8a. [x] Open flight from the exact spine
+**Pitch:** The book now slides home onto its spine and tips onto its side. Make the opening the mirror of it: the spine lifts and turns upright as it flies out, so open and close read as one object.
+**Brief:** Goal: mirror the `--sx/--sy` footprint on the way out in `openBook`. Files: `src/ui/bookOpenFx.css`, `src/ui/home.js`. **Conflicts:** home book threads, Settings book fix.
+### AT8b. [x] Spine settle nudge
+**Pitch:** When the book lands the stack could take a tiny weight bump, like setting a book down on a pile.
+**Brief:** Goal: a 2px translate on the landed spine and its neighbours, transform only. Files: `src/ui/homeBookEdges.css`. **Conflicts:** AT8a.
+
+- [x] Z2 The room breathes when you leave it alone (idle director, `src/ui/idleRoom.js`).
+
+### Z2b. A cat on the hearth rug
+**Pitch:** The room already breathes when idle (Z2); something alive should settle in. After a few minutes idle a small shape curls up by the grate, its flank rising slowly in the firelight, and it lifts its head when you move.
+**Brief:** Goal: one new idle event in `src/ui/idleRoom.js` that draws a sleeping creature by the hearth (low quality and reduced motion: off). Files: `src/ui/idleRoom.js`, `idleRoom.css`. **Conflicts:** FH2, W5.
+
+### Z2c. Rain and wind answer the idle room
+**Pitch:** Long idle, the world outside should show up: a rain patter on the attic skylight, a draught that bends the candle flames.
+**Brief:** Goal: two more events in the idle director tied to the attic skylight weather and the mantel flames, same stop-on-input rule. Files: `src/ui/idleRoom.js`, `idleRoom.css`. **Conflicts:** AT10, FH3.
+### Y7. Rail answers the depth (from Y6)
+**Pitch:** The rail now takes each floor's lamp colour; the streak and deepest plates and the medallion rims could warm or cool with it too, and the floor banner could slide out of the rail.
+**Brief:** Goal: tint plate borders and medallion rims at ~25% of `--rail-tint`, never bright. Files: `src/ui/railHatch.css`. **Conflicts:** V3.
+
+### Y8. Hatch lid reacts to the fire (from Y5)
+**Pitch:** The hatch sits in the rail now; its inner glow could breathe with the hearth flame below it so the room feels connected.
+**Brief:** Goal: drive `.ach-glow` opacity from the hearth flicker value, subtle, off in reduced motion. Files: `src/ui/atticHome.js`, `src/ui/hearth.js`. **Conflicts:** hearth threads.
+
+### TR4. Word pool safety filter [x] (word-blocklist PR)
+**Pitch:** The topic scan found a racial slur ("coolie") in the shipped word list. Done: `src/core/blocklist.js` drops slurs, hateful terms and ethnic or sexual stereotypes by word and by gloss; `test/word-blocklist.test.js` fails if one returns.
+**Brief:** Blocked words stay as non-playable "ghosts" in the Daily's random stream so no other day reshuffles (Daily No. 1 to 4 are pinned by a fixture). Add a word to `BLOCKED_WORDS` to block it. **Conflicts:** word pool threads.
+
+### TR5. Hand-review the Daily slice of the word list
+**Pitch:** The blocklist catches known slurs; a person should still skim the easy and mid words for anything odd or unfair.
+**Brief:** Goal: print the words between difficulty 1.5 and 5.5 with their glosses into `notes/`, flag anything off, add to `BLOCKED_WORDS`. Files: `src/core/blocklist.js`. **Conflicts:** word pool threads.
+
+### TR6. Report-a-word on the result page
+**Pitch:** If a word or definition still feels wrong, a quiet "Skip this word" mark on the book page hides it on this device.
+**Brief:** Goal: additive `S.hiddenWords`, filtered at pick time. Files: new `src/core/hiddenWords.js`, one hook in the result page. **Conflicts:** result page threads, Daily (hidden words must not change the seeded Daily).
+
+
+### Headword fit follow-ups
+**Pitch:** Headwords now shrink to fit on one line; the same fit rule could cover the shelf spine plaques and Daily result words.
+**Brief:** Goal: reuse `src/ui/fitHeadword.js` selectors for any remaining word label that still wraps. Files: that selector list only. **Conflicts:** result page threads.
+## TR. Topic rooms (nate 2026-11-06: "a room full of just history terms, or just mathematical terms"; mockup https://claude.ai/artifact/6jSVvLziuGc55Pb12z6cGa, sources design/topic-rooms/)
+
+### [x] TR0. Mock up topic rooms (done: artifact + screenshots/topic-rooms/, no code PR)
+**Pitch:** Rooms per topic reusing the fireplace home with a different coloured fire; Daily, Unlimited, Shelf and Stats come along, Sets move into rooms. Three switch options mocked by injecting into the real build; Wiktionary topic labels counted for all 13,470 words (10,345 matched, about 570 to 950 labelled words per room).
+
+### [x] TR1. Rooms registry, word lists, per-room Daily and rating (PR #284; fire colour moves to TR2)
+**Pitch:** The five starter rooms (Chronicle, Abacus, Herbarium, Gallery, Observatory) become real places with their own fire colour and word list, so Descend and Unlimited draw from the room you stand in.
+**Brief:** Goal: keep sense topic labels in `scripts/build-words.mjs` (kaikki `senses[].topics`), map labels to rooms (`design/topic-rooms/groups.json`), filter each room list by embedding closeness of the game's definition to the room, write an additive `rooms` field; register rooms in `src/core/places.js`; hearth reads a room hue (hue-rotate on the live canvas + `--rm-rgb` glow, as in `inject.js`). Files: build script, `src/core/places.js`, `src/ui/hearth.css`. Done when: default room byte-identical, a test picks only room words, save field `room` additive. **Conflicts:** G11, 35, word pool threads.
+
+### [x] TR2. Switch rooms: Side Doors on desktop, Room Ledger on phones, recoloured fire (TR2/TR3 PR)
+**Done:** the live fire takes the room's colour (hue-rotate on the hearth's flame canvas + room light), the tagline names the room in its ink, a ring of seven room lights sits under the title. Wide screens: arched side doors in the margins lead to the previous and next room in the ring (plates name them; [ and ] too); the room slides away from the door you took and the next slides in. Phones: the Rooms book (Room Ledger) lists every room and enters it. Files: `src/ui/roomHome.js` + `.css`, `src/ui/roomLedger.js`, `src/app/roomGo.js`.
+
+### [x] TR3. Sets move into rooms, Sets book retired into the Room Ledger (TR2/TR3 PR)
+**Done:** the Rooms spine replaces Sets; 18 sets, three per topic room (the old six re-homed, ids and progress untouched; 12 new from each room's list). A room's word pool also holds its sets' words. Share text names the room. Shelf room tabs and a Stats rooms page are TR7/TR8.
+
+### [x] TR7. Shelf room tabs (TR7-TR9 PR: Room chips with fire-coloured dots, shown once a second room has books)
+**Pitch:** "still uses daily and unlimited shelf and stats": the Shelf keeps every book but gains a tab per room (books already carry `room`), with each tab's spines lit in that room's fire colour.
+**Brief:** Goal: filter chips in the Shelf book by `book.room` (missing = Reading Room). Files: shelf book pages only. **Conflicts:** shelf threads.
+
+### [x] TR8. Stats per room (TR7-TR9 PR: The Rooms + Side by side pages after the Almanac)
+**Pitch:** A Rooms page in the Stats book: each room's streak, Lexicon, Dailies played and sets, side by side, so you can see which room you are strongest in.
+**Brief:** Goal: read `roomData(S, id)` for every room; one new leaf in the stats book. **Conflicts:** stats threads.
+
+### [x] TR9. Door walk polish (TR7-TR9 PR: plank doors stand ajar, open wider on hover, swing open when taken; new fire comes up from embers; `door` sound cue)
+**Pitch:** Make walking through a door feel like a place: the door you take swings open, the new fire flares up from embers as the room slides in, and a soft footstep and latch sound plays.
+**Brief:** Goal: richer `rm-leave`/`rm-enter` keyframes, a `door` cue in `src/sound/materials.js`; keep it under 600 ms and transform/opacity only. **Conflicts:** sound threads, hearth.
+
+### TR10. A room's own shelf in the world
+**Pitch:** When you stand in a room, the background shelves behind the fireplace hold that room's books, their spines lit faintly in the room's fire colour, so the room feels stocked with its own words.
+**Brief:** Goal: `World.setShelf` gets the shelf filtered by `bookRoom` when not in the Reading Room. Files: `src/app/home.js` showHome line, `src/core/shelfRooms.js`. **Conflicts:** world/shelf threads.
+
+### TR11. Room-coloured Daily binding and share card
+**Pitch:** The Daily book's dated tab and the share text's block colours take the room's fire colour, so a Chronicle Daily reads crimson and an Observatory one green.
+**Brief:** Goal: `placeDailyTab` and the result share read `--rm-rgb`. Files: `src/ui/dailyBind.css`, `src/app/final.js`. **Conflicts:** Daily binding, results threads.
+
+### TR12. Room streak flames on the doors
+**Pitch:** Each side door's lamp burns brighter the longer your streak in that room, and a small number on the plate shows it, so you can see which room is waiting for today's Daily.
+**Brief:** Goal: `doorHTML` reads `roomData(S, id)` streak and today's Daily. Files: `src/ui/roomHome.js` + css. **Conflicts:** none.
+
+### RS1. [x] Stand-alone phone layout for the Unlimited and Daily books (done in the same thread: #283)
+
+**Pitch:** The menu books fit at every size now, but on a 320 px phone they still show one page at a time with long lists clipped under "turn the page"; give the Shelf rarity list and the Daily list a phone-sized rhythm so nothing is cut.
+**Brief:** Goal: at 320 to 414 px wide, no handwritten line is clipped or overlapped by the page-turn hint on any menu book page; extend `scripts/responsive.mjs` to assert it. Files: `src/ui/pageFit.js`, `src/ui/bookpages.css`, `scripts/responsive.mjs`. **Conflicts:** menu book threads.
+
+### RS2. [x] A fireplace that scales down instead of vanishing (done in the same thread: #283)
+**Pitch:** On short phones (360x640 and under) the fire now gives way to a plain wall; a tiny framed hearth would keep the room's heart.
+**Brief:** Goal: a minimal hearth (arch, glow, no mantel candles) at heights where `planFlow` returns null, still without overlapping Descend. Files: `src/ui/hearth.js` (`planFlow`, `layout`). **Conflicts:** FH2, FH3.
+
+### RS3. Orientation change keeps the camera and open book
+**Pitch:** Rotating a phone mid-descent or with a book open should keep where you were, same books, same page.
+**Brief:** Goal: resize and orientationchange keep scroll depth, attic state and the open book's page; test in `scripts/responsive.mjs` with `page.setViewportSize`. Files: `src/world/world.js`, `src/ui/bookpages.js`. **Conflicts:** AT8, attic threads.
+>>>>>>> origin/main
+
+## TA. Topic rooms audit menu 2026-11-06 (after #289/#290; screenshots audit/rm-*.png; word data from public/data/rooms.json vs words.json)
+
+### TA1. Room word lists miss the obvious and keep the odd
+**Pitch:** Measured against the main word list, the room lists leave out on-topic words and keep off-topic ones. Math has furlong, gallon, litre, quark, aperture and approximately, but not theorem, integer, equation, algebra, calculus, axiom, matrix, exponent or polynomial (all in the pool). History is mostly war and ships (quiver, scabbard, schooner, starboard) and misses renaissance, dynasty, feudal, treaty, pharaoh, medieval. English misses metaphor, simile, irony, alliteration. Art misses sculpture, fresco, tapestry, mural. Science misses photosynthesis, molecule, electron, velocity. Body & Sport holds board and card games (checkmate, rummy, trump, backgammon).
+**Brief:** Goal: a repeatable audit script (`scripts/room-audit.mjs`) with a hand-written anchor list per room (about 40 must-have words) reporting misses and a sample of suspected noise, then fix `scripts/build-rooms.mjs` (labels, thresholds, per-room include/exclude lists) until every anchor is in and the noise is gone. Done when: audit table in the PR, rooms.json rebuilt, tests pin the anchors. **Touches:** room data only. **Conflicts:** TR5, TR4.
+
+### TA2. How deep each room really is
+**Pitch:** Four rooms hold 115 to 146 words. A Daily uses 7, so a small room repeats its words within a few weeks, and an Unlimited player who keeps playing will start meeting the same words. Nothing shows how much of a room you have explored.
+**Brief:** Goal: (a) measure repeat rate for a simulated 60-day Daily and a 200-word Unlimited in each room; (b) show "47 of 118 met" per room on the Room Ledger page and the door plate; (c) decide a floor on list size and widen lists that fall short (with TA1). Files: `src/core/roomPool.js`, `roomLedger.js`, door plate. Done when: report plus the counter. **Conflicts:** TA1, TR12, Z1.
+
+### TA3. Which numbers are per room, and do they agree
+**Pitch:** In the Chronicle the top bar and Almanac show "0 day streak" next to "300 ft deepest", and the Card shows Books 13 and Floor from your whole shelf, while streak and Dailies are the room's own. Nothing says which is which, and an unsynced number would be a bug that a player reads as lost progress.
+**Brief:** Goal: a script that seeds a save with two rooms (different Dailies, streaks, ratings, shelf books) and checks every readout in every room: top bar chips, Card, Almanac, Lexicon, Shelf counts and room tabs, Daily book calendar, share text, spine badges, Room Ledger. Fix mismatches and label shared versus room numbers in a few pen words ("all rooms", "this room"). Files: `roomStore.js`, `statsPages.js`, `welcome.js`, `topbar.js`. Done when: the table of readouts per room is in the PR and tested. **Conflicts:** TR8, TR12.
+
+### TA4. Switching rooms by every route
+**Pitch:** There are four ways into a room (a side door on desktop, the Room Ledger, the dots above the fire, keyboard shortcuts) plus reload and leaving mid-run. Each could leave a different residue: a flash of the old fire, the old tagline, a stale Card, the wrong spine badges, the old room after a reload mid-Daily.
+**Brief:** Goal: a frame-capture check (like `scripts/transitions-guard`) that enters every room by every route, at 375 and 1280, and asserts within 150 ms: fire hue, tagline, Card, Daily plaque text and badges all match the new room; reload mid-run returns to the same room and word. Files: new `scripts/rooms-guard.mjs`. Done when: runs in CI under 30 s. **Conflicts:** W4 guard, V10 keys.
+
+### TA5. Swipe the hearth to change room on phones
+**Pitch:** On a phone the only quick room switch is seven 20 px dots on the mantel, too small to hit, or the Rooms book. The desktop has doors you walk through. A phone should let you swipe the fireplace sideways and the next room's fire slides in, with a small name label.
+**Brief:** Goal: horizontal swipe on the hearth region (and arrow keys) changes room with the same fire hand-off as the door walk; dots get 44 px hit areas and a name toast on press. Files: `src/ui/roomHome.js`, `hearth.js`. Done when: 375x667 frame strip, vertical scroll to the attic still works, reduced motion cross-fades. **Conflicts:** V3, attic scroll (#265).
+
+### TA6. The room follows you down
+**Pitch:** Enter the Chronicle and the home glows red, but the run screen is the same orange alcove with nothing saying where you are. The descent should carry the room: its fire colour on the candle halo, lanterns and result card edge, its name in pen on the plaque, and the lift cage showing its fire.
+**Brief:** Goal: pass the room's `rgb` and `ink` into the run alcove lighting, result card and lift, and show the room name small on the depth plaque. Files: `src/world/world.js` lights, `candleLight.js`, card css, `lift.js`. Done when: per-room run and card screenshots, the Reading Room unchanged byte for byte. **Conflicts:** Y1 (lift), W3, TR10.
+
+### TA7. Small room visuals
+**Pitch:** (a) The Card's floor name still truncates ("The Cataco…") beside its label. (b) At 375 the attic hatch plate shows a second offset frame behind it. (c) The room dots on phones are tiny and unnamed (covered by TA5). (d) Room names in the side-door plates are good; the Reading Room one has no fire swatch.
+**Brief:** Goal: fix (a) by giving the floor row the full width (label above or smaller), (b) by removing the duplicate frame, (d) by adding a tiny fire swatch. Files: `src/ui/welcome.css`, `atticHome.js`, `roomHome.js`. Done when: screenshots at 375 and 1280. **Conflicts:** X1, Y5.

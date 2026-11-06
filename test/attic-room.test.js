@@ -20,3 +20,14 @@ test('lantern sways, and holds still for reduced motion or low quality',()=>{
  const p=_lp(1000,0,800,.38,0);assert.equal(p.x,p.px);assert.ok(p.y>p.py);
  assert.ok(propUnit(375)<propUnit(1280));
 });
+
+test('W2: a row is one group centred under the light, with its sign beside its first pile',()=>{
+ for(const W of[375,1280,1640]){
+  const {rows,pileW}=planRows(mk(30,12),W);
+  for(const r of rows){
+   const xs=[...(r.sign?[r.sign.x]:[]),...r.piles.map(p=>p.x)];
+   assert.ok(Math.abs((Math.min(...xs)+Math.max(...xs))/2-W/2)<pileW*.1,'group centred');
+   if(r.sign&&r.piles.length)assert.ok(Math.abs(r.piles[0].x-r.sign.x)<=pileW*1.01,'sign touches its first pile');
+  }
+ }
+});

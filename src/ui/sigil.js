@@ -17,7 +17,8 @@ export const CORES = ['runes', 'star', 'knot', 'petals'];
 /** The set a word belongs to (or null). Set members share one ring so a complete set reads as a family. */
 export const setIndexOf = word => { const w = String(word || '').toLowerCase().trim(); const i = SETS.findIndex(s => s.words.includes(w)); return i < 0 ? -1 : i; };
 /** The ring that marks set number i: every set gets its own (ring, second ring) pair, so no two sets match. */
-export const setRing = i => ({ring: RINGS[i % RINGS.length], ring2: Math.floor(i / RINGS.length) % 2 === 1});
+/* sets past the first ten add a third, innermost ring so every set keeps its own (the first ten are unchanged) */
+export const setRing = i => ({ring: RINGS[i % RINGS.length], ring2: Math.floor(i / RINGS.length) % 2 === 1, ...(i >= RINGS.length * 2 ? {ring3: true} : {})});
 
 /** Pure description of the sigil for a word. Same word, same spec. Words in a book set take the set's ring but keep their own core. */
 export function sigilSpec(word) {
@@ -48,6 +49,7 @@ function paths(c, s, R) {
   if (s.ring === 'ticked') { arc(R * .9); for (let i = 0; i < 16; i++) { const a = i * TAU / 16; c.moveTo(Math.cos(a) * R * .9, Math.sin(a) * R * .9); c.lineTo(Math.cos(a) * R, Math.sin(a) * R); } }
   if (s.ring === 'dotted') for (let i = 0; i < 18; i++) { const a = i * TAU / 18; c.moveTo(Math.cos(a) * R + R * .06, Math.sin(a) * R); c.arc(Math.cos(a) * R, Math.sin(a) * R, R * .06, 0, TAU); }
   if (s.ring2 && s.ring !== 'double') arc(R * .72);
+  if (s.ring3) arc(R * .6);
   c.stroke();
   const r0 = R * .62;
   if (s.core === 'none') return;   // ring-only crest (set pages)

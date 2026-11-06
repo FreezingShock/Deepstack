@@ -1,0 +1,116 @@
+/* Topic rooms on the home screen (roomHome.js). Colours come from <html> --rm-hue/--rm-sat/--rm-rgb/--rm-ink. */
+
+/* the fire: the hearth's live flames take the room's salt colour; the room light follows */
+.hearth canvas:last-of-type{transition:filter var(--m-smooth) var(--e-cruise)}
+html[data-room] .hearth canvas:last-of-type{filter:hue-rotate(var(--rm-hue)) saturate(var(--rm-sat,1.2))}
+html[data-room] .hearth-light.hl-glow{background:
+ radial-gradient(calc(var(--hl-r,900px)*1.05) calc(var(--hl-r,900px)*.8) at var(--hl-x,50%) var(--hl-y,70%),rgba(var(--rm-rgb),.32) 0,rgba(var(--rm-rgb),.14) 38%,rgba(var(--rm-rgb),0) 72%),
+ radial-gradient(var(--hl-fw,380px) var(--hl-fh,80px) at var(--hl-fx,50%) var(--hl-fy,80%),rgba(var(--rm-rgb),.4) 0,rgba(var(--rm-rgb),0) 70%)}
+
+/* the room's name on the tagline, in the room's ink */
+html[data-room] #home .hz-title .tagline{font-style:normal}
+#home .tagline .rm-name{font-family:Cinzel,serif;font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:.86em;color:rgb(var(--rm-ink))}
+#home .tagline .rm-name+em{font-style:italic}
+html[data-room] #home .daily-tag{color:rgb(var(--rm-ink))}
+@media(max-width:600px){#home .tagline .rm-name+em{display:none}}
+
+/* ring of room lights under the title: every room, this one lit */
+#home .rm-ring{display:flex;justify-content:center;gap:2px;margin:2px auto 0;line-height:0}
+#home .rm-dot{appearance:none;border:0;padding:6px;margin:0;background:none;cursor:pointer;position:relative;width:21px;height:21px;border-radius:50%}
+#home .rm-dot::before{content:'';position:absolute;left:6px;top:6px;width:9px;height:9px;border-radius:50%;background:rgba(var(--c),.3);box-shadow:0 0 0 1px rgba(0,0,0,.55);transition:background var(--m-quick) var(--e-cruise),box-shadow var(--m-quick) var(--e-cruise),transform var(--m-quick) var(--e-cruise)}
+#home .rm-dot:hover::before,#home .rm-dot:focus-visible::before{background:rgba(var(--c),.75);transform:scale(1.15)}
+#home .rm-dot.on::before{background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.55) 0,rgb(var(--c)) 50%);box-shadow:0 0 0 1px rgba(0,0,0,.55),0 0 9px 2px rgba(var(--c),.75)}
+#home .rm-dot:focus-visible{outline:1px solid rgba(var(--c),.8);outline-offset:-2px}
+@media(pointer:coarse){#home .rm-dot{width:26px;height:26px;padding:8px}#home .rm-dot::before{left:8.5px;top:8.5px}}
+#home.hearth-compact .rm-ring{margin-top:0}
+
+/* side doors (wide screens): arches in the margins either side of the room, lit by the neighbouring fire */
+#rm-doors{position:fixed;inset:0;pointer-events:none;z-index:3;transition:opacity var(--m-base) var(--e-cruise)}
+#rm-doors[hidden],body:has(#home[hidden]) #rm-doors,body.browsing #rm-doors{display:none}
+body:has(#home.book-opening) #rm-doors,body:has(#home.attic-away) #rm-doors,body:has(#cardlayer:not([hidden])) #rm-doors{opacity:0}
+body:has(#home.book-opening) #rm-doors .rm-door{pointer-events:none}
+body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity var(--m-page) var(--e-cruise)}
+.rm-door{position:absolute;top:var(--dt);width:var(--dw);height:var(--dh);pointer-events:auto;appearance:none;border:0;padding:0;background:none;cursor:pointer;color:inherit;font:inherit;-webkit-tap-highlight-color:transparent}
+.rm-door.rm-prev{left:var(--dl)}.rm-door.rm-next{right:var(--dr)}
+.rm-arch{position:absolute;inset:0;border-radius:calc(var(--dw)/2) calc(var(--dw)/2) 3px 3px;overflow:hidden;
+ background:linear-gradient(#040303,#0b0806 62%,#17100b);
+ box-shadow:0 0 0 6px #2a1c12,0 0 0 8px #110a06,0 0 0 9px #3d2a1a,0 18px 36px rgba(0,0,0,.8),inset 0 10px 28px #000}
+.rm-fire{position:absolute;inset:0;background:radial-gradient(85% 55% at 50% 100%,rgba(var(--c),.6),rgba(var(--c),.14) 58%,transparent 84%);opacity:.78;transition:opacity var(--m-base) var(--e-cruise),transform var(--m-smooth) var(--e-settle);transform-origin:50% 100%;animation:rmFlick 3.2s ease-in-out infinite alternate}
+.rm-boards{position:absolute;left:12%;right:12%;bottom:0;height:68%;background:repeating-linear-gradient(90deg,transparent 0 13px,rgba(0,0,0,.28) 13px 15px);border-radius:50% 50% 0 0/18% 18% 0 0;opacity:.55}
+.rm-lamp{position:absolute;top:21%;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:rgb(var(--c));box-shadow:0 0 16px 5px rgba(var(--c),.5)}
+.rm-arrow{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font:600 calc(22px*var(--ts,1))/1 Cinzel,serif;font-style:normal;color:rgb(var(--ci));text-shadow:0 0 10px rgba(var(--c),.9);transition:transform var(--m-base) var(--e-settle)}
+.rm-spill{position:absolute;left:-22%;right:-22%;bottom:-24px;height:38px;background:radial-gradient(50% 50% at 50% 20%,rgba(var(--c),.4),transparent 70%);filter:blur(4px);pointer-events:none}
+.rm-plate{position:absolute;left:50%;bottom:calc(100% + 14px);transform:translateX(-50%);width:max-content;max-width:calc(var(--gap,200px) - 14px);box-sizing:border-box;text-align:center;
+ font:600 calc(11px*var(--ts,1))/1.2 Cinzel,serif;letter-spacing:.16em;text-transform:uppercase;color:#e9dcc0;
+ background:linear-gradient(#3b2a1a,#22170d);border:1px solid #5d4428;padding:5px 11px 4px;border-radius:3px;box-shadow:0 4px 10px rgba(0,0,0,.65)}
+.rm-plate b{font-weight:600}
+.rm-plate small{display:block;font:italic calc(11px*var(--ts,1))/1.3 'Anthropic Serif Text',Georgia,serif;letter-spacing:0;text-transform:none;color:rgb(var(--ci));margin-top:1px}
+.rm-door:hover .rm-fire,.rm-door:focus-visible .rm-fire{opacity:1;transform:scaleY(1.12)}
+.rm-door.rm-prev:hover .rm-arrow{transform:translateX(calc(-50% - 4px))}
+.rm-door.rm-next:hover .rm-arrow{transform:translateX(calc(-50% + 4px))}
+.rm-door:focus-visible{outline:none}
+.rm-door:focus-visible .rm-arch{box-shadow:0 0 0 6px #2a1c12,0 0 0 8px rgba(var(--c),.85),0 0 0 9px #3d2a1a,0 18px 36px rgba(0,0,0,.8),inset 0 10px 28px #000}
+.rm-door:active .rm-arch{transform:scale(.985)}
+.rm-door.go .rm-fire{opacity:1;transform:scaleY(1.5)}
+@keyframes rmFlick{0%{opacity:.7}40%{opacity:.86}100%{opacity:.74}}
+
+/* walking through a door: the room slides away from the door you took, the next one slides in from the far side */
+#home.rm-leave{animation:rmLeave var(--m-base) var(--e-cruise) forwards}
+#home.rm-enter{animation:rmEnter var(--m-smooth) var(--e-settle) both}
+#home.rm-leave[data-rm-dir=prev],#home.rm-enter[data-rm-dir=prev]{--rm-dx:-1}
+@keyframes rmLeave{to{opacity:0;transform:translateX(calc(var(--rm-dx,1)*-48px))}}
+@keyframes rmEnter{from{opacity:0;transform:translateX(calc(var(--rm-dx,1)*48px))}}
+body:has(#home.rm-leave) #rm-doors{opacity:0;transition:opacity var(--m-base) var(--e-cruise)}
+
+/* Room ledger pages (roomLedger.js) */
+.bk-spread .rl-toc li{cursor:pointer}
+.bk-spread .rl-toc li.here span{font-style:italic}
+.rl-dot{display:inline-block;width:.62em;height:.62em;border-radius:50%;margin-right:.45em;vertical-align:.04em;background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.5) 0,rgb(var(--c)) 45%,rgba(var(--c),.45) 100%);box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.rl-fire{height:78px;margin:6px 0 10px;border-radius:6px;position:relative;overflow:hidden;
+ background:radial-gradient(60% 90% at 50% 100%,rgba(var(--c),.95),rgba(var(--c),.25) 55%,transparent 75%),linear-gradient(#2a1d14,#120c08);
+ box-shadow:inset 0 0 0 1px rgba(0,0,0,.4),inset 0 -10px 20px rgba(0,0,0,.5)}
+.rl-fire::after{content:'';position:absolute;left:30%;right:30%;bottom:6px;height:10px;border-radius:5px;background:#1a100a;box-shadow:0 -2px 6px rgba(var(--c),.6)}
+.rl-facts{display:flex;flex-wrap:wrap;gap:4px 14px;margin:2px 0 8px;font-size:.86em;opacity:.85}
+.rl-sets{list-style:none;margin:6px 0 0;padding:0}
+.rl-sets li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dotted rgba(60,40,20,.25)}
+.rl-sets li b{font-weight:normal;opacity:.7;font-variant-numeric:tabular-nums}
+.rl-sets li.done span::after{content:' \2713'}
+.rl-here{font-style:italic;opacity:.75;margin-top:10px}
+.bk-spread .rl-enter{margin-top:12px}
+@media(prefers-reduced-motion:reduce){.rm-fire{animation:none}#home.rm-leave,#home.rm-enter{animation:none}}
+/* the new room's doors come in with it */
+body:has(#home.rm-enter) #rm-doors{animation:rmDoorsIn var(--m-smooth) var(--e-settle) both}
+@keyframes rmDoorsIn{from{opacity:0}}
+
+/* Stats: the Rooms pages (roomStats.js) */
+.alm.rs .rs-t{width:100%;border-collapse:collapse;font-size:calc(14px*var(--ts,1));margin-top:6px}
+.alm.rs .rs-t th{font:600 calc(10px*var(--ts,1)) Cinzel,serif;letter-spacing:.12em;text-transform:uppercase;text-align:right;opacity:.7;padding:4px 2px 6px}
+.alm.rs .rs-t th:first-child,.alm.rs .rs-t td:first-child{text-align:left}
+.alm.rs .rs-t td{text-align:right;padding:5px 2px;border-bottom:1px dotted rgba(60,40,20,.25);font-variant-numeric:tabular-nums}
+.alm.rs .rs-t tr.here td{font-weight:600}
+.alm.rs .rs-name em{font-weight:normal;opacity:.7}
+.alm.rs .rs-bars{list-style:none;margin:6px 0 10px;padding:0}
+.alm.rs .rs-bars li{display:grid;grid-template-columns:minmax(0,8.5em) 1fr 4.6em 4.2em;align-items:center;gap:8px;padding:3px 0;font-size:calc(14px*var(--ts,1))}
+.alm.rs .rs-bar{height:7px;border-radius:4px;background:rgba(60,40,20,.12);overflow:hidden}
+.alm.rs .rs-bar i{display:block;height:100%;border-radius:4px;background:rgb(var(--c));box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}
+.alm.rs .rs-bars li>*{font-size:calc(14px*var(--ts,1));line-height:1.3}
+.alm.rs .rs-bars li.here .rs-name{font-weight:600}
+.alm.rs .rs-bars small{opacity:.65;text-align:right;font-size:calc(12px*var(--ts,1))}
+.alm.rs .rs-bars b{text-align:right;font-weight:normal;opacity:.75;font-size:.9em;font-variant-numeric:tabular-nums}
+
+/* Door walk (TR9): each arch holds a plank door standing ajar; hover opens it wider, taking it swings it right open
+   while the far fire flares, and the new room's fire comes up from embers as the room slides in */
+.rm-leaf{position:absolute;inset:0;border-radius:inherit;transform-origin:0 50%;transform:perspective(380px) rotateY(-70deg);
+ background:linear-gradient(90deg,rgba(0,0,0,.35),rgba(0,0,0,0) 18%),repeating-linear-gradient(90deg,#3a2414 0 11px,#2c1a0e 11px 13px);
+ box-shadow:inset -3px 0 0 #1a0f07,inset 0 0 0 2px #24160b;transition:transform var(--m-smooth) var(--e-settle)}
+.rm-leaf::after{content:'';position:absolute;right:16%;top:54%;width:5px;height:5px;border-radius:50%;background:#b08a4a;box-shadow:0 0 4px rgba(var(--c),.6)}
+.rm-door.rm-next .rm-leaf{transform-origin:100% 50%;transform:perspective(380px) rotateY(70deg)}
+.rm-door.rm-next .rm-leaf::after{right:auto;left:16%}
+.rm-door:hover .rm-leaf,.rm-door:focus-visible .rm-leaf{transform:perspective(380px) rotateY(-80deg)}
+.rm-door.rm-next:hover .rm-leaf,.rm-door.rm-next:focus-visible .rm-leaf{transform:perspective(380px) rotateY(80deg)}
+.rm-door.go .rm-leaf{transform:perspective(380px) rotateY(-88deg);transition-duration:var(--m-base)}
+.rm-door.rm-next.go .rm-leaf{transform:perspective(380px) rotateY(88deg)}
+.rm-door.go .rm-lamp{box-shadow:0 0 26px 10px rgba(var(--c),.7)}
+#home.rm-enter .hearth canvas:last-of-type{animation:rmEmbers var(--m-page) var(--e-settle) both}
+@keyframes rmEmbers{from{opacity:.2}}
+@media(prefers-reduced-motion:reduce){.rm-leaf{transition:none}#home.rm-enter .hearth canvas:last-of-type{animation:none}}

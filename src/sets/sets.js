@@ -3,20 +3,49 @@
    { got: {word: bestScore}, done: {setId: isoDate} }. It is kept separately from the shelf, which is capped. */
 export const MIN_SCORE = 14; // Paperback: a skipped or off-target answer does not collect a word
 
+/* Each set lives in a topic room (src/core/rooms.js) and is shown on that room's page of the Rooms book; its words are
+   added to the room's word pool, so every set can be finished inside its own room. Progress (S.sets) is global and keyed
+   by word, so a set word answered anywhere still counts. The first six keep their ids and order (their sigil rings). */
 export const SETS = [
-  {id:'time', name:'Tides of Time', blurb:'Words about how long things last.', bonus:150,
+  {id:'time', room:'history', name:'Tides of Time', blurb:'Words about how long things last.', bonus:150,
    words:['ephemeral','fleeting','perpetual','interval','duration','epoch']},
-  {id:'weather', name:'Weather Almanac', blurb:'Storms, rain and the long dry.', bonus:150,
+  {id:'weather', room:'science', name:'Weather Almanac', blurb:'Storms, rain and the long dry.', bonus:150,
    words:['drizzle','blizzard','tempest','frost','monsoon','drought']},
-  {id:'land', name:'The Atlas', blurb:'Places on the map.', bonus:150,
+  {id:'land', room:'science', name:'The Atlas', blurb:'Places on the map.', bonus:150,
    words:['meadow','glacier','canyon','lagoon','marsh','prairie']},
-  {id:'travel', name:'Wayfarer’s Shelf', blurb:'Going, leaving and straying.', bonus:200,
+  {id:'travel', room:'history', name:'Wayfarer’s Shelf', blurb:'Going, leaving and straying.', bonus:200,
    words:['wander','voyage','expedition','stray','depart','harbor']},
-  {id:'speech', name:'The Orator’s Row', blurb:'Ways of saying things.', bonus:200,
+  {id:'speech', room:'english', name:'The Orator’s Row', blurb:'Ways of saying things.', bonus:200,
    words:['mutter','proclaim','declare','babble','narrate','retort']},
-  {id:'craft', name:'Workshop Manuals', blurb:'Making and joining.', bonus:200,
-   words:['weave','forge','stitch','engrave','solder','tailor']}
+  {id:'craft', room:'art', name:'Workshop Manuals', blurb:'Making and joining.', bonus:200,
+   words:['weave','forge','stitch','engrave','solder','tailor']},
+  {id:'crown', room:'history', name:'Crown and Coronet', blurb:'Who sat on the throne, and who stood beside it.', bonus:200,
+   words:['monarchy','reign','empress','viceroy','viscount','marquess']},
+  {id:'shapes', room:'math', name:'The Geometer’s Case', blurb:'Flat shapes and solid ones.', bonus:150,
+   words:['triangle','hexagon','pentagon','rhombus','trapezium','cylinder']},
+  {id:'parts', room:'math', name:'Parts of the Whole', blurb:'Splitting things up fairly.', bonus:200,
+   words:['fraction','numerator','denominator','quotient','percentage','ratio']},
+  {id:'survey', room:'math', name:'The Surveyor’s Chain', blurb:'Measuring across, along and up.', bonus:250,
+   words:['perimeter','diameter','hypotenuse','diagonal','slope','azimuth']},
+  {id:'sky', room:'science', name:'The Night Sky', blurb:'What burns and drifts above the roof.', bonus:200,
+   words:['comet','nebula','quasar','supernova','eclipse','constellation']},
+  {id:'marks', room:'english', name:'Marks on the Page', blurb:'The small signs between the words.', bonus:150,
+   words:['comma','colon','apostrophe','ellipsis','umlaut','exclamation']},
+  {id:'forms', room:'english', name:'The Poet’s Forms', blurb:'Shapes a poem can take.', bonus:250,
+   words:['sonnet','stanza','couplet','quatrain','elegy','ghazal']},
+  {id:'pit', room:'art', name:'The Orchestra Pit', blurb:'Strings, reeds and drums.', bonus:200,
+   words:['violin','bassoon','piccolo','kettledrum','zither','mandolin']},
+  {id:'stone', room:'art', name:'Stone and Arch', blurb:'The parts of a building that hold it up.', bonus:250,
+   words:['buttress','cupola','facade','lintel','cornice','keystone']},
+  {id:'bones', room:'body', name:'The Skeleton', blurb:'The frame under everything.', bonus:200,
+   words:['pelvis','humerus','coccyx','sacrum','mandible','shinbone']},
+  {id:'inner', room:'body', name:'Inner Workings', blurb:'What keeps going without being asked.', bonus:250,
+   words:['aorta','pancreas','intestine','diaphragm','ventricle','oesophagus']},
+  {id:'field', room:'body', name:'Field and Court', blurb:'Whistles, goals and the rules of the game.', bonus:150,
+   words:['referee','umpire','goalkeeper','dribble','offside','sprint']}
 ];
+/** The sets kept in one room, in SETS order. */
+export const setsOfRoom = room => SETS.filter(s => s.room === room);
 
 const norm = w => String(w || '').toLowerCase();
 export const emptyProgress = () => ({got: {}, done: {}});

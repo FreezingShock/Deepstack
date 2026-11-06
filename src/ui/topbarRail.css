@@ -1,0 +1,65 @@
+/* Top bar rail (overhaul): a carved oak rail with a brass inlay line, rivets, brass medallion buttons
+   with engraved tooltip tags, and readout plates. Loaded after topbar.css so it refines it. */
+#bar{
+ background:
+  radial-gradient(160px 70px at 0 0,rgba(var(--glow),.2),transparent 70%),
+  radial-gradient(160px 70px at 100% 0,rgba(var(--glow),.2),transparent 70%),
+  repeating-linear-gradient(90deg,rgba(0,0,0,.16) 0 2px,transparent 2px 31px),
+  linear-gradient(180deg,rgba(255,220,170,.07) 0 2px,transparent 2px 9px),
+  linear-gradient(180deg,var(--c-oak-34210f),var(--wood1) 40%,var(--wood2));
+ box-shadow:inset 0 1px 0 rgba(255,214,160,.18),inset 0 -1px 0 rgba(0,0,0,.6),0 3px 0 var(--c-oak-0d0805),0 4px 0 var(--c-oak-5a3d22),0 10px 26px var(--c-black-alpha-dd);
+ gap:12px}
+/* brass inlay running the length of the rail */
+#bar::before{content:"";position:absolute;left:10px;right:10px;bottom:5px;height:2px;border-radius:1px;pointer-events:none;
+ background:linear-gradient(90deg,transparent,var(--c-bronze-43) 8%,var(--c-bronze-44) 50%,var(--c-bronze-43) 92%,transparent);opacity:.55}
+#mark{flex:none;transition:transform var(--m-quick) var(--e-cruise)}
+#mark:hover{transform:translateY(-1px)}#mark:active{transform:translateY(1px)}
+#bar #barNav{margin-left:auto;gap:7px}
+.judgestat{align-self:center}
+
+/* readout plates */
+#barGauges{display:flex;align-items:center;gap:8px;margin-right:auto;min-width:0}
+#barGauges[hidden]{display:none}
+.bg{display:inline-flex;align-items:baseline;gap:5px;height:30px;padding:0 11px 0 9px;align-items:center;border-radius:5px;white-space:nowrap;color:var(--c-parchment-79);
+ background:linear-gradient(180deg,var(--c-oak-1a110a),var(--c-oak-15));border:1px solid var(--c-oak);box-shadow:inset 0 2px 5px rgba(0,0,0,.65),0 1px 0 rgba(255,214,160,.1);
+ font:600 calc(15px*var(--ts))/1 var(--typewriter,var(--sans))}
+.bg svg{flex:none;color:var(--c-bronze-43);align-self:center}
+.bg b{font-weight:600;font-variant-numeric:tabular-nums;color:var(--c-parchment-86)}
+.bg i{font:italic 400 calc(12px*var(--ts)) var(--serif);color:var(--c-parchment-dim);font-style:italic}
+.bg-streak.lit svg{color:var(--c-amber-77);filter:drop-shadow(0 0 5px rgba(var(--glow),.7));animation:bgflick 2.8s ease-in-out infinite}
+.bg-streak.lit b{color:var(--c-amber-92)}
+@keyframes bgflick{0%,100%{opacity:1}45%{opacity:.82}60%{opacity:1}}
+@media(max-width:1000px){.bg i{display:none}}
+@media(max-width:560px){#barGauges{gap:5px}.bg{padding:0 7px 0 6px;height:28px;font-size:calc(13px*var(--ts))}.bg svg{width:15px;height:15px}.bg-deep{display:none}}
+@media(max-width:400px){#barGauges{display:none}}
+
+/* brass medallion buttons */
+.bbtn{width:38px;padding:0!important;justify-content:center;border-radius:50%;gap:0;
+ background:radial-gradient(circle at 35% 28%,var(--c-oak-2d1d0d),var(--c-oak-15) 60%,var(--c-oak-9));
+ border:1px solid var(--c-bronze-43);box-shadow:inset 0 1px 0 rgba(255,214,160,.2),inset 0 0 0 3px rgba(0,0,0,.28),0 2px 4px var(--c-black-alpha-99)}
+.bbtn .bl{display:none}
+.bbtn:hover{background:radial-gradient(circle at 35% 28%,var(--c-oak-20),var(--c-oak-2d1d0d) 65%,var(--c-oak-15));border-color:var(--c-bronze-44);transform:translateY(-1px)}
+.bbtn:active{transform:translateY(1px) scale(.96)}
+/* engraved tag that drops from the rail */
+.bbtn[data-tip]::after{content:attr(data-tip) "  " attr(data-key);position:absolute;top:calc(100% + 9px);right:0;z-index:5;padding:5px 10px 5px;border-radius:3px;white-space:pre;pointer-events:none;
+ font:500 calc(11px*var(--ts))/1 var(--label,var(--sans));letter-spacing:.12em;text-transform:uppercase;color:var(--c-oak-1c1209);
+ background:linear-gradient(180deg,var(--c-bronze-56),var(--c-bronze-40));box-shadow:inset 0 1px 0 rgba(255,240,200,.4),0 3px 8px var(--c-black-alpha-bb);
+ opacity:0;transform:translateY(-4px);transition:opacity var(--m-quick),transform var(--m-quick) var(--e-cruise)}
+.bbtn[data-tip]:not([data-key])::after{content:attr(data-tip)}
+.bbtn:hover::after,.bbtn:focus-visible::after{opacity:1;transform:none;transition-delay:.25s}
+@media(hover:none){.bbtn[data-tip]::after{display:none}}
+html[data-motion="reduce"] .bbtn[data-tip]::after{transition:none}
+
+/* volume pips under the speaker */
+.snd .pips{position:absolute;left:50%;bottom:3px;display:flex;gap:2px;transform:translateX(-50%);pointer-events:none}
+.snd .pips i{width:3px;height:3px;border-radius:50%;background:var(--c-oak-5a3d22)}
+.snd .pips i.on{background:var(--c-amber-77)}
+.snd[aria-pressed="false"] .pips{opacity:.35}
+.snd svg{margin-top:-3px}
+
+/* depth plate during a run: a brass gauge set into the rail */
+#depthHud{top:50%!important;transform:translate(-50%,-50%);padding:5px 18px!important;border-radius:4px;font:600 calc(11px*var(--ts)) var(--label,var(--sans));letter-spacing:.16em;text-transform:uppercase;color:var(--c-oak-1c1209);
+ background:linear-gradient(180deg,var(--c-bronze-56),var(--c-bronze-40) 55%,var(--c-bronze-31));box-shadow:inset 0 1px 0 rgba(255,240,200,.45),inset 0 -2px 3px rgba(0,0,0,.35),0 2px 6px var(--c-black-alpha-bb);text-shadow:0 1px 0 rgba(255,235,190,.35)}
+#depthHud b{color:var(--c-oak-0d0805)}
+#depthHud em{color:var(--c-oak-2b1b10)}
+@media(max-width:700px){#depthHud{top:calc(100% + 6px)!important}}

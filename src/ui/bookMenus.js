@@ -5,6 +5,8 @@ import {statsLeaves} from './statsPages.js';
 export {statsLeaves};
 import {penMark,penPlay} from './penInk.js';
 import {BAY_MODES,bayGroups,pileEdges,ladderSide} from './shelfBays.js';
+import {roomCounts} from '../core/shelfRooms.js';
+import {ROOMS,rgbOf} from '../core/rooms.js';
 
 /* Shelf layout. Books lie flat in stacks (STACK_H high, STACKS_PER_SHELF side by side) on a wooden shelf; a labelled
    plaque heads each section. Pages fill by a height budget: a shelf costs 1, a plaque PLAQUE_COST. */
@@ -45,7 +47,7 @@ export function statsBook({S,st,TIERS,FLOORS,floorStartFt}){
  return {label:'Stats',spreads:()=>toSpreads(statsLeaves(st(),S,{TIERS,FLOORS,floorStartFt}))};
 }
 
-let fTier=-1,fSort='new',fQ='',fFav=false,fGroup='tier';
+let fTier=-1,fSort='new',fQ='',fFav=false,fGroup='tier',fRoom='';
 export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOORS=[],reduceMotion=()=>false}){
  const SORTS=core.SORTS;
  let list=[],countText='';
@@ -53,8 +55,11 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOOR
   return `<button class="sbook" data-i="${x.i}" data-tex="${TEXTURES[b.tier%TEXTURES.length]}" style="--t:${t.spine};--o:${o}px;--e:${pileEdges(x.n)}" data-tip="${esc(b.w)}${x.n>1?` \u00d7${x.n}`:''} \u00b7 ${t.name} \u00b7 ${b.score}" aria-label="${esc(b.w)}, ${t.name}, ${b.score} out of 100${x.n>1?`, ${x.n} copies`:''}"><span class="sb-pages" aria-hidden="true"></span><span class="sb-spine"><i class="sb-band" aria-hidden="true"></i><span class="sb-t">${esc(b.w)}</span>${x.n>1?`<i class="sb-n" aria-hidden="true">\u00d7${x.n}</i>`:''}${b.fav?'<i class="sb-fav" aria-hidden="true">\u2605</i>':''}<i class="sb-band" aria-hidden="true"></i></span></button>`;};
  const stack=items=>`<div class="sstack">${items.map(book).join('')}</div>`;
  const shelf=items=>`<div class="sshelf">${chunk(items,STACK_H).filter(c=>c.length).map(stack).join('')}</div>`;
+ /* room tabs (TR7): one per room you have books from, each dot in that room's fire colour; hidden until a second room has books */
+ const roomChips=()=>{const rc=roomCounts(S.shelf),has=ROOMS.filter(r=>rc[r.id]);if(has.length<2&&!fRoom)return '';
+  return `<div class="chipgroup"><div class="kicker">Room</div><div class="chips" role="group" aria-label="Room"><button class="fchip" data-r="" data-k="r" aria-pressed="${!fRoom}">All</button>${ROOMS.map(r=>`<button class="fchip" data-r="${r.id}" data-k="r${r.id}" aria-pressed="${fRoom===r.id}"${rc[r.id]?'':' disabled'}><i class="dot" style="background:rgb(${rgbOf(r)})"></i>${esc(r.short)} <small>${rc[r.id]}</small></button>`).join('')}</div></div>`;};
  const build=()=>{
-  const all=core.filterShelf(S.shelf,{tier:fTier,q:fQ.trim().toLowerCase(),sort:fSort,fav:fFav});
+  const all=core.filterShelf(S.shelf,{tier:fTier,q:fQ.trim().toLowerCase(),sort:fSort,fav:fFav,room:fRoom});
   list=collapseDupes(all);
   const groups=bayGroups(list,fGroup,{TIERS,FLOORS,floorStartFt:core.floorStartFt,dailyNumber:core.dailyNumber}),favN=S.shelf.filter(b=>b.fav).length;
   const counts=TIERS.map(t=>S.shelf.filter(b=>b.tier===t.id).length);
@@ -65,6 +70,7 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOOR
    <div class="chipgroup"><div class="kicker">Sort</div><div class="chips" role="group" aria-label="Sort">${Object.entries(SORTS).map(([k,v])=>`<button class="fchip" data-s="${k}" data-k="s${k}" aria-pressed="${fSort===k}">${v[0]}</button>`).join('')}</div></div>
    <div class="chipgroup"><div class="kicker">Bay</div><div class="chips" role="group" aria-label="Shelve by">${BAY_MODES.map(([k,l])=>`<button class="fchip" data-g="${k}" data-k="g${k}" aria-pressed="${fGroup===k}">${l}</button>`).join('')}</div></div>
    <div class="chipgroup"><div class="kicker">Show</div><div class="chips"><button class="fchip" id="ffav" data-k="fav" aria-pressed="${fFav}"${favN||fFav?'':' disabled'}>\u2605 Favourites <small>${favN}</small></button></div></div>
+   ${roomChips()}
    <div class="chipgroup"><div class="kicker">Rarity</div><div class="chips"><button class="fchip" data-t="-1" data-k="t-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" data-k="t${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div></div>`;
   if(!list.length)return [ctrl,S.shelf.length?`<p class="empty">No book matches.</p>`:`<div class="empty-shelf"><svg viewBox="0 0 260 120" aria-hidden="true"><path d="M14 98 L246 97"/><path d="M14 106 L246 105"/><path d="M40 97 C39 70 41 52 40 40 L62 41 C63 60 62 80 62 96" stroke-dasharray="5 6"/><path d="M92 96 L148 94 M92 96 L92 82 L148 80 L148 94" stroke-dasharray="5 6"/><path d="M178 58 q16 -22 34 0" opacity=".6"/><path d="M195 74 v-10 m-5 5 l5 5 l5 -5" opacity=".6"/></svg><p class="empty">Nothing here yet. Your first answer becomes your first book.</p></div>`];
   if(!groups.length)return [ctrl,`<p class="empty">No book here has a floor yet. Earlier finds wait in the attic: close this book and scroll up on the home screen.</p>`];
@@ -76,6 +82,7 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOOR
   root.querySelectorAll('.fchip[data-t]').forEach(c=>c.onclick=()=>{fTier=+c.dataset.t;redo(c.dataset.k);});
   root.querySelectorAll('.fchip[data-s]').forEach(c=>c.onclick=()=>{fSort=c.dataset.s;redo(c.dataset.k);});
   root.querySelectorAll('.fchip[data-g]').forEach(c=>c.onclick=()=>{fGroup=c.dataset.g;redo(c.dataset.k);});
+  root.querySelectorAll('.fchip[data-r]').forEach(c=>c.onclick=()=>{fRoom=c.dataset.r;redo(c.dataset.k);});
   const fav=root.querySelector('#ffav');if(fav)fav.onclick=()=>{fFav=!fFav;redo('fav');};
   const fq=root.querySelector('#fq');
   /* typing repaints only the results page; the search box and the rest of the left page stay untouched */

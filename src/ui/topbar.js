@@ -30,6 +30,7 @@ export function initTopbar({Sfx,doc=document}={}){
  Sfx&&Sfx.volume(st.volume);
  const set=patch=>{st={...st,...patch};saveSettings(st);applySettings(st,doc);if('volume' in patch&&Sfx)Sfx.volume(st.volume);};
 
+ addEventListener('deepstack:set-volume',e=>{set({volume:e.detail});dispatchEvent(new CustomEvent('deepstack:volume',{detail:e.detail}));});
  /* ---- the plaque and buttons ---- */
  const mark=$('#mark');
  if(mark)mark.innerHTML='<span class="plq">Deepstack</span>';
@@ -101,7 +102,7 @@ export function initTopbar({Sfx,doc=document}={}){
   sw($('#sContrast'),v=>set({contrast:v}));
   $('#sFloorRules').setAttribute('aria-checked',loadEnabled());sw($('#sFloorRules'),v=>saveEnabled(v));
   root.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{Quality.setPref(b.dataset.q);root.querySelectorAll('[data-q]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
-  const vol=$('#sVol');vol.oninput=()=>{const n=+vol.value;$('#oVol').textContent=n+'%';vol.setAttribute('aria-valuetext',n+' percent');set({volume:n/100});};
+  const vol=$('#sVol');vol.oninput=()=>{const n=+vol.value;dispatchEvent(new CustomEvent('deepstack:volume',{detail:n/100}));$('#oVol').textContent=n+'%';vol.setAttribute('aria-valuetext',n+' percent');set({volume:n/100});};
   root.querySelectorAll('[data-text]').forEach(b=>b.onclick=()=>{set({text:b.dataset.text});root.querySelectorAll('[data-text]').forEach(x=>x.setAttribute('aria-pressed',x===b));});
  }
  layer.addEventListener('click',e=>{if(e.target===layer)closePanel();});

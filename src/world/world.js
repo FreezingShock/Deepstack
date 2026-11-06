@@ -8,7 +8,7 @@ import {worldCovered,frameInterval} from '../ui/canvasCover.js';
 import {Quality} from '../ui/quality.js';
 import {worldDpr} from '../ui/dprCap.js';
 import {Feel,Sfx} from '../feel.js';
-import {travelEase,travelMs} from '../ui/camMotion.js';
+import {travelEase,travelMs,ascendMs} from '../ui/camMotion.js';
 import {deepProps,deepWall,deepProp} from '../ui/floorArt.js';
 import {pullX as pullXAt} from '../core/pull.js';
 import {liftGeom,liftEnvelope,drawLift} from './lift.js';
@@ -49,7 +49,7 @@ export const World=(()=>{
  function nicheBox(){const nw=Math.min(W-24,760),NT=barPx()+16,NB=H-RH-BM-10;return{x:(W-nw)/2,w:nw,t:NT,h:NB-NT,b:NB};}
  function setNicheVars(){const n=nicheBox(),r=document.documentElement.style;r.setProperty('--nx',n.x+'px');r.setProperty('--nw',n.w+'px');r.setProperty('--nt',n.t+'px');r.setProperty('--nb',(H-n.b)+'px');r.setProperty('--nook',nookMetrics(W).reserve+'px');}
  function resize(){W=innerWidth;H=innerHeight;DPR=worldDpr(W,H,Math.min(devicePixelRatio||1,Quality.params().dprMax)); // capped at ~6 MP so huge screens stay light
-  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);RH=clamp(H*.22,108,172);BM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);rows.clear();resetBackStacks();
+  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);RH=clamp(H*.22,clamp(H*.2,70,108),172); // short windows get shorter shelves, so the room above them keeps its heightBM=Math.max(14,parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||14);rows.clear();resetBackStacks();
   document.documentElement.style.setProperty('--shelfH',(RH+BM+10)+'px');setNicheVars();document.documentElement.style.setProperty('--rh',Math.round(RH*.8)+'px');if(!st)cam=restCam(restRow);}
  // where the book for row r is pulled from: a random spot along that shelf, stable for the row
  function pullX(r){return pullXAt(r,W);}
@@ -58,24 +58,27 @@ export const World=(()=>{
   const rng=mulberry(r*7919+layer*104729+13),a=abn(r),fl=floorAtRow(r),sc=layer?.72:1,bs=[],webs=[],props=[];let x=-6;
   while(x<W+40){const w=(10+rng()*22)*sc;
    if(rng()<.03+.24*a+(fl.gap||0)){x+=w*(.5+rng());continue;} // missing books
-   const cx=x+w/2;if(layer===0&&r===fl.row&&r>0&&cx>doorSpan(W)[0]-w&&cx<doorSpan(W)[1]+w){x+=w;continue;} // the doorway bay holds no books
-   if(layer===0&&(taken.has(r)||(st&&st.row===r))&&Math.abs(cx-pullX(r))<34){x+=w;continue;}
+   // every book draws all of its random numbers before any window-dependent skip, so a different width never shifts the rest of the row
    const h=RH*sc*(.58+rng()*.32);
-   const lean=layer===0?-(((x+w/2)/W)*2-1)*.12*a:0;const rnd=rng()<.05+.32*a?(rng()-.5)*(.1+.45*a):0,tilt=rnd+lean;
+   const cx=x+w/2,lean=layer===0?-clamp((cx-600)/600,-1,1)*.12*a:0;const rnd=rng()<.05+.32*a?(rng()-.5)*(.1+.45*a):0,tilt=rnd+lean;
    const tier=rng()<.05?Math.floor(rng()*rng()*7):-1;
    const col=tier>=0?tierBase(tier):mixc(mixc(LEATHER[(rng()*LEATHER.length)|0],fl.books[0],fl.books[1]),[110,100,86],a*.5);
-   bs.push({x:x,w,h,tier,col,tilt,lean,rnd,seed:(rng()*65536)|0,rib:rng()<.14?RIBBONS[(rng()*5)|0]:null,lying:rng()<.09*a});
-   x+=Math.max(w,bs[bs.length-1].lying?lyingFootprint(bs[bs.length-1]):0)+(rng()<.1?3+rng()*12:1);}
+   const seed=(rng()*65536)|0,rib=rng()<.14?RIBBONS[(rng()*5)|0]:null,lying=rng()<.09*a,gapAfter=rng()<.1?3+rng()*12:1;
+   if(layer===0&&r===fl.row&&r>0&&cx>doorSpan(W)[0]-w&&cx<doorSpan(W)[1]+w){x+=w;continue;} // the doorway bay holds no books
+   if(layer===0&&(taken.has(r)||(st&&st.row===r))&&Math.abs(cx-pullX(r))<34){x+=w;continue;}
+   bs.push({x:x,w,h,tier,col,tilt,lean,rnd,seed,rib,lying});
+   x+=Math.max(w,lying?lyingFootprint(bs[bs.length-1]):0)+gapAfter;}
+  const rg2=mulberry(r*6329+layer*77003+5); // webs, props and cracks draw from their own stream so a book count that changes with the window never reshuffles them
   settleBooks(bs); // lean only on a neighbour, about the right foot; lying books keep their own room
-  if(layer===0){for(let i=0;i<=3;i++){const ux=i*(W/3);if(rng()<.3+.7*a){const dir=i===3?-1:1;webs.push({k:'corner',x:ux+dir*7,y:0,dir,s:34+rng()*(60+120*a),seed:(rng()*999)|0});}
-    if(i<3&&rng()<.1+.8*a){webs.push({k:'curtain',x:ux+7,x2:ux+W/3-7,sag:30+rng()*60,seed:(rng()*999)|0});}}
-   const nh=a>.03?Math.floor(rng()*(1+8*a)):0;for(let i=0;i<nh;i++)webs.push({k:'strand',x:rng()*W,len:(20+rng()*60)*(fl.motif==='flood'?2.2:1),seed:(rng()*999)|0});
+  if(layer===0){for(let i=0;i<=3;i++){const ux=i*(W/3);if(rg2()<.3+.7*a){const dir=i===3?-1:1;webs.push({k:'corner',x:ux+dir*7,y:0,dir,s:34+rg2()*(60+120*a),seed:(rg2()*999)|0});}
+    if(i<3&&rg2()<.1+.8*a){webs.push({k:'curtain',x:ux+7,x2:ux+W/3-7,sag:30+rg2()*60,seed:(rg2()*999)|0});}}
+   const nh=a>.03?Math.floor(rg2()*(1+8*a)):0;for(let i=0;i<nh;i++)webs.push({k:'strand',x:rg2()*W,len:(20+rg2()*60)*(fl.motif==='flood'?2.2:1),seed:(rg2()*999)|0});
    if(r===fl.row&&r>0)props.push({k:'lintel'});
-   if(fl.motif==='stacks'){for(let x2=60+rng()*80;x2<W-30;x2+=130+rng()*220){props.push(rng()<.5?{k:'plate',x:x2,n:1+((rng()*98)|0)}:{k:'papers',x:x2,n:2+((rng()*3)|0),w:24+rng()*26,tw:rng()-.5});}}
-   else if(fl.motif==='archive'){for(let x2=40+rng()*60;x2<W-30;x2+=90+rng()*150){props.push(rng()<.55?{k:'plate',x:x2,n:100+((rng()*899)|0)}:{k:'papers',x:x2,n:2+((rng()*4)|0),w:26+rng()*30,tw:rng()-.5});}}
-   else if(fl.motif==='crypt'){for(let x2=30+rng()*60;x2<W-30;x2+=70+rng()*140){props.push(rng()<.5?{k:'skull',x:x2,s:.8+rng()*.5,tilt:(rng()-.5)*.5}:{k:'bones',x:x2,s:.8+rng()*.6,seed:(rng()*999)|0});}}
-   else{props.push(...deepProps(fl,W,rng));props.push(...brazierProps(fl,W,rng));}}
-  const data={bs,webs,props,fl,crack:rng()<.5*a?{x:rng()*W,w:30+rng()*90}:null};
+   if(fl.motif==='stacks'){for(let x2=60+rg2()*80;x2<W-30;x2+=130+rg2()*220){props.push(rg2()<.5?{k:'plate',x:x2,n:1+((rg2()*98)|0)}:{k:'papers',x:x2,n:2+((rg2()*3)|0),w:24+rg2()*26,tw:rg2()-.5});}}
+   else if(fl.motif==='archive'){for(let x2=40+rg2()*60;x2<W-30;x2+=90+rg2()*150){props.push(rg2()<.55?{k:'plate',x:x2,n:100+((rg2()*899)|0)}:{k:'papers',x:x2,n:2+((rg2()*4)|0),w:26+rg2()*30,tw:rg2()-.5});}}
+   else if(fl.motif==='crypt'){for(let x2=30+rg2()*60;x2<W-30;x2+=70+rg2()*140){props.push(rg2()<.5?{k:'skull',x:x2,s:.8+rg2()*.5,tilt:(rg2()-.5)*.5}:{k:'bones',x:x2,s:.8+rg2()*.6,seed:(rg2()*999)|0});}}
+   else{props.push(...deepProps(fl,W,mulberry(r*6329+11)));props.push(...brazierProps(fl,W,mulberry(r*6329+23)));}}
+  const data={bs,webs,props,fl,crack:rg2()<.5*a?{x:rg2()*W,w:30+rg2()*90}:null};
   for(const pr of props)if(pr.x!=null)pr.x=placeProp(pr.x,propHalf(pr),W,data.crack); // nothing stands on a pillar or over a cracked plank
   if(layer===0&&r>0)data.fallen=placeFallen(bs,{W,RH,a,r,crack:data.crack,avoid:[[pullX(r)-40,pullX(r)+40]],paint:g=>{const t=g()<.05?Math.floor(g()*g()*7):-1;return{tier:t,col:t>=0?tierBase(t):mixc(mixc(LEATHER[(g()*LEATHER.length)|0],fl.books[0],fl.books[1]),[110,100,86],a*.5)};}}); // books that came down in front of the gaps
   rows.set(key,data);return data;}
@@ -381,6 +384,6 @@ export const World=(()=>{
   nextRows(){const n=nicheBox();return Math.ceil((H-BM-n.t)/RH);},
   glide(row,ms){return new Promise(res=>{const c0=cam,c1=restCam(row);rest={t0:performance.now(),ms:RM?200:(ms||travelMs(Math.abs(c0-c1)/RH)),c0,c1,done:()=>{restRow=row;res();}};});},
   release(){if(!st)return;taken.add(st.row);rows.delete(st.row*2);restRow=st.row;cam=restCam(restRow);st=null;},
-  ascend(){return new Promise(res=>{const c0=cam,c1=restCam(0),dist=Math.abs(c0-c1)/RH;rest={t0:performance.now(),ms:travelMs(dist,RM),c0,c1,done:()=>{restRow=0;res();}};});},
+  ascend(){return new Promise(res=>{const c0=cam,c1=restCam(0),dist=Math.abs(c0-c1)/RH;let off=()=>{};const fin=()=>{off();restRow=0;res();};rest={t0:performance.now(),ms:ascendMs(dist,RM),c0,c1,done:fin};const skip=e=>{if(rest&&rest.done===fin&&(e.type!=='keydown'||!e.repeat))rest.t0=-1e9;};addEventListener('keydown',skip);addEventListener('pointerdown',skip);off=()=>{removeEventListener('keydown',skip);removeEventListener('pointerdown',skip);};});},
   get stActive(){return !!st;},get descending(){return !!st&&st.phase!=='hold';}
  };})();
