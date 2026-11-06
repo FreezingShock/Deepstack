@@ -1,14 +1,13 @@
 /* Sound, ambience and "juice". Everything is synthesized with WebAudio (no assets).
    Kept calm on purpose: soft attacks, low levels, a shared reverb, nothing sharp. */
 
-import { reducedMotion } from './ui/settings.js';
+import { motionNow } from './ui/settings.js';
 import { createScribe } from './sound/scribe.js';
 import { createAmbience } from './sound/ambience.js';
 import { createSting } from './sound/thresholdSting.js';
 import { createScore } from './sound/score.js';
 import { createMaterials } from './sound/materials.js';
 import { Quality } from './ui/quality.js';
-const RM = reducedMotion();
 const rnd = (a, b) => a + Math.random() * (b - a);
 
 /* ---------- visual feel: slow-motion + shake (read by the render loops) ---------- */
@@ -19,8 +18,8 @@ export const Feel = (() => {
     /** time scale applied to world/particle dt (1 = normal). */
     ts: 1,
     get ox() { return ox; }, get oy() { return oy; },
-    slowmo(scale, ms) { if (RM) return; slow = { scale, from: performance.now(), until: performance.now() + ms, ease: 1 }; },
-    shake(amp, ms = 500) { if (RM) return; shakeAmp = Math.max(shakeAmp, amp); shakeDecay = amp / (ms / 1000); },
+    slowmo(scale, ms) { if (motionNow()) return; slow = { scale, from: performance.now(), until: performance.now() + ms, ease: 1 }; },
+    shake(amp, ms = 500) { if (motionNow()) return; shakeAmp = Math.max(shakeAmp, amp); shakeDecay = amp / (ms / 1000); },
     /** call once per frame with real (unscaled) dt in seconds. */
     tick(dt) {
       const now = performance.now();
@@ -147,6 +146,16 @@ export const Sfx = (() => {
     /** one cue from the sound palette (src/sound/materials.js): turn, lift, shut, hatch, rung, knock, tick, crackle ... */
     cue: (kind, arg) => mats.play(kind, arg),
     quill: () => scribe.quill(), paper: () => scribe.paper(), seal: () => scribe.seal(), land: () => scribe.land(),
+    /** a short sample of one bus, played while its slider is let go (ST4). Silent when Sound is off. */
+    preview(kind) {
+      if (!on || !ctx) return;
+      if (kind === 'music') {
+        const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(196, t);
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05, t + .3); g.gain.exponentialRampToValueAtTime(.0001, t + 1.8);
+        o.connect(g); g.connect(musicBus); g.connect(musicSend); o.start(t); o.stop(t + 1.9);
+      } else scribe.paper();
+    },
     /** master volume 0..1 (settings panel) */
     volume(v) { vol = Math.max(0, Math.min(1, v)); if (master) master.gain.setTargetAtTime(.9 * vol, ctx.currentTime, .05); },
     /** Music and Effects levels 0..1 under the master volume (settings panel); applied live once audio exists */
