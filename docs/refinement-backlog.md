@@ -1600,3 +1600,19 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### V14. A judge fairness report
 **Pitch:** The judge is the heart of the game and nate cannot see its mistakes. A script that runs 300 wrong, vague and right answers across the Daily pool and writes a table of surprises (wrong word scores 40+, good answer under 20).
 **Brief:** Files: extend `scripts/judge-bench.mjs`, output to `notes/judge-report.md`. Done when: runs offline in under a minute, top 20 surprises listed with words. **Conflicts:** J3, G3.
+
+### X1. Librarian's Card floor line overflows the card (bug)
+**Pitch:** With a saved depth the Card's "Floor" line wraps "The Sunken Vault" onto three handwritten lines that run past the bottom of the card at 1640 (screenshot audit/r3-s-home-1640.png).
+**Brief:** Goal: floor names fit the card at every width: shorter pen size or a two-line cap with the article dropped ("Sunken Vault"). Files: Card ledger css/js. Done when: all six floors fit at 1280, 1640 and 375. **Touches:** HOME. **Conflicts:** V4, H3, R2.
+
+### X2. Touch-aware copy and the attic hint on phones
+**Pitch:** At 375 the attic footer says "scroll up to go further in" (phones swipe) and wraps to three lines on a dark band, while the "Down the ladder" label touches the lantern tag. Copy that names an input (scroll, click, Enter) should follow the device.
+**Brief:** Goal: one helper that picks scroll/swipe, click/tap, and hides key hints on touch; use it in the attic hint and run hints; keep the label clear of the lantern at 375. Files: new `src/ui/inputCopy.js`, attic hint. Done when: 375 screenshot, test pins wording per input type. **Conflicts:** V10 (shortcuts), AE4.
+
+### X3. "Close the book" belongs to the whole book
+**Pitch:** In the Unlimited book the handwritten "Close the book" sits under the Riddle button on the right page, so it reads as part of Riddle. It closes both halves.
+**Brief:** Goal: move it to the spread's bottom edge (or a ribbon) in every menu book so it is always in the same place. Files: book page builders, `bookpages.css`. Done when: all menu books at 1280 and 375. **Conflicts:** P1, 104 follow-ups.
+
+### X4. A name for the ring on the Sets page
+**Pitch:** The right page of Book Sets shows an empty pink ring above the set title with no label or meaning.
+**Brief:** Goal: it becomes the set's sigil: empty until you finish the set, then inked in the colour of your best tier in it, with a pen caption. Files: sets book page. Done when: tested for 0, partial and complete. **Conflicts:** S1, 14.
