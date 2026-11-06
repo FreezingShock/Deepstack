@@ -7,7 +7,10 @@
 .bs-leaf{transition:transform calc(var(--o-swing,320ms)*.8) calc(var(--o-swing,320ms)*.1) var(--e-cruise),visibility 0s}
 .bk-spread.open .bs-leaf{transition:transform calc(var(--o-swing,320ms)*.8) calc(var(--o-swing,320ms)*.1) var(--e-cruise),visibility 0s var(--o-swing,320ms)}
 .bk-spread.closing:not(.flyback){transition:transform var(--o-swing,320ms) var(--e-cruise)}
-.bk-spread.flyback{transition:transform var(--o-flyback,230ms) var(--e-accelerate),opacity .2s .1s}
+.bk-spread.flyback{transition:transform var(--o-flyback,300ms) var(--e-settle),opacity 150ms calc(var(--o-flyback,300ms) - 150ms) linear}
+/* AT8: the closed book slides home and tips onto its side, ending exactly on its spine's footprint (--sx/--sy are the
+   spine's size over the closed book's), then dissolves into the spine in the last 150 ms. Transform and opacity only. */
+.bk-spread.flyback:not(.rm){transform-origin:75% 50%;transform:translate(calc(-75% + var(--fx)),calc(-50% + var(--fy))) scale(var(--sx,.25),var(--sy,.25))}
 /* the cover's inside is a marbled endpaper in the book's own colours */
 .cv-in{background:radial-gradient(ellipse 60% 35% at 30% 30%,color-mix(in srgb,var(--bk-gild) 22%,transparent),transparent 70%),radial-gradient(ellipse 50% 40% at 70% 72%,color-mix(in srgb,var(--bk) 55%,transparent),transparent 70%),repeating-linear-gradient(115deg,color-mix(in srgb,var(--bk) 22%,var(--c-parchment-80)) 0 7px,color-mix(in srgb,var(--bk) 32%,var(--c-parchment-80)) 7px 11px,color-mix(in srgb,var(--bk2) 26%,var(--c-parchment-80)) 11px 13px);box-shadow:inset -22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 0 7px color-mix(in srgb,var(--bk) 85%,transparent)}
 /* page-block thickness: stacked leaf edges peeking out beside each page */
@@ -90,3 +93,8 @@
    in. Still hidden while the book is open; one slow cruise curve, no per-piece timing. */
 .book-opening.book-closing .hz-title,.book-opening.book-closing .hz-plaque{opacity:1;transition:opacity var(--m-page) var(--e-cruise)}
 .book-opening.book-closing .hbook:not(.opening){opacity:1;transform:none;transition:opacity var(--m-page) var(--e-cruise),transform var(--m-page) var(--e-cruise)}
+
+/* AT9: the opening mirrors the close: the spine's own footprint is where the book starts, standing up as it flies out. */
+.bk-spread:not(.rm){transform-origin:75% 50%;transform:translate(calc(-75% + var(--fx)),calc(-50% + var(--fy))) scale(var(--sx,.25),var(--sy,.25))}
+.bk-spread.go:not(.rm){transform:translate(-75%,-50%) scale(1)}
+.bk-spread.open:not(.rm){transform:translate(-50%,-50%) scale(1)}

@@ -85,18 +85,18 @@ export const pg={
 /* Click handlers for extra Start buttons inside a book (a section's data-act). app/home.js fills it. */
 export const BOOK_ACTS={};
 /* a sectioned page: the main action sits right under the intro (and rank), never at the foot where a tall page would clip it; the feature list follows */
-const introPage=(i,btn,close)=>pg.head(i.kicker,i.h)+pg.body(i.p)+(i.extra?i.extra():'')+`<div class="pg-actions"><button class="bs-start bs-primary pen-ink rest"${i.act?` data-act="${i.act}"`:''}>${esc(typeof i.btn==='function'?i.btn():i.btn)}</button>${i.second?i.second():''}${close?`<button class="bs-back-btn pen-ink">Close the book</button>`:''}</div>`+pg.label('In this book')+pg.list(i.pts);
+const introPage=(i,btn,close)=>pg.head(i.kicker,i.h)+pg.body(i.p)+(i.extra?i.extra():'')+`<div class="pg-actions"><button class="bs-start bs-primary pen-ink rest"${i.act?` data-act="${i.act}"`:''}>${esc(typeof i.btn==='function'?i.btn():i.btn)}</button>${i.second?i.second():''}</div>`+pg.label('In this book')+pg.list(i.pts);
 export function introSpreads(intro){
  if(intro.riddle){/* sectioned book: left page the book's own mode, right page its riddle; phones step left then right */
   const a=introPage(intro,0,false),b=introPage(intro.riddle,0,true);
-  return [{l:`<section class="pg-sec" aria-label="${esc(intro.h)}">${a}</section>`,r:`<section class="pg-sec" aria-label="${esc(intro.riddle.h)}">${b}</section>`}];
+  return [{l:`<section class="pg-sec" aria-label="${esc(intro.h)}">${a}</section>`,r:`<section class="pg-sec" aria-label="${esc(intro.riddle.h)}">${b}</section><div class="pg-foot"><button class="bs-back-btn pen-ink">Close the book</button></div>`}];
  }
  const narrow=typeof matchMedia==='function'&&matchMedia('(max-width:560px)').matches;
  /* phones show one page at a time: keep the Start button on the first page */
- if(narrow)return [{l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button><button class="bs-back-btn pen-ink">Close the book</button></div>`,r:''}];
+ if(narrow)return [{l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button></div><div class="pg-foot"><button class="bs-back-btn pen-ink">Close the book</button></div>`,r:''}];
  return [{
   l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+(intro.art?`<div class="intro-sketch">${intro.art}</div>`:''),
-  r:pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button><button class="bs-back-btn pen-ink">Close the book</button></div>`,
+  r:pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button></div><div class="pg-foot"><button class="bs-back-btn pen-ink">Close the book</button></div>`,
  }];
 }
 
@@ -117,6 +117,9 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches,T=bookTimings(reduce);
  dressBook(sp,T);
  document.body.appendChild(sp);bookSound('whoosh');
+ /* The closed book's size is the spine's, so it leaves the spine standing up and lands back on it lying down (AT8/AT9). */
+ const footprint=()=>{if(r.width>0&&sp.offsetWidth){sp.style.setProperty('--sx',(r.width/(sp.offsetWidth/2)).toFixed(4));sp.style.setProperty('--sy',(r.height/sp.offsetHeight).toFixed(4));}};
+ sp.style.transition='none';footprint();void sp.offsetWidth;sp.style.transition='';
  requestAnimationFrame(()=>requestAnimationFrame(()=>sp.classList.add('go')));
  const timers=[];let idx=0,closed=false;
  const t=(fn,ms)=>timers.push(setTimeout(fn,ms));
@@ -126,7 +129,10 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   if(!(spreads&&spreads.length)){sp.classList.add('out');setTimeout(()=>{sp.remove();onClose();},400);return;}
   bookSound('flip');
   const swing=sp.classList.contains('open')?T.swing:0,fly=T.flyBack;
-  sp.removeAttribute('role');sp.setAttribute('aria-hidden','true');sp.classList.remove('intro','open');sp.classList.add('closing');
+  sp.removeAttribute('role');sp.setAttribute('aria-hidden','true');
+  /* land exactly on the spine: scale the closed book (half the spread wide) down to the spine's size */
+  footprint();
+  sp.classList.remove('intro','open');sp.classList.add('closing');
   if(swing)setTimeout(()=>thud(sp),swing);
   setTimeout(()=>{sp.classList.remove('go');sp.classList.add('flyback','out');onFly();setTimeout(()=>{sp.remove();onClose();},(reduce?T.fade:Math.max(fly,300))+30);},swing+T.shutHold);
  };
@@ -238,8 +244,8 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
    busy=true;flying=false;root.classList.add('book-opening');el.classList.add('opening');
    /* The room comes back while the book is still flying home (not after it lands), so closing is one motion,
       and the spine it left fades in as the book settles onto it. */
-   const lift=()=>{flying=true;root.classList.remove('book-opening');root.classList.remove('book-closing');setTimeout(()=>el.classList.remove('opening'),reduce?0:130);};
-   const fin=()=>{el.classList.remove('opening');root.classList.remove('book-opening');root.classList.remove('book-closing');busy=false;flying=false;
+   const lift=()=>{flying=true;root.classList.remove('book-opening');root.classList.remove('book-closing');setTimeout(()=>el.classList.remove('opening'),reduce?0:Math.max(0,BOOK_TIMING.flyBack-170));};
+   const fin=()=>{el.classList.remove('opening');if(!reduce){root.classList.add('book-landed');el.classList.add('landed');setTimeout(()=>{root.classList.remove('book-landed');el.classList.remove('landed');},300);}root.classList.remove('book-opening');root.classList.remove('book-closing');busy=false;flying=false;
     if(pending){const n=pending;pending=null;n();}};
    const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onFly:lift,onClose:fin,onShut:()=>root.classList.add('book-closing'),
     colors:{bk:cs.getPropertyValue('--bk'),bk2:cs.getPropertyValue('--bk2'),gild:cs.getPropertyValue('--bk-gild'),tex:cs.getPropertyValue('--tex')}});

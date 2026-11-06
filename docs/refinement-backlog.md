@@ -1617,7 +1617,9 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** At 375 the attic footer says "scroll up to go further in" (phones swipe) and wraps to three lines on a dark band, while the "Down the ladder" label touches the lantern tag. Copy that names an input (scroll, click, Enter) should follow the device.
 **Brief:** Goal: one helper that picks scroll/swipe, click/tap, and hides key hints on touch; use it in the attic hint and run hints; keep the label clear of the lantern at 375. Files: new `src/ui/inputCopy.js`, attic hint. Done when: 375 screenshot, test pins wording per input type. **Conflicts:** V10 (shortcuts), AE4.
 
-### X3. "Close the book" belongs to the whole book
+### [x] X3. "Close the book" belongs to the whole book
+
+_Done in this PR: Close the book is now a `.pg-foot` link on the right page bottom edge, in every menu book._
 **Pitch:** In the Unlimited book the handwritten "Close the book" sits under the Riddle button on the right page, so it reads as part of Riddle. It closes both halves.
 **Brief:** Goal: move it to the spread's bottom edge (or a ribbon) in every menu book so it is always in the same place. Files: book page builders, `bookpages.css`. Done when: all menu books at 1280 and 375. **Conflicts:** P1, 104 follow-ups.
 
@@ -1643,7 +1645,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The cord creak, lid knock and rungs creaking as you climb, so the way in feels as physical as it looks.
 **Brief:** Goal: three short Sfx hooks fired from `atticHome.js` (pull, arrive, descend). Files: `src/sound/`, `src/ui/atticHome.js`. **Conflicts:** sound threads.
 
-### AT8. Books return to the stack
+### AT8. [x] Books return to the stack (PR pending)
 **Pitch:** After a menu book closes it should slide back into its exact slot on the stack, with the others easing forward rather than popping.
 **Brief:** Goal: shared-element return flight and sibling stagger in `bookOpenFx`. Files: `src/ui/bookOpenFx.css`, `src/ui/homeBookEdges.css`. **Conflicts:** home book threads.
 ### V17. Floor rule on the door sign
@@ -1683,3 +1685,10 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 
 ### Y6. Top bar: floor-tinted rail
 **Pitch:** The rail's inlay and glow take on the current floor's colour as you descend. **Brief:** Goal: tint `#bar::before` and the corner glows from the floor tokens, softly, never bright. Files: `src/ui/topbarRail.css`, `src/main.js` onDepth hook.
+
+### AT8a. [x] Open flight from the exact spine
+**Pitch:** The book now slides home onto its spine and tips onto its side. Make the opening the mirror of it: the spine lifts and turns upright as it flies out, so open and close read as one object.
+**Brief:** Goal: mirror the `--sx/--sy` footprint on the way out in `openBook`. Files: `src/ui/bookOpenFx.css`, `src/ui/home.js`. **Conflicts:** home book threads, Settings book fix.
+### AT8b. [x] Spine settle nudge
+**Pitch:** When the book lands the stack could take a tiny weight bump, like setting a book down on a pile.
+**Brief:** Goal: a 2px translate on the landed spine and its neighbours, transform only. Files: `src/ui/homeBookEdges.css`. **Conflicts:** AT8a.
