@@ -47,40 +47,66 @@ const homeAway = () => page.evaluate(() => document.querySelector('#home')?.clas
 const rowText = () => page.evaluate(() => document.querySelector('.attic-depth')?.textContent || '');
 const rowNo = async () => +((/row (\d+) of/.exec(await rowText()) || [])[1] || 0);
 const wheel = async dy => { await page.mouse.move(640, 400); await page.mouse.wheel(0, dy); };
+// Timing rule for this whole file: never decide anything from how long a wall-clock wait took. CI runs several browsers
+// at once, so a 30 ms pause can stretch past a 420 ms rest period. Wait on app state (World.atticReady, row label,
+// classes) or on the page's own animation clocks instead, and do the time-critical bursts inside one page task.
+const atticReady = () => page.evaluate(() => window.__deepstack?.World?.atticReady === true);
+const waitAway = (want, msg) => page.waitForFunction(w => document.querySelector('#home')?.classList.contains('attic-away') === w, want, {timeout: T}).then(() => true, () => { fail(msg); return false; });
+const waitRow = (n, msg) => page.waitForFunction(n => +((/row (\d+) of/.exec(document.querySelector('.attic-depth')?.textContent || '') || [])[1] || 0) === n, n, {timeout: T}).then(() => true, () => { fail(msg); return false; });
 
 // 1. Climb in. While the climb is under way, row moves are refused; once it lands, one notch moves one row.
 if (!(await page.locator('.attic-cue-home').count())) fail('attic entrance missing from home');
 else {
   await page.keyboard.press('ArrowUp');
-  await page.waitForFunction(() => document.querySelector('#home')?.classList.contains('attic-away'), null, {timeout: T}).catch(() => fail('ArrowUp on home did not climb into the attic'));
-  if (await homeAway()) {
-    for (let i = 0; i < 3; i++) { await page.keyboard.press('ArrowUp'); await page.waitForTimeout(30); }
-    if (await rowNo() > 1) fail(`row changed mid-climb (row ${await rowNo()})`);
-    // The climb length depends on machine load (CI runs three browsers at once), so poll for the landing: keep nudging
-    // one row further in until it takes. Early presses are swallowed by the lock, which is the behaviour under test.
+  if (await waitAway(true, 'ArrowUp on home did not climb into the attic') && await homeAway()) {
+    // Burst of ArrowUps in a single page task, straight after the climb began: the attic cannot have landed in between.
+    // (If a machine stalled so long that it had already landed, there is nothing to check, so that run does not judge.)
+    const mid = await page.evaluate(() => {
+      const ready = () => window.__deepstack?.World?.atticReady === true, wasReady = ready();
+      for (let i = 0; i < 3; i++) document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true, cancelable: true}));
+      return {wasReady, nowReady: ready(), row: +((/row (\d+) of/.exec(document.querySelector('.attic-depth')?.textContent || '') || [])[1] || 0)};
+    });
+    if (!mid.wasReady && !mid.nowReady && mid.row > 1) fail(`row changed mid-climb (row ${mid.row})`);
     const rows = +((/of (\d+)/.exec(await rowText()) || [])[1] || 0);
     if (rows < 2) fail('seeded attic has fewer than 2 rows; cannot check row moves');
     else {
-      for (let i = 0; i < 20 && await rowNo() < 2; i++) { await page.waitForTimeout(400); await page.keyboard.press('ArrowUp'); await page.waitForTimeout(250); }
-      if (await rowNo() !== 2) fail(`ArrowUp after landing did not go one row further in (row ${await rowNo()})`);
-      await wheel(-300); await page.waitForTimeout(80); await wheel(-300);
-      await page.waitForTimeout(150);
-      if (await rowNo() > 3) fail('two quick wheel notches moved more than one row each (rest period broken)');
-      await page.waitForTimeout(900);
-      // 2. scroll down returns through the rows and then home
-      for (let i = 0; i < 14 && await homeAway(); i++) { await wheel(200); await page.waitForTimeout(700); }
+      await page.waitForFunction(() => window.__deepstack?.World?.atticReady === true, null, {timeout: T}).catch(() => fail('attic never finished climbing in'));
+      // Presses that landed mid-climb were swallowed, so we are on row 1; now exactly one press must go exactly one row.
+      if (await atticReady()) {
+        if (await rowNo() !== 1) fail(`row moved during the climb (row ${await rowNo()})`);
+        await page.keyboard.press('ArrowUp');
+        await waitRow(2, `ArrowUp after landing did not go one row further in (row ${await rowNo()})`);
+        // Two wheel notches in one burst must move at most one row (the rest period). Wait for the glide to settle first
+        // (the row label alone cannot say), then fire both events in one page task so no stall can separate them.
+        await page.waitForFunction(() => new Promise(r => { const t0 = performance.now(); const f = () => performance.now() - t0 > 700 ? r(true) : requestAnimationFrame(f); f(); }));
+        const before = await rowNo();
+        await page.evaluate(() => { for (let i = 0; i < 2; i++) window.dispatchEvent(new WheelEvent('wheel', {deltaY: -300, bubbles: true, cancelable: true})); });
+        await page.waitForFunction(() => new Promise(r => { const t0 = performance.now(); const f = () => performance.now() - t0 > 900 ? r(true) : requestAnimationFrame(f); f(); }));
+        if (await rowNo() > before + 1) fail('two quick wheel notches moved more than one row each (rest period broken)');
+      }
+      // 2. scroll down returns through the rows and then home. Each notch is followed by waiting for the row label or
+      // the room to change, never for a fixed time; a notch that lands inside the rest period is simply repeated.
+      for (let i = 0; i < 12 && await homeAway(); i++) {
+        const r0 = await rowNo();
+        await wheel(200);
+        await page.waitForFunction(r => !document.querySelector('#home')?.classList.contains('attic-away') || +((/row (\d+) of/.exec(document.querySelector('.attic-depth')?.textContent || '') || [])[1] || 0) !== r, r0, {timeout: 1500}).catch(() => {});
+        await page.waitForTimeout(450);
+      }
       await page.waitForFunction(() => !document.querySelector('#home')?.classList.contains('attic-away'), null, {timeout: T}).catch(() => fail('scrolling down never returned home'));
       if (await page.locator('.attic-down').isVisible()) fail('"Down the ladder" still showing after returning home');
     }
   }
 }
-// ...and Escape from the attic goes home too
-await page.waitForTimeout(1200);
-await page.keyboard.press('ArrowUp');
-await page.waitForFunction(() => document.querySelector('#home')?.classList.contains('attic-away'), null, {timeout: T}).catch(() => fail('could not re-enter the attic'));
-await page.keyboard.press('Escape');
-await page.waitForFunction(() => !document.querySelector('#home')?.classList.contains('attic-away'), null, {timeout: T}).catch(() => fail('Escape did not leave the attic'));
-await page.waitForTimeout(1000);
+// ...and Escape from the attic goes home too (re-enter until it takes: the hatch ignores presses while still settling)
+for (let i = 0; i < 8 && !await homeAway(); i++) { await page.keyboard.press('ArrowUp'); await page.waitForFunction(() => document.querySelector('#home')?.classList.contains('attic-away'), null, {timeout: 1500}).catch(() => {}); }
+if (!await homeAway()) fail('could not re-enter the attic');
+else {
+  await page.waitForFunction(() => window.__deepstack?.World?.atticReady === true, null, {timeout: T}).catch(() => {});
+  await page.keyboard.press('Escape');
+  await waitAway(false, 'Escape did not leave the attic');
+}
+// let the descent finish: the home's own title/plaque are fully back before the books are tested
+await page.waitForFunction(() => !window.__deepstack?.World?.atticOpen && ['.hz-title', '.hz-plaque'].every(s => { const e = document.querySelector(s); return !e || +getComputedStyle(e).opacity > 0.99; }), null, {timeout: T}).catch(() => {});
 
 // 3. Each home book opens, then closes without leaving the home locked, hidden or faded. The close is sampled every
 // 40 ms and logged; the hard check is that the home itself is never display:none/hidden during it and always settles
@@ -88,48 +114,73 @@ await page.waitForTimeout(1000);
 // 200 ms into the close (sample 5) the title/plaque must be at least faintly there, and by the last sample (~480 ms)
 // mostly there. Before W1 they sat at 0 until ~360 ms, a lone book on bare brick; that now fails.
 const MIN_AT_200MS = 0.05, MIN_AT_END = 0.5;
-const homeState = () => page.evaluate(() => {
-  const home = document.querySelector('#home'), cs = home && getComputedStyle(home);
-  const t = ['.hz-title', '.hz-plaque'].map(s => { const e = document.querySelector(s); return e ? +getComputedStyle(e).opacity : 1; });
-  return {shown: !!home && !home.hidden && cs.display !== 'none' && cs.visibility !== 'hidden', vis: Math.min(...t), at: performance.now()};
-});
+const bare = a => a.length ? Math.min(...a).toFixed(2) : 'n/a';
 for (const [id, name] of [['bDaily', 'Daily'], ['bUnl', 'Unlimited'], ['bAll', 'Shelf'], ['bSets', 'Sets'], ['bStats', 'Stats']]) {
   const btn = page.locator('#' + id);
   if (!(await btn.count())) { fail(`${name}: book missing from home`); continue; }
-  await btn.click({timeout: T}).catch(() => fail(`${name}: could not click book`));
   const dlg = page.locator('[role=dialog].intro').first();
-  if (!await dlg.waitFor({state: 'visible', timeout: T}).then(() => true, () => false)) { fail(`${name}: never opened`); continue; }
+  // wait for the home to be idle (no book still landing, attic fully down), then click; retry the click if a loaded
+  // machine swallowed it, since a click is only an input and the check is about what the book does afterwards
+  await page.waitForFunction(() => { const h = document.querySelector('#home'); return h && !h.classList.contains('book-opening') && !h.classList.contains('book-landed') && !window.__deepstack?.World?.atticOpen; }, null, {timeout: T}).catch(() => {});
+  let opened = false;
+  for (let i = 0; i < 4 && !opened; i++) {
+    await btn.click({timeout: T}).catch(() => {});
+    opened = await dlg.waitFor({state: 'visible', timeout: 3000}).then(() => true, () => false);
+  }
+  if (!opened) { fail(`${name}: never opened`); continue; }
   if (await page.locator('#home.book-opening').count() === 0) fail(`${name}: home not marked book-opening while open`);
-  const t0 = await page.evaluate(() => performance.now());
-  await page.keyboard.press('Escape');
-  // AT8: the closed book slides home (a transform, not an early fade): once it is flying, its opacity stays 1 until the
-  // last ~150 ms, and it flies toward the spine's own centre.
-  const flight = await page.evaluate(async id => {
+  // Sample inside the page on every frame, from before the Escape until the flying book is gone, and judge each frame by
+  // the page's own animation clock (the title fade's CSSTransition currentTime), not by how late a Playwright round trip
+  // came back. Under load frames get sparse but the timeline still advances, so the same rules hold on a slow machine.
+  const sampling = page.evaluate(async id => {
     const spine = document.getElementById(id).getBoundingClientRect(), c = [spine.left + spine.width / 2, spine.top + spine.height / 2];
-    const out = {early: 1, dist: 1e9, seen: false};
-    for (let i = 0; i < 40; i++) {
-      await new Promise(r => setTimeout(r, 20));
-      const sp = document.querySelector('.bk-spread.flyback'); if (!sp) { if (out.seen) break; continue; }
-      out.seen = true; const rect = sp.querySelector('.bs-board.r').getBoundingClientRect(), age = (out.t0 ??= performance.now());
-      if (performance.now() - age < 120) out.early = Math.min(out.early, +getComputedStyle(sp).opacity);
-      out.dist = Math.hypot(rect.left + rect.width / 2 - c[0], rect.top + rect.height / 2 - c[1]);
+    const out = {seen: false, early: 1, dist: 1e9, frames: []};
+    const t0 = performance.now(); let seenAt = 0;
+    // a 330 ms flight can fall between two frames on a stalled machine; the observer cannot miss it
+    const mo = new MutationObserver(() => { if (document.querySelector('.bk-spread.flyback')) { out.seen = true; seenAt ||= performance.now(); } });
+    mo.observe(document.body, {subtree: true, childList: true, attributes: true, attributeFilter: ['class']});
+    while (performance.now() - t0 < 6000) {
+      await new Promise(r => requestAnimationFrame(r));
+      const home = document.querySelector('#home'), cs = home && getComputedStyle(home);
+      const sp = document.querySelector('.bk-spread.flyback');
+      if (!sp && out.seen) break;
+      if (out.seen && !seenAt) seenAt = performance.now();
+      let flyT = -1;
+      if (sp) {
+        out.seen = true; seenAt ||= performance.now();
+        const fly = sp.getAnimations().find(a => a.transitionProperty === 'transform');
+        flyT = fly ? +fly.currentTime : performance.now() - seenAt;
+        // AT8: while the book is flying (until the last 150 ms of its flight) it must not have faded
+        if (flyT < 150) out.early = Math.min(out.early, +getComputedStyle(sp).opacity);
+        const bar = sp.querySelector('.bs-board.r').getBoundingClientRect();
+        out.dist = Math.hypot(bar.left + bar.width / 2 - c[0], bar.top + bar.height / 2 - c[1]);
+      }
+      const vis = Math.min(...['.hz-title', '.hz-plaque'].map(s => { const e = document.querySelector(s); return e ? +getComputedStyle(e).opacity : 1; }));
+      const fade = ['.hz-title', '.hz-plaque'].map(s => document.querySelector(s)).filter(Boolean).flatMap(e => e.getAnimations()).find(a => a.transitionProperty === 'opacity');
+      // frames before the fade exists and before the book flies carry no clock: they judge nothing
+      if (!fade && flyT < 0) continue;
+      out.frames.push({t: fade ? +fade.currentTime : flyT, vis, shown: !!home && !home.hidden && cs.display !== 'none' && cs.visibility !== 'hidden'});
     }
+    mo.disconnect();
     return out;
   }, id);
+  await page.keyboard.press('Escape');
+  const flight = await sampling;
   console.log(`transitions: ${name} fly-home early opacity ${flight.early.toFixed(2)}, end distance ${flight.dist.toFixed(1)}px`);
   if (!flight.seen) fail(`${name}: no fly-home phase seen`);
   else if (flight.early < 0.95) fail(`${name}: book faded (${flight.early.toFixed(2)}) instead of sliding home`);
-  const samples = [];
-  for (let i = 0; i < 12; i++) { const s = await homeState(); samples.push(s); if (!s.shown) fail(`${name}: home hidden during close (frame ${i})`); await page.waitForTimeout(40); }
-  // judge by elapsed time, not sample index (a loaded runner takes ~50-100 ms per sample); 260 ms still catches the old bug, which stayed bare until ~360 ms
-  if (samples.filter(s => s.at - t0 >= 260).some(s => s.vis < MIN_AT_200MS)) fail(`${name}: home still bare 200 ms into the close (bare brick under the flying book)`);
-  if (samples[samples.length - 1].vis < MIN_AT_END) fail(`${name}: home only ${samples[samples.length - 1].vis.toFixed(2)} visible at the end of the close`);
+  const frames = flight.frames;
+  if (frames.some(f => !f.shown)) fail(`${name}: home hidden during close`);
+  // W1: the room is already fading in under the flying book. Judged on the fade's own clock: at least faintly there
+  // 200 ms in, mostly there by 400 ms. Frames that never reached that point (the book landed first) judge nothing.
+  if (frames.some(f => f.t >= 200 && f.vis < MIN_AT_200MS)) fail(`${name}: home still bare 200 ms into the close (bare brick under the flying book)`);
+  if (frames.some(f => f.t >= 400 && f.vis < MIN_AT_END)) fail(`${name}: home only ${Math.min(...frames.filter(f => f.t >= 400).map(f => f.vis)).toFixed(2)} visible 400 ms into the close`);
   await dlg.waitFor({state: 'detached', timeout: T}).catch(() => fail(`${name}: did not close`));
   await page.locator('#home.book-opening').waitFor({state: 'detached', timeout: T}).catch(() => fail(`${name}: home stayed locked after closing`));
-  await page.waitForFunction(() => ['.hz-title', '.hz-plaque'].every(s => { const e = document.querySelector(s); return !e || +getComputedStyle(e).opacity > 0.99; }), null, {timeout: 3000})
+  await page.waitForFunction(() => ['.hz-title', '.hz-plaque'].every(s => { const e = document.querySelector(s); return !e || +getComputedStyle(e).opacity > 0.99; }), null, {timeout: T})
     .catch(() => fail(`${name}: home title/plaque never came back after closing`));
   if (!(await page.locator('#bPlay, #bRes').first().isVisible())) fail(`${name}: Descend button missing after closing`);
-  console.log(`transitions: ${name} close, opacity@ms: ${samples.map(s => s.vis.toFixed(2) + '@' + Math.round(s.at - t0)).join(' ')}`);
+  console.log(`transitions: ${name} close, ${frames.length} frames, lowest title/plaque opacity ${bare(frames.map(f => f.vis))}`);
 }
 
 await browser.close(); server.close();
