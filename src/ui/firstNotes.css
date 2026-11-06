@@ -2,3 +2,10 @@
    Reduced motion: the strip and its slips already stop animating (hintSlips.css), so the note simply sits there. */
 .hslip.fnote{font:500 calc(16px*var(--ts))/24px 'Fuzzy Bubbles','Newsreader',cursive;color:var(--c-steel-53);text-align:left;overflow-wrap:anywhere;text-wrap:pretty}
 @media(max-width:640px){.hslip.fnote{font-size:calc(15px*var(--ts));line-height:23px}}
+
+/* Home first-visit line (showHomeNote): a small pinned slip under the Descend plaque. Static, so reduced motion needs nothing. */
+.hz-plaque > .fnote-home,.hz-title > .fnote-home{position:absolute;left:50%;top:100%;transform:translate(-50%,0) rotate(-.6deg);width:max-content;max-width:min(94%,340px);box-sizing:border-box;padding:4px 12px;border-radius:2px;
+  background:linear-gradient(180deg,var(--c-parchment-ebe1c4),var(--c-parchment-92));color:var(--c-steel-23);box-shadow:0 6px 12px -6px var(--c-black);
+  font:500 calc(15px*var(--ts))/1.25 'Fuzzy Bubbles','Newsreader',cursive;text-align:center;pointer-events:none;z-index:2}
+@media(max-width:640px){.hz-plaque > .fnote-home,.hz-title > .fnote-home{font-size:calc(12.5px*var(--ts));line-height:1.2;padding:2px 8px;white-space:nowrap;max-width:98%}}
+.hz-title{position:relative}
