@@ -1,6 +1,7 @@
 /* Top bar rail: the live readouts (streak flame, deepest ft), a Keys button, and sound volume pips.
    Hooked from main.js with one line. Reads the save, never writes it; the Sound/Settings/Credits buttons stay in topbar.js. */
 import './topbarRail.css';
+import './railHatch.css';
 import {railValues,dayKey} from './topbarRailCore.js';
 import {loadSettings} from './settings.js';
 
