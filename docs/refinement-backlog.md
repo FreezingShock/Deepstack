@@ -1732,15 +1732,15 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### [x] TR0. Mock up topic rooms (done: artifact + screenshots/topic-rooms/, no code PR)
 **Pitch:** Rooms per topic reusing the fireplace home with a different coloured fire; Daily, Unlimited, Shelf and Stats come along, Sets move into rooms. Three switch options mocked by injecting into the real build; Wiktionary topic labels counted for all 13,470 words (10,345 matched, about 570 to 950 labelled words per room).
 
-### TR1. Rooms registry, word lists and the recoloured fire
+### [x] TR1. Rooms registry, word lists, per-room Daily and rating (PR #284; fire colour moves to TR2)
 **Pitch:** The five starter rooms (Chronicle, Abacus, Herbarium, Gallery, Observatory) become real places with their own fire colour and word list, so Descend and Unlimited draw from the room you stand in.
 **Brief:** Goal: keep sense topic labels in `scripts/build-words.mjs` (kaikki `senses[].topics`), map labels to rooms (`design/topic-rooms/groups.json`), filter each room list by embedding closeness of the game's definition to the room, write an additive `rooms` field; register rooms in `src/core/places.js`; hearth reads a room hue (hue-rotate on the live canvas + `--rm-rgb` glow, as in `inject.js`). Files: build script, `src/core/places.js`, `src/ui/hearth.css`. Done when: default room byte-identical, a test picks only room words, save field `room` additive. **Conflicts:** G11, 35, word pool threads.
 
-### TR2. Fire salts switcher and Room Ledger
+### [~] TR2. Switch rooms: Side Doors on desktop, Room Ledger on phones, recoloured fire (nate 2026-11-06 replaced the fire salts pick)
 **Pitch:** Five salt jars on the mantel switch rooms in one tap (a pinch arcs into the grate, the fire flares into the new colour, the room slides sideways); a Rooms book lists every room and its progress.
 **Brief:** Goal: jars drawn on the hearth mantel with 44 px hit areas, toss + slide transition in the shared motion tokens, mantel plate with the room name, Rooms spine opening a ledger in the menu-book system. Files: new `src/ui/roomSalts.js`, `src/ui/roomLedger.js` + css, one hook in home. Done when: transitions guard passes, reduced motion swaps instantly, keyboard reaches every jar. **Conflicts:** home threads, hearth, TR1.
 
-### TR3. Sets move into rooms
+### [~] TR3. Sets move into rooms, Sets book retired into the Room Ledger
 **Pitch:** Each room owns four sets (the 20 in the mockup are real words from the game's list); the Sets book shows the current room's; the current six stay in the Reading Room; Shelf gets room tabs and Stats a Rooms page.
 **Brief:** Goal: `SETS` gains a `room` field (default `hall`), Sets book filters by room, Shelf tabs, Stats page. Files: `src/sets/sets.js`, `src/sets/ui.js`, shelf filters, stats pages. Done when: existing set progress untouched (`S.sets` shape unchanged), tests per room. **Conflicts:** TR1, Almanac, shelf threads.
 
