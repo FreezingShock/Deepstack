@@ -43,6 +43,8 @@ import './ui/welcome.css';
 import './ui/deskProps.css';
 import './ui/mantel.css';
 import './ui/hearth.css';
+import './ui/homeSpineSub.css';
+import './ui/homeSpineSub.js';
 import './ui/idleRoom.css';
 import './ui/menuWear.css';
 import './ui/homeBookEdges.css';
