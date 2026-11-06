@@ -85,18 +85,18 @@ export const pg={
 /* Click handlers for extra Start buttons inside a book (a section's data-act). app/home.js fills it. */
 export const BOOK_ACTS={};
 /* a sectioned page: the main action sits right under the intro (and rank), never at the foot where a tall page would clip it; the feature list follows */
-const introPage=(i,btn,close)=>pg.head(i.kicker,i.h)+pg.body(i.p)+(i.extra?i.extra():'')+`<div class="pg-actions"><button class="bs-start bs-primary pen-ink rest"${i.act?` data-act="${i.act}"`:''}>${esc(typeof i.btn==='function'?i.btn():i.btn)}</button>${i.second?i.second():''}${close?`<button class="bs-back-btn pen-ink">Close the book</button>`:''}</div>`+pg.label('In this book')+pg.list(i.pts);
+const introPage=(i,btn,close)=>pg.head(i.kicker,i.h)+pg.body(i.p)+(i.extra?i.extra():'')+`<div class="pg-actions"><button class="bs-start bs-primary pen-ink rest"${i.act?` data-act="${i.act}"`:''}>${esc(typeof i.btn==='function'?i.btn():i.btn)}</button>${i.second?i.second():''}</div>`+pg.label('In this book')+pg.list(i.pts);
 export function introSpreads(intro){
  if(intro.riddle){/* sectioned book: left page the book's own mode, right page its riddle; phones step left then right */
   const a=introPage(intro,0,false),b=introPage(intro.riddle,0,true);
-  return [{l:`<section class="pg-sec" aria-label="${esc(intro.h)}">${a}</section>`,r:`<section class="pg-sec" aria-label="${esc(intro.riddle.h)}">${b}</section>`}];
+  return [{l:`<section class="pg-sec" aria-label="${esc(intro.h)}">${a}</section>`,r:`<section class="pg-sec" aria-label="${esc(intro.riddle.h)}">${b}</section><div class="pg-foot"><button class="bs-back-btn pen-ink">Close the book</button></div>`}];
  }
  const narrow=typeof matchMedia==='function'&&matchMedia('(max-width:560px)').matches;
  /* phones show one page at a time: keep the Start button on the first page */
- if(narrow)return [{l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button><button class="bs-back-btn pen-ink">Close the book</button></div>`,r:''}];
+ if(narrow)return [{l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button></div><div class="pg-foot"><button class="bs-back-btn pen-ink">Close the book</button></div>`,r:''}];
  return [{
   l:pg.head(intro.kicker,intro.h)+pg.body(intro.p)+(intro.art?`<div class="intro-sketch">${intro.art}</div>`:''),
-  r:pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button><button class="bs-back-btn pen-ink">Close the book</button></div>`,
+  r:pg.label('In this book')+pg.list(intro.pts)+`<div class="pg-actions"><button class="bs-start pen-ink rest">${esc(intro.btn)}</button></div><div class="pg-foot"><button class="bs-back-btn pen-ink">Close the book</button></div>`,
  }];
 }
 

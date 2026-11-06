@@ -1617,7 +1617,9 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** At 375 the attic footer says "scroll up to go further in" (phones swipe) and wraps to three lines on a dark band, while the "Down the ladder" label touches the lantern tag. Copy that names an input (scroll, click, Enter) should follow the device.
 **Brief:** Goal: one helper that picks scroll/swipe, click/tap, and hides key hints on touch; use it in the attic hint and run hints; keep the label clear of the lantern at 375. Files: new `src/ui/inputCopy.js`, attic hint. Done when: 375 screenshot, test pins wording per input type. **Conflicts:** V10 (shortcuts), AE4.
 
-### X3. "Close the book" belongs to the whole book
+### [x] X3. "Close the book" belongs to the whole book
+
+_Done in this PR: Close the book is now a `.pg-foot` link on the right page bottom edge, in every menu book._
 **Pitch:** In the Unlimited book the handwritten "Close the book" sits under the Riddle button on the right page, so it reads as part of Riddle. It closes both halves.
 **Brief:** Goal: move it to the spread's bottom edge (or a ribbon) in every menu book so it is always in the same place. Files: book page builders, `bookpages.css`. Done when: all menu books at 1280 and 375. **Conflicts:** P1, 104 follow-ups.
 
