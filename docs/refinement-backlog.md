@@ -6,6 +6,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Open the card catalogue on the left wall of home (1000 px and wider): pull each of the eight drawers, flip the cards with Turn, cycle with the arrow keys, and check the Settings drawer. On a big window the whole room, cabinet and fire are now much bigger; say if the word alcoves being wider on big windows feels right. Tell me which drawers to add or drop (CC1 to CC3 below).
 - Look at the home plaque on your 1920 screen while mid-Daily: Continue should now have a clear gap to the Library Rules drawers and the Librarian's Card (src/ui/plaqueGap.css).
 - Walk between rooms on desktop: the fireplace should stay put while the fire, title and labels glide to the new colour and the room and Daily lines type in. Tell me if the glide is too slow or the title tint is too strong.
+- Rooms now show "X of N met" on the door plates, the room tagline and the Room Ledger page, and each room Daily never reuses a word from the last 14 days. Check the counts feel right after a few answers; small rooms (History, Math, English, Art, Anatomy at 115 to 156 words) still need TA2a to reach a month of fresh words. (thread: make every room deep enough to play)
 - Enter the Chronicle (or any other room) and press Descend: the candle halo, the two lanterns and the lift cage burn in the room's fire, the result card gets a rim of it, and the depth plaque names the room. The Reading Room should look exactly as before. Say if the tint is too strong or too faint.
 - Check the home spine captions (Daily, Shelf, Unlimited, Rooms) at 1920 and on your phone: readable, centred, nothing clipped. Say if you want the captions stacked under the title instead (PR #292).
 - Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
@@ -1810,9 +1811,21 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Measured against the main word list, the room lists leave out on-topic words and keep off-topic ones. Math has furlong, gallon, litre, quark, aperture and approximately, but not theorem, integer, equation, algebra, calculus, axiom, matrix, exponent or polynomial (all in the pool). History is mostly war and ships (quiver, scabbard, schooner, starboard) and misses renaissance, dynasty, feudal, treaty, pharaoh, medieval. English misses metaphor, simile, irony, alliteration. Art misses sculpture, fresco, tapestry, mural. Science misses photosynthesis, molecule, electron, velocity. Body & Sport holds board and card games (checkmate, rummy, trump, backgammon).
 **Brief:** Goal: a repeatable audit script (`scripts/room-audit.mjs`) with a hand-written anchor list per room (about 40 must-have words) reporting misses and a sample of suspected noise, then fix `scripts/build-rooms.mjs` (labels, thresholds, per-room include/exclude lists) until every anchor is in and the noise is gone. Done when: audit table in the PR, rooms.json rebuilt, tests pin the anchors. **Touches:** room data only. **Conflicts:** TR5, TR4.
 
-### TA2. How deep each room really is
+### [x] TA2. How deep each room really is
 **Pitch:** Four rooms hold 115 to 146 words. A Daily uses 7, so a small room repeats its words within a few weeks, and an Unlimited player who keeps playing will start meeting the same words. Nothing shows how much of a room you have explored.
 **Brief:** Goal: (a) measure repeat rate for a simulated 60-day Daily and a 200-word Unlimited in each room; (b) show "47 of 118 met" per room on the Room Ledger page and the door plate; (c) decide a floor on list size and widen lists that fall short (with TA1). Files: `src/core/roomPool.js`, `roomLedger.js`, door plate. Done when: report plus the counter. **Conflicts:** TA1, TR12, Z1.
+
+### TA2a. Widen the four thin rooms to a month of Dailies
+**Pitch:** Every room should hold about 210 playable words so no Daily word returns for a month; today they hold 115 to 156 (science 315).
+**Brief:** Goal: raise history, math, english, art and body to `DEPTH_TARGET` (210) playable words by pulling more from the archive through `scripts/build-rooms.mjs`, then raise `MIN_DEPTH_WORDS` in `src/core/roomDepth.js` to match. Done when: `test/room-depth.test.js` prints no "depth:" shortfall lines. **Conflicts:** TA1 (same lists), TR12.
+
+### TA2b. Unlimited should not repeat inside a room
+**Pitch:** Daily words are now spaced 14 days apart, but Unlimited remembers only the last 300 seen ids, so a small room can still deal you a word you just answered.
+**Brief:** Goal: simulate a 200-word Unlimited run per room (`pickWord` with `rating.seen`) and keep the seen window at least the room's size. Files: `src/core/unlimited.js`, `src/core/roomDepth.js`. Done when: a test shows no repeat inside one 200-word run for every room. **Conflicts:** none.
+
+### TA2c. Tell the player when a room is nearly all met
+**Pitch:** "117 of 118 met" is a good moment: the door plate could glow or the ledger page could say the room is mastered.
+**Brief:** Goal: a small flourish on the plate and the ledger page at 100% met, not a popup. Files: `src/ui/roomHome.js`, `roomHome.css`, `roomLedger.js`. **Conflicts:** TR9.
 
 ### TA3. Which numbers are per room, and do they agree
 **Pitch:** In the Chronicle the top bar and Almanac show "0 day streak" next to "300 ft deepest", and the Card shows Books 13 and Floor from your whole shelf, while streak and Dailies are the room's own. Nothing says which is which, and an unsynced number would be a bug that a player reads as lost progress.

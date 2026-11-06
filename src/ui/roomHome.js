@@ -30,9 +30,9 @@ export function ringHTML(cur) {
   return ROOMS.map(r => `<button type="button" class="rm-dot${r.id === cur ? ' on' : ''}" data-room="${r.id}" style="--c:${rgbOf(r)}" title="${esc(r.name)}${r.id === cur ? ' (you are here)' : ''}" aria-label="${esc(r.name)}${r.id === cur ? ', you are here' : ''}"${r.id === cur ? ' aria-current="true"' : ''}></button>`).join('');
 }
 /** One side door: the neighbour's fire through the arch, its name on the plate, and which way it lies. */
-export function doorHTML(r, side) {
+export function doorHTML(r, side, met = '') {
   return `<button type="button" class="rm-door rm-${side}" data-room="${r.id}" style="--c:${rgbOf(r)};--ci:${ink(r)}" aria-label="${side === 'prev' ? 'Previous' : 'Next'} room: ${esc(r.name)}, ${esc(r.topic)}" title="${esc(r.name)} (${side === 'prev' ? '[' : ']'})">
- <span class="rm-plate"><b>${esc(r.name)}</b><small>${esc(r.topic)}</small></span>
+ <span class="rm-plate"><b>${esc(r.name)}</b><small>${esc(r.topic)}</small>${met ? `<small class="rm-met">${esc(met)}</small>` : ''}</span>
  <span class="rm-arch" aria-hidden="true"><i class="rm-fire"></i><i class="rm-lamp"></i><i class="rm-boards"></i><i class="rm-leaf"></i><i class="rm-arrow">${side === 'prev' ? '‹' : '›'}</i></span>
  <span class="rm-spill" aria-hidden="true"></span></button>`;
 }
@@ -60,12 +60,12 @@ function placeDoors() {
 }
 
 /** Paint the room into a freshly rendered home: colours, title, ring, doors. go(id, dir) walks to another room. */
-export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = () => {}} = {}) {
+export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = () => {}, met = () => ''} = {}) {
   if (!home || typeof document === 'undefined') return;
   const r = roomById(room); curRoom = r.id; goFn = go;
   paintRoomVars(r.id);
   const tl = home.querySelector('.hz-title .tagline');
-  if (tl && r.id !== HALL) tl.innerHTML = `<span class="rm-name">${esc(r.name)}</span> <em>· ${esc(r.motto)}</em>`;
+  if (tl && r.id !== HALL) tl.innerHTML = `<span class="rm-name">${esc(r.name)}</span> <em>· ${esc(r.motto)}</em>${met(r.id) ? ` <small class="rm-met">${esc(met(r.id))}</small>` : ''}`;
   const tag = home.querySelector('.daily-tag');
   if (tag && r.id !== HALL) tag.textContent = `${r.topic} · ${tag.textContent}`;
   if (typeNext) { typeNext = false; typewrite(tl, {delay: 60}); typewrite(tag, {delay: 140}); }
@@ -88,7 +88,7 @@ export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = ()
     document.body.appendChild(doors);
   }
   const {prev, next} = neighbours(r.id);
-  doors.innerHTML = doorHTML(prev, 'prev') + doorHTML(next, 'next');
+  doors.innerHTML = doorHTML(prev, 'prev', met(prev.id)) + doorHTML(next, 'next', met(next.id));
   placeDoors();
   requestAnimationFrame(placeDoors); // after the hearth has laid the room out
   if (!resizeOn) { resizeOn = true; addEventListener('resize', () => requestAnimationFrame(placeDoors)); }
