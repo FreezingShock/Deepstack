@@ -126,3 +126,8 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
  #home .rm-dot{flex:1 1 0;min-width:0;max-width:44px;width:44px;height:44px;padding:0;margin:-11px 0}
  #home .rm-dot::before{left:50%;top:50%;margin:-4.5px 0 0 -4.5px}
 }
+/* TA7: a tiny swatch of the room's fire before its name on the door plate (every room, the Reading Room included) */
+.rm-plate .rm-sw{display:inline-block;width:8px;height:8px;margin:0 6px 1px 0;border-radius:50%;vertical-align:middle;background:conic-gradient(rgb(var(--c)) calc(var(--f,0)*1turn),rgba(var(--c),.3) 0);box-shadow:0 0 6px 1px rgba(var(--c),.45),0 0 0 1px rgba(var(--c),.8)}
+/* TA7c: the room name stays on one line (tighter tracking), the topic and count sit below */
+.rm-plate b{white-space:nowrap;letter-spacing:.08em}
+.rm-plate{max-width:none}

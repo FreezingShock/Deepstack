@@ -6,3 +6,7 @@
 @media(max-width:560px){.slip textarea::placeholder{font-size:calc(19px*var(--ts));line-height:calc(26px*var(--ts))}}
 /* Librarian's Card: a floor name stays on one line (shelfSpineFit lets other ledger values wrap). */
 .home .lg-row.lg-floor dd{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(14px*var(--ts))}
+/* TA7: the Card's floor name wraps (smaller, two lines at most) instead of ending in an ellipsis. */
+.home .lg-row.lg-floor dd{white-space:normal;overflow:visible;text-overflow:clip;line-height:1;font-size:calc(13px*var(--ts));text-align:right}
+/* TA7: at phone width the rail has no hatch frame to match, so the ladder's own frame showed as a second offset frame over the rail buttons. */
+@media(max-width:560px){.attic-down .adl-frame{display:none}}
