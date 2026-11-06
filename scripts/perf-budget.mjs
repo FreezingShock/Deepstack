@@ -18,7 +18,7 @@ const noFail = process.argv.includes('--no-fail');
 // Budgets. Generous on purpose (CI runners are noisy and software-rendered): they catch a regression in kind, not a few percent.
 const BUDGET = {
   entryGzipKB: 260,          // index js + css the first paint needs
-  dataReadyMs: 4500,         // repeat visit, slow data network, 4x CPU: the lists a run needs are in the page this soon after navigation start (was 4-11 s)
+  dataReadyMs: 6500,         // repeat visit, slow data network, 4x CPU: the lists a run needs are in the page this soon after navigation start (a data-wait regression showed 6-12 s; boot alone is 3-5 s)
   roomEnterMs: 10500,        // the same visit: reload in a room, tap Descend -> first word on screen (includes ~6.5 s of boot, intro and animation at 4x CPU)
   judgeWarmMs: 3500,         // a fresh word's score once the model is ready (4x CPU)
   judgeColdMs: 3000,         // the first score after the model is ready
