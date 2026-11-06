@@ -39,6 +39,15 @@ export function doorHTML(r, side, met = '') {
 
 /** The next mount (the home redrawn after a walk to another room) types the room's lines instead of just showing them. */
 let typeNext = false;
+function patchDoor(el, r, side) {
+  const t = document.createElement('div'); t.innerHTML = doorHTML(r, side);
+  const n = t.firstElementChild;
+  el.classList.remove('go'); el.dataset.room = r.id;
+  el.setAttribute('aria-label', n.getAttribute('aria-label')); el.title = n.title;
+  el.style.setProperty('--c', rgbOf(r)); el.style.setProperty('--ci', ink(r));
+  const a = el.querySelector('.rm-plate'), b = n.querySelector('.rm-plate');
+  if (a && b && a.innerHTML !== b.innerHTML) a.innerHTML = b.innerHTML;
+}
 export const typeOnNextMount = () => { typeNext = true; };
 
 let doors = null, keysOn = false, resizeOn = false, goFn = null, curRoom = HALL;
