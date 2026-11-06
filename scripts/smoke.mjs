@@ -190,6 +190,11 @@ await step('side doors show with reduced motion', async () => {
   await rp.goto(url);
   try { await rp.waitForFunction(() => { const d = document.querySelector('#rm-doors .rm-door'); if (!d) return false; const r = d.getBoundingClientRect(); return r.width > 40 && r.height > 40 && getComputedStyle(d.parentElement).opacity === '1' && !d.parentElement.hidden; }, null, {timeout: T}); }
   catch { fail('side doors: not visible under prefers-reduced-motion'); }
+  // the rest of the home must also be there without any animation having run (swept: nothing else differed from full motion)
+  for (const sel of ['.hz-title', '.rm-ring .rm-dot', '.hearth', '.rm-door.rm-prev', '.rm-door.rm-next']) {
+    const vis = await rp.locator(sel).first().evaluate(el => { const r = el.getBoundingClientRect(); let op = 1; for (let n = el; n; n = n.parentElement) op *= +getComputedStyle(n).opacity; return r.width > 2 && r.height > 2 && op > 0.5; }).catch(() => false);
+    if (!vis) fail(`reduced motion: ${sel} not visible`);
+  }
   await rp.context().close();
 });
 await browser.close(); server.close();

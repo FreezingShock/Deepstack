@@ -42,7 +42,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 
 ### Reduced-motion audit (fix: side doors vanished with OS animations off)
 - [x] Side doors re-place on ResizeObserver + late retries; smoke.mjs now renders home under reduced motion and asserts the doors are visible (PR pending).
-- [ ] RM2 Reduced-motion sweep: smoke-check more elements (ring dots, Daily tab, shelf spines, attic hatch) under `reducedMotion: 'reduce'`. Conflicts: scripts/smoke.mjs only.
+- [x] RM2 Reduced-motion sweep: diffed visible elements full vs reduced motion at 1280 and 375, no other differences; smoke now checks title, ring, hearth and doors (PR #295).
 - [ ] RM3 Settings motion toggle preview: show a live "reduced" preview beside the Motion setting. Conflicts: src/ui/settings.js.
 
 ## Standard preamble (add to every brief)
