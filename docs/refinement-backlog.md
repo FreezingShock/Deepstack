@@ -1825,13 +1825,21 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Every room should hold about 210 playable words so no Daily word returns for a month; today they hold 115 to 156 (science 315).
 **Brief:** Goal: raise history, math, english, art and body to `DEPTH_TARGET` (210) playable words by pulling more from the archive through `scripts/build-rooms.mjs`, then raise `MIN_DEPTH_WORDS` in `src/core/roomDepth.js` to match. Done when: `test/room-depth.test.js` prints no "depth:" shortfall lines. **Conflicts:** TA1 (same lists), TR12.
 
-### TA2b. Unlimited should not repeat inside a room
+### [x] TA2b. Unlimited should not repeat inside a room (done)
 **Pitch:** Daily words are now spaced 14 days apart, but Unlimited remembers only the last 300 seen ids, so a small room can still deal you a word you just answered.
 **Brief:** Goal: simulate a 200-word Unlimited run per room (`pickWord` with `rating.seen`) and keep the seen window at least the room's size. Files: `src/core/unlimited.js`, `src/core/roomDepth.js`. Done when: a test shows no repeat inside one 200-word run for every room. **Conflicts:** none.
 
-### TA2c. Tell the player when a room is nearly all met
+### [x] TA2c. Tell the player when a room is nearly all met (done)
 **Pitch:** "117 of 118 met" is a good moment: the door plate could glow or the ledger page could say the room is mastered.
 **Brief:** Goal: a small flourish on the plate and the ledger page at 100% met, not a popup. Files: `src/ui/roomHome.js`, `roomHome.css`, `roomLedger.js`. **Conflicts:** TR9.
+
+### TA2d. Show which words are left in a room
+**Pitch:** "402 of 413 met" is a tease; nate could tap the count and see the 11 words he has not met yet, as a page in the Room Ledger.
+**Brief:** Goal: a "Not yet met" page per room listing the unmet words (words only, no definitions). Files: `src/ui/roomLedger.js`, `src/core/roomDepth.js` (`metWords` already has the sets). **Conflicts:** TR12.
+
+### TA2e. Mastered rooms in the Almanac
+**Pitch:** A room at 100% should be remembered somewhere: a small "Rooms mastered" line on the Rooms stats page with the date it was completed.
+**Brief:** Goal: store `S.metAt = {room: isoDate}` the first time a room reaches 100% and show it on the Rooms Almanac page. Files: `src/core/roomDepth.js`, `src/ui/roomStats.js`. **Conflicts:** none.
 
 ### [x] TA3. Which numbers are per room, and do they agree (scope labels PR: top bar, Librarian's Card, Almanac tagged "this room" vs "all rooms")
 **Pitch:** In the Chronicle the top bar and Almanac show "0 day streak" next to "300 ft deepest", and the Card shows Books 13 and Floor from your whole shelf, while streak and Dailies are the room's own. Nothing says which is which, and an unsynced number would be a bug that a player reads as lost progress.

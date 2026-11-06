@@ -16,6 +16,7 @@ import {backfillFloors} from './core/attic.js';
 import {dustCardOpts} from './ui/atticDust.js';
 import {roomsBook} from './ui/roomLedger.js';
 import './ui/roomHome.css';
+import './ui/roomMastery.css';
 import './ui/roomRun.css';
 import {initRoomRun} from './ui/roomRun.js';
 import {goRoom} from './app/roomGo.js';

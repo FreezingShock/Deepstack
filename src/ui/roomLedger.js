@@ -7,7 +7,7 @@ import {currentRoom, roomData} from '../core/roomStore.js';
 import {loadRoomLists, roomList} from '../core/roomPool.js';
 import {SETS, setStatus, bonusFt, MIN_SCORE} from '../sets/sets.js';
 import {setPageHTML} from '../sets/pages.js';
-import {roomMetLabel, roomWordNames} from '../core/roomDepth.js';
+import {roomMetLabel, roomWordNames, allMet} from '../core/roomDepth.js';
 import {BOOK_TIMING} from './bookOpenFx.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
@@ -27,7 +27,7 @@ export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, 
     const f = mm && +mm[2] ? Math.min(1, +mm[1] / +mm[2]).toFixed(3) : 0;
     const right = r.id === HALL ? `${shelfWords} ${shelfWords === 1 ? 'word' : 'words'} met` : m || `${d}/${n} sets`;
     const sf = n ? (d / n).toFixed(3) : 0, tip = `${right}${r.id === HALL ? '' : `, ${d} of ${n} sets complete`}`;
-    return `<li class="${r.id === cur ? 'here' : ''}" data-room="${r.id}" style="--c:${rgbOf(r)}" title="${esc(tip)}"><span><i class="rl-dot${r.id === HALL ? ' nosets' : ''}" style="--f:${r.id === HALL ? (shelfWords ? 1 : 0) : f};--s:${sf}" aria-hidden="true"></i>${esc(r.name)}${r.id === cur ? ' (here)' : ''}</span><b>${esc(right)}</b></li>`;
+    return `<li class="${r.id === cur ? 'here' : ''}" data-room="${r.id}" style="--c:${rgbOf(r)}" title="${esc(tip)}"><span><i class="rl-dot${r.id === HALL ? ' nosets' : ''}${r.id !== HALL && allMet(m) ? ' all' : ''}" style="--f:${r.id === HALL ? (shelfWords ? 1 : 0) : f};--s:${sf}" aria-hidden="true"></i>${esc(r.name)}${r.id === cur ? ' (here)' : ''}</span><b>${esc(right)}</b></li>`;
   }).join('');
   leaves.push(`<h1>Room ledger</h1><div class="kicker">${ROOMS.length} rooms · ${ROOMS.length} fires</div>
    <p class="note">Every room keeps its own words, its own Daily, its own Lexicon and its own sets. Your shelf and stats come with you.</p>
@@ -40,7 +40,7 @@ export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, 
       rt.placed ? `Lexicon ${esc(lexicon(rt.L))}` : 'Unlimited: not yet ranked'].filter(Boolean);
     return `<div class="setpage rl-room" style="--c:${rgbOf(r)}"><div class="kicker">${esc(r.topic)}${r.id === HALL ? '' : ' room'} · ${esc(r.salt)} fire</div><h1>${esc(r.name)}</h1>
      <p class="note">${esc(r.blurb)}</p><div class="rl-fire" aria-hidden="true"></div>
-     <div class="rl-facts">${facts.map(f => `<span>${f}</span>`).join('')}</div>
+     <div class="rl-facts">${facts.map(f => `<span${allMet(f) ? ' class="rl-all"' : ''}>${f}</span>`).join('')}</div>
      ${sets.length ? `<h2>Sets</h2><ul class="rl-sets">${sets.map(({s}) => `<li class="${s.complete ? 'done' : ''}"><span>${esc(s.name)}</span><b>${s.n}/${s.total}</b></li>`).join('')}</ul>`
        : `<p class="note">No sets here: they live in the topic rooms, and every set word still counts when it comes up in this room.</p>`}
      ${r.id === cur ? `<p class="rl-here">You are here.</p>` : `<div class="pg-actions rl-enter"><button class="bs-start bs-primary pen-ink" data-room="${r.id}">Enter ${esc(r.name)}</button></div>`}</div>`;

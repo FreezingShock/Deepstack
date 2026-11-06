@@ -1,11 +1,12 @@
 /* Unlimited mode: an ~8 word placement test, then an Elo-style rating (the Lexicon, 0-100) that picks word difficulty.
    Pure functions plus a tiny state shape, so it saves additively as S.rating and old saves keep working. */
 import {levelUpdate, levelTitle, pickWord} from './level.js';
+import {WORDS} from './words.js';
 
 export const PLACEMENT_WORDS = 8;
 export const RUN_WORDS = 7;
 export const START_LEVEL = 3.5;
-const SEEN_CAP = 400;
+export const SEEN_CAP = 1200; // above the biggest room, so a room is only 'spent' when every one of its words was really met
 
 export const newRating = () => ({L: START_LEVEL, placed: false, n: 0, runs: 0, seen: [], hist: []});
 
@@ -40,18 +41,20 @@ export function targetFor(L, i, n, span = 1.6) {
 }
 
 /** Picks the next word. Placement is adaptive: it just asks at the current estimate, which moves after each answer. */
-export function nextWord(rating, i, n, used, rng = Math.random) {
-  const seen = new Set([...rating.seen, ...used]);
-  const target = rating.placed ? targetFor(rating.L, i, n) : rating.L;
-  let w = pickWord(target, seen, rng);
-  if (seen.has(w.id)) w = pickWord(target, new Set(used), rng); // pool exhausted: allow repeats across runs
-  return w;
+export function nextWord(rating, i, n, used, rng = Math.random, pool = WORDS) {
+  const usedSet = new Set(used), target = rating.placed ? targetFor(rating.L, i, n) : rating.L;
+  const seen = new Set([...rating.seen, ...usedSet]);
+  if (pool.some(w => !seen.has(w.id))) return pickWord(target, seen, rng);
+  // The room is spent: replay the words met longest ago first (rating.seen is oldest-first), keeping a margin of fresh-ish picks.
+  const keep = Math.max(0, Math.min(rating.seen.length, pool.length - Math.max(12, n * 3)));
+  const recent = new Set([...rating.seen.slice(rating.seen.length - keep), ...usedSet]);
+  return pickWord(target, recent, rng);
 }
 
 /** Applies one scored word to the rating. Returns the new rating (input untouched). */
 export function applyResult(rating, word, score, i) {
   const L = levelUpdate(rating.L, word.d, score, kFactor(rating.placed, i));
-  const seen = [...rating.seen, word.id].slice(-SEEN_CAP);
+  const seen = [...rating.seen.filter(id => id !== word.id), word.id].slice(-SEEN_CAP); // most recent last, no duplicates
   return {...rating, L, n: rating.n + 1, seen};
 }
 

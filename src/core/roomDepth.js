@@ -26,10 +26,19 @@ export function simulateRoom(pool, id, {days = SIM_DAYS, n = DAILY_LEN} = {}) {
     soonestRepeatDays: Number.isFinite(soonest) ? soonest : null, daysBeforeRepeatsExpected: Math.floor(pool.length / n)};
 }
 
-/** The words of `list` the player has met: distinct shelf books plus collected set words. */
+/** Remembers a word as met. The shelf keeps only the last 300 books, which could never reach 100% of a 400-word room,
+ *  so every answered word is also kept in S.met = {word: 1} (an additive save field; old saves fall back to the shelf). */
+export function recordMet(S, book) {
+  if (!S || !book || !book.w || book.skipped) return;
+  if (!S.met || typeof S.met !== 'object' || Array.isArray(S.met)) S.met = {};
+  S.met[book.w] = 1;
+}
+/** The words of `list` the player has met: S.met, distinct shelf books and collected set words. */
 export function metWords(S, list) {
   const inRoom = new Set(list || []), met = new Set();
   for (const b of (S && S.shelf) || []) if (b && inRoom.has(b.w) && !b.skipped) met.add(b.w);
+  const seen = (S && S.met && typeof S.met === 'object' && !Array.isArray(S.met)) ? S.met : {};
+  for (const w of Object.keys(seen)) if (inRoom.has(w)) met.add(w);
   const got = (S && S.sets && S.sets.got) || {};
   for (const w of Object.keys(got)) if (inRoom.has(w)) met.add(w);
   return met.size;
@@ -40,6 +49,8 @@ export function roomWordNames(id) {
   if (!l && !e) return null;
   return [...new Set([...(l || []), ...(e || []).map(x => x.w)])];
 }
+/** True when a label like "118 of 118 met" says every word of the room has been met (TA2c). */
+export const allMet = label => { const m = /(\d+) of (\d+)/.exec(label || ''); return !!m && +m[2] > 0 && +m[1] >= +m[2]; };
 export const metLabel = (met, total) => `${met} of ${total} met`;
 /** "47 of 118 met" for room `id`, or '' until its word list has loaded (the Reading Room has no list). */
 export function roomMetLabel(S, id) {
