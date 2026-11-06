@@ -185,8 +185,26 @@ export function bookAge(b,rank,n,now=Date.now()){
 const DUST=hexRgb(PALETTE.parchmentDim),WEB=hexRgb(PALETTE.parchment);
 /* Dust, webs and faded gilding over a lying book (called inside its translate/rotate). The title is painted after,
    so a long word stays readable whatever the age. */
-function ageBook(c,w,h,age,seed){
- if(age<.02)return;const R=rng(seed^0x9e3779b9);
+const dustSprites=new Map();
+/* The dust layer is the same every frame for a given book, so it is painted once into a small canvas (age rounded to
+   1/24 so it only repaints as a book slowly ages) and drawn as one image. Thousands of per-frame specks were the
+   attic's biggest cost with a full shelf. */
+function ageBook(c,w,h,age,seed,dpr=1){
+ if(age<.02)return;
+ if(typeof document==='undefined'){paintAge(c,w,h,age,seed);return;}
+ const q=Math.round(age*24)/24,pad=2,key=[seed,Math.round(w),Math.round(h),q,dpr].join('|');
+ let cv=dustSprites.get(key);
+ if(!cv){
+  if(dustSprites.size>400)dustSprites.clear();
+  const sw=Math.ceil(w+pad*2),sh=Math.ceil(h+pad*2);
+  cv=document.createElement('canvas');cv.width=Math.ceil(sw*dpr);cv.height=Math.ceil(sh*dpr);
+  const x=cv.getContext('2d');x.scale(dpr,dpr);x.translate(sw/2,sh-pad);paintAge(x,w,h,q,seed);
+  cv.sw=sw;cv.sh=sh;dustSprites.set(key,cv);
+ }
+ c.drawImage(cv,-cv.sw/2,-h-pad,cv.sw,cv.sh);
+}
+function paintAge(c,w,h,age,seed){
+ const R=rng(seed^0x9e3779b9);
  c.save();c.beginPath();c.rect(-w/2,-h,w,h);c.clip();
  c.fillStyle=rgb(...DUST,.02+.07*age);c.fillRect(-w/2,-h,w,h); // dull the cloth, lightly so the lettering stays readable
  const tg=c.createLinearGradient(0,-h,0,-h*.35);tg.addColorStop(0,rgb(...DUST,.42*age));tg.addColorStop(1,rgb(...DUST,0));
@@ -252,7 +270,7 @@ function lyingBook(c,x,y,w,h,b,rot,age=0,seed=1,dpr=1,n=1,isTop=true,lean=1,dim=
  c.save();c.translate(0,-h/2);c.rotate(Math.PI/2);c.drawImage(spineSprite(b,w,h,dpr),-h/2,-w/2,h,w);c.restore();
  c.fillStyle=rgb(255,240,200,.12);c.fillRect(-w/2,-h,w,1.2);
  if(!isTop){const sg=c.createLinearGradient(0,-h,0,-h+7);sg.addColorStop(0,rgb(0,0,0,.4));sg.addColorStop(1,rgb(0,0,0,0));c.fillStyle=sg;c.fillRect(-w/2,-h,w,7);}
- ageBook(c,w,h,age,seed);
+ ageBook(c,w,h,age,seed,dpr);
  if(dim>.01){c.fillStyle=rgb(4,3,2,dim);c.fillRect(-w/2,-h,w,h);}
  if(b.fav){c.font='600 13px Cinzel,Georgia,serif';c.fillStyle=rgb(246,217,138);c.textAlign='center';c.textBaseline='middle';c.fillText('★',-lean*(w/2-h*.6),-h/2+.5);}
  if(n>1){ /* the same word found again: one book stands for all, with a brass tally */
