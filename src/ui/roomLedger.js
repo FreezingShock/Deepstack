@@ -57,7 +57,7 @@ export function roomsBook(S, {go = () => {}, today = () => '', lexicon = () => '
     label: 'Room ledger',
     spreads() { const r = roomLeaves(S, {today: today(), lexicon, words, met: id => roomMetLabel(S, id)}); at = r.at; spreads = toSpreads(r.leaves); return spreads; },
     onPaint(sp, api) {
-      sp.querySelectorAll('.rl-toc li[data-room]').forEach(li => { li.onclick = () => { const j = Math.floor((at[li.dataset.room] || 0) / 2); if (j !== api.index) api.setSpreads(spreads, j); }; });
+      sp.querySelectorAll('.rl-toc li[data-room]').forEach(li => { li.onclick = () => { const p = at[li.dataset.room] || 0, j = Math.floor(p / 2); api.setSpreads(spreads, j, undefined, p % 2 ? 'r' : 'l'); }; });
       sp.querySelectorAll('.rl-enter [data-room]').forEach(b => {
         b.onclick = () => { const id = b.dataset.room; api.close(); setTimeout(() => go(id), BOOK_TIMING.shutHold + BOOK_TIMING.flyBack + 60); };
       });
