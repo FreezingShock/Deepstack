@@ -72,6 +72,8 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 sizing: "fix sizing issues at different widths and heights, also all the books being reset and randomized when changing window height and width" -> resizing must never reshuffle the world (seed every decoration from its row, never from the window), and every menu and home composition must fit the window with no overflow or overlap (thread: fix layout at small and odd window sizes)
 - 2026-11-06 Continue plaque: "its kinda close to the drawer" -> the Continue/Descend plaque always keeps a clear, even gap (about 28px at 1000 to 2560 wide) to the Library Rules cabinet and Librarian's Card; long sub-lines shrink the plaque spacing, never the gap.
 
+- 2026-11-06 home cabinet: the Library Rules drawer was a weak, off-style menu and Tiers A-M / Sets N-Z were fake -> every drawer must do something real; wants small box drawers (Credits, Instructions and so on) so the cabinet is part of the game, and the cabinet and the whole fireplace room allowed to be much bigger on big windows.
+
 ## Changelog
 - 2026-11-04 initial version from project chat history.
 

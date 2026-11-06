@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Open the card catalogue on the left wall of home (1000 px and wider): pull each of the eight drawers, flip the cards with Turn, cycle with the arrow keys, and check the Settings drawer. On a big window the whole room, cabinet and fire are now much bigger; say if the word alcoves being wider on big windows feels right. Tell me which drawers to add or drop (CC1 to CC3 below).
 - Look at the home plaque on your 1920 screen while mid-Daily: Continue should now have a clear gap to the Library Rules drawers and the Librarian's Card (src/ui/plaqueGap.css).
 - Walk between rooms on desktop: the fireplace should stay put while the fire, title and labels glide to the new colour and the room and Daily lines type in. Tell me if the glide is too slow or the title tint is too strong.
 - Enter the Chronicle (or any other room) and press Descend: the candle halo, the two lanterns and the lift cage burn in the room's fire, the result card gets a rim of it, and the depth plaque names the room. The Reading Room should look exactly as before. Say if the tint is too strong or too faint.
@@ -1855,3 +1856,16 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### SP3. Caption on the Shelf and Stats spines
 **Pitch:** Shelf shows its book count only when it fits; Stats has no caption at all (e.g. best streak).
 **Brief:** Goal: consistent captions on all five spines with the same fit rules. Files: `src/ui/home.js`, `src/ui/homeSpineSub.css`. **Conflicts:** SP2.
+
+## Card catalogue follow-ups (2026-11-06, card catalogue thread; the first build is done)
+- [x] CC0. Rebuild the card drawer: eight box drawers (Rules, Tiers, Scoring, Tips, Keys, Settings, Credits, About), bigger room on wide windows.
+### CC1. Cabinet on phones and very short rooms
+**Pitch:** Phones and 1000 x 560 windows show no cabinet at all, so there is no way to read the rules there.
+**Brief:** Goal: a small brass "card catalogue" tab (like the tablet bar) that fits the compact phone home without moving Descend; opens the same cards. Files: `src/ui/cabinet.css`, `src/ui/cabinet.js`, `src/ui/fit.css` hide rule. **Conflicts:** home layout and hearth threads.
+### CC2. Live drawers
+**Pitch:** Make the cabinet react to the game, not just explain it.
+**Brief:** Goal: a drawer that fills with something earned (a Tiers card that stamps each tier the first time you earn it, a Credits card for each room's word source, a small "today" card when the Daily is unplayed), plus a pull sound with weight. Files: `src/ui/cabinet.js`, `src/sound/materials.js`. **Conflicts:** sound palette threads.
+### CC3. Bigger Descend and wordmark on wide windows
+**Pitch:** The cabinet, ledger and fire grew with the room; the title and Descend plaque did not.
+**Brief:** Goal: scale `.wordmark`, the tagline and `.descend` by `--hs` (up to 1.45) without changing the fit at 1280 or below. Files: `src/ui/cabinet.css` or a new css file. **Conflicts:** the Continue plaque spacing thread (`homePlaque`).
+

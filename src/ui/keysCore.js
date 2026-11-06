@@ -4,7 +4,7 @@ export const SHORTCUT_GROUPS=[
   ['1 / D','Open the Daily book'],
   ['2 / U','Open the Unlimited book'],
   ['3 / S','Open the Shelf'],
-  ['4','Open Sets'],
+  ['4 / R','Open Rooms'],
   ['5','Open Stats'],
   ['N','Descend: start your next run'],
   ['A','Climb to the attic'],
