@@ -9,6 +9,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Rooms now show "X of N met" on the door plates, the room tagline and the Room Ledger page, and each room Daily never reuses a word from the last 14 days. Check the counts feel right after a few answers; small rooms (History, Math, English, Art, Anatomy at 115 to 156 words) still need TA2a to reach a month of fresh words. (thread: make every room deep enough to play)
 - Enter the Chronicle (or any other room) and press Descend: the candle halo, the two lanterns and the lift cage burn in the room's fire, the result card gets a rim of it, and the depth plaque names the room. The Reading Room should look exactly as before. Say if the tint is too strong or too faint.
 - Check the home spine captions (Daily, Shelf, Unlimited, Rooms) at 1920 and on your phone: readable, centred, nothing clipped. Say if you want the captions stacked under the title instead (PR #292).
+- Librarian's Card (LC1): on desktop, click Deepest or Books on the card (opens Stats) and Floor (opens the new Floors book). Then pick what Streak should open: 1 Ember Log (calendar + next milestone), 2 Milestone stamps, 3 Streak insurance (hours left).
 - Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
 - Resize the window (or rotate your phone) on home and in each menu book: the hatch tag should clear the title, Descend and the five spines should always fit, short landscape windows get one row of spines, and the background shelves (books, cobwebs, props) should stay put as you drag the window. Say which size still feels cramped. (thread: fix layout at small and odd window sizes, `node scripts/responsive.mjs`)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
@@ -1896,3 +1897,15 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### CC5. Tall-screen alcove breathing
 **Pitch:** On 1440p+ tall windows the alcove spans many rows; add a mid-wall detail.
 **Brief:** Goal: for windows over 1200 px tall, add a small plaque or ladder on the side shelves at the alcove's mid height. Files: new css/js only. **Conflicts:** none known.
+### LC1. Librarian's Card rows open books (done in this PR)
+**Pitch:** Each card row is a doorway: Floor to the Floors book, Books and Deepest to Stats.
+**Brief:** Goal: Streak row opens something new once nate picks. Files: `src/ui/ledgerBooks.js`, `src/ui/floorLeaves.js`. **Conflicts:** fireplace/mantel layout thread.
+### LC2. Streak row opens the Ember Log
+**Pitch:** Streak opens a book with a 5-week grid of days played, best streak and the next milestone as an empty stamp.
+**Brief:** Goal: new `bStreak` BOOK_PAGES entry using Daily history in S.daily; row gets `id="bStreak"`. Files: new `src/ui/streakLeaves.js`. **Conflicts:** LC1.
+### LC3. Card rows show a tooltip with detail
+**Pitch:** Hover Books for your rarest tier, Deepest for the floor it reached.
+**Brief:** Goal: richer `title` per row in `ledgerHTML`. Files: `src/ui/welcome.js`. **Conflicts:** LC1.
+### LC4. Floors book page art
+**Pitch:** Each floor page gets its own small motif drawing (shelf lean, water line, red pulse).
+**Brief:** Goal: reuse `floorArt.js` motifs on `floorLeaves` pages. Files: `src/ui/floorLeaves.js`. **Conflicts:** LC1.
