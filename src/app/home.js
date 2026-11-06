@@ -28,7 +28,7 @@ export function showHome(){
  ui.home.hidden=false;ui.home.className='center fadein';
  ui.home.innerHTML=homeHTML({S,st,d,no:dailyNo(),today:utc(),floorName:S.bestFloor?FLOORS[S.bestFloor].name:'',floorKey:S.bestFloor?FLOORS[S.bestFloor].key:'',tierInk:(()=>{const t=S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1);return t>=0?core.TIERS?.[t]?.ink||'':''})(),lexicon:core.lexicon});
  paintJudge(modelStatus());
- World.clearNiches();World.openNiche(0,{label:'No. '+dailyNo(),books:[]});
+ World.clearNiches();World.openNiche(0,{label:'',books:[]});
  $('#bPlay')&&($('#bPlay').onclick=e=>descendInto(e.currentTarget,()=>startDaily(false)));
  $('#bRes')&&($('#bRes').onclick=()=>showFinal(d,true));
  $('#bNext')&&($('#bNext').onclick=e=>descendInto(e.currentTarget,()=>startUnlimited()));

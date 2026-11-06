@@ -155,7 +155,7 @@ function createHearth(home, sfx, mood) {
         setStyle(shelves[0], 'translate', `${14 - a.x}px 0`);
         setStyle(shelves[1], 'translate', `${W - 14 - b.r}px 0`);
       }
-      setStyle(row, 'translate', `0 ${-plan.lift}px`); setStyle(tag, 'translate', `0 ${-plan.lift}px`);
+      for (const r of home.querySelectorAll('.hz-plaque .row')) setStyle(r, 'translate', `0 ${-plan.lift}px`); setStyle(tag, 'translate', `0 ${-plan.lift}px`);
       const beam = loc(beamEl);
       setStyle(mantelEl, 'translate', `0 ${plan.mantel.y - beam.y}px`);
     } else {

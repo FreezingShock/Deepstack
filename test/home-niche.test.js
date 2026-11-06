@@ -5,5 +5,5 @@ import {readFileSync} from 'node:fs';
 test('showHome clears leftover niches before opening the home niche',()=>{
  const rd=f=>readFileSync(new URL('../src/'+f,import.meta.url),'utf8');
  assert.match(rd('world/world.js'),/clearNiches\(\)\{niches\.clear\(\);\}/);
- assert.match(rd('app/home.js'),/World\.clearNiches\(\);World\.openNiche\(0,\{label:'No\. '/);
+ assert.match(rd('app/home.js'),/World\.clearNiches\(\);World\.openNiche\(0,\{label:''/);
 });
