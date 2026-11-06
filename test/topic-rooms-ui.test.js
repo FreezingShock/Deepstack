@@ -44,3 +44,28 @@ test('ring of lights and side doors name the rooms', async () => {
   assert.match(h, /rm-dot on" data-room="math"/);
   assert.match(doorHTML(ROOMS[1], 'prev'), /Previous room: The Chronicle/);
 });
+
+test('shelf room tabs: books without a room are Reading Room books', async () => {
+  const {bookRoom, roomCounts} = await import('../src/core/shelfRooms.js');
+  const {filterShelf} = await import('../src/core/shelf.js');
+  const shelf = [{w: 'a', tier: 1, score: 30}, {w: 'b', tier: 1, score: 30, room: 'math'}, {w: 'c', tier: 1, score: 30, room: 'nowhere'}];
+  assert.equal(bookRoom(shelf[0]), HALL); assert.equal(bookRoom(shelf[2]), HALL);
+  assert.equal(roomCounts(shelf).hall, 2); assert.equal(roomCounts(shelf).math, 1);
+  assert.deepEqual(filterShelf(shelf, {room: 'math'}).map(x => x.b.w), ['b']);
+  assert.equal(filterShelf(shelf, {}).length, 3);
+});
+
+test('stats per room read each room on its own', async () => {
+  const {roomRows, roomStatsLeaves} = await import('../src/ui/roomStats.js');
+  const {computeStats} = await import('../src/core/stats.js');
+  const S = {shelf: [{w: 'x', tier: 2, score: 40, room: 'art'}], sets: {got: {}, done: {}}, daily: {'2026-11-06': {depth: 500, books: []}},
+    rating: {...loadRating(null), placed: true, L: 6}, rooms: {art: {daily: {}, rating: {placed: true, L: 3}}}};
+  installRooms(S);
+  const rows = roomRows(S, {today: '2026-11-06', computeStats});
+  const by = Object.fromEntries(rows.map(x => [x.r.id, x]));
+  assert.equal(by.hall.runs, 1); assert.equal(by.hall.deepest, 500); assert.equal(by.hall.lex, 60);
+  assert.equal(by.art.runs, 0); assert.equal(by.art.lex, 30); assert.equal(by.art.books, 1);
+  assert.equal(by.math.lex, null);
+  const [l, r] = roomStatsLeaves(S, {today: '2026-11-06', computeStats});
+  assert.match(l, /The Rooms/); assert.match(r, /Strongest: The Reading Room/);
+});

@@ -1743,17 +1743,29 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### [x] TR3. Sets move into rooms, Sets book retired into the Room Ledger (TR2/TR3 PR)
 **Done:** the Rooms spine replaces Sets; 18 sets, three per topic room (the old six re-homed, ids and progress untouched; 12 new from each room's list). A room's word pool also holds its sets' words. Share text names the room. Shelf room tabs and a Stats rooms page are TR7/TR8.
 
-### TR7. Shelf room tabs
+### [x] TR7. Shelf room tabs (TR7-TR9 PR: Room chips with fire-coloured dots, shown once a second room has books)
 **Pitch:** "still uses daily and unlimited shelf and stats": the Shelf keeps every book but gains a tab per room (books already carry `room`), with each tab's spines lit in that room's fire colour.
 **Brief:** Goal: filter chips in the Shelf book by `book.room` (missing = Reading Room). Files: shelf book pages only. **Conflicts:** shelf threads.
 
-### TR8. Stats per room
+### [x] TR8. Stats per room (TR7-TR9 PR: The Rooms + Side by side pages after the Almanac)
 **Pitch:** A Rooms page in the Stats book: each room's streak, Lexicon, Dailies played and sets, side by side, so you can see which room you are strongest in.
 **Brief:** Goal: read `roomData(S, id)` for every room; one new leaf in the stats book. **Conflicts:** stats threads.
 
-### TR9. Door walk polish
+### [x] TR9. Door walk polish (TR7-TR9 PR: plank doors stand ajar, open wider on hover, swing open when taken; new fire comes up from embers; `door` sound cue)
 **Pitch:** Make walking through a door feel like a place: the door you take swings open, the new fire flares up from embers as the room slides in, and a soft footstep and latch sound plays.
 **Brief:** Goal: richer `rm-leave`/`rm-enter` keyframes, a `door` cue in `src/sound/materials.js`; keep it under 600 ms and transform/opacity only. **Conflicts:** sound threads, hearth.
+
+### TR10. A room's own shelf in the world
+**Pitch:** When you stand in a room, the background shelves behind the fireplace hold that room's books, their spines lit faintly in the room's fire colour, so the room feels stocked with its own words.
+**Brief:** Goal: `World.setShelf` gets the shelf filtered by `bookRoom` when not in the Reading Room. Files: `src/app/home.js` showHome line, `src/core/shelfRooms.js`. **Conflicts:** world/shelf threads.
+
+### TR11. Room-coloured Daily binding and share card
+**Pitch:** The Daily book's dated tab and the share text's block colours take the room's fire colour, so a Chronicle Daily reads crimson and an Observatory one green.
+**Brief:** Goal: `placeDailyTab` and the result share read `--rm-rgb`. Files: `src/ui/dailyBind.css`, `src/app/final.js`. **Conflicts:** Daily binding, results threads.
+
+### TR12. Room streak flames on the doors
+**Pitch:** Each side door's lamp burns brighter the longer your streak in that room, and a small number on the plate shows it, so you can see which room is waiting for today's Daily.
+**Brief:** Goal: `doorHTML` reads `roomData(S, id)` streak and today's Daily. Files: `src/ui/roomHome.js` + css. **Conflicts:** none.
 
 ### RS1. [x] Stand-alone phone layout for the Unlimited and Daily books (done in the same thread: #283)
 
