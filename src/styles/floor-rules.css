@@ -1,0 +1,2 @@
+.floorrule{font:italic 400 calc(13px*var(--ts)) var(--hand,Georgia,serif);color:var(--mute);text-align:center;margin:2px 0 0;opacity:.9}
+.word.smeared span{filter:blur(2.6px);opacity:.7;transition:filter var(--m-smooth) var(--e-settle),opacity var(--m-smooth) var(--e-settle)}

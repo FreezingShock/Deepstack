@@ -1569,7 +1569,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The share text is fine (no emojis, nate's rule) but the Daily deserves a shareable picture: a pen-written bookplate with the date, the seven tier spines and the depth, rendered on a canvas.
 **Brief:** Goal: "Copy bookplate" next to "Copy result" on the Daily final screen; text stays the default. Files: new `src/ui/bookplate.js`. Done when: PNG at 1080x1350, no emojis, works offline, test checks the canvas size. **Touches:** final screen. **Conflicts:** G7, 28.
 
-### V7. Floors that change how a word feels (not just how it looks)
+### V7. [x] Floors that change how a word feels (not just how it looks)
 **Pitch:** Floors already change the room. Let each one also change one small rule so descending feels different, ready for the topic zones: Catacombs candle burns a little faster, the Sunken Vault smears the ink of the word's first letters until you type, the Hollow whispers an extra hint after skipping.
 **Brief:** Goal: one optional modifier per floor, shown as a line on the floor door, off for the Daily so it stays fair. Files: new `src/core/floorRules.js`, hook in `run.js`. Done when: tests pin each modifier, Daily unaffected, Settings can turn them off. **Conflicts:** G10, G11, F1, 142.
 
@@ -1623,3 +1623,10 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### AT8. Books return to the stack
 **Pitch:** After a menu book closes it should slide back into its exact slot on the stack, with the others easing forward rather than popping.
 **Brief:** Goal: shared-element return flight and sibling stagger in `bookOpenFx`. Files: `src/ui/bookOpenFx.css`, `src/ui/homeBookEdges.css`. **Conflicts:** home book threads.
+### V17. Floor rule on the door sign
+**Pitch:** Floors now bend one rule each in Unlimited, but the line only shows once you are on the word. Let the hanging sign on each floor door say it as you walk through.
+**Brief:** Goal: draw the rule's short name under the floor name on the threshold sign. Files: `src/ui/thresholds.js`, `src/core/floorRules.js`. Done when: sign shows the name only when rules are on and the mode is Unlimited. **Conflicts:** G10, F1, 142.
+
+### V18. More floor rules for topic zones
+**Pitch:** When the topic zones arrive each one should carry its own small rule, same as the floors, so a zone feels different to play and not only to look at.
+**Brief:** Goal: let `FLOOR_RULES` take a zone key, plus two spare rules (a slower first letter fade, a bonus second hint). Files: `src/core/floorRules.js`. Done when: tests pin each new rule, Daily unaffected. **Conflicts:** V7 follow-ups, G11.
