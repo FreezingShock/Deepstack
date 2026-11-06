@@ -38,7 +38,13 @@ export function runsHtml(runs){
 const NIB='<i class="ink-nib" aria-hidden="true"><svg viewBox="0 0 24 40" width="22" height="36"><path d="M2 38 L7 30 C4 20 8 8 22 1 C21 14 17 24 11 31 Z" class="vane"/><path d="M2 38 L10 29 M21 2 C14 12 9 22 8 30" class="rib"/></svg></i>';
 
 /** Dress the slip around `ta`. Returns a teardown (used by tests; the run screen is rebuilt each word). */
+// Slips whose page listeners are still on. The run screen is rebuilt each word without calling the teardown, so a slip that
+// has left the page is torn down here (on the next attach or the next page event): its document/window listeners used to keep
+// every old slip, mirror and textarea alive for the whole session (~100 DOM nodes and 2 listeners per word).
+const live=new Set();
+const sweep=()=>{for(const t of live)if(!t.ta.isConnected)t.off();};
 export function attachInk(ta){
+ sweep();
  const slip=ta&&ta.closest&&ta.closest('.slip');if(!slip||slip.querySelector('.ink-mirror'))return ()=>{};
  const mir=document.createElement('div');mir.className='ink-mirror';mir.setAttribute('aria-hidden','true');
  slip.insertBefore(mir,ta.nextSibling);slip.classList.add('ink-on');
@@ -63,8 +69,11 @@ export function attachInk(ta){
  ta.addEventListener('input',onInput);ta.addEventListener('keydown',onKey);
  ta.addEventListener('scroll',()=>{mir.scrollTop=ta.scrollTop;});
  ta.addEventListener('focus',paint);ta.addEventListener('blur',paint);
- document.addEventListener('selectionchange',()=>{if(document.activeElement===ta)paint();});
- addEventListener('resize',sync);
+ const ac=new AbortController(),on={signal:ac.signal};
+ const off=()=>{ac.abort();clearTimeout(timer);live.delete(rec);ta.removeEventListener('input',onInput);ta.removeEventListener('keydown',onKey);};
+ const rec={ta,off};live.add(rec);
+ document.addEventListener('selectionchange',()=>{if(!ta.isConnected)return off();if(document.activeElement===ta)paint();},on);
+ addEventListener('resize',()=>{if(!ta.isConnected)return off();sync();},on);
  requestAnimationFrame(sync);
- return ()=>{clearTimeout(timer);removeEventListener('resize',sync);ta.removeEventListener('input',onInput);ta.removeEventListener('keydown',onKey);mir.remove();slip.classList.remove('ink-on');};
+ return ()=>{off();mir.remove();slip.classList.remove('ink-on');};
 }

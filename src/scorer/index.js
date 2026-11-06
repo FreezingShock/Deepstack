@@ -4,8 +4,8 @@ import {judge as lexicalJudge} from './lexical.js';
 import {cosine, referenceTexts, prepareAnswer, scoreFromSims} from './embedding.js';
 import {embed, whenReady, modelStatus, retryModelLoad} from './model.js';
 import {hubTexts, hubSim} from './hubness.js';
-import {relate, relationTexts, loadRelations, answerSynonyms} from './relations.js';
-import {senseTexts, loadSenses} from './senses.js';
+import {lexReady, prepAnswer, refTexts, lexEntries} from './lexicon.js';
+export {lexReady, lexEntries, relEntry, senEntry} from './lexicon.js';
 export {loadSenses} from './senses.js';
 export {loadRelations} from './relations.js';
 export {startModelLoad, onModelStatus, modelStatus, whenReady} from './model.js';
@@ -13,11 +13,14 @@ export {startModelLoad, onModelStatus, modelStatus, whenReady} from './model.js'
 const refCache = new Map(); // word -> Promise<{texts, vecs}>
 const refsFor = w => {
   if (!refCache.has(w.w)) {
-    const texts = referenceTexts(w), {group, singles} = relationTexts(w), extra = [...(group ? [group] : []), ...singles], {alt, syn} = senseTexts(w);
-    refCache.set(w.w, embed([...texts, ...extra, ...alt, ...syn, w.w]).then(vecs => {
+    refCache.set(w.w, refTexts(w).then(({rt: {group, singles}, st: {alt, syn}}) => {
+      const texts = referenceTexts(w), extra = [...(group ? [group] : []), ...singles];
+      return embed([...texts, ...extra, ...alt, ...syn, w.w]).then(vecs => {
       const n = texts.length, m = n + (group ? 1 : 0) + singles.length;
       return {vecs: vecs.slice(0, n), grp: group ? vecs[n] : null, singles: vecs.slice(n + (group ? 1 : 0), m), alt: vecs.slice(m, m + alt.length), gloss: vecs.slice(m + alt.length, -1), wordVec: vecs.at(-1)};
-    }));
+    });
+    }).catch(e => { refCache.delete(w.w); throw e; }));
+    if (refCache.size > 400) refCache.delete(refCache.keys().next().value); // a long Unlimited session: keep the recent words' vectors only
   }
   return refCache.get(w.w);
 };
@@ -28,8 +31,8 @@ const hubFor = () => (hubVecs ??= embed(hubTexts).catch(e => { hubVecs = null; t
 /** Embed the day's definitions up front (cheap: a handful of short texts). No-op until the model is ready. */
 export async function prepareWords(words) {
   if (modelStatus().state !== 'ready') return;
-  await Promise.all([loadRelations(), loadSenses()]);
-  await Promise.all([hubFor(), ...words.map(refsFor)]);
+  await lexReady();
+  await Promise.all([hubFor(), ...words.map(refsFor), lexEntries(words.map(w => w.w))]);
 }
 
 // Without concept lists the lexical scorer can only reward definition-word overlap; keep that as an honest, rough fallback.
@@ -44,12 +47,11 @@ export const mayUseQuickJudge = opts => !opts?.strict;
 
 async function fullJudge(text, word, lex) {
   const prep = prepareAnswer(text, word);
-  await Promise.all([loadRelations(), loadSenses()]);
-  const via = answerSynonyms(text, word);
+  const [{rel, via}] = await Promise.all([prepAnswer(text, word), lexEntries([word.w])]); // the card reads this word's entries right after
   const [{vecs, grp, singles, alt, gloss, wordVec}, [a, ...vv], hv] = await Promise.all([refsFor(word), embed([prep.text || text, ...via]), hubFor()]);
   const viaSim = vv.length ? Math.max(...vv.flatMap(v => [...vecs, ...singles].map(r => cosine(v, r)))) : null;
   const r = scoreFromSims(vecs.map(v => cosine(a, v)), prep, text, {word, wordSim: cosine(a, wordVec), hub: hubSim(a, hv, word),
-    rel: relate(text, word), viaSim, altSim: alt.length ? Math.max(...alt.map(v => cosine(a, v))) : null, glossSim: gloss.length ? Math.max(...gloss.map(v => cosine(a, v))) : null, synSim: singles.length ? Math.max(...singles.map(v => cosine(a, v))) : null, grpSim: grp ? cosine(a, grp) : null});
+    rel, viaSim, altSim: alt.length ? Math.max(...alt.map(v => cosine(a, v))) : null, glossSim: gloss.length ? Math.max(...gloss.map(v => cosine(a, v))) : null, synSim: singles.length ? Math.max(...singles.map(v => cosine(a, v))) : null, grpSim: grp ? cosine(a, grp) : null});
   return {score: r.score, sim: r.sim, caught: lex.caught, missed: lex.missed, opposite: r.opposite || lex.opposite,
     usedWord: lex.usedWord, empty: false, words: lex.words, engine: 'embedding'};
 }

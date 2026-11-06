@@ -4,10 +4,10 @@
 //      room and starting a run takes. The service worker must answer unchanged data from its cache, so the delay must not show;
 //   3. judge latency (submit -> score) for fresh words in every room, once the model is ready.
 // Fails (exit 1) if a budget is blown; prints the numbers either way. Usage: npm run build && node scripts/perf-budget.mjs
-//   [--dist dist] [--cpu 4] [--delay 3000] [--rooms hall,history,...] [--json out.json] [--no-fail]
+//   [--dist dist] [--cpu 4] [--delay 3000] [--rooms hall,history,...] [--json out.json] [--trace dir] [--no-fail]
 // Set CHROMIUM_PATH if Playwright's browser is missing. Skips (exit 0) without a browser.
 import {createServer} from 'node:http';
-import {readFile, writeFile, readdir} from 'node:fs/promises';
+import {readFile, writeFile, readdir, mkdir} from 'node:fs/promises';
 import {extname, join, normalize, resolve} from 'node:path';
 import {gzipSync} from 'node:zlib';
 
@@ -55,12 +55,12 @@ const over = (what, v, max) => { if (v > max) problems.push(`${what}: ${Math.rou
   over('entry gzip KB', R.entryGzipKB, BUDGET.entryGzipKB);
 }
 
-for (const room of ROOMS) {
+async function visit(room, traceFile = '') {
   const ctx = await browser.newContext({viewport: {width: 390, height: 800}, isMobile: true, hasTouch: true, serviceWorkers: 'allow'});
   const page = await ctx.newPage();
   await page.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
   await page.addInitScript(r => { if (!localStorage.getItem('deepstack.v1')) localStorage.setItem('deepstack.v1', JSON.stringify({shelf: [], sound: false, room: r, rooms: {}})); }, room);
-  const out = R.rooms[room] = {};
+  const out = traceFile ? {} : (R.rooms[room] = {});
   try {
     // visit 1: load, let the service worker install and the data cache fill (the delay only slows this visit)
     await page.goto(url);
@@ -73,11 +73,13 @@ for (const room of ROOMS) {
     await page.reload(); await page.waitForTimeout(500); // the worker now controls the page
     // visit 2 (repeat): slow data network, throttled CPU
     const cdp = await ctx.newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: cpu});
+    if (traceFile) await browser.startTracing(page, {path: traceFile, screenshots: true});
     const t0 = Date.now();
     await page.reload();
     await page.locator('#bPlay').waitFor({state: 'visible', timeout: 60000});
     await page.locator('#bPlay').tap();
     await page.locator('#stage .word').waitFor({state: 'visible', timeout: 60000});
+    if (traceFile) { await browser.stopTracing(); await ctx.close(); return; }
     // what the start of a run needs: the word list, plus the room lists when the save is in a topic room (the Reading Room prefetches those later, on a timer)
     out.dataReadyMs = await page.evaluate(room => Math.round(Math.max(0, ...performance.getEntriesByType('resource').filter(e => new RegExp(room === 'hall' ? '/data/words\\.json' : '/data/(words|rooms|room-words)\\.json').test(e.name)).map(e => e.responseEnd))), room);
     over(`${room} word/room lists in the page (repeat visit, ${delay}ms data latency)`, out.dataReadyMs, BUDGET.dataReadyMs);
@@ -98,8 +100,19 @@ for (const room of ROOMS) {
     out.judgeColdMs = j.cold; out.judgeWarmMs = Math.max(...j.warm);
     over(`${room} first score once the model is up`, j.cold, BUDGET.judgeColdMs);
     over(`${room} later score`, out.judgeWarmMs, BUDGET.judgeWarmMs);
-  } catch (e) { problems.push(`${room}: ${String(e.message).split('\n')[0]}`); }
-  await ctx.close();
+  } catch (e) { if (!traceFile) problems.push(`${room}: ${String(e.message).split('\n')[0]}`); }
+  await ctx.close().catch(() => {});
+}
+for (const room of ROOMS) await visit(room);
+// PF7: a blown budget in CI leaves a Chrome trace of the slowest room's repeat visit (open it in Perfetto or chrome://tracing)
+// and the numbers, uploaded as the perf-traces artifact. --trace dir does the same on demand.
+const traceDir = arg('trace', problems.length && process.env.CI ? 'perf-traces' : '');
+if (traceDir) {
+  await mkdir(traceDir, {recursive: true});
+  const slow = Object.entries(R.rooms).sort((a, b) => (b[1].roomEnterMs || 1e9) - (a[1].roomEnterMs || 1e9))[0]?.[0] || ROOMS[0];
+  await visit(slow, join(traceDir, `perf-budget-${slow}-trace.json`)).catch(() => {});
+  await writeFile(join(traceDir, 'perf-budget.json'), JSON.stringify({R, problems}, null, 2));
+  console.log(`perf-budget: trace of ${slow} saved to ${traceDir}/`);
 }
 await browser.close(); server.close();
 

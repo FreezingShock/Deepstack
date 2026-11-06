@@ -26,7 +26,7 @@ export function openCard(b,opts={}){
    <p class="verdict ${opts.fresh?'':'on'}" id="vd">${esc(b.verdict)}</p>
    <p class="def">${esc(b.def)}</p>
    <span class="means-slot"></span>
-   ${alsoAcceptedHTML(b)}
+   ${alsoAcceptedHTML(b)||'<span class="also-slot"></span>'}
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
    ${feedbackHTML(b)}
    <div class="chips">

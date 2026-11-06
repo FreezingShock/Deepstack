@@ -4,11 +4,17 @@
 export const STOP=new Set('a an the of to and or in on at for with by from as is are was were be been being it its this that these those which who whom what when where how than then so such i you he she they we me my your their our them him her his do does did has have had can could may might will would should'.split(' '));
 export const FILL=new Set('very something someone thing things word means mean meaning describes describe person people when someone one like thats'.split(' '));
 export const NEGW=new Set(['not','never','no','non','isnt','arent','cant','dont','doesnt','opposite','unlike','contrary','neither','nor','lack']);
+// stem() is pure and hot (every word of words.json at boot, every answer token): remember results. Bounded so it cannot grow forever.
+const STEMS=new Map();
 export function stem(w){
+ let r=STEMS.get(w);if(r!==undefined)return r;
+ r=stem0(w);if(STEMS.size>60000)STEMS.clear();STEMS.set(w,r);return r;
+}
+const STEM_R=[[/ies$/,'y'],[/ied$/,'y'],[/ings?$/,''],[/ness$/,''],[/ments?$/,''],[/ally$/,''],[/ly$/,''],[/ed$/,''],[/ers?$/,''],[/es$/,''],[/(?<!s)s$/,'']];
+function stem0(w){
  w=w.toLowerCase().replace(/[^a-z]/g,'');
  if(w.length<4)return w;
- const R=[[/ies$/,'y'],[/ied$/,'y'],[/ings?$/,''],[/ness$/,''],[/ments?$/,''],[/ally$/,''],[/ly$/,''],[/ed$/,''],[/ers?$/,''],[/es$/,''],[/(?<!s)s$/,'']];
- for(const [re,rep] of R){ if(re.test(w)){const x=w.replace(re,rep); if(x.length>=3){w=x;break;}} }
+ for(const [re,rep] of STEM_R){ if(re.test(w)){const x=w.replace(re,rep); if(x.length>=3){w=x;break;}} }
  if(/(.)\1$/.test(w)&&!/(ss|ll|ee)$/.test(w))w=w.slice(0,-1);
  if(w.length>3&&w.endsWith('e'))w=w.slice(0,-1);
  return w;

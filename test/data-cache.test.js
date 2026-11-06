@@ -41,5 +41,7 @@ test('room lists and room entries download side by side', () => {
 test('judge data (relations, senses) starts downloading with the model, not after it', () => {
   const main = read('src/main.js');
   const i = main.indexOf('startModelLoad();');
-  assert.ok(i > 0 && /loadRelations\(\),loadSenses\(\)/.test(main.slice(i, i + 200)));
+  assert.ok(i > 0 && /lexReady\(\)/.test(main.slice(i, i + 200)), 'the lexicon worker (relations + senses) must start beside the model');
+  const lex = read('src/scorer/lexicon.js');
+  assert.ok(/dataUrl\('relations\.json'\)/.test(lex) && /dataUrl\('senses\.json'\)/.test(lex), 'the worker loads the hashed data URLs');
 });
