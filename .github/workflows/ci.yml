@@ -94,11 +94,13 @@ jobs:
           node scripts/snapshots.mjs & snaps=$!
           node scripts/text-fit.mjs & fit=$!
           node scripts/transitions.mjs & trans=$!
+          node scripts/room-switch.mjs & rooms=$!
           rc=0
           wait $smoke || rc=1
           wait $snaps || rc=1
           wait $fit || rc=1
           wait $trans || rc=1
+          wait $rooms || rc=1
           exit $rc
       - name: Upload snapshot diffs
         if: failure()
