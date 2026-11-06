@@ -1685,3 +1685,21 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 ### Y4. Top bar overhaul
 **Pitch:** The top bar (Deepstack plate, Sound, Credits, Settings, attic hatch) is functional but does not feel like part of the game. Not a hamburger menu: a bar that belongs to the library.
 **Brief:** Goal: redesign as part of the room (a brass rail or card-catalogue rail), with room for streak/depth readouts, a keys hint, and the attic hatch, hover and press feedback in the shared motion language, phone layout that does not crowd. Files: `src/ui/topbar.js`, `topbar.css`, `src/styles/`. nate to review two mockups before it ships. Done when: 375/1280/1640 screenshots, all existing buttons and keys unchanged. **Touches:** every screen. **Conflicts:** V3, V10 shortcuts, attic hatch.
+
+## Z. Niche felt-moment menu 2026-11-06 (built to nate's Y-series bar; proposals, none verified as absent beyond a code search)
+
+### Z1. Words you have met before
+**Pitch:** When a word you already own comes back (Unlimited pool, Riddle, a Daily weeks later), a pencilled margin note appears on the alcove frame: "met 9 days ago: Paperback". Beat it and the old book is slid off its shelf and replaced; fall short and it stays. Today a repeat is just another word.
+**Brief:** Goal: look up `S.shelf` by word at word start, show a margin note in the pen font, and on the card compare old and new tier with one handwritten line ("up from Paperback"). Files: new `src/ui/metBefore.js`, hook in `run.js` and `card.js`. Done when: tested for new word, repeat better, repeat worse, repeat equal; Daily unaffected for scoring. **Conflicts:** W3, Y1, 91.
+
+### Z2. The room breathes when you leave it alone
+**Pitch:** Home is perfectly still if you stop touching it. After ~40 s idle the fire pops and throws an ember, a candle on the mantel drips, a moth circles the candles, the bell on the cabinet rings once on its own. All of it stops the moment you move.
+**Brief:** Goal: a small idle director with 5 to 6 one-shot events at random 6 to 15 s spacing, each using existing sprites and sounds, all paused on any input and off in reduced motion and low quality. Files: new `src/ui/idleRoom.js`, hooks in `hearth.js`. Done when: tests for start, stop and reduced motion, `?perf` shows no cost at rest. **Conflicts:** FH2, W5, AT10.
+
+### Z3. The card cannot be skipped before the ink dries
+**Pitch:** The result card takes Enter to dismiss, and Enter was just how you submitted. Mashing or holding Enter can fly past the card before you read it. Make the "Next word" ribbon fill like cooling wax for ~0.5 s so it cannot be skipped by accident, and let any key after that go.
+**Brief:** Goal: ignore Enter repeat and key presses for the first 500 ms after the card's text has landed, shown as the ribbon filling left to right; first confirm the problem by simulating held Enter in a script. Files: `src/app/card.js`, card css. Done when: held Enter does not skip, a deliberate press after 0.5 s does, reduced motion shortens it. **Conflicts:** V10 keys, W3.
+
+### Z4. Seven books bound into the Daily
+**Pitch:** Finishing a Daily ends on a results screen. It should end with the librarian binding your seven books: they slide into the Daily book, a dated tab sticks out of its spine, and the Daily spine on home now shows today's tier colours.
+**Brief:** Goal: a 2 s end-of-Daily scene from the final screen back to home where the seven earned spines fly into the Daily book on the stack and a dated tab appears. Files: `src/app/final.js`, home Daily spine. Done when: frame strip, skippable, reduced motion jumps to the result. **Conflicts:** Y1, Y3, W1, 62, 63.
