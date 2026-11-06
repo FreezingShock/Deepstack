@@ -35,8 +35,8 @@ const problems = [];
 const fail = msg => { problems.push(msg); };
 const T = 15000;
 
-async function newPage() {
-  const ctx = await browser.newContext({viewport: {width: 1280, height: 800}});
+async function newPage(opts = {}) {
+  const ctx = await browser.newContext({viewport: {width: 1280, height: 800}, ...opts});
   const page = await ctx.newPage();
   await page.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
   page.on('pageerror', e => fail(`pageerror: ${e.message}${e.stack ? ' @ ' + e.stack.split('\n')[1]?.trim() : ''}`));
@@ -184,6 +184,14 @@ await step('unlimited descends to a finite depth', async () => {
   if (!filled) fail('Unlimited: saved book has a non-finite row count');
 });
 
+// OS "reduce animations": nothing may depend on an animation to become visible. The topic-room side doors must show and be hittable.
+await step('side doors show with reduced motion', async () => {
+  const rp = await newPage({reducedMotion: 'reduce'});
+  await rp.goto(url);
+  try { await rp.waitForFunction(() => { const d = document.querySelector('#rm-doors .rm-door'); if (!d) return false; const r = d.getBoundingClientRect(); return r.width > 40 && r.height > 40 && getComputedStyle(d.parentElement).opacity === '1' && !d.parentElement.hidden; }, null, {timeout: T}); }
+  catch { fail('side doors: not visible under prefers-reduced-motion'); }
+  await rp.context().close();
+});
 await browser.close(); server.close();
 if (problems.length) { console.error('smoke: FAILED\n - ' + [...new Set(problems)].join('\n - ')); process.exit(1); }
 console.log('smoke: ok');
