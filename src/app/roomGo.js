@@ -17,10 +17,11 @@ export async function goRoom(id,dir){
  const from=currentRoom(S);
  if(busy||id===from)return false;
  busy=true;
-  try{
+ try{
   Sfx.cue&&Sfx.cue('door');
   paintRoomVars(id,undefined,{settle:true}); // the fire, the light, the title and the labels glide to the new colours; the fireplace itself stays
   typeOnNextMount();
+  await new Promise(r=>{requestAnimationFrame(()=>r());setTimeout(r,60);}); // let the first frame of the glide paint before the room's save swap and word lists load
   await enterRoom(id);
   showHome({keep:true}); // the home is redrawn around the same burning fire and the same wall; only the words type
  }finally{busy=false;}
