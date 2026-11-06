@@ -422,6 +422,13 @@ function createHearth(home, sfx, mood) {
     for (let i = 0; i < 46 * QK; i++) spawn(true);
     kick();
   }
+  /* a quiet pop of the fire for the idle room: a few sparks and a small flare, no whoosh */
+  function pop(n = 6, lift = 0) {
+    if (!G || reducedMotion()) return;
+    flare = Math.max(flare, lift);
+    for (let i = 0; i < n * QK; i++) spawn(false);
+    kick();
+  }
   function tongue(g, T, time, ox, base, sw, sh) {
     const h = T.h * sh * I * (.78 + .22 * S(time * T.sp * 1.9 + T.ph) / 1.75) * (T.inner ? .62 : 1);
     const w = T.w * sw * (T.inner ? 1 : 1.1), x0 = ox + T.x * sw;
@@ -564,6 +571,7 @@ function createHearth(home, sfx, mood) {
 
   return {
     stoke,
+    pop,
     layout,
     get geom() { return G; },
     destroy() {
