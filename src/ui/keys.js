@@ -2,7 +2,7 @@
    calls initKeys(). Shortcuts click existing buttons, so game logic is not
    touched. */
 import './keys.css';
-import {SHORTCUTS,isTyping,actionFor} from './keysCore.js';
+import {SHORTCUT_GROUPS,isTyping,actionFor} from './keysCore.js';
 
 export function initKeys({doc=document}={}){
  const $=s=>doc.querySelector(s);
@@ -25,7 +25,7 @@ export function initKeys({doc=document}={}){
  };
  if(stage)new MutationObserver(tag).observe(stage,{childList:true,attributes:true,attributeFilter:['hidden']});
 
- const modalOpen=()=>!!panel||['#cardlayer','#all','#stats','#topPanel'].some(s=>{const m=$(s);return m&&!m.hidden;});
+ const modalOpen=()=>!!panel||['#cardlayer','#all','#stats','#topPanel'].some(s=>{const m=$(s);return m&&!m.hidden;})||!!$('.bk-spread');
 
  function closeHelp(){
   if(!panel)return;panel.remove();panel=null;
@@ -35,8 +35,8 @@ export function initKeys({doc=document}={}){
   if(panel)return;
   opener=doc.activeElement&&doc.activeElement!==doc.body?doc.activeElement:null;
   panel=doc.createElement('div');panel.className='keyhelp';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','kh-t');
-  const rows=SHORTCUTS.map(([k,d])=>`<tr><th scope="row"><kbd>${k}</kbd></th><td>${d}</td></tr>`).join('');
-  panel.innerHTML=`<div class="khbox"><h2 id="kh-t">Keyboard shortcuts</h2><table>${rows}</table><button type="button" class="btn" id="khClose">Close</button></div>`;
+  const groups=SHORTCUT_GROUPS.map(([h,rows])=>`<h3>${h}</h3><dl>${rows.map(([k,d])=>`<div><dt>${k.split(' / ').map(x=>`<kbd>${x}</kbd>`).join(' or ')}</dt><dd>${d}</dd></div>`).join('')}</dl>`).join('');
+  panel.innerHTML=`<div class="khbox"><h2 id="kh-t">Keys of the library</h2><p class="khsub">Press <kbd>?</kbd> any time you are not typing.</p>${groups}<button type="button" class="btn" id="khClose">Close</button></div>`;
   doc.body.appendChild(panel);
   panel.addEventListener('click',e=>{if(e.target===panel)closeHelp();});
   panel.querySelector('#khClose').onclick=closeHelp;
@@ -50,13 +50,16 @@ export function initKeys({doc=document}={}){
    return;
   }
   const wordScreen=!!stage&&!stage.hidden&&!!$('#hint');
-  const a=actionFor(e,{typing:isTyping(e.target),modal:modalOpen(),wordScreen});
+  const home=!!$('#home')&&!$('#home').hidden&&!$('#home').closest('[hidden]');
+  const a=actionFor(e,{typing:isTyping(e.target),modal:modalOpen(),wordScreen,home});
   if(!a)return;
   e.preventDefault();
   if(a==='hint'){const b=$('#hint');if(b&&!b.disabled)b.click();}
   else if(a==='skip'){const b=$('#skip');if(b)b.click();}
   else if(a==='mute'){const b=$('#bSound');if(b)b.click();}
   else if(a==='help')openHelp();
+  else if(a==='descend'){const b=$('#bPlay')||$('#bNext');if(b)b.click();}
+  else if(a.startsWith('click:')){const b=$(a.slice(6));if(b&&!b.disabled&&!b.hidden&&b.offsetParent!==null)b.click();}
  },true);
  return{openHelp,closeHelp};
 }

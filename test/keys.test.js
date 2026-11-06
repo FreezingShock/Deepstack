@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {actionFor,SHORTCUTS} from '../src/ui/keysCore.js';
+import {actionFor,SHORTCUTS,SHORTCUT_GROUPS} from '../src/ui/keysCore.js';
 
 const ev=(key,o={})=>({key,code:'Key'+key.toUpperCase(),...o});
 test('Alt+H and Alt+S work on the word screen, even while typing',()=>{
@@ -24,3 +24,18 @@ test('M mutes and ? opens help when not typing; ctrl combos are ignored',()=>{
  assert.equal(actionFor(ev('m',{ctrlKey:true}),c),null);
 });
 test('shortcut list is documented',()=>assert.ok(SHORTCUTS.length>=8));
+
+test('home keys open each book, descend and the attic, only on the home screen',()=>{
+ const h={typing:false,modal:false,wordScreen:false,home:true};
+ assert.equal(actionFor(ev('1'),h),'click:#bDaily');
+ assert.equal(actionFor(ev('u'),h),'click:#bUnl');
+ assert.equal(actionFor(ev('3'),h),'click:#bAll');
+ assert.equal(actionFor(ev('5'),h),'click:#bStats');
+ assert.equal(actionFor(ev(','),h),'click:#bSettings');
+ assert.equal(actionFor(ev('a'),h),'click:.attic-cue-home');
+ assert.equal(actionFor(ev('n'),h),'descend');
+ assert.equal(actionFor(ev('1'),{...h,home:false}),null);
+ assert.equal(actionFor(ev('1'),{...h,modal:true}),null);
+ assert.equal(actionFor(ev('1'),{...h,typing:true}),null);
+});
+test('every shortcut group has rows',()=>{for(const [h,r] of SHORTCUT_GROUPS){assert.ok(h&&r.length);}});
