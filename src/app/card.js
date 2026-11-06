@@ -12,6 +12,7 @@ import {FX} from './fx.js';
 import {countUp} from './chrome.js';
 import {alsoAcceptedHTML} from '../ui/alsoAccepted.js';
 import {fillMeans} from '../ui/alsoMeans.js';
+import {animate} from '../ui/motion.js';
 
 /* ---------- result card ---------- */
 export let cardOpts=null;
@@ -46,6 +47,7 @@ export function openCard(b,opts={}){
  L.hidden=false;requestAnimationFrame(()=>L.classList.add('on'));
  fillMeans(L,b);
  const bk=$('#bk');stampCover(bk.querySelector('.cover'),b.w,b.tier);stampPage(bk.querySelector('.page'),b.w,b.tier);
+ if(opts.fresh&&opts.from&&!RM){/* the card grows out of the book the cage is holding: same spot and height, then settles to full size */const r=bk.getBoundingClientRect(),f=opts.from,sc=Math.min(1,f.h/r.height);animate(bk,[{transform:`translate(${f.x-(r.left+r.width/2)}px,${f.y-(r.top+r.height/2)}px) scale(${sc})`},{transform:'none'}],{d:'page',e:'settle',fill:'none'});}
  if(opts.fresh){const pl0=revealPlan(b.tier);bk.classList.add('rvc');const cvv=coverLockVars(pl0.cover,RM),dl=RM?0:pl0.cover.delay;for(const k in cvv)bk.style.setProperty(k,cvv[k]);setTimeout(async()=>{Sfx.paper();/* the closure comes undone first; the sting, shake and burst land when the cover starts to swing (Apocrypha's burst starts at once: it implodes first) */const at=(fn,ms)=>ms>0?setTimeout(()=>{if(cardOpts===opts)fn();},ms):fn();if(pl0.sound.sting)at(()=>Sfx.sting(b.tier),dl);if(pl0.shake)at(()=>Feel.shake(pl0.shake.amp,pl0.shake.ms),dl);if(pl0.slow)at(()=>Feel.slowmo(pl0.slow.scale,pl0.slow.ms),dl);bk.classList.add('open');{const pl=playReveal(L,b.tier,T.spine,RM);if(pl.ink)bk.classList.add('rv-ink');if(pl.pulse)bk.classList.add('rv-pulse');}at(()=>{const rc=bk.getBoundingClientRect();FX.reveal(rc.left+rc.width/2,rc.top+rc.height*.45,b.tier);const hh=$('#halo');if(hh)hh.classList.add('go');},b.tier>=6?0:dl);await sleep(380+pl0.cover.delay);if(cardOpts!==opts)return;Sfx.chime(b.tier);$('#mt').style.width=b.score+'%';countUp($('#cn'),b.score,550);await sleep(250);if(cardOpts!==opts)return;$('#vd').classList.add('on');if(b.tier>=3){const rc=bk.getBoundingClientRect();FX.settle(rc.left+rc.width/2,rc.top+80,b.tier);}$('#go').focus();},220);}
  else if(RM||opts.stepped){bk.classList.add('open','gone');setTimeout(()=>$('#go').focus(),50);}
  else{/* a card from the shelf opens like a book: the cover swings over, then the page is read */requestAnimationFrame(()=>requestAnimationFrame(()=>{if(cardOpts===opts)bk.classList.add('open');}));setTimeout(()=>{if(cardOpts===opts)$('#go').focus();},360);}

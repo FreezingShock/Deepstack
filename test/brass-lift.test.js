@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {liftGeom, liftEnvelope, latchOpen, landDip, ropeMarks, wheelAngle, ROPE_STEP} from '../src/world/lift.js';
+import {liftGeom, liftEnvelope, latchOpen, landDip, ropeMarks, wheelAngle, cageBook, ROPE_STEP} from '../src/world/lift.js';
 
 test('the cage fits every screen and sits on the lamp', () => {
   for (const [W, H] of [[375, 667], [1280, 720], [1640, 900]]) {
@@ -17,8 +17,10 @@ test('envelope: cage rides the glide, latch opens after landing, cage fades with
   assert.equal(liftEnvelope({phase: 'down', u: .5}).latch, 0);
   assert.equal(liftEnvelope({phase: 'settle', settle: 0}).latch, 0);
   assert.equal(liftEnvelope({phase: 'settle', settle: 1}).latch, 1);
-  assert.equal(liftEnvelope({phase: 'pull', pull: 1}).alpha, 0);
-  assert.equal(liftEnvelope({phase: 'hold'}).alpha, 0);
+  assert.equal(liftEnvelope({phase: 'pull', pull: 1}).alpha, 1); // the cage keeps the book while it is read
+  assert.equal(liftEnvelope({phase: 'hold'}).alpha, 1);
+  assert.equal(liftEnvelope({phase: 'exit', pull: 1}).alpha, 0);
+  assert.equal(liftEnvelope({phase: 'hold', rm: true}).alpha, 0);
 });
 
 test('low quality draws nothing; reduced motion shows only the latch', () => {
@@ -42,4 +44,19 @@ test('rope marks are fixed in the world, so they scroll exactly with the camera'
   assert.ok(world(a).every(w => w % ROPE_STEP === 0) && world(b).every(w => w % ROPE_STEP === 0));
   assert.equal(wheelAngle(50, 50), 0);
   assert.ok(wheelAngle(150, 50) > 0);
+});
+
+test('the carried book sits inside the cage on its floor, scaled to fit', () => {
+  for (const [W, H] of [[375, 667], [1280, 720], [1640, 900]]) {
+    const g = liftGeom(W, H, 760), b = cageBook(g, 123);
+    assert.ok(b.x > g.x0 && b.x < g.x1 && b.y <= g.bot && b.y > g.top);
+    assert.ok(b.s >= 1 && 123 * b.s < g.ch && 36 * b.s < g.cw);
+  }
+});
+
+test('exit: the cage rises up the rope and fades near the top', () => {
+  const a = liftEnvelope({phase: 'exit', pull: 0, H: 700}), b = liftEnvelope({phase: 'exit', pull: .5, H: 700}), c = liftEnvelope({phase: 'exit', pull: 1, H: 700});
+  assert.equal(a.dip, 0); assert.equal(a.alpha, 1);
+  assert.ok(b.dip < a.dip && c.dip < b.dip && c.dip <= -700 * .7);
+  assert.equal(c.alpha, 0);
 });

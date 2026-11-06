@@ -6,6 +6,8 @@
 
    Geometry and the phase envelope are pure (and tested). drawLift only paints into a given 2D context.
    Cost: nothing is drawn outside a descent, and `low` quality draws nothing at all.
+   The earned book is lifted off the shelf into the open cage (cageBook gives where it sits), stays there
+   while the result card is read, and the cage fades only when the card is closed ('exit').
    Reduced motion: no cage, rope or pulley, only a brass latch on the shelf lip that clunks open. */
 import {PALETTE} from '../theme/colors.js';
 import {glowSprite, stampGlow} from '../ui/glowSprite.js';
@@ -28,11 +30,17 @@ export function liftGeom(W, H, alcoveW = 760) {
   return {cx, cy, cw, ch, x0: Math.round(cx - cw / 2), x1: Math.round(cx + cw / 2), top, bot, ring, wheel};
 }
 
-/** What the lift shows for a descent state. phase: 'down' | 'settle' | 'pull' | 'hold'.
+/** Where the carried book sits inside the cage: base centre (x, y) and its scale for a book of height bh. */
+export function cageBook(g, bh) {
+  return {x: g.cx, y: g.bot - 4, s: clamp(g.ch * 0.6 / bh, 1, 2.3)};
+}
+
+/** What the lift shows for a descent state. phase: 'down' | 'settle' | 'pull' | 'hold' | 'exit' (cage leaves; pull = 0..1).
  *  u: glide progress 0..1; settle/pull: 0..1 progress of those phases. Returns {alpha, latch, dip, full}. */
-export function liftEnvelope({phase, u = 0, settle = 0, pull = 0, rm = false, quality = 'high'}) {
+export function liftEnvelope({phase, u = 0, settle = 0, pull = 0, rm = false, quality = 'high', H = 700}) {
   const none = {alpha: 0, latch: 0, dip: 0, full: false, latchOnly: false};
-  if (quality === 'low' || phase === 'hold' || !phase) return none;
+  if (quality === 'low' || !phase) return none;
+  if (phase === 'hold' && rm) return none;
   if (rm) { // only the latch, once the book has landed
     if (phase === 'down') return none;
     const latch = phase === 'settle' ? latchOpen(settle) : 1;
@@ -40,7 +48,11 @@ export function liftEnvelope({phase, u = 0, settle = 0, pull = 0, rm = false, qu
   }
   if (phase === 'down') return {alpha: smooth(u / 0.1), latch: 0, dip: 0, full: true, latchOnly: false};
   if (phase === 'settle') return {alpha: 1, latch: latchOpen(settle), dip: landDip(settle), full: true, latchOnly: false};
-  return {alpha: 1 - smooth(pull), latch: 1, dip: 0, full: true, latchOnly: false};
+  if (phase === 'exit') { // the cage climbs back up its rope (slow start, then away), fading near the top
+    const k = clamp(pull, 0, 1);
+    return {alpha: 1 - smooth((k - .55) / .45), latch: 1, dip: 0 - (k * k * .6 + smooth(k) * .4) * H * .75, full: true, latchOnly: false};
+  }
+  return {alpha: 1, latch: 1, dip: 0, full: true, latchOnly: false}; // pull and hold: the cage stays around the book
 }
 
 /** The latch holds for the first beat after landing, then snaps open (fast, with a little overshoot). */
@@ -118,6 +130,20 @@ function drawPulley(ctx, g, cam, cam0, W, H) {
   // the rope comes up the left of the rim, over the top and away right to the winch off screen
   ctx.strokeStyle = P.bronze55; ctx.lineWidth = 4.5; ctx.beginPath(); ctx.arc(x, cy, r + 2, Math.PI, Math.PI * 1.5); ctx.stroke();
   ctx.fillStyle = P.bronze55; ctx.fillRect(x, cy - r - 4.25, W - x, 4.5);
+}
+
+/** The cage's front edge, painted over the carried book so it sits inside: outer posts and the floor plate. */
+export function drawLiftFront(ctx, o) {
+  const {env, geom: g} = o;
+  if (!env || env.alpha <= 0 || !env.full) return;
+  const {x0, x1, bot, top} = g;
+  ctx.save(); ctx.globalAlpha = env.alpha; ctx.translate(0, env.dip);
+  for (const x of [x0, x1]) { ctx.fillStyle = P.bronze41; ctx.fillRect(x - 3.5, top, 7, bot - top); ctx.fillStyle = P.brass65; ctx.fillRect(x - 3.5, top, 2, bot - top); }
+  ctx.fillStyle = P.bronze41; ctx.fillRect(x0 - 8, bot - 6, x1 - x0 + 16, 12);
+  ctx.fillStyle = P.brass; ctx.fillRect(x0 - 8, bot - 6, x1 - x0 + 16, 3);
+  for (let x = x0 - 2; x <= x1 + 2; x += 22) bolt(ctx, x, bot + 1, 1.6);
+  drawLatch(ctx, x1 + 10, bot - 30, env.latch, -1);
+  ctx.restore();
 }
 
 /** Paint the lift. o: {W,H,cam,cam0,vt,env,geom,baseY,baseX}. Call before the pulled book and the darkness. */
