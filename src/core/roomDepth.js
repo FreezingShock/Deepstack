@@ -2,12 +2,12 @@
    - simulateRoom: replays N days of Dailies (and one Unlimited-sized run) over a room's pool and reports repeats.
    - metCount: how many of a room's words the player has met (a shelf book or a collected set word). */
 import {dailyWords} from './daily.js';
-import {roomList} from './roomPool.js';
+import {roomList, roomEntries} from './roomPool.js';
+import {ROOMS, HALL} from './rooms.js';
 
 export const DAILY_LEN = 7;       // words in a Daily
 export const SIM_DAYS = 60;       // days the simulation replays
-export const MIN_DEPTH_WORDS = 110; // enforced floor on a room's playable words (about 15 Dailies before a word returns); CI fails below it
-export const DEPTH_TARGET = 210;    // where lists should be: a month of Dailies with no repeat (reported, not enforced)
+export const MIN_DEPTH_WORDS = 210; // enforced floor on a room's playable words (a month of Dailies before a word returns); CI fails below it
 export const MIN_REPEAT_GAP_DAYS = 14; // enforced: in a 60-day run no Daily word returns sooner than this
 
 const dayKey = i => new Date(Date.UTC(2026, 10, 3) + i * 86400000).toISOString().slice(0, 10);
@@ -27,17 +27,60 @@ export function simulateRoom(pool, id, {days = SIM_DAYS, n = DAILY_LEN} = {}) {
     soonestRepeatDays: Number.isFinite(soonest) ? soonest : null, daysBeforeRepeatsExpected: Math.floor(pool.length / n)};
 }
 
-/** The words of `list` the player has met: distinct shelf books plus collected set words. */
+/** Remembers a word as met. The shelf keeps only the last 300 books, which could never reach 100% of a 400-word room,
+ *  so every answered word is also kept in S.met = {word: 1} (an additive save field; old saves fall back to the shelf). */
+export function recordMet(S, book) {
+  if (!S || !book || !book.w || book.skipped) return;
+  if (!S.met || typeof S.met !== 'object' || Array.isArray(S.met)) S.met = {};
+  S.met[book.w] = 1;
+}
+/** The words of `list` the player has met: S.met, distinct shelf books and collected set words. */
 export function metWords(S, list) {
   const inRoom = new Set(list || []), met = new Set();
   for (const b of (S && S.shelf) || []) if (b && inRoom.has(b.w) && !b.skipped) met.add(b.w);
+  const seen = (S && S.met && typeof S.met === 'object' && !Array.isArray(S.met)) ? S.met : {};
+  for (const w of Object.keys(seen)) if (inRoom.has(w)) met.add(w);
   const got = (S && S.sets && S.sets.got) || {};
   for (const w of Object.keys(got)) if (inRoom.has(w)) met.add(w);
   return met.size;
 }
+/** Every word a room holds: its list (sets included) plus its own entries (room-words.json). Null until a list has loaded. */
+export function roomWordNames(id) {
+  const l = roomList(id), e = roomEntries(id);
+  if (!l && !e) return null;
+  return [...new Set([...(l || []), ...(e || []).map(x => x.w)])];
+}
+/** True when a label like "118 of 118 met" says every word of the room has been met (TA2c). */
+export const allMet = label => { const m = /(\d+) of (\d+)/.exec(label || ''); return !!m && +m[2] > 0 && +m[1] >= +m[2]; };
 export const metLabel = (met, total) => `${met} of ${total} met`;
 /** "47 of 118 met" for room `id`, or '' until its word list has loaded (the Reading Room has no list). */
 export function roomMetLabel(S, id) {
-  const l = roomList(id);
+  const l = roomWordNames(id);
   return l && l.length ? metLabel(metWords(S, l), l.length) : '';
+}
+
+/** The words of room `id` the player has not met yet, alphabetical (TA2d). Empty until the room's list has loaded. */
+export function unmetWords(S, id) {
+  const names = roomWordNames(id);
+  if (!names) return [];
+  const have = new Set();
+  const inRoom = new Set(names);
+  for (const w of Object.keys((S && S.met && typeof S.met === 'object' && !Array.isArray(S.met)) ? S.met : {})) if (inRoom.has(w)) have.add(w);
+  for (const b of (S && S.shelf) || []) if (b && inRoom.has(b.w) && !b.skipped) have.add(b.w);
+  for (const w of Object.keys((S && S.sets && S.sets.got) || {})) if (inRoom.has(w)) have.add(w);
+  return names.filter(w => !have.has(w)).sort();
+}
+
+/** Stamps S.metAt[room] = day the first time a room reaches 100% met (TA2e). Additive save field {room: 'YYYY-MM-DD'}.
+ *  Checks every topic room, since a word can belong to several. Returns the ids of rooms newly mastered. */
+export function recordMastery(S, day) {
+  if (!S) return [];
+  if (!S.metAt || typeof S.metAt !== 'object' || Array.isArray(S.metAt)) S.metAt = {};
+  const fresh = [];
+  for (const r of ROOMS) {
+    if (r.id === HALL || S.metAt[r.id]) continue;
+    const names = roomWordNames(r.id);
+    if (names && names.length && metWords(S, names) >= names.length) { S.metAt[r.id] = day; fresh.push(r.id); }
+  }
+  return fresh;
 }

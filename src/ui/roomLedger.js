@@ -4,24 +4,31 @@
 import {toSpreads} from './bookpages.js';
 import {ROOMS, HALL, rgbOf} from '../core/rooms.js';
 import {currentRoom, roomData} from '../core/roomStore.js';
-import {roomList, loadRoomLists} from '../core/roomPool.js';
+import {loadRoomLists, roomList} from '../core/roomPool.js';
 import {SETS, setStatus, bonusFt, MIN_SCORE} from '../sets/sets.js';
 import {setPageHTML} from '../sets/pages.js';
-import {roomMetLabel} from '../core/roomDepth.js';
+import {roomMetLabel, roomWordNames, allMet, unmetWords} from '../core/roomDepth.js';
 import {BOOK_TIMING} from './bookOpenFx.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 
 /** Pure page builder. ctx: {today, lexicon(L), words(id) -> count or 0}. Returns {leaves, at: {room: leafIndex}}. */
-export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, met = () => ''} = {}) {
+export const UNMET_SHOW = 60; // list the words still to meet once a room is this close to done (before that the list is just a wall)
+export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, met = () => '', unmet = () => []} = {}) {
   const cur = currentRoom(S), st = setStatus(S), got = (S.sets && S.sets.got) || {};
   const ofRoom = id => st.map((s, i) => ({s, i})).filter(x => x.s.room === id);
   const tally = id => ofRoom(id).reduce((a, {s}) => [a[0] + (s.complete ? 1 : 0), a[1] + 1], [0, 0]);
   const done = st.filter(s => s.complete).length, bonus = bonusFt(S);
   const at = {}, leaves = [];
+  const shelfWords = new Set(((S && S.shelf) || []).filter(b => b && !b.skipped).map(b => b.w)).size;
+  /* RA5: every row says how much of the room you have met ("47 of 118 met") and its swatch fills to match, as on the
+     door plates; until a room's word list has loaded it falls back to the sets tally. */
   const toc = ROOMS.map(r => {
-    const [d, n] = tally(r.id);
-    return `<li class="${r.id === cur ? 'here' : ''}" data-room="${r.id}" style="--c:${rgbOf(r)}"><span><i class="rl-dot"></i>${esc(r.name)}${r.id === cur ? ' (here)' : ''}</span><b>${r.id === HALL ? 'every word' : `${d}/${n} sets`}</b></li>`;
+    const [d, n] = tally(r.id), m = r.id === HALL ? '' : met(r.id), mm = /(\d+) of (\d+)/.exec(m);
+    const f = mm && +mm[2] ? Math.min(1, +mm[1] / +mm[2]).toFixed(3) : 0;
+    const right = r.id === HALL ? `${shelfWords} ${shelfWords === 1 ? 'word' : 'words'} met` : m || `${d}/${n} sets`;
+    const sf = n ? (d / n).toFixed(3) : 0, tip = `${right}${r.id === HALL ? '' : `, ${d} of ${n} sets complete`}`;
+    return `<li class="${r.id === cur ? 'here' : ''}" data-room="${r.id}" style="--c:${rgbOf(r)}" title="${esc(tip)}"><span><i class="rl-dot${r.id === HALL ? ' nosets' : ''}${r.id !== HALL && allMet(m) ? ' all' : ''}" style="--f:${r.id === HALL ? (shelfWords ? 1 : 0) : f};--s:${sf}" aria-hidden="true"></i>${esc(r.name)}${r.id === cur ? ' (here)' : ''}</span><b>${esc(right)}</b></li>`;
   }).join('');
   leaves.push(`<h1>Room ledger</h1><div class="kicker">${ROOMS.length} rooms · ${ROOMS.length} fires</div>
    <p class="note">Every room keeps its own words, its own Daily, its own Lexicon and its own sets. Your shelf and stats come with you.</p>
@@ -34,7 +41,7 @@ export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, 
       rt.placed ? `Lexicon ${esc(lexicon(rt.L))}` : 'Unlimited: not yet ranked'].filter(Boolean);
     return `<div class="setpage rl-room" style="--c:${rgbOf(r)}"><div class="kicker">${esc(r.topic)}${r.id === HALL ? '' : ' room'} · ${esc(r.salt)} fire</div><h1>${esc(r.name)}</h1>
      <p class="note">${esc(r.blurb)}</p><div class="rl-fire" aria-hidden="true"></div>
-     <div class="rl-facts">${facts.map(f => `<span>${f}</span>`).join('')}</div>
+     <div class="rl-facts">${facts.map(f => `<span${allMet(f) ? ' class="rl-all"' : ''}>${f}</span>`).join('')}</div>
      ${sets.length ? `<h2>Sets</h2><ul class="rl-sets">${sets.map(({s}) => `<li class="${s.complete ? 'done' : ''}"><span>${esc(s.name)}</span><b>${s.n}/${s.total}</b></li>`).join('')}</ul>`
        : `<p class="note">No sets here: they live in the topic rooms, and every set word still counts when it comes up in this room.</p>`}
      ${r.id === cur ? `<p class="rl-here">You are here.</p>` : `<div class="pg-actions rl-enter"><button class="bs-start bs-primary pen-ink" data-room="${r.id}">Enter ${esc(r.name)}</button></div>`}</div>`;
@@ -43,6 +50,8 @@ export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, 
   for (const r of ROOMS.slice(1)) {
     if (leaves.length % 2) leaves.push(''); // each room opens on a left page
     at[r.id] = leaves.length; leaves.push(page(r));
+    const left = unmet(r.id); // TA2d: the words still to meet, on a page of their own once the room is nearly done
+    if (left.length && left.length <= UNMET_SHOW) leaves.push(`<div class="setpage rl-unmet" style="--c:${rgbOf(r)}"><div class="kicker">${esc(r.short)} · still to meet</div><h1>${left.length} to go</h1><p class="note">Every word of ${esc(r.name)} you have not met yet.</p><p class="rl-words">${left.map(w => `<span>${esc(w)}</span>`).join(' ')}</p></div>`);
     for (const {s, i} of ofRoom(r.id)) leaves.push(setPageHTML(s, i, got).replace('<div class="kicker">Set</div>', `<div class="kicker">${esc(r.short)} · set</div>`));
   }
   return {leaves, at};
@@ -50,17 +59,19 @@ export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, 
 
 /** Registry entry for home.js BOOK_PAGES. go(id) walks to the room once the book has closed. */
 export function roomsBook(S, {go = () => {}, today = () => '', lexicon = () => ''} = {}) {
-  let spreads = [], at = {};
-  const words = id => (roomList(id) || []).length;
+  let spreads = [], at = {}, refreshing = false;
+  const words = id => (roomWordNames(id) || []).length;
   if (typeof setTimeout === 'function') setTimeout(() => loadRoomLists(), 3000); // word counts for the room pages
-  return {
+  const book = {
     label: 'Room ledger',
-    spreads() { const r = roomLeaves(S, {today: today(), lexicon, words, met: id => roomMetLabel(S, id)}); at = r.at; spreads = toSpreads(r.leaves); return spreads; },
+    spreads() { const r = roomLeaves(S, {today: today(), lexicon, words, met: id => roomMetLabel(S, id), unmet: id => unmetWords(S, id)}); at = r.at; spreads = toSpreads(r.leaves); return spreads; },
     onPaint(sp, api) {
+      if (!roomList('science') && !refreshing) { refreshing = true; loadRoomLists().then(() => { if (roomList('science')) api.setSpreads(book.spreads(), api.index); }).catch(() => {}); }
       sp.querySelectorAll('.rl-toc li[data-room]').forEach(li => { li.onclick = () => { const p = at[li.dataset.room] || 0, j = Math.floor(p / 2); api.setSpreads(spreads, j, undefined, p % 2 ? 'r' : 'l'); }; });
       sp.querySelectorAll('.rl-enter [data-room]').forEach(b => {
         b.onclick = () => { const id = b.dataset.room; api.close(); setTimeout(() => go(id), BOOK_TIMING.shutHold + BOOK_TIMING.flyBack + 60); };
       });
     },
   };
+  return book;
 }

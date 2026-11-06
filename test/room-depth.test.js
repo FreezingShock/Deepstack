@@ -5,28 +5,33 @@ import {buildPool} from '../src/core/wordPool.js';
 import {ROOMS, HALL} from '../src/core/rooms.js';
 import {dailyWords} from '../src/core/daily.js';
 import {SETS} from '../src/sets/sets.js';
-import {simulateRoom, metWords, metLabel, MIN_DEPTH_WORDS, MIN_REPEAT_GAP_DAYS, DEPTH_TARGET} from '../src/core/roomDepth.js';
+import {WORDS} from '../src/core/words.js';
+import {captureFullPool, setRoomLists, setRoomEntries, setRoomExtras, applyRoomPool} from '../src/core/roomPool.js';
+import {simulateRoom, metWords, metLabel, MIN_DEPTH_WORDS, MIN_REPEAT_GAP_DAYS} from '../src/core/roomDepth.js';
 
 const read = p => JSON.parse(readFileSync(new URL(p, import.meta.url)));
 const POOL = buildPool(read('../public/data/words.json'));
 const LISTS = read('../public/data/rooms.json').rooms;
-const extra = id => SETS.filter(s => s.room === id).flatMap(s => s.words);
-const roomPool = id => { const s = new Set([...LISTS[id], ...extra(id)]); return POOL.filter(w => s.has(w.w)); };
+// the real room pool: list + sets + the room's own entries (room-words.json), exactly as entering the room builds it
+WORDS.length = 0; WORDS.push(...POOL); captureFullPool();
+setRoomLists(LISTS); setRoomEntries(read('../public/data/room-words.json').rooms);
+setRoomExtras(Object.fromEntries(ROOMS.map(r => [r.id, SETS.filter(x => x.room === r.id).flatMap(x => x.words)])));
+const roomPool = id => { applyRoomPool(id); const p = WORDS.slice(); applyRoomPool(HALL); return p; };
 
 test('every topic room holds at least MIN_DEPTH_WORDS playable words', () => {
   for (const r of ROOMS.filter(r => r.id !== HALL)) {
     const p = roomPool(r.id);
-    assert.ok(p.length >= MIN_DEPTH_WORDS, `${r.id} has ${p.length} playable words, floor is ${MIN_DEPTH_WORDS}: widen public/data/rooms.json (scripts/build-rooms.mjs)`);
+    assert.ok(p.length >= MIN_DEPTH_WORDS, `${r.id} has ${p.length} playable words, floor is ${MIN_DEPTH_WORDS}: widen the room with scripts/build-rooms.mjs and scripts/build-room-words.mjs`);
   }
 });
 
-test('60 days of Dailies in each room: no word returns within two weeks, and the room is mostly covered', () => {
+test('60 days of Dailies in each room: no word returns within two weeks, and the room is covered', () => {
   for (const r of ROOMS.filter(r => r.id !== HALL)) {
     const p = roomPool(r.id), s = simulateRoom(p, r.id);
     assert.equal(s.picks, 420);
     assert.ok(s.soonestRepeatDays === null || s.soonestRepeatDays >= MIN_REPEAT_GAP_DAYS, `${r.id}: a word repeats after ${s.soonestRepeatDays} days`);
     assert.ok(s.distinct >= Math.min(p.length, 100) * 0.9, `${r.id}: only ${s.distinct} of ${p.length} words came up in 60 days`);
-    if (p.length < DEPTH_TARGET) console.log(`  depth: ${r.id} holds ${p.length} words (target ${DEPTH_TARGET}); 60 days showed ${s.distinct} distinct, ${(s.repeatRate * 100).toFixed(0)}% repeat picks`);
+    console.log(`  depth: ${r.id} holds ${p.length} words; 60 days showed ${s.distinct} distinct, ${(s.repeatRate * 100).toFixed(0)}% repeat picks`);
   }
 });
 

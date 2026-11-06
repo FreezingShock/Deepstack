@@ -9,8 +9,7 @@ import {riddleJudge,riddleLadder,riddleVerdict} from '../core/riddleJudge.js';
 import {dailyRiddleWords,recordRiddleDay,riddleDay} from '../core/riddleDaily.js';
 import {RIDDLE_WORDS,loadRiddle,recordRiddleRun,riddleTarget} from '../core/riddleStats.js';
 import {Sfx} from '../feel.js';
-import {loadRelations} from '../scorer/index.js';
-import {relOf} from '../scorer/relations.js';
+import {lexEntries,relEntry} from '../scorer/index.js';
 import {attachInk} from '../ui/inkInput.js';
 import {paintRun} from '../ui/runScreen.js';
 import {seatCandle} from '../ui/candle.js';
@@ -31,7 +30,7 @@ export async function startRiddle(){return beginRiddle(false);}
 /* Today's riddle: the same seven definitions for everyone (seeded by UTC date), one attempt. A second visit replays the first result. */
 export async function startTodayRiddle(){return beginRiddle(true);}
 async function beginRiddle(daily){
- await wordsReady;await loadRelations();
+ await wordsReady;
  S.riddle=loadRiddle(S.riddle);
  const day=utc();
  if(daily){const done=riddleDay(S,day);if(done){showFinal(done,true);return;}}
@@ -39,6 +38,7 @@ async function beginRiddle(daily){
  let words=[];
  if(daily)words=dailyRiddleWords(day,RIDDLE_WORDS);
  else for(let i=0;i<RIDDLE_WORDS;i++){const w=core.pickWord(riddleTarget(L,i,RIDDLE_WORDS),new Set([...seen,...used]),Math.random);words.push(w);used.push(w.id);}
+ await lexEntries(words.map(w=>w.w));
  World.reset();World.setShelf([]);
  setRun({mode:'riddle',daily,day,practice:false,i:0,words,results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true});
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
@@ -61,7 +61,7 @@ export function showRiddle(){
  ta.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();submit(false);}};
  attachInk(ta);
  ta.oninput=()=>{Sfx.quill();const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width)FX.ember(r.left+r.width/2,r.top+4);}};
- run.ladder=riddleLadder(w,relOf(w.w));run.hintN=0;paintHintBtn();
+ run.ladder=riddleLadder(w,relEntry(w.w));run.hintN=0;paintHintBtn();
  $('#hint').onclick=useHint;$('#skip').onclick=()=>submit(true);
  clearInterval(timerId);
  timerId=setInterval(()=>{if(!run||run.mode!=='riddle'){clearInterval(timerId);return;}if(run.busy)return;const left=Math.max(0,run.limit-(performance.now()-run.t0));const f=$('#tfill');if(!f)return;const fr=left/run.limit;f.style.transform=`scaleX(${fr})`;$('#tbar').classList.toggle('low',left<10000);$('#wax').style.height=(12+58*fr)+'px';$('#candle').classList.toggle('low',left<10000);paintRun(left,run.limit);if(left<=0)submit(!$('#ans').value.trim());},100);
@@ -73,7 +73,7 @@ async function submit(skipped){
  if(!run||run.busy||run.mode!=='riddle')return;const w=run.words[run.i];const text=$('#ans').value.trim();
  if(!skipped&&!text){const f=$('#fld');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');return;}
  run.busy=true;clearInterval(timerId);
- const j=skipped?{score:0,kind:'empty',empty:true,opposite:false}:riddleJudge(text,w,relOf(w.w));
+ const j=skipped?{score:0,kind:'empty',empty:true,opposite:false}:riddleJudge(text,w,relEntry(w.w));
  const t=tierOf(j.score);
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
  const base=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);

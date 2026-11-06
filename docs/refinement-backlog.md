@@ -3,15 +3,21 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
+- Pick a one-tap way into the Ember Log on phones (LC7): A flame tag, B fire, C labelled flame tag (recommended), D streak line under Descend. Screenshots in screenshots/ember-log-onetap/.
+- Slow-network check (perf pass): on your phone, load the site once, then toggle airplane-mode-slow or a weak connection and reload; entering another room and the first answer should no longer stall. Tell me if any room still feels slow and which (numbers in screenshots/performance/results.md).
+- Phone check for the three audit fixes (RA2/RA5/RA7): the attic hatch should now sit between the wordmark and the buttons with Mute fully tappable (on very narrow phones the keyboard button hides and the wordmark shrinks a little; Keys is still in the card catalogue). Open the Rooms book (each row says "N of M met" and its swatch fills), and open the Today card in a few rooms (the footer names the room and the card takes its colour). Tell me if you would rather keep the keyboard button and lose the streak plate instead.
 - On your phone, open the Rooms book, tap a room in the contents list (try the Reading Room): it now turns to that room's page. CI also walks every room by door, keys, dots and the book on every push (TA4).
+- Look at the Card's Floor row (try the Catacombs and the Sunken Vault), the attic ladder at phone width, and the fire swatch on the side-door plates (TA7, PR #305 + follow-up). Also note: side doors were missing under reduced motion until this PR; check they now show on first load with Reduce motion on.
+- Look at the door plates (swatch fills with rooms met, one-line names) and the Card's Floor row (try the Catacombs and the Sunken Vault), the attic ladder at phone width, and the fire swatch on the side-door plates (TA7, PR #305 + follow-up). Also note: side doors were missing under reduced motion until this PR; check they now show on first load with Reduce motion on.
 - Switch to the Chronicle on desktop: the top bar plates and Librarian's Card now tag Streak with the room and Deepest/Books/Floor with "all rooms"; open Stats and check the pen tags under each page title. Say if the wording or size is off.
 - Open the card catalogue on the left wall of home (1000 px and wider): pull each of the eight drawers, flip the cards with Turn, cycle with the arrow keys, and check the Settings drawer. On a big window the whole room, cabinet and fire are now much bigger; say if the word alcoves being wider on big windows feels right. Tell me which drawers to add or drop (CC1 to CC3 below).
 - Look at the home plaque on your 1920 screen while mid-Daily: Continue should now have a clear gap to the Library Rules drawers and the Librarian's Card (src/ui/plaqueGap.css).
 - Walk between rooms on desktop: the fireplace should stay put while the fire, title and labels glide to the new colour and the room and Daily lines type in. Tell me if the glide is too slow or the title tint is too strong.
-- Rooms now show "X of N met" on the door plates, the room tagline and the Room Ledger page, and each room Daily never reuses a word from the last 14 days. Check the counts feel right after a few answers; small rooms (History, Math, English, Art, Anatomy at 115 to 156 words) still need TA2a to reach a month of fresh words. (thread: make every room deep enough to play)
+- Rooms now show "X of N met" on the door plates, the room tagline and the Room Ledger page, and each room Daily never reuses a word from the last 14 days. Check the counts feel right after a few answers; after TA1 every room holds 300 to 800 words, so a Daily word now returns after a month or more. (thread: make every room deep enough to play)
 - Enter the Chronicle (or any other room) and press Descend: the candle halo, the two lanterns and the lift cage burn in the room's fire, the result card gets a rim of it, and the depth plaque names the room. The Reading Room should look exactly as before. Say if the tint is too strong or too faint.
 - Check the home spine captions (Daily, Shelf, Unlimited, Rooms) at 1920 and on your phone: readable, centred, nothing clipped. Say if you want the captions stacked under the title instead (PR #292).
-- Librarian's Card (LC1): on desktop, click Deepest or Books on the card (opens Stats) and Floor (opens the new Floors book). Then pick what Streak should open: 1 Ember Log (calendar + next milestone), 2 Milestone stamps, 3 Streak insurance (hours left).
+- Librarian's Card (LC1, LC2): on desktop click Streak (Ember Log), Floor (Floors book), Books or Deepest (Stats). On a phone open the Stats book: the streak section of its first page has a "The Ember Log →" link that opens it (the card is hidden on phones and the attic hatch leaves no room for a streak chip). On wide screens the Streak row on the card and the flame chip in the top bar both open it.
 - Topic rooms are playable (TR2/TR3): on a wide screen walk through the side doors (or press [ and ]); on your phone open the Rooms book (where Sets was) and press Enter on a room. Each room has its own fire colour, Daily, Lexicon and three sets. Say if the walk feels smooth and if any room's words feel off-topic. (topic rooms thread)
 - Resize the window (or rotate your phone) on home and in each menu book: the hatch tag should clear the title, Descend and the five spines should always fit, short landscape windows get one row of spines, and the background shelves (books, cobwebs, props) should stay put as you drag the window. Say which size still feels cramped. (thread: fix layout at small and odd window sizes, `node scripts/responsive.mjs`)
 - Pick from the V1 to V14 audit menu (end of this file, 2026-11-06). V8 (streak ribbon) softens the streak, so it needs your yes or no before it ships.
@@ -1526,6 +1532,30 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: shrink the file (see backlog item 80) and keep `loadWords()` output identical; the service worker (#243) then caches it. Done when: tests pass unchanged and gzip size drops. **Touches:** Performance, data. **Conflicts:** `scripts/build-words.mjs`.
 
 
+### PF5. [x] (deep perf PR: relations + senses live in `src/scorer/lexWorker.js`; 10.5 s of long tasks to ~1.5 s at 4x CPU, page heap 18.7 to ~8 MB) Judge data off the main thread
+**Pitch:** relations.json (3.9 MB) and senses.json (3.1 MB) are parsed on the page's thread when the judge warms; on a 4x slower phone that is a visible hitch. Parsing and the synonym lookups could live in the judge worker, and both files could drop entries no room or answer ever reaches.
+**Brief:** Goal: move relation/sense loading and lookups into `src/scorer/worker.js` (or shrink the files in `scripts/build-relations.mjs` / `build-senses.mjs`) with identical scores. Done when: `scripts/judge-eval.mjs` scores unchanged, long tasks during warm-up drop in `scripts/perf-budget.mjs`. **Touches:** Performance, scorer. **Conflicts:** PF3, scorer threads.
+
+### PF6. [x] (deep perf PR: the fireplace keeps its painted bricks when only the tagline changes; worst walk frame ~950 to ~300 ms) Lighter room walk on slow phones
+**Pitch:** At 4x CPU the walk between rooms logs about 50 long frames (3.5 s of them); the fire, title and label glide is the busiest moment on home.
+**Brief:** Goal: profile the room walk (`#303`), cut per-frame work (cached gradients, fewer layers), keep the look. Done when: long-task total during a walk is halved in `scripts/perf-budget.mjs` and `room-switch.mjs` still passes. **Touches:** Performance, hearth. **Conflicts:** room threads.
+
+### PF7. [x] (deep perf PR: perf-budget and perf-memory save Chrome traces + JSON to the perf-traces CI artifact on failure) Put phone traces in CI
+**Pitch:** The budget guard only prints numbers; keeping a trace of the slowest room on failure would make the next regression a five-minute fix.
+**Brief:** Goal: on budget failure upload a Chrome trace and the JSON from `perf-budget.mjs` as a CI artifact. Done when: a deliberately blown budget produces the artifact. **Touches:** CI. **Conflicts:** none.
+
+### PF8. Shrink the judge's word data
+**Pitch:** relations.json and senses.json (7 MB) now load in a worker, but the worker still holds every entry in memory. Most entries are words no room, answer or definition ever reaches; nate wants little memory use.
+**Brief:** Goal: drop unreachable entries in `scripts/build-relations.mjs` / `build-senses.mjs` (keep any word a player could type that has synonyms), identical `judge-eval` scores. Done when: files and worker heap shrink, eval unchanged. **Touches:** data, scorer. **Conflicts:** scorer threads.
+
+### PF9. Boot word pool off the main thread
+**Pitch:** Building the word pool from words.json is still the longest task on a slow phone (~0.9 s at 4x CPU) right as home appears.
+**Brief:** Goal: precompute the pool's reject reasons at build time (or build it in a worker), same pool and same Daily words. Files: `src/core/wordPool.js`, `scripts/build-words.mjs`. Done when: `perf-memory` boot worst task halves, daily tests unchanged. **Touches:** performance. **Conflicts:** PF3.
+
+### PF10. Real-phone check of low power mode
+**Pitch:** Headless numbers can't show iOS Low Power Mode (30 fps cap) or a real GPU. A quick on-device pass would confirm the quality step-down and the reduced-motion idle rate feel right.
+**Brief:** Goal: with `?perf`, record home, a room walk and a run on a phone in Low Power Mode and with Reduce Motion; tune `src/ui/quality.js` thresholds if it steps down too eagerly. Done when: numbers in screenshots/performance/. **Touches:** quality. **Conflicts:** none.
+
 ### UB4. Mark the rank bands on the Lexicon pen line
 **Pitch:** The pen line under the rank shows direction but not what a rise means; faint ticks where Bookworm, Wordsmith and so on begin would let a player see the next rank approaching.
 **Brief:** Goal: up to two faint hand-lettered band ticks on `lexiconTrend.js`, no new numbers. Files: `src/ui/lexiconTrend.js`, `lexiconTrend.css`. Done when: still reads at 375. **Touches:** UI. **Conflicts:** none.
@@ -1818,17 +1848,25 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Four rooms hold 115 to 146 words. A Daily uses 7, so a small room repeats its words within a few weeks, and an Unlimited player who keeps playing will start meeting the same words. Nothing shows how much of a room you have explored.
 **Brief:** Goal: (a) measure repeat rate for a simulated 60-day Daily and a 200-word Unlimited in each room; (b) show "47 of 118 met" per room on the Room Ledger page and the door plate; (c) decide a floor on list size and widen lists that fall short (with TA1). Files: `src/core/roomPool.js`, `roomLedger.js`, door plate. Done when: report plus the counter. **Conflicts:** TA1, TR12, Z1.
 
-### TA2a. Widen the four thin rooms to a month of Dailies
+### [x] TA2a. Widen the four thin rooms to a month of Dailies (done by TA1 #299 plus the 210 floor, this PR)
 **Pitch:** Every room should hold about 210 playable words so no Daily word returns for a month; today they hold 115 to 156 (science 315).
 **Brief:** Goal: raise history, math, english, art and body to `DEPTH_TARGET` (210) playable words by pulling more from the archive through `scripts/build-rooms.mjs`, then raise `MIN_DEPTH_WORDS` in `src/core/roomDepth.js` to match. Done when: `test/room-depth.test.js` prints no "depth:" shortfall lines. **Conflicts:** TA1 (same lists), TR12.
 
-### TA2b. Unlimited should not repeat inside a room
+### [x] TA2b. Unlimited should not repeat inside a room (done)
 **Pitch:** Daily words are now spaced 14 days apart, but Unlimited remembers only the last 300 seen ids, so a small room can still deal you a word you just answered.
 **Brief:** Goal: simulate a 200-word Unlimited run per room (`pickWord` with `rating.seen`) and keep the seen window at least the room's size. Files: `src/core/unlimited.js`, `src/core/roomDepth.js`. Done when: a test shows no repeat inside one 200-word run for every room. **Conflicts:** none.
 
-### TA2c. Tell the player when a room is nearly all met
+### [x] TA2c. Tell the player when a room is nearly all met (done)
 **Pitch:** "117 of 118 met" is a good moment: the door plate could glow or the ledger page could say the room is mastered.
 **Brief:** Goal: a small flourish on the plate and the ledger page at 100% met, not a popup. Files: `src/ui/roomHome.js`, `roomHome.css`, `roomLedger.js`. **Conflicts:** TR9.
+
+### [x] TA2d. Show which words are left in a room (done)
+**Pitch:** "402 of 413 met" is a tease; nate could tap the count and see the 11 words he has not met yet, as a page in the Room Ledger.
+**Brief:** Goal: a "Not yet met" page per room listing the unmet words (words only, no definitions). Files: `src/ui/roomLedger.js`, `src/core/roomDepth.js` (`metWords` already has the sets). **Conflicts:** TR12.
+
+### [x] TA2e. Mastered rooms in the Almanac (done)
+**Pitch:** A room at 100% should be remembered somewhere: a small "Rooms mastered" line on the Rooms stats page with the date it was completed.
+**Brief:** Goal: store `S.metAt = {room: isoDate}` the first time a room reaches 100% and show it on the Rooms Almanac page. Files: `src/core/roomDepth.js`, `src/ui/roomStats.js`. **Conflicts:** none.
 
 ### [x] TA3. Which numbers are per room, and do they agree (scope labels PR: top bar, Librarian's Card, Almanac tagged "this room" vs "all rooms")
 **Pitch:** In the Chronicle the top bar and Almanac show "0 day streak" next to "300 ft deepest", and the Card shows Books 13 and Floor from your whole shelf, while streak and Dailies are the room's own. Nothing says which is which, and an unsynced number would be a bug that a player reads as lost progress.
@@ -1858,9 +1896,21 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** The floor rail on the left of a run is still amber-brown in every room; its lamp and active floor could take the room's fire.
 **Brief:** Goal: tint the active rail row and lamp from `--rm-rgb`. Files: `src/ui/topbarRail.js`, new css. Done when: screenshots per room. **Conflicts:** Y6.
 
-### TA7. Small room visuals
+### TA7. [x] Small room visuals (this PR)
 **Pitch:** (a) The Card's floor name still truncates ("The Cataco…") beside its label. (b) At 375 the attic hatch plate shows a second offset frame behind it. (c) The room dots on phones are tiny and unnamed (covered by TA5). (d) Room names in the side-door plates are good; the Reading Room one has no fire swatch.
 **Brief:** Goal: fix (a) by giving the floor row the full width (label above or smaller), (b) by removing the duplicate frame, (d) by adding a tiny fire swatch. Files: `src/ui/welcome.css`, `atticHome.js`, `roomHome.js`. Done when: screenshots at 375 and 1280. **Conflicts:** X1, Y5.
+
+### TA7a. [x] Door plates say how deep each room is by colour
+**Pitch:** The new fire swatch on a door plate could fill with the room's "X of N met" so you see progress before walking through.
+**Brief:** Goal: swatch ring fills by met/total. Files: `src/ui/roomHome.js`, `roomHome.css`, `scripts/room-visuals.mjs` (extend the guard). **Conflicts:** TA2.
+
+### TA7b. [x] Doors and Card checked on every viewport in CI
+**Pitch:** `scripts/room-visuals.mjs` now covers 375 and 1280 only; add 800, 1000 (door threshold) and 1920 so a layout shift never hides the doors again.
+**Brief:** Goal: widen VIEWS. Files: `scripts/room-visuals.mjs`. **Conflicts:** none.
+
+### TA7c. [x] Long room names on the door plate
+**Pitch:** "The Anatomy Theatre" wraps to two lines beside its swatch; a tighter plate or smaller caps would keep it to one.
+**Brief:** Goal: one-line plates at 1000-1280. Files: `src/ui/roomHome.css`. **Conflicts:** X1.
 
 ### SP1. [x] Readable home spine captions (PR #292)
 **Pitch:** The tiny NO. 4 / 113 / LEXICON 44 / 7 ROOMS captions on the home stacks are now 10-11px and centred on the spine. Done: `src/ui/homeSpineSub.{js,css}`.
@@ -1914,10 +1964,10 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### RS2. [x] Phone ring of lights hit areas (PR pending)
 **Pitch:** On a phone the ledger contents list used to leave the Reading Room's page on the hidden right-hand side; it now lands on the right page, but the 20 px dots still open the book rather than walking.
 **Brief:** Goal: 44 px hit areas for the dots and a name toast on press; the guard already covers the ledger route. **Touches:** `roomHome.js`, css. **Conflicts:** TA5.
-### LC1. Librarian's Card rows open books (done in this PR)
+### LC1. [x] Librarian's Card rows open books (#293)
 **Pitch:** Each card row is a doorway: Floor to the Floors book, Books and Deepest to Stats.
 **Brief:** Goal: Streak row opens something new once nate picks. Files: `src/ui/ledgerBooks.js`, `src/ui/floorLeaves.js`. **Conflicts:** fireplace/mantel layout thread.
-### LC2. Streak row opens the Ember Log
+### LC2. [x] Streak row opens the Ember Log (this PR)
 **Pitch:** Streak opens a book with a 5-week grid of days played, best streak and the next milestone as an empty stamp.
 **Brief:** Goal: new `bStreak` BOOK_PAGES entry using Daily history in S.daily; row gets `id="bStreak"`. Files: new `src/ui/streakLeaves.js`. **Conflicts:** LC1.
 ### LC3. Card rows show a tooltip with detail
@@ -1932,7 +1982,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### RA1. [x] (PR pending) Phone room home hides Unlimited and Stats
 **Pitch:** In a topic room at 375x667 the extra "N of M met" line and Daily line push the fire down, and the Unlimited and Stats spines slide under the shelf (Reading Room is fine). **Brief:** Goal: pull the room's two caption lines into one row or tighten the fire's top margin so all four spines stay visible down to 360x640. Files: `src/ui/roomHome.js`, new `src/ui/roomHomeFit.css`. Screens: audit/x-room-home-375.png vs x-home-375.png. **Conflicts:** CC1, TR7.
 
-### RA2. Attic gauge sits on the Mute button on phones
+### RA2. [x] (PR pending, RA2/RA5/RA7 thread) Attic gauge sits on the Mute button on phones
 **Pitch:** On every phone screen the ATTIC gauge covers the mute button (the dots show behind it), so you cannot mute from the home or any book. **Brief:** Goal: move the gauge into the free space left of Keys or shrink it, keeping the hatch tag hanging from it. Files: `src/ui/topbarRail.js` css. Screens: x-home-375.png. **Conflicts:** none.
 
 ### RA3. [x] (PR pending) Depth plaque overlaps the top bar on phones
@@ -1941,14 +1991,23 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### RA4. [x] (PR pending, filters fold to one line each) Shelf filter rows crowd on phones
 **Pitch:** The ROOM and RARITY rows wrap with the colour dots under the labels and the squiggle under "All" cutting through the next line; "Longest word" drops to its own line under a squiggle. **Brief:** Goal: a two-column chip grid with the dot inline and no squiggle on wrapped rows. Screens: x-room-shelf-375.png. **Conflicts:** TR7.
 
-### RA5. Room Ledger shows met counts, not just sets
+### RA5. [x] (PR pending, RA2/RA5/RA7 thread) Room Ledger shows met counts, not just sets
 **Pitch:** Every room line says "0/3 sets" but the door plates already know "5 of 156 met"; the ledger should say how far into each room you are. **Brief:** Goal: add a thin progress bar and "5 of 156" beside each room line, on phone and desktop. Files: `src/ui/roomLedger.js`. Screens: x-rooms-375.png. **Conflicts:** TA2c, TA3.
 
 ### RA6. Almanac and Lexicon show the room you are standing in
 **Pitch:** In the Chronicle the Almanac says "0 days running, no descents yet" while the top bar says 5 day streak and 300 ft deepest: the page and the bar disagree and nothing says which scope each shows. **Brief:** Goal: a room label on each stats page ("The Chronicle" vs "All rooms") and agree the bar with it. Screens: x-room-stats-1280.png, y-home-1280.png. **Conflicts:** TA3 (started), TR8.
 
-### RA7. Today drawer cycles every room but opens on the wrong one
+### RA7. [x] (PR pending, RA2/RA5/RA7 thread) Today drawer cycles every room but opens on the wrong one
 **Pitch:** The Today card opens on "No. 7 of 7" in the Reading Room; it should open on the room you are in and show that room's colour. **Brief:** Goal: start on the current room, tint the heading with the room's ink. Screens: y-drawer-today-1280.png. **Conflicts:** CC2.
+### RA8. [x] (PR #312) Today card shows the room's own progress
+**Pitch:** The Today card now names the room and takes its colour; it could also say how far in you are ("47 of 118 met") and this room's streak so the card stands alone. **Brief:** Goal: one pen line under the Daily number with the room's met count and room streak (the same `roomMetLabel`). Files: `src/ui/cabinet.js`, `roomHome.css`. **Conflicts:** none known.
+
+### RA9. [x] (PR #312) Phone rail brings the streak flame back
+**Pitch:** On phones under 414px the streak and deepest plates are hidden so the hatch and Mute fit; the flame is the thing you check every day. **Brief:** Goal: a small flame and number tucked on the left of the hatch when there is room (or hanging under the rail like the depth tag), room dot included. Files: `src/ui/railFit.js`, `topbarRail.css`. **Conflicts:** none known.
+
+### RA10. [x] (PR #312) Ledger rows open their room page with a progress ring
+**Pitch:** The ledger swatches fill with rooms met; the sets tally ("0/3 sets") now only lives on each room's page. **Brief:** Goal: a thin second ring (sets complete) around each swatch and a tooltip/pen note on tap. Files: `src/ui/roomLedger.js`, `roomHome.css`. **Conflicts:** TR12.
+
 ### [x] SL1. Show the room on the phone top bar and Card (done in the scope-labels PR: bars under 1180 px keep a room dot; the Almanac tags already show on phones; bars under 400 px still hide the plates)
 **Pitch:** On phones the streak chip drops its label and the Librarian's Card is hidden, so the "this room" tag is invisible there.
 **Brief:** Goal: on screens under 560 px show a room-coloured dot on the streak chip (tap shows "Chronicle streak"), and put the same scope tags on the Rooms book page. Files: `src/ui/topbarRail.js`, `scope.css`. **Conflicts:** none known.
@@ -1956,3 +2015,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### [x] SL2. Optional "all rooms" streak (nate picked B: two tallies side by side on the Almanac streak page, #306)
 **Pitch:** Each room keeps its own streak, so a 0 in the Chronicle sits next to a 5 in the Reading Room; some players will want one combined flame.
 **Brief:** Goal: a pen line on the Almanac streak page, "Any room: N days", counting a day if any room's Daily was played. Files: `src/ui/statsPages.js`, `src/core/stats.js`. **Conflicts:** TR12.
+
+### LC5. [x] Ember Log on phones via the Almanac link, and from the top-bar chip on wide screens (#313)
+**Pitch:** The card is hidden on phones, so the streak chip in the top bar should open the Ember Log too.
+**Brief:** Goal: chip click opens `#bStreak` via the same BOOK_PAGES entry. Files: `src/ui/topbar.js`. **Conflicts:** topbar threads.
+### LC6. Milestone stamps on the Ember Log
+**Pitch:** Earned milestones (3, 7, 14, 30, 100) get inked stamps on a third page.
+**Brief:** Goal: derive stamps from Daily history with no new saved fields. Files: `src/ui/streakLeaves.js`. **Conflicts:** LC2.
+### LC7. A one-tap way into the Ember Log on phones
+**Pitch:** On phones the Ember Log is two taps away (Stats, then the link); the attic hatch leaves no room for a streak chip in the rail.
+**Brief:** Goal: one tap from home, e.g. tap the hearth fire (the fire already reflects the streak). Files: `src/ui/hearth.js`, `src/ui/ledgerBooks.js`. **Conflicts:** fireplace layout threads, RA2 rail fit.

@@ -66,7 +66,8 @@ export function todayFront(t){
  const streak=t.streak>0?`<p class="cb-streak"><b>${t.streak}</b> ${t.streak===1?'day':'days'} in a row. ${t.played?'Tonight’s candle is lit.':'Write today’s to light the next candle.'}</p>`:note('No streak yet. Write today’s Daily to light the first candle.');
  const go=t.played?`<div class="cb-go"><button type="button" class="cc-go" data-go="#bRes">Today’s result</button><button type="button" class="cc-go cc-go2" data-go="#bNext">Descend</button></div>`
   :`<div class="cb-go"><button type="button" class="cc-go" data-go="#bPlay">${t.kind==='resume'?'Continue':'Descend'}</button></div>`;
- return `<p class="cb-big">Daily No. ${esc(t.no)}</p>`+para(line)+streak+go;
+ const room=t.room?`<p class="cb-room"><i aria-hidden="true"></i>${esc(t.room.name)}</p>`:'',met=t.room?`<p class="cb-met"${t.room.met?'':' hidden'}>${esc(t.room.met||'')}</p>`:'';
+ return room+`<p class="cb-big">Daily No. ${esc(t.no)}</p>`+para(line)+streak+met+go;
 }
 /* ---------- the drawers ---------- */
 /** id, plate (drawer label), title/sub (card head), front/back (HTML builders), kind: 'card' or 'action'. */
@@ -101,9 +102,9 @@ export function cabinetHTML(ctx){
  const turn=(l,aria,cls)=>`<button type="button" class="cc-turn ${cls}" aria-label="${aria}">${l}</button>`;
  const cards=DRAWERS.filter(d=>d.kind!=='action').map((d,i)=>{
   const two=!!d.back,n=`${i+1} of ${CARD_IDS.length}`;
-  const foot=side=>`<div class="cc-foot"><button type="button" class="cc-nav cc-prev" aria-label="Previous card">‹</button>${two?turn(side==='f'?'Turn ↻':'↺ Turn',side==='f'?`Turn the card over: ${esc(d.backTitle||'')}`:'Turn the card back','cc-flipbtn'):''}<span class="cc-no">No. ${n}</span><button type="button" class="cc-nav cc-next" aria-label="Next card">›</button></div>`;
+  const foot=side=>`<div class="cc-foot"><button type="button" class="cc-nav cc-prev" aria-label="Previous card">‹</button>${two?turn(side==='f'?'Turn ↻':'↺ Turn',side==='f'?`Turn the card over: ${esc(d.backTitle||'')}`:'Turn the card back','cc-flipbtn'):''}<span class="cc-no">${d.id==='today'&&c.today&&c.today.room?esc(c.today.room.short):`No. ${n}`}</span><button type="button" class="cc-nav cc-next" aria-label="Next card">›</button></div>`;
   const face=(side,t,s,html)=>`<div class="cc-face cc-${side==='f'?'front':'back'}"><div class="wc-head">${esc(t)}</div><p class="cc-sub">${esc(s)}</p><div class="cc-body">${html}</div>${foot(side)}</div>`;
-  return `<div class="cc-slot" id="cc-${d.id}" data-card="${d.id}" data-s="off" data-face="0" inert aria-label="${esc(d.title)}"><div class="cc-flip">${face('f',d.title,d.sub,d.front(c))}${two?face('b',d.backTitle,d.backSub,d.back(c)):''}</div></div>`;
+  return `<div class="cc-slot" id="cc-${d.id}" data-card="${d.id}"${d.id==='today'&&c.today&&c.today.room?` style="--rc:${c.today.room.rgb.join(',')}"`:''} data-s="off" data-face="0" inert aria-label="${esc(d.title)}"><div class="cc-flip">${face('f',d.title,d.sub,d.front(c))}${two?face('b',d.backTitle,d.backSub,d.back(c)):''}</div></div>`;
  }).join('');
  return `<aside class="cat-card" data-open="" aria-label="Card catalogue">
  <div class="cc-cab"><div class="cc-top" data-prop-slot="bell"></div><div class="cc-run"><div class="cc-plate-head" aria-hidden="true">Card catalogue</div><div class="cc-grid">${drawers}</div></div></div>

@@ -16,6 +16,7 @@ import {backfillFloors} from './core/attic.js';
 import {dustCardOpts} from './ui/atticDust.js';
 import {roomsBook} from './ui/roomLedger.js';
 import './ui/roomHome.css';
+import './ui/roomMastery.css';
 import './ui/roomRun.css';
 import {initRoomRun} from './ui/roomRun.js';
 import {goRoom} from './app/roomGo.js';
@@ -34,7 +35,7 @@ import './ui/reveal.js';
 import * as core from './core/index.js';
 import {Sfx} from './feel.js';
 import {installUiSounds} from './sound/uiHooks.js';
-import {onModelStatus,startModelLoad,judgeAnswer,prepareWords} from './scorer/index.js';
+import {onModelStatus,startModelLoad,judgeAnswer,prepareWords,lexReady} from './scorer/index.js';
 import {BOOK_PAGES} from './ui/home.js';
 import {lazyBooks} from './ui/lazyScreens.js';
 import {registerLedgerBooks} from './ui/ledgerBooks.js';
@@ -173,13 +174,13 @@ addEventListener('keydown',e=>{
 const bookOpenCard=()=>!$('#cardlayer').hidden;
 BOOK_PAGES.bRooms={...roomsBook(S,{go:id=>goRoom(id),today:utc,lexicon:core.lexicon}),keepOnEsc:bookOpenCard};
 lazyBooks({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,utc,computeStats,floorAtFt,wordsReady,wordsLoaded:()=>wordsLoaded});
-registerLedgerBooks({S,FLOORS,floorStartFt:core.floorStartFt});
+registerLedgerBooks({S,FLOORS,floorStartFt:core.floorStartFt,today:utc,computeStats});
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();
 initTransitions();
 showHome();
-wordsReady.catch(()=>{}).then(()=>deferAfterPaint(startModelLoad,1500))
- // once the model is up, warm the judge in idle time: relations/senses (7 MB of JSON parse) and the distractor embeddings, so the first answer isn't slow
- .then(ok=>ok&&deferAfterPaint(()=>prepareWords([]),2500)).catch(()=>{});
+wordsReady.catch(()=>{}).then(()=>deferAfterPaint(()=>{const m=startModelLoad();lexReady();return m;},1500)) // relations/senses download beside the model, not after it
+ // once the model is up, warm the distractor embeddings in idle time so the first answer isn't slow
+ .then(ok=>ok&&deferAfterPaint(()=>prepareWords([]),600)).catch(()=>{});
  // judge model downloads after first paint and the word list
-window.__deepstack={openCard,S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,get run(){return run;}};
+window.__deepstack={openCard,S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,lexReady,get run(){return run;}};

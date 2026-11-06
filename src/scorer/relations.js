@@ -2,6 +2,7 @@
 // built by scripts/build-relations.mjs). An answer that never repeats the definition's words can still be right because it
 // is *related* to the word ("reserved" for taciturn) or to the words of its definition ("miserly" for a definition that says
 // "stingy"). Pure functions here; the facade loads the data once and hands it in.
+import {dataUrl} from '../core/dataUrl.js';
 import {analyze, stem, STOP, FILL} from './lexical.js';
 
 let REL = null;           // word -> {s,h,r,a}
@@ -13,7 +14,7 @@ export const hasRelations = () => !!REL;
 
 let loading = null;
 /** Fetches relations.json once. Resolves false (never throws) when it is missing so the judge still works without it. */
-export function loadRelations(url = (import.meta.env?.BASE_URL || '/') + 'data/relations.json') {
+export function loadRelations(url = dataUrl('relations.json')) {
   return loading ||= (async () => {
     try {
       const r = await fetch(url);
@@ -29,7 +30,7 @@ const keyOf = s => norm(s).split(' ').map(stem).join(' ');
 function setOf(word, field, rel = REL) {
   const id = word + '|' + field;
   let s = stemSets.get(id);
-  if (!s) { s = new Set([...(rel?.[word]?.[field] || []), ...(field === 's' ? rel?.[word]?.c || [] : [])].map(keyOf)); stemSets.set(id, s); } // c = everyday synonyms (WordNet, Moby) count as synonyms
+  if (!s) { if (stemSets.size > 20000) stemSets.clear(); s = new Set([...(rel?.[word]?.[field] || []), ...(field === 's' ? rel?.[word]?.c || [] : [])].map(keyOf)); stemSets.set(id, s); } // c = everyday synonyms (WordNet, Moby) count as synonyms
   return s;
 }
 /** Synonyms of every key that shares this stem (inflections of one word), as a stemmed Set. */

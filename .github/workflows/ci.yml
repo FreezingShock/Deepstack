@@ -95,13 +95,33 @@ jobs:
           node scripts/text-fit.mjs & fit=$!
           node scripts/transitions.mjs & trans=$!
           node scripts/room-switch.mjs & rooms=$!
+          node scripts/room-visuals.mjs & rvis=$!
+          node scripts/ra-fixes.mjs & rafix=$!
+          node scripts/ember-log.mjs & ember=$!
           rc=0
           wait $smoke || rc=1
           wait $snaps || rc=1
           wait $fit || rc=1
           wait $trans || rc=1
           wait $rooms || rc=1
+          wait $rvis || rc=1
+          wait $rafix || rc=1
+          wait $ember || rc=1
           exit $rc
+      # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
+      - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)
+        run: node scripts/perf-budget.mjs --rooms hall,science,body
+      # Memory and frame time: heap after the judge warms (its data lives in a worker), heap/DOM/listeners kept across laps of
+      # every room and a long Unlimited run, and the worst frozen frame of a throttled room walk. Leaves traces on failure.
+      - name: Memory and frame-time budget (leaks across room laps and long runs, worst frame)
+        run: node scripts/perf-memory.mjs
+      - name: Upload performance traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-traces
+          path: perf-traces/
+          if-no-files-found: ignore
       - name: Upload snapshot diffs
         if: failure()
         uses: actions/upload-artifact@v4

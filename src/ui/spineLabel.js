@@ -12,6 +12,7 @@ function measureAt(word, fs) {
   const k = fs + '|' + word;
   let v = cache.get(k);
   if (v == null) {
+    if (cache.size > 4000) cache.clear(); // measurements are cheap to redo; never let a long session grow this forever
     if (!ctx && typeof document !== 'undefined') ctx = document.createElement('canvas').getContext('2d');
     if (ctx) { ctx.font = spineFont(fs); v = ctx.measureText(word).width; } else v = word.length * fs * .52;
     cache.set(k, v);

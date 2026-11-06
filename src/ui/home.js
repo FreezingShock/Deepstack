@@ -52,10 +52,11 @@ import {plaqueState,dailyBadge,unlimitedBadge} from './homePlaque.js';
 import {ROOMS,roomById} from '../core/rooms.js';
 import {currentRoom} from '../core/roomStore.js';
 import {scopeRoom} from './scope.js';
+import {roomMetLabel} from '../core/roomDepth.js';
 export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>'',today=''}){
  const ctx={lexicon,dailyNo:no,played:!!d,today},pq=plaqueState({S,played:!!d,no,today,lexicon});
  /* library furniture built into the niche walls: a card-catalogue cabinet (rules) and the borrower's ledger (welcome.css) */
- const rules=cabinetHTML({steps:HOME_STEPS,bestTier:S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1),today:{no,kind:pq.kind,tag:pq.tag,streak:st.streak|0,played:!!d},tierCounts:S.shelf.reduce((a,b)=>{const t=b.tier|0;a[t]=(a[t]|0)+1;return a;},[]),seen:loadSeen()});
+ const rules=cabinetHTML({steps:HOME_STEPS,bestTier:S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1),today:{no,kind:pq.kind,tag:pq.tag,streak:st.streak|0,played:!!d,room:(r=>({name:r.name,short:r.short,rgb:r.rgb,met:r.id==='hall'?(n=>`${n} ${n===1?'word':'words'} met`)(new Set(S.shelf.filter(b=>b&&!b.skipped).map(b=>b.w)).size):roomMetLabel(S,r.id)}))(roomById(currentRoom(S)))},tierCounts:S.shelf.reduce((a,b)=>{const t=b.tier|0;a[t]=(a[t]|0)+1;return a;},[]),seen:loadSeen()});
  const slip=ledgerHTML({streak:st.streak,deepest:st.deepest,books:S.shelf.length,floor:floorName||'',floorKey:floorKey||'',tierInk:tierInk||'',room:scopeRoom(S)});
  const book=l=>{const b=l.badge?l.badge(S,ctx):'';const c=HOME_BOOK_COLORS[l.color]||HOME_BOOK_COLORS.brown;
   return `<li><button class="hbook" data-tex="${l.tex||'leather'}" id="${l.id}"${l.note?` title="${esc(l.note)}"`:''} style="--bk:${c[0]};--bk2:${c[1]};--bk-gild:${c[2]}"><span class="hb-pages" aria-hidden="true"></span><span class="hb-spine"><i class="hb-band" aria-hidden="true"></i><span class="hb-t">${esc(l.label)}${b?` <small>${esc(b)}</small>`:''}</span><i class="hb-band" aria-hidden="true"></i></span></button></li>`;};
@@ -236,7 +237,7 @@ export const BOOK_PAGES={};
 export function bookify(root,{wait=BOOK_OPEN_MS}={}){
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
  let busy=false,flying=false,pending=null;
- root.querySelectorAll('.hbook,.lg-row#bFloors').forEach(el=>{
+ root.querySelectorAll('.hbook,.lg-row#bFloors,.lg-row#bStreak').forEach(el=>{
   const go=el.onclick;if(!go&&!BOOK_PAGES[el.id])return;
   el.onclick=e=>{
    if(busy){if(!el.classList.contains('opening'))pending=()=>el.onclick(e);return;}
@@ -251,7 +252,7 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
    const lift=()=>{flying=true;root.classList.remove('book-opening');root.classList.remove('book-closing');setTimeout(()=>el.classList.remove('opening'),reduce?0:Math.max(0,BOOK_TIMING.flyBack-170));};
    const fin=()=>{el.classList.remove('opening');if(!reduce){root.classList.add('book-landed');el.classList.add('landed');setTimeout(()=>{root.classList.remove('book-landed');el.classList.remove('landed');},300);}root.classList.remove('book-opening');root.classList.remove('book-closing');busy=false;flying=false;
     if(pending){const n=pending;pending=null;n();}};
-   const bk=openBook({from:el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onFly:lift,onClose:fin,onShut:()=>root.classList.add('book-closing'),
+   const bk=openBook({from:el.__from?el.__from():el.getBoundingClientRect(),title,label:intro?.h||pages?.label,cls:pages?'menu':'',keepOnEsc:pages?.keepOnEsc,spreads:pages?pages.spreads():intro?introSpreads(intro):null,onFly:lift,onClose:fin,onShut:()=>root.classList.add('book-closing'),
     colors:{bk:cs.getPropertyValue('--bk'),bk2:cs.getPropertyValue('--bk2'),gild:cs.getPropertyValue('--bk-gild'),tex:cs.getPropertyValue('--tex')}});
    if(pages){bk.onPaint=(sp,idx)=>{inkPage(sp,pages.label);pages.onPaint&&pages.onPaint(sp,bk,idx);};}
    else if(intro){

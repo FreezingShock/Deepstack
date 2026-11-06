@@ -6,6 +6,7 @@ import {hashStr} from './daily.js';
 import {stem, match} from '../scorer/lexical.js';
 import {isSpecialist, effectiveDifficulty} from './difficulty.js';
 import {isBlocked} from './blocklist.js';
+import {dataUrl} from './dataUrl.js';
 
 const POS_OK = new Set(['noun', 'verb', 'adjective', 'adverb']);
 // Glosses that only point at another word, or describe a form rather than a meaning.
@@ -70,9 +71,11 @@ export function buildPool(data) {
       out.push({id: bi, w: b[0], pos: b[1], d: b[2], def: b[3], hint: b[4], concepts: b[5], opp: b[6], curated: true});
       seen.add(e.w); continue;
     }
-    if (rejectReason(e)) {
+    const why = rejectReason(e);
+    if (why) {
       // Blocked words stay in the seeded Daily's random stream (see pickRampWord) so dropping one never reshuffles a day.
-      if (rejectReason(e, true) === null) ghosts.push({id: hashStr('w:' + e.w), w: e.w, d: effectiveDifficulty(e.d, e.t)});
+      // (Only 'blocked' can turn null when the blocklist is ignored: every later check is the same either way.)
+      if (why === 'blocked' && rejectReason(e, true) === null) ghosts.push({id: hashStr('w:' + e.w), w: e.w, d: effectiveDifficulty(e.d, e.t)});
       continue;
     }
     const w = {id: hashStr('w:' + e.w), w: e.w, pos: e.pos, d: effectiveDifficulty(e.d, e.t), def: clean(e.def), hint: e.hint || null, concepts: [], opp: '', curated: false};
@@ -92,7 +95,7 @@ export function buildPool(data) {
 
 let loading = null;
 /** Replaces the contents of WORDS in place (references stay valid). Falls back to the 38-word bank on failure. */
-export function loadWords(url = (import.meta.env?.BASE_URL || '/') + 'data/words.json') {
+export function loadWords(url = dataUrl('words.json')) {
   return loading ||= (async () => {
     try {
       const r = await fetch(url);
