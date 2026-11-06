@@ -30,7 +30,7 @@ catch (e) { console.log('room-visuals: no browser, skipping:', e.message.split('
 const BLOCKED = /^https?:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|huggingface\.co|[^/]*\.hf\.co|cdn\.jsdelivr\.net)\//;
 const ROOMS = ['hall', 'history', 'math', 'science', 'english', 'art', 'body'];
 const FLOOR_IDX = [0, 1, 2, 3, 4, 5]; // every floor (2 = The Catacombs, 3 = The Sunken Vault, the longest names)
-const VIEWS = [{w: 375, h: 700}, {w: 1280, h: 800}];
+const VIEWS = [{w: 375, h: 700}, {w: 800, h: 600}, {w: 1000, h: 700}, {w: 1280, h: 800}, {w: 1920, h: 1080}]; // 1000 is the door threshold; doors must show from 1280
 const shelf = Array.from({length: 6}, (_, i) => ({w: 'word' + i, word: 'word' + i, s: 60 + i, t: Date.now() - i * 1e6}));
 const problems = [];
 const T = 15000;
@@ -56,11 +56,15 @@ for (const view of VIEWS) for (const room of ROOMS) {
     try {
       const f = await page.evaluate(() => {
         const dd = document.querySelector('.lg-row.lg-floor dd');
-        return dd && dd.offsetParent ? {t: dd.textContent, clipX: dd.scrollWidth > dd.clientWidth + 1, clipY: dd.scrollHeight > dd.clientHeight + 1, ell: getComputedStyle(dd).textOverflow === 'ellipsis' && dd.scrollWidth > dd.clientWidth} : null;
+        if (!dd || !dd.offsetParent) return null;
+        const rg = document.createRange(); rg.selectNodeContents(dd); const t = rg.getBoundingClientRect(), pg = dd.closest('.lg-page').getBoundingClientRect();
+        const ell = getComputedStyle(dd).textOverflow === 'ellipsis' && getComputedStyle(dd).overflow !== 'visible' && dd.scrollWidth > dd.clientWidth;
+        return {t: dd.textContent, clipX: t.left < pg.left - 1 || t.right > pg.right + 1, clipY: t.top < pg.top - 1 || t.bottom > pg.bottom + 1, ell};
       });
       if (f) { seenFloors.add(f.t); if (f.clipX || f.clipY || f.ell) problems.push(`${tag} floor ${depth}: Card floor name "${f.t}" is clipped`); }
-      const doors = await page.evaluate(() => [...document.querySelectorAll('#rm-doors:not([hidden]) .rm-door')].map(d => { const s = d.querySelector('.rm-plate .rm-sw'); const r = s && s.getBoundingClientRect(); return {room: d.dataset.room, ok: !!r && r.width >= 5 && r.height >= 5 && getComputedStyle(s).backgroundColor !== 'rgba(0, 0, 0, 0)'}; }));
-      if (view.w >= 1000 && doors.length < 2) problems.push(`${tag}: expected two visible side doors, found ${doors.length}`);
+      const doors = await page.evaluate(() => [...document.querySelectorAll('#rm-doors:not([hidden]) .rm-door')].map(d => { const s = d.querySelector('.rm-plate .rm-sw'); const r = s && s.getBoundingClientRect(); return {room: d.dataset.room, ok: !!r && r.width >= 5 && r.height >= 5 && getComputedStyle(s).backgroundImage !== 'none', one: (() => { const b = d.querySelector('.rm-plate b'); return b.getBoundingClientRect().height < parseFloat(getComputedStyle(b).fontSize) * 2; })()}; }));
+      if (view.w >= 1280 && doors.length < 2) problems.push(`${tag}: expected two visible side doors, found ${doors.length}`);
+      for (const d of doors) if (!d.one) problems.push(`${tag}: door plate name for "${d.room}" wraps to two lines`);
       for (const d of doors) if (!d.ok) problems.push(`${tag}: door plate for "${d.room}" has no visible fire swatch`);
       if (depth === 3) {
         const frame = await page.evaluate(() => { const e = document.querySelector('.attic-down .adl-frame'); return e ? getComputedStyle(e).display : 'missing'; });
