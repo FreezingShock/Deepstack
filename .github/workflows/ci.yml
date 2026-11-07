@@ -104,7 +104,6 @@ jobs:
           node scripts/pwa-check.mjs & pwa=$!
           node scripts/review-shelf.mjs & review=$!
           node scripts/patrons.mjs & patrons=$!
-          node scripts/book-readability.mjs & bookread=$!
           rc=0
           wait $smoke || rc=1
           wait $snaps || rc=1
@@ -119,8 +118,8 @@ jobs:
           wait $pwa || rc=1
           wait $review || rc=1
           wait $frames || rc=1
-          wait $bookread || rc=1
           wait $patrons || rc=1
+          node scripts/book-readability.mjs || rc=1
           node scripts/first-note-clear.mjs || rc=1
           exit $rc
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
