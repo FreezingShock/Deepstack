@@ -12,9 +12,8 @@
 .hslip .hbody{display:block;overflow:visible;white-space:normal}
 .hslip mark{background:none;color:var(--c-blood-43);font-style:normal;font-weight:700;border-bottom:1px dashed var(--c-blood-43)}
 @keyframes hslip-in{from{opacity:0;transform:translateY(-10px) rotate(calc(var(--tilt,0deg) * 3))}to{opacity:1}}
-@keyframes hslip-breath{0%,100%{opacity:.45}50%{opacity:1}}
-@media (prefers-reduced-motion:reduce){html:not([data-motion="full"]) .hslip,html:not([data-motion="full"]) .hslip mark.gap{animation:none}}
-html[data-motion="reduce"] .hslip,html[data-motion="reduce"] .hslip mark.gap{animation:none}
+@keyframes hslip-breath{0%,100%{opacity:.45}50%{opacity:1}}html.rm .hslip,html.rm .hslip mark.gap{animation:none}
+html.rm .hslip,html.rm .hslip mark.gap{animation:none}
 .hslip mark.gap{display:inline-block;min-width:4.5em;height:1em;vertical-align:-.15em}
 /* the blank breathes slowly once its slip has pinned on, like a held breath */
 .hslip mark.gap{animation:hslip-breath calc(var(--m-linger) * 3) var(--e-cruise) calc(var(--m-page) + var(--hn,0) * var(--m-quick)) infinite both}
@@ -39,9 +38,8 @@ html[data-motion="reduce"] .hslip,html[data-motion="reduce"] .hslip mark.gap{ani
 .hs-pips i.snuff{animation:hs-snuff var(--m-smooth) var(--e-settle) both}
 .hs-cost{width:12px;height:12px;position:relative;opacity:.8}
 .hs-cost::before{content:"";position:absolute;left:5px;top:-2px;width:2px;height:16px;background:var(--c-blood-77);border-radius:1px;transform:rotate(35deg)}
-@keyframes hs-snuff{from{transform:scale(1.5);opacity:1;background:var(--c-lamplight)}to{transform:scale(.8);opacity:.6}}
-@media (prefers-reduced-motion:reduce){html:not([data-motion="full"]) .hs-pips i.snuff{animation:none}}
-html[data-motion="reduce"] .hs-pips i.snuff{animation:none}
+@keyframes hs-snuff{from{transform:scale(1.5);opacity:1;background:var(--c-lamplight)}to{transform:scale(.8);opacity:.6}}html.rm .hs-pips i.snuff{animation:none}
+html.rm .hs-pips i.snuff{animation:none}
 .center .row .hs-btn{font:600 calc(20px*var(--ts))/1 'Fuzzy Bubbles','Newsreader',cursive;letter-spacing:.01em;text-transform:none;padding:6px 16px}
 .center .row .hs-skip{font-size:calc(18px*var(--ts))}
 .hintline:not(:empty){text-align:left;padding-left:68px}

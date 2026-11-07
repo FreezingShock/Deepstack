@@ -25,7 +25,5 @@
 .bk-spread.menu #fq:focus-visible{outline:0;border-bottom:2.5px solid var(--bk)}
 
 /* the stroke slides between choices (penInk.js animates it); a fallback draw-in for the first pick in a group */
-@media (prefers-reduced-motion:reduce){
- .bk-spread .pen-ink::after{transition:none}
- .bk-spread.menu .fchip.pen[aria-pressed="true"]::after{animation:none}
-}
+ :where(html.rm) .bk-spread .pen-ink::after{transition:none}
+ :where(html.rm) .bk-spread.menu .fchip.pen[aria-pressed="true"]::after{animation:none}

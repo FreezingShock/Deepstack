@@ -3,6 +3,7 @@
    motion drops the flight and just places the tab. The tab stays on the book for the rest of that day (home.js calls
    placeDailyTab on every render). Uniform motion language (#125): one ease, staggered, nothing bouncy. */
 import {TIERS} from '../core/tiers.js';
+import {motionNow} from './settings.js';
 
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 export const EASE='cubic-bezier(.2,.8,.2,1)';
@@ -11,7 +12,7 @@ export const bindTimings=(n=7,reduce=false)=>reduce?{stagger:0,fly:0,tab:0,total
  :{stagger:90,fly:520,tab:260,total:90*Math.max(0,n-1)+520+260};
 export const isDailyRun=d=>!!d&&d.mode!=='unlimited'&&d.mode!=='riddle'&&!d.practice;
 
-const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduced=()=>motionNow();
 export let binding=false;
 
 /* Rects and images of the spines on the results sheet, read before that sheet is hidden. */
