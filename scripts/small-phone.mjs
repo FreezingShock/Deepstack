@@ -29,11 +29,8 @@ const MIN = 44;
 // Open items, each with its reason. Remove an entry in the PR that fixes it.
 const ALLOW = [
   ['#home .hbook', 'home spines are 24px tall; a 44px target needs a layout decision (nate)'],
-  ['#home .cc-tab', 'card catalogue tab overlaps the tagline and the first room dot; placement decision (PR 2)'],
   ['#tracker li button', 'depth rail plaques are hidden on phones; the rail itself is the target (tracker)'],
   ['.skiplink', 'off-screen until focused'],
-  ['#sSound, #sVol, #sMus, #sFx, #sHaptics', 'settings switches and sliders at 320, Haptics added by #353 (PR 2: settings controls)'],
-  ['#sMotion button', 'settings motion chips at 320 (PR 2: settings controls)'],
 ];
 const OUT = process.env.SHOTS || '';
 if (OUT) await mkdir(OUT, {recursive: true});
