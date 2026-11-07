@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Pick the share picture look (SH2): screenshots in screenshots/share-card/ (card-history-stamp.png, card-history-plain.png, card-history-dots.png; results-history-375.png and -1280.png). A is shipped (date stamp in the room colour, spines). Reply A, B or C. Phone: the picture goes out with Share and the Save image link stays hidden on phones; say if you want it on phones too.
 - Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
@@ -2139,12 +2140,24 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### SH1. [x] Shareable Daily result card (per room, Share button)
 **Pitch:** After a Daily the Share button copies a spoiler-free text card (room, Daily number, depth, floor, streak, one tier symbol per book) and opens the system share sheet where the browser has one.
 **Brief:** Done: `src/ui/dailyShare.js` (text and share helper), `src/app/final.js`, `src/ui/results.js` (button), `src/ui/dailyShare.css` (phone wrap). Tests in `test/daily-share.test.js`. Screenshots in screenshots/daily-share/.
-### SH2. A picture for the share
-**Pitch:** Share the result as a small PNG of the descent: the room's colour, the shelf of books and the tier grid, for chat apps that take images.
-**Brief:** Goal: draw the share card to a canvas from the run data, pass it to navigator.share with files, copy text as the fallback. Files: new `src/ui/dailyShareImage.js`. **Conflicts:** SH1.
-### SH3. Room colour on the share text
-**Pitch:** The share card's header takes the room's fire colour, so a Chronicle share looks red and a Gallery share purple (text only, no emoji).
-**Brief:** Goal: a colour line via `ROOMS[].rgb` in the share card's header (HTML sheet only). Files: `src/ui/results.js`, `src/ui/dailyShare.css`. **Conflicts:** SH1.
+### SH2. [x] A picture for the share (library card, PR: share card overhaul; look A shipped, B and C pending nate's pick)
+**Done:** `src/ui/dailyShareImage.js` draws a 1080 square library card on a canvas: a dark oak card with a brass frame, the room's colour on its top edge and room name, a tilted date stamp in the room colour (No. N), the depth numeral and facts, one spine per book in its tier colour, and the tier names. Share sends the picture with the text where the browser can share files; Save picture (desktop) downloads it. Spoiler-free: no word or answer is drawn. Guard: `scripts/share-card.mjs` (every room, every look: fits, no overlap, no spoilers, results page at 375 and 1280). Tests: `test/share-card.test.js`. Screenshots in screenshots/share-card/.
+**Alternatives (change with one letter):**
+- A (shipped): stamp and spines, as above.
+- B: no stamp; a plain card with a full-width header and the same spines. Screenshots: screenshots/share-card/card-*-plain.png.
+- C: no stamp, one coloured dot per book instead of spines. Screenshots: screenshots/share-card/card-*-dots.png.
+**Conflicts:** SH1, V6 (superseded by this), TR11.
+### SH4. The Unlimited result has no picture yet
+**Pitch:** The share picture only covers the Daily. An Unlimited result could get the same card with its Lexicon in place of the Daily number (no streak line), so both share looks match.
+**Brief:** Goal: `shareCardOps` takes an `unlimited` mode (kicker "Unlimited", Lexicon line in place of No.). Files: `src/ui/dailyShareImage.js`, `src/app/final.js`. Done when: the guard covers an Unlimited run in every room. **Conflicts:** SH2.
+### SH5. Results Back button sits under the game toast at 1280x800
+**Pitch:** In the seeded Daily result at 1280x800 the "Back to the surface" button falls under the "Unlimited: words matched to your rank" toast. The same happens before this change, so it is not from the share card. The row also wraps to two lines on desktop.
+**Brief:** Goal: keep the results row clear of toasts (move the toast or lift the row). Files: `src/ui/finalPage.css`, toast code. Done when: a screenshot at 1280x800 and 1280x720 shows all three buttons clear. **Conflicts:** results threads.
+### SH6. A stamp on the on-screen slip (option B)
+**Pitch:** The slip on the results page has the same date stamp as the picture, sized to sit over the slip's top-right margin without touching the first line.
+**Brief:** Goal: a small stamp in the room colour on the slip, placed so no line of the copied text is covered. Files: `src/ui/results.js`, `src/ui/shareCard.css`. Done when: the share-text guard finds no overlap at 1280 and 1920. **Conflicts:** SH3.
+### SH3. [~] Room colour on the share text
+**Done (display only):** the torn slip on the results page has a top edge in the room's colour (`src/ui/shareCard.css`). The copied text is unchanged; the colour is decoration, not text, so contrast is not affected. Not done: colouring the words themselves (would fail contrast on the parchment slip).
 
 ### CF1. [x] Core loop: answer feedback, hurry the reveal, full "You wrote" (this PR)
 **Pitch:** Enter now answers at once: the slip holds, locks and says "Reading your answer", Enter or Space during the card reveal hurries it to the verdict, phone cards drop the Enter hint, and a long answer shows whole.

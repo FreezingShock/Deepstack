@@ -1,0 +1,7 @@
+/* The Daily share picture. Save image is a small link under the slip (desktop only: on a phone the picture goes out with
+   Share, through the system sheet). The torn slip gets a top edge in the room's colour: decoration only, so the copied
+   text and its contrast do not change. */
+.fin .fslip .slip{box-shadow:inset 0 4px 0 rgb(var(--rm-rgb,255,140,60))}
+.fin .linkbtn{display:block;margin:4px 0 0 auto;padding:2px 6px;background:none;border:0;box-shadow:none;border-radius:0;font:500 calc(20px*var(--ts))/1.2 var(--fhand);color:var(--ink);text-decoration:underline wavy;text-decoration-thickness:1px;text-underline-offset:6px;cursor:pointer}
+.fin .linkbtn:hover,.fin .linkbtn:focus-visible{outline:0;color:var(--ink);text-decoration-thickness:2px}
+@media (max-width:760px){.fin .linkbtn{display:none}}

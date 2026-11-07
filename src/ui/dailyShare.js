@@ -18,10 +18,13 @@ export function dailyShareText(d, o) {
   return [head, facts, streak, grid, names].filter(Boolean).join('\n');
 }
 
-/** Opens the system share sheet when there is one, otherwise copies. Resolves to 'shared', 'copied', 'cancelled' or 'failed'. */
-export async function shareDaily(txt, title = 'Deepstack') {
+/** Opens the system share sheet when there is one, otherwise copies. An optional picture (a File from the share card) goes
+    with the text when the browser can share files. Resolves to 'shared', 'copied', 'cancelled' or 'failed'. */
+export async function shareDaily(txt, title = 'Deepstack', file = null) {
   if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-    try { await navigator.share({title, text: txt}); return 'shared'; }
+    const data = {title, text: txt};
+    if (file && typeof navigator.canShare === 'function' && navigator.canShare({files: [file]})) data.files = [file];
+    try { await navigator.share(data); return 'shared'; }
     catch (e) { if (e && e.name === 'AbortError') return 'cancelled'; /* other failures fall through to the clipboard */ }
   }
   try { await navigator.clipboard.writeText(txt); return 'copied'; }

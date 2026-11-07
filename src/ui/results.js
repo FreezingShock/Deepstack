@@ -48,7 +48,7 @@ export function finalHTML(d, S, o) {
   <p class="fsub">${o.floorName ? `<span>Reached <b>${esc(o.floorName)}</b></span>` : ''}<span>Average <b>${d.avg}</b></span><span>Rarest <b>${esc(o.rarest)}</b></span>${lex}</p>${levelChangeLine(d)?`<p class="lx-change">${esc(levelChangeLine(d))}</p>`:''}
   <div class="spineimgs" id="sp">${o.spines}</div></div>
   <div class="fright">${recapHTML(d, S)}
-  <div class="slipwrap fslip"><i class="pin"></i><div class="slip"><pre class="share pe" id="shr">${shareHTML(o.txt)}</pre></div></div></div>
+  <div class="slipwrap fslip"><i class="pin"></i><div class="slip"><pre class="share pe" id="shr">${shareHTML(o.txt)}</pre></div></div>${o.share ? '<button class="linkbtn" id="spic">Save image</button>' : ''}</div>
   <div class="row">${o.share ? '<button class="btn pri" id="sh">Share</button><button class="btn" id="cp">Copy result</button>' : '<button class="btn pri" id="cp">Copy result</button>'}<button class="btn" id="up">Back to the surface</button></div></div>`;
 }
 
