@@ -54,10 +54,11 @@ export async function startDaily(practice){
  showWord();
 }
 /* the descent's rules and its landing, loaded with the first Unlimited run and the first landing (keeps them out of the entry bundle) */
-let DS=null,descentUI=null;
+let DS=null,DL=null,descentUI=null;
 export async function startUnlimited(replace=false){
  await wordsReady;
  DS=DS||await import('../core/descent.js');
+ DL=DL||await import('../core/descentLog.js'); // the descent's memory (S.descent): written when a run finishes, read by the Almanac
  if(modelStatus().state==='loading')await whenReady(8000);
  if(replace&&S.rating.placed){S.rating={...S.rating,placed:false};save();}
  const placing=!S.rating.placed,n=placing?core.PLACEMENT_WORDS:core.RUN_WORDS;
@@ -168,7 +169,7 @@ export function finishRun(){
  const r=run;const books=r.results;const avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length);const best=Math.max(...books.map(b=>b.tier));
  const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,isDaily=r.mode!=='unlimited',depth=isDaily?worldDepth:worldDepth+setBonus; // Daily depth is words only: set bonuses depend on each player's collection, so they stay out of the shared score
  const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
-  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});if(r.dsc)d.descent=DS.descentSummary(r.dsc,r.words.length);}
+  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});if(r.dsc)d.descent=DS.descentSummary(r.dsc,r.words.length);if(r.dsc&&!r.practice&&DL){DL.recordDescent(S,r.dsc,{day:utc(),ft:depth,words:r.words.length});save();}}
  else if(r.mode==='weekly'){Object.assign(d,{mode:'weekly',weekKey:r.wk,themeKey:r.theme.key,themeName:r.theme.name,dayIdx:weekdayIndex(r.day)});toastStamps(recordStamps(S,utc()));save();}
  else if(r.mode==='nemesis'){Object.assign(d,{mode:'nemesis',word:books[0].w,beat:books[0].score>=BEAT_SCORE,wk:r.wk});toastStamps(recordStamps(S,utc()));save();}
  else if(!r.practice){delete S.dailyRun;if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);toastStamps(recordStamps(S,utc()));save();}
