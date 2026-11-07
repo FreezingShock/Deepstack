@@ -16,7 +16,7 @@ test('the Stamps page draws every stamp once, on two leaves, with the earned one
   assert.equal((html.match(/class="stp-seal on/g) || []).length, stampTally(seeded).earned, 'lit seals match what is earned');
   assert.equal(stampTally(seeded).earned, 3);
   assert.match(a, /<h1>Stamps<\/h1>/);
-  assert.match(a, /3 of 41 earned/);
+  assert.match(a, new RegExp(`3 of ${CATALOG.length} earned`));
   assert.match(a, /Chronicle/);
   assert.match(b, /The library/);
   assert.equal((a.match(/class="stp-row"/g) || []).length, 3, 'three rooms on the first leaf');

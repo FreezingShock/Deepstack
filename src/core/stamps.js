@@ -27,9 +27,10 @@ const LIBRARY_STAMPS = [
   {key: 'week', name: 'Any-room week', hint: `${STREAK_DAYS} Dailies in a row, in any room.`, test: l => l.anyStreak >= STREAK_DAYS},
   {key: 'hundred', name: 'A hundred words', hint: `Meet ${LIBRARY_WORDS} different words across the library.`, test: l => l.libMet >= LIBRARY_WORDS},
   {key: 'theme', name: 'A themed week', hint: `Answer all ${WEEK_DAYS} days of one themed week.`, test: l => l.themedWeeks >= 1},
+  {key: 'seal', name: 'Wax seal', hint: 'Restore every entry on one damaged page.', test: l => l.sealed},
 ];
 
-/** Every stamp in a fixed order: each topic room's six, then the four library-wide ones. */
+/** Every stamp in a fixed order: each topic room's six, then the library-wide ones. */
 export const CATALOG = [
   ...TOPIC_ROOMS.flatMap(r => ROOM_STAMPS.map(s => ({id: `${r.id}.${s.key}`, room: r.id, key: s.key, name: s.name, hint: s.hint, test: s.test}))),
   ...LIBRARY_STAMPS.map(s => ({id: `library.${s.key}`, room: null, key: s.key, name: s.name, hint: s.hint, test: s.test})),
@@ -66,8 +67,12 @@ function libCtx(S, rooms) {
     anyStreak: longestStreak([...days]),
     libMet: met.size,
     themedWeeks: themedWeeksDone(S),
+    sealed: !!S.restore && Array.isArray(S.restore.wall) && S.restore.wall.some(sealedPage),
   };
 }
+
+/** A restoration page with every entry back in ink: the wax seal (MR4). Shared with src/restore/store.js. */
+export const sealedPage = pg => !!pg && Array.isArray(pg.passages) && pg.passages.length > 0 && pg.passages.every(p => !!p && p.restored);
 
 /** Every stamp the save has earned right now, whether or not it has been recorded yet. */
 export function earnedStamps(S) {
