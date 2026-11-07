@@ -10,8 +10,17 @@
 .hintline:not(:empty) .hslip .hcap b{color:var(--c-blood-43)}
 
 @media(max-width:640px){
- /* phones: the newest hint only, in flow. Older hints stay in the strip's DOM but are not drawn, so the answer slip keeps its height. */
+ /* phones: the newest hint only, in flow. Older hints stay in the strip's DOM but are not drawn, so the answer slip keeps its height.
+    A tap opens them all in a panel over the stage (hintTags.js). The tap cue shows only when there is an earlier hint. */
  #stage.center .hintline:not(:empty) .hslip:not(:last-child){display:none}
+ #stage.center .hintline:not(:empty){cursor:pointer;outline:none}
+ #stage.center .hintline:not(:empty):focus-visible .hslip:last-child{box-shadow:0 0 0 2px var(--c-lamplight),0 4px 8px -4px var(--c-black)}
+ #stage.center .hintline:not(:empty) .hslip:last-child:not(:first-child)::after{content:" · more";font-size:calc(10px*var(--ts));color:var(--c-steel-63);font-style:normal}
+ #stage.center .hintline.open{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:950;width:min(92vw,340px);max-height:70vh;overflow-y:auto;
+  display:flex;flex-direction:column;gap:6px;padding:12px;background:color-mix(in srgb,var(--c-oak-1a1208) 88%,transparent);border-radius:6px;cursor:pointer}
+ #stage.center .hintline.open .hslip{display:block;width:100%}
+ #stage.center .hintline.open .hslip:not(:last-child){display:block}
+ #stage.center .hintline.open .hslip:last-child:not(:first-child)::after{content:none}
  #stage.center .hintline:not(:empty){width:min(100%,340px);margin-top:6px}
  #stage.center .hintline:not(:empty) .hslip{width:100%;box-sizing:border-box;padding:3px 10px 3px 18px;font-size:calc(14px*var(--ts));line-height:1.25;text-align:left}
  #stage.center .hintline:not(:empty) .hslip .hcap{display:inline;margin-right:6px;font-size:calc(9px*var(--ts))}

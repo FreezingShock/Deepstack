@@ -24,3 +24,26 @@ test('the tag sheet is loaded after the hint slip sheet, so it wins the cascade'
  const b = main.indexOf("import './ui/hintTags.css';");
  assert.ok(a >= 0 && b > a, 'hintTags.css is imported after hintSlips.css');
 });
+
+test('a tap on the phone strip opens every hint in a panel, and a tap closes it', async () => {
+ const listeners = {};
+ globalThis.document = {addEventListener: (t, f) => { listeners[t] = f; }};
+ globalThis.innerWidth = 375;
+ try {
+  await import('../src/ui/hintTags.js?phone');
+  const hl = {children: [1, 2], classList: {toggled: 0, toggle(c) { this.toggled++; }}};
+  const hit = {closest: sel => (sel === '#hl' ? hl : null)};
+  listeners.click({target: hit});
+  assert.equal(hl.classList.toggled, 1, 'a tap on a two-hint strip toggles it');
+  hl.children = [1];
+  listeners.click({target: hit});
+  assert.equal(hl.classList.toggled, 1, 'a single hint has nothing to open');
+  globalThis.innerWidth = 1280;
+  hl.children = [1, 2];
+  listeners.click({target: hit});
+  assert.equal(hl.classList.toggled, 1, 'desktop shows every hint and does not toggle');
+ } finally {
+  delete globalThis.document;
+  delete globalThis.innerWidth;
+ }
+});

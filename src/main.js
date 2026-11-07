@@ -121,6 +121,7 @@ import './ui/runScreen.js';
 import './ui/hintSlips.js';
 import './ui/hintSlips.css';
 import './ui/hintTags.css';
+import './ui/hintTags.js';
 import './ui/firstNotes.css';
 import './ui/feedback.js';
 import './core/feedback.js';
