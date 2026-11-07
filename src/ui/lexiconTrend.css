@@ -5,5 +5,4 @@
 .lx-trend .lx-line{fill:none;stroke:var(--c-oak-4a3a22);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0;animation:lxDraw var(--m-page) var(--e-ink) both}
 .lx-trend .lx-dot{fill:var(--c-oak-4a3a22)}
 .lx-trend figcaption{font:italic 400 calc(13px*var(--ts))/1.35 var(--serif);opacity:.8}
-@keyframes lxDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
-@media(prefers-reduced-motion:reduce){.lx-trend .lx-line{animation:none}}
+@keyframes lxDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}:where(html.rm) .lx-trend .lx-line{animation:none}

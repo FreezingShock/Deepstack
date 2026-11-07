@@ -24,5 +24,4 @@
 .ih-go[hidden]{display:none}
 .ih-no{color:var(--c-parchment-80);background:none;border:1px solid var(--c-bronze-51)}
 .ih button:focus-visible{outline:2px solid var(--c-brass-65);outline-offset:2px}
-@keyframes ihIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion: reduce){.ih{animation:none}}
+@keyframes ihIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}:where(html.rm) .ih{animation:none}

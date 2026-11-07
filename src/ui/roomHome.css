@@ -85,8 +85,7 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
 .rl-sets li b{font-weight:normal;opacity:.7;font-variant-numeric:tabular-nums}
 .rl-sets li.done span::after{content:' \2713'}
 .rl-here{font-style:italic;opacity:.75;margin-top:10px}
-.bk-spread .rl-enter{margin-top:12px}
-@media(prefers-reduced-motion:reduce){.rm-fire{animation:none}}
+.bk-spread .rl-enter{margin-top:12px}:where(html.rm) .rm-fire{animation:none}
 
 /* Stats: the Rooms pages (roomStats.js) */
 .alm.rs .rs-t{width:100%;border-collapse:collapse;font-size:calc(14px*var(--ts,1));margin-top:6px}
@@ -116,8 +115,7 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
 .rm-door.rm-next:hover .rm-leaf,.rm-door.rm-next:focus-visible .rm-leaf{transform:perspective(380px) rotateY(80deg)}
 .rm-door.go .rm-leaf{transform:perspective(380px) rotateY(-88deg);transition-duration:var(--m-base)}
 .rm-door.rm-next.go .rm-leaf{transform:perspective(380px) rotateY(88deg)}
-.rm-door.go .rm-lamp{box-shadow:0 0 26px 10px rgba(var(--c),.7)}
-@media(prefers-reduced-motion:reduce){.rm-leaf{transition:none}}
+.rm-door.go .rm-lamp{box-shadow:0 0 26px 10px rgba(var(--c),.7)}:where(html.rm) .rm-leaf{transition:none}
 /* "47 of 118 met": how much of a room the player has seen (TA2) */
 .rm-plate .rm-met{font-style:normal;opacity:.8;letter-spacing:.04em;margin-top:2px}
 .hz-title .tagline .rm-met{font-size:max(calc(10px*var(--ts,1)),.7em);font-style:normal;opacity:.75;letter-spacing:.04em;white-space:nowrap}

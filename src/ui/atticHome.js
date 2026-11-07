@@ -7,11 +7,12 @@ import {Sfx} from '../feel.js';
 import {atticAll,atticTidy} from '../core/attic.js';
 import {fitRail,initRailFit} from './railFit.js';
 import './attic.css';
+import {motionNow} from './settings.js';
 
 let cue=null,down=null,home=null,count=0,wired=false,depthEl=null,pulling=0;
 const WHEEL_STEP=70,ROW_REST=420;
 const PULL_MS=520; // cord pull + lid swing + light on the panel, then the climb starts
-const reduced=()=>{const r=document.documentElement,m=r.getAttribute('data-motion');return m==='reduce'||(m!=='full'&&matchMedia('(prefers-reduced-motion:reduce)').matches);};
+const reduced=()=>motionNow();
 const ui=()=>({live:!!home&&!home.hidden&&home.isConnected&&World.canAttic&&!document.querySelector('.bk-spread,[role=dialog]:not([hidden]),#cardlayer.on')});
 function sync(open){
  if(home)home.classList.toggle('attic-away',open);

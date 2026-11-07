@@ -16,7 +16,7 @@ test('the Stamps page draws every stamp once, on two leaves, with the earned one
   assert.equal((html.match(/class="stp-seal on/g) || []).length, stampTally(seeded).earned, 'lit seals match what is earned');
   assert.equal(stampTally(seeded).earned, 3);
   assert.match(a, /<h1>Stamps<\/h1>/);
-  assert.match(a, /3 of 41 earned/);
+  assert.match(a, new RegExp(`3 of ${CATALOG.length} earned`));
   assert.match(a, /Chronicle/);
   assert.match(b, /The library/);
   assert.equal((a.match(/class="stp-row"/g) || []).length, 3, 'three rooms on the first leaf');
@@ -50,6 +50,6 @@ test('the toast names each new stamp with its room, or the library, and escapes 
 test('the stamp look uses the tokens and the room colour only through --c, with no raw hex', () => {
   const css = readFileSync(new URL('../src/ui/stamps.css', import.meta.url), 'utf8');
   assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/, 'colours come from tokens');
-  assert.match(css, /prefers-reduced-motion:reduce\)\{#stamptoast,#stamptoast \.stp-seal,#stamptoast::after\{transition:none;animation:none\}/);
+  assert.match(css, /:where\(html\.rm\) #stamptoast,:where\(html\.rm\) #stamptoast \.stp-seal,:where\(html\.rm\) #stamptoast::after\{transition:none;animation:none\}/);
   assert.match(css, /@keyframes stpPress/);
 });

@@ -7,7 +7,7 @@ test('books turn with page-corner zones, not round arrow buttons',()=>{
  assert.ok(!js.includes('bs-turn'));
 });
 test('the flip animates transform/opacity only and honours reduced motion',()=>{
- assert.match(css,/@keyframes fl-next\{to\{transform:rotateY\(-180deg\)\}\}/);
+ assert.match(readFileSync('src/ui/pageFlip.css','utf8'),/@keyframes fl-next\{0%\{transform:rotateY\(0\)\}100%\{transform:rotateY\(-180deg\)\}\}/);
  assert.ok(/reduce\s*\|\|/.test(js),'reduced motion swaps pages without a leaf');
 });
 test('corner hit zones are large',()=>{

@@ -55,7 +55,7 @@ const READ = `(() => {
     ring: [...document.querySelectorAll('#home .rm-ring .rm-dot.on')].map(d => d.dataset.room),
     doors: document.querySelector('#rm-doors') && !document.querySelector('#rm-doors').hidden ? [...document.querySelectorAll('#rm-doors .rm-door')].map(d => d.dataset.room) : null,
     badge: (q('#bRooms') || {}).textContent || null,
-    streak: ((q('#home .lg-streak dd') || {}).textContent || '').trim(),
+    streak: ((q('#home .lg-streak .lg-v') || {}).textContent || '').trim(),
     hearth: !!q('#home .hearth, .hearth'),
     hearthTag: (q('.hearth') || {}).__roomGuard || 0,
     homeHidden: !h || h.hidden,

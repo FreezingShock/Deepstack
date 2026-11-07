@@ -17,7 +17,7 @@ export function dueStamp(now = new Date(), days = LOAN_DAYS) {
 export const PROPS = [
   { id: 'bell', label: 'Ring the brass bell', sfx: 'chime1', side: 'l',
     svg: '<svg viewBox="0 0 40 36" aria-hidden="true"><ellipse class="dp-sh" cx="20" cy="34" rx="17" ry="2.2"/><ellipse class="dp-brass2" cx="20" cy="31" rx="15" ry="3.2"/><path class="dp-brass" d="M6 31c1-11 5-19 14-19s13 8 14 19z"/><path class="dp-hi" d="M11 29c1-7 3-12 7-14"/><circle class="dp-brass2" cx="20" cy="10" r="3"/><rect class="dp-pad" x="17" y="3.5" width="6" height="3" rx="1.5"/></svg>' },
-  { id: 'stamp', label: 'Stamp a due date in the Borrower’s ledger', sfx: 'thud', side: 'r',
+  { id: 'stamp', label: 'Stamp a due date in the Librarian’s Card', sfx: 'thud', side: 'r',
     svg: '<svg viewBox="0 0 34 36" aria-hidden="true"><ellipse class="dp-sh" cx="17" cy="34" rx="15" ry="2.2"/><rect class="dp-pad" x="3" y="26" width="28" height="7" rx="1.5"/><rect class="dp-redpad" x="6" y="27" width="22" height="3.5" rx="1"/><g class="dp-head"><rect class="dp-wood" x="10" y="3" width="14" height="6" rx="3"/><rect class="dp-wood" x="14" y="8" width="6" height="8"/><rect class="dp-brass" x="9" y="15" width="16" height="5" rx="1"/><rect class="dp-pad" x="8" y="20" width="18" height="3" rx="1"/></g></svg>' },
 ];
 

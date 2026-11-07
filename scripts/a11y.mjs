@@ -89,9 +89,10 @@ async function targets(page, vp, state) {
       if (el.closest('nav[aria-label="Depth tracker"]') && el.tagName === 'BUTTON') continue;
       // a control under an open modal layer (the result card, the shortcut panel) cannot be tapped now, so it is not a target here
       if (cardUp && !cardUp.contains(el)) continue;
-      // WCAG 2.5.8 (AA) minimum is 24px. Room lights, book spines and the menu books sit side by side on the shelf
+      // WCAG 2.5.8 (AA) minimum is 24px. Room lights, book spines, menu books and Card rows sit side by side
       // (4-8px apart, so a 44px tap area would overlap the next book and move the clicks); the menu books are 28px and up.
-      const min = el.matches('.rm-dot, .ledgebook, .home .hbook') ? 24 : 44;
+      // The Librarian's Card rows are ruled lines 26px apart, the same case.
+      const min = el.matches('.rm-dot, .ledgebook, .home .hbook, .home .lg-row[role="button"]') ? 24 : 44;
       if (r.width >= min && r.height >= min) continue;
       const max = 44;
       const w = r.width + reach(el, -1, 0, max, r) + reach(el, 1, 0, max, r);
@@ -233,6 +234,31 @@ for (const [vp, width, height] of VIEWPORTS) {
     await page.keyboard.press('Escape');
     await settle(page, 500);
   }
+  await ctx.close();
+}
+
+// Every topic room's home, at both widths: axe, tap targets and a 40-stop Tab walk per room. This folds in the room
+// coverage of the axe and focus guards that #358 added (scripts/a11y-axe.mjs and a11y-focus.mjs, now removed).
+const ROOM_IDS = ['hall', 'history', 'math', 'science', 'english', 'art', 'body'];
+for (const [vp, width, height] of VIEWPORTS) for (const room of ROOM_IDS) {
+  const ctx = await browser.newContext({viewport: {width, height}, reducedMotion: 'reduce', serviceWorkers: 'block'});
+  await ctx.addInitScript(r => {
+    try {
+      localStorage.setItem('deepstack.v1', JSON.stringify({room: r === 'hall' ? undefined : r, streak: {last: '', n: 3}, daily: {}}));
+      localStorage.setItem('deepstack.settings.v1', JSON.stringify({motion: 'reduce'}));
+    } catch {}
+  }, room);
+  const page = await ctx.newPage();
+  await page.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
+  page.on('pageerror', e => problems.push(`${vp} ${room} room: pageerror ${e.message}`));
+  await page.goto(url, {waitUntil: 'load'});
+  await page.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T}).catch(() => problems.push(`${vp} ${room} room: home never rendered`));
+  await page.addScriptTag({path: AXE});
+  await settle(page, 800);
+  const state = `${room} room home`;
+  await audit(page, vp, state);
+  await targets(page, vp, state);
+  await focusRings(page, vp, state, 40);
   await ctx.close();
 }
 

@@ -12,6 +12,6 @@ test('the entrance sits dead centre in the ceiling and uses the shared motion to
  const rule=css.match(/\.attic-cue-home\{[^}]*\}/)[0];
  assert.match(rule,/left:50%/);assert.match(rule,/top:0/);
  assert.match(css,/transition:transform var\(--m-smooth\) var\(--e-settle\)/);
- assert.match(css,/prefers-reduced-motion:reduce\)\{\.ach-cord\{animation:none\}/);
+ assert.match(css,/where\(html\.rm\) \.ach-cord\{animation:none\}/);
  assert.match(css,/:focus-visible \.ach-hatch/);
 });

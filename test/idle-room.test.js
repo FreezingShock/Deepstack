@@ -58,7 +58,7 @@ test('wiring: reduced motion and low quality gate the room; the css never takes 
   const css = readFileSync(new URL('../src/ui/idleRoom.css', import.meta.url), 'utf8');
   assert.match(js, /reducedMotion\(\)/); assert.match(js, /Quality\.params\(\)\.ambient/);
   assert.equal((css.match(/pointer-events:none/g) || []).length, 2);
-  assert.match(css, /prefers-reduced-motion/);
+  assert.match(css, /html\.rm/);
 });
 
 test('events that cannot happen right now (no candles, no bell) are skipped', () => {

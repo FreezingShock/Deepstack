@@ -20,6 +20,9 @@ const schedule = () => { if (queued) return; queued = true; requestAnimationFram
 if (typeof document !== 'undefined') {
   new MutationObserver(m => { if (m.some(r => [...r.addedNodes].some(n => n.nodeType === 1 && (n.id === 'home' || n.querySelector?.('.hb-t'))))) schedule(); })
     .observe(document.body || document.documentElement, {childList: true, subtree: true});
+  // The hearth switches #home between compact and tall layouts by its class; a spine fitted before that switch would
+  // keep its caption (the class is what hides it), so refit whenever #home's own class list changes.
+  new MutationObserver(() => schedule()).observe(document.getElementById('home') || document.body, {attributes: true, attributeFilter: ['class'], attributeOldValue: false});
   addEventListener('resize', () => { schedule(); setTimeout(schedule, 400); });
   document.fonts?.ready.then(schedule);
 }

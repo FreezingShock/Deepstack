@@ -91,8 +91,7 @@
 .descend-veil{position:fixed;inset:0;z-index:90;pointer-events:auto;background:radial-gradient(ellipse at var(--vx) var(--vy),var(--c-oak-1a0f06),var(--c-black) 60%);clip-path:circle(0 at var(--vx) var(--vy));animation:vclose var(--m-page) var(--e-accelerate) forwards}
 @keyframes vclose{to{clip-path:circle(150vmax at var(--vx) var(--vy))}}
 .descend-veil.lift{clip-path:none;animation:vlift var(--m-page) var(--e-cruise) forwards}
-@keyframes vlift{to{opacity:0}}
-@media(prefers-reduced-motion:reduce){.descend,.d-flame,.d-chev{animation:none}.hbook,.hb-spine{transition:none}.hbook:hover,.hbook:focus-visible{transform:none}.hbook.opening{transform:none}.bk-spread{transition:none}.descend-veil{display:none}}
+@keyframes vlift{to{opacity:0}}:where(html.rm) .descend,:where(html.rm) .d-flame,:where(html.rm) .d-chev{animation:none}:where(html.rm) .hbook,:where(html.rm) .hb-spine{transition:none}:where(html.rm) .hbook:hover,:where(html.rm) .hbook:focus-visible{transform:none}:where(html.rm) .hbook.opening{transform:none}:where(html.rm) .bk-spread{transition:none}:where(html.rm) .descend-veil{display:none}
 
 /* ---- the opened book: a generic, large two-page spread (hosts any menu book) ----
    Stages: .go flies the closed book to the middle (cover showing), .open swings the cover
@@ -171,9 +170,6 @@
 .bs-flip.prev .front,.bs-flip.next .back{border-radius:3px 0 0 3px;box-shadow:inset -22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 34px var(--c-oak-24-alpha-55)}
 .bs-flip.next .back,.bs-flip.prev .back{transform:rotateY(180deg)}
 .bs-flip.prev .front::after,.bs-flip.next .back::after{background:linear-gradient(270deg,var(--c-black-alpha-66),transparent 70%)}
-@keyframes fl-next{to{transform:rotateY(-180deg)}}
-@keyframes fl-prev{to{transform:rotateY(180deg)}}
-@keyframes fl-shade{50%{opacity:.7}to{opacity:.15}}
 /* phones: one page at a time, so the page peels away (or settles back in) instead of crossing a spread */
 .bs-flip.one{left:0;right:auto;width:100%;transform-origin:0 50%}
 .bs-flip.one.next{animation:fl-peel var(--m-smooth) var(--e-cruise) forwards}
@@ -182,8 +178,7 @@
 .bs-flip.one .front::after{display:none}
 @keyframes fl-peel{to{transform:translateX(-6%) rotateY(-85deg);opacity:0}}
 .bk-spread.one .bs-corner{width:30%;height:22%}
-.bk-spread.one .bs-corner::after{width:22px}
-@media(prefers-reduced-motion:reduce){.bs-corner i{transition:none}}
+.bk-spread.one .bs-corner::after{width:22px}:where(html.rm) .bs-corner i{transition:none}
 /* Start / close controls */
 .bk-spread.intro{pointer-events:auto}
 .bs-start{padding:12px 24px;border-radius:3px;font:600 calc(13px*var(--ts)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--bk-gild);background:linear-gradient(var(--bk),var(--bk2));border:1px solid var(--bk-gild);box-shadow:0 3px 10px -3px var(--c-black-alpha-aa)}

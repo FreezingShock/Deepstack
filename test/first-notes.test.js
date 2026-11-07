@@ -175,7 +175,7 @@ test('notes are panels, not ruled paper, and they use tokens and no keyframes', 
  assert.doesNotMatch(css, /@keyframes|animation:/, 'reduced motion needs nothing extra: no keyframes here');
  assert.doesNotMatch(css, /repeating-linear-gradient|hslip/, 'no ruled lines and no hint-strip paper');
  assert.doesNotMatch(css, /#[0-9a-f]{3,8}\b/i, 'colours come from tokens');
- assert.match(css, /prefers-reduced-motion:reduce/, 'reduced motion turns the fade off');
+ assert.match(css, /html\.rm/, 'reduced motion turns the fade off');
 });
 
 test('the run screen and the home screen call the notes at their moments', () => {

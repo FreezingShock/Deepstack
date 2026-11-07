@@ -13,5 +13,4 @@
  #stage.riddle .slip textarea.rans{height:48px;font-size:calc(26px*var(--ts));line-height:34px;padding:8px 14px 0 58px}
  #stage.riddle .pos{margin:6px 0 4px;font-size:calc(16px*var(--ts))}
 }
-@media(max-width:640px) and (max-height:700px){#stage.riddle .rdef{font-size:calc(clamp(17px,5vw,21px)*var(--ts))}#stage.riddle .wlabel{display:none}#stage.riddle .clock{margin-bottom:4px}#stage.riddle .hintline{margin-top:2px}}
-@media(prefers-reduced-motion:reduce){#stage.riddle .rdef{animation:none}}
+@media(max-width:640px) and (max-height:700px){#stage.riddle .rdef{font-size:calc(clamp(17px,5vw,21px)*var(--ts))}#stage.riddle .wlabel{display:none}#stage.riddle .clock{margin-bottom:4px}#stage.riddle .hintline{margin-top:2px}}:where(html.rm) #stage.riddle .rdef{animation:none}

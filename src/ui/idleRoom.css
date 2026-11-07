@@ -5,6 +5,5 @@
 .home .idle-moth{position:absolute;left:50%;top:6px;width:0;height:0;pointer-events:none;opacity:0;animation:idle-orbit 7s linear both}
 .home .idle-moth b{position:absolute;left:34px;top:-2px;width:5px;height:3px;border-radius:50%;background:var(--c-parchment-alpha-55);box-shadow:0 0 5px var(--c-lamplight);animation:idle-flit .42s ease-in-out infinite}
 @keyframes idle-orbit{0%{opacity:0;transform:rotate(0) scale(1.5)}10%{opacity:.9}50%{transform:rotate(540deg) scale(.55)}88%{opacity:.9}100%{opacity:0;transform:rotate(1020deg) scale(1.6)}}
-@keyframes idle-flit{0%,100%{transform:scaleY(.4) translateY(-2px)}50%{transform:scaleY(1.2) translateY(2px)}}
-@media(prefers-reduced-motion:reduce){.home .idle-drip,.home .idle-moth{display:none}}
-html[data-motion="reduce"] .home .idle-drip,html[data-motion="reduce"] .home .idle-moth{display:none}
+@keyframes idle-flit{0%,100%{transform:scaleY(.4) translateY(-2px)}50%{transform:scaleY(1.2) translateY(2px)}}:where(html.rm) .home .idle-drip,:where(html.rm) .home .idle-moth{display:none}
+html.rm .home .idle-drip,html.rm .home .idle-moth{display:none}

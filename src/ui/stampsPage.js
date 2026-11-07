@@ -6,7 +6,7 @@ import {TOPIC_ROOMS, stampRows, stampTally} from '../core/stamps.js';
 import {rgbOf} from '../core/rooms.js';
 
 const ROOM_GLYPH = {first: '✦', quarter: '¼', half: '½', mastered: '★', week: '7', perfect: '✓'};
-const LIBRARY_GLYPH = {doors: '⌂', shelves: '❀', week: '7', hundred: '100', theme: '✿'};
+const LIBRARY_GLYPH = {doors: '⌂', shelves: '❀', week: '7', hundred: '100', theme: '✿', seal: '✪'};
 const day = d => new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'});
 
 /** One seal. `room` is a room id (its colour is set from the room) or null for the library's gilt seals. */

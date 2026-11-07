@@ -41,11 +41,6 @@
 .bk-spread.menu .dly.cal .cal-d{position:relative}
 .bk-spread .dly.cal .cal-d::before{content:"";position:absolute;inset:-4px;pointer-events:auto} /* ::before, because today's underline owns ::after; the button's 2px border is inside the slop */
 .bk-spread.menu .dly.cal .cal-d:focus-visible{outline:2px solid var(--bk);outline-offset:3px}
-
-/* Librarian's Card rows you can open: the value button reaches 44px with a slop (below) */
-/* The button keeps its drawn size; its tap area is a slop (the card's last row sits at the page edge, so a taller box would be clipped) */
-.home .lg-row.lg-link .lg-val{position:relative}
-.home .lg-row.lg-link .lg-val::before{content:"";position:absolute;inset:-8px -18px;pointer-events:auto}
 /* Result card's main button: the card is a .book zoomed by --fz on phones, so its 44px floor is divided by that zoom */
 #cardlayer #go{min-height:calc(44px / var(--fz,1));box-sizing:border-box}
 /* Settings: volume and effects sliders (17px tall as drawn) and the Reset progress button (36px) */
@@ -64,6 +59,9 @@ nav[aria-label="Depth tracker"] li button{width:45px;margin:0 -13px;padding:0}
 #sVol{min-height:44px}
 .tpcred a{display:inline-block;padding:13px 2px;margin:-13px -2px}
 
+/* Restoration bench entry (fixed corner button) and the Shelf / To review switch (a filter chip) */
+.rs-entry{min-height:44px;box-sizing:border-box}
+.bk-spread.menu .sv-tab{min-height:44px!important;box-sizing:border-box;align-items:center}
 /* Home: the Descend button is the main thumb target on a phone (35px as drawn) */
 .home .descend{min-height:44px;box-sizing:border-box}
 /* Daily page: the week link ("Open the week") gets the same floor as the other Daily buttons, zoomed like them on phones */

@@ -50,6 +50,9 @@ let liveRM=null;
 /** Recompute the live flag from the settings (or the given ones, for tests) and tell every listener. */
 export function refreshMotion(s=loadSettings(),mq){
  liveRM=mq===undefined?reducedMotion(s):reducedMotion(s,mq);
+ // One switch for CSS: html.rm is on exactly when motion is reduced (the Motion setting, or the OS when set to System).
+ // Every reduced-motion rule in src/**/*.css keys off this class, so the in-game setting always wins.
+ if(globalThis.document?.documentElement)document.documentElement.classList.toggle('rm',!!liveRM);
  motionListeners.forEach(fn=>{try{fn(liveRM);}catch(e){}});
  return liveRM;
 }
@@ -60,6 +63,7 @@ export function onMotionChange(fn){motionListeners.add(fn);return()=>motionListe
 try{
  const mq=globalThis.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)');
  if(mq&&mq.addEventListener)mq.addEventListener('change',()=>refreshMotion());
+ refreshMotion();
 }catch(e){}
 
 /** Mirror settings onto <html> data attributes; CSS does the rest. */
@@ -69,4 +73,5 @@ export function applySettings(s,doc=globalThis.document){
  h.dataset.text=s.text;
  h.dataset.contrast=s.contrast?'high':'normal';
  h.dataset.motion=s.motion==='system'?'system':s.motion;
+ refreshMotion(s);
 }

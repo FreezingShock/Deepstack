@@ -3,8 +3,7 @@
 .rm-plate .rm-sw.all,.rl-toc .rl-dot.all{box-shadow:0 0 8px 2px color-mix(in srgb,var(--c-brass-cdbb92) 60%,transparent),0 0 0 1.5px var(--c-brass-cdbb92)}
 .rm-met.all{color:var(--c-brass-cdbb92)} /* light gilt on the dark plates; the ledger's cream paper keeps its ink and just gains the ✦ */
 .rm-met.all::before,.rl-room .rl-facts .rl-all::before,.rl-toc li:has(.rl-dot.all) b::before{content:"\2726\00a0";display:inline-block;transform-origin:50% 55%;animation:rmGlint calc(var(--m-page)*3) var(--e-settle) 1 both}
-@keyframes rmGlint{0%{opacity:0;transform:scale(.3) rotate(-40deg)}40%{opacity:1;transform:scale(1.5) rotate(10deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
-@media(prefers-reduced-motion:reduce){.rm-met.all::before,.rl-room .rl-facts .rl-all::before,.rl-toc li:has(.rl-dot.all) b::before{animation:none}}
+@keyframes rmGlint{0%{opacity:0;transform:scale(.3) rotate(-40deg)}40%{opacity:1;transform:scale(1.5) rotate(10deg)}100%{opacity:1;transform:scale(1) rotate(0)}}:where(html.rm) .rm-met.all::before,:where(html.rm) .rl-room .rl-facts .rl-all::before,:where(html.rm) .rl-toc li:has(.rl-dot.all) b::before{animation:none}
 /* TA2d: the "still to meet" page of the Room ledger; TA2e: the mastered line on the Rooms Almanac page */
 .rl-unmet .rl-words{font:italic 400 calc(16px*var(--ts,1))/1.75 var(--serif);margin:.4em 0 0;text-wrap:pretty;overflow-wrap:anywhere}
 .alm.rs .rs-master{margin-top:.9em}
