@@ -72,11 +72,11 @@ test('the answer wrong state and the restored state are both reachable from the 
   assert.match(passageHTML(sm, 0, true), /rs-p smudged done restored fresh/);
 });
 
-test('CSS guard: entries wrap instead of clipping, and every motion rule has a reduced-motion off switch', () => {
+test('CSS guard: entries wrap instead of clipping, and every motion rule has a reduced-motion off switch (html.rm)', () => {
   assert.match(css, /\.rs-def,\.rs-lost\{[^}]*overflow-wrap:anywhere/);
   assert.match(css, /\.rs-head\{[^}]*overflow-wrap:anywhere/);
   assert.match(css, /\.rs-word\{[^}]*overflow-wrap:anywhere/);
-  assert.match(css, /@media \(prefers-reduced-motion:reduce\)\{[^@]*\.rs-stain[^@]*\}/);
+  assert.match(css, /:where\(html\.rm\) \.rs-stain/);
   assert.match(css, /@media \(max-width:640px\)/);
   assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/, 'raw hex: use a colour token from src/theme/colors.js');
 });

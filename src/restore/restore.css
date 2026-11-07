@@ -93,7 +93,5 @@
   .rs-wall{grid-template-columns:1fr}
 }
 
-@media (prefers-reduced-motion:reduce){
-  .rs-bench,.rs-stain,.rs-entry,.rs-btn{transition:none!important}
-  .rs-p.fresh .rs-def,.rs-p.fresh .rs-head,.rs-p.shake{animation:none!important}
-}
+:where(html.rm) .rs-bench,:where(html.rm) .rs-stain,:where(html.rm) .rs-entry,:where(html.rm) .rs-btn{transition:none!important}
+:where(html.rm) .rs-p.fresh .rs-def,:where(html.rm) .rs-p.fresh .rs-head,:where(html.rm) .rs-p.shake{animation:none!important}
