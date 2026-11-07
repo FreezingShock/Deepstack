@@ -112,6 +112,13 @@ const MATERIAL = [
   }
 ];
 
+/* The bookmark ribbon hanging from a spine's foot: p = {rx, rl, col, seed}, drawn in the spine's own frame (origin at the
+   foot's centre). The sway depends on time, so it is drawn live even when the spine itself is cached. */
+export function drawRibbon(c, p, t = 0) {
+  const sw = Math.sin(t * 1.3 + p.seed) * 1.2, rx = p.rx, rl = p.rl;
+  c.fillStyle = p.col; c.beginPath(); c.moveTo(rx, -3); c.lineTo(rx + 3.6, -3); c.lineTo(rx + 3.6 + sw, rl); c.lineTo(rx + 1.8 + sw, rl - 3.5); c.lineTo(rx + sw, rl); c.closePath(); c.fill();
+  c.fillStyle = 'rgba(255,255,255,.25)'; c.fillRect(rx, -3, 1, rl * .8);
+}
 export function bookArt(c, o, t = 0) {
   const rng = mulberry(o.seed | 0), w = o.w, h = o.h, x0 = -w / 2, y0 = -h, T = o.tier;
   const base = o.col || tierBase(T), dark = mixc(base, BLACK, .5), light = mixc(base, PAPER, .22);
@@ -167,6 +174,6 @@ export function bookArt(c, o, t = 0) {
   if (T === 6) { c.save(); c.translate(0, y0 + h * .14); c.rotate(.785); const r = Math.min(5.5, w * .2); const gg = c.createLinearGradient(-r, -r, r, r); gg.addColorStop(0, PALETTE.teal96); gg.addColorStop(.55, PALETTE.aqua); gg.addColorStop(1, PALETTE.teal40); c.fillStyle = gg; c.shadowColor = PALETTE.aqua; c.shadowBlur = 10; c.fillRect(-r, -r, r * 2, r * 2); c.restore(); }
   c.strokeStyle = 'rgba(0,0,0,.55)'; c.lineWidth = 1; c.beginPath(); c.moveTo(x0, 0); c.lineTo(x0, y0); c.lineTo(x0 + w, y0); c.lineTo(x0 + w, 0); c.stroke();
   // bookmark ribbon (hangs out of the bottom)
-  if (o.ribbon) { const rx = x0 + w * (.25 + rng() * .4), rl = 10 + rng() * 14, sw = Math.sin(t * 1.3 + o.seed) * 1.2; c.fillStyle = o.ribbon; c.beginPath(); c.moveTo(rx, -3); c.lineTo(rx + 3.6, -3); c.lineTo(rx + 3.6 + sw, rl); c.lineTo(rx + 1.8 + sw, rl - 3.5); c.lineTo(rx + sw, rl); c.closePath(); c.fill(); c.fillStyle = 'rgba(255,255,255,.25)'; c.fillRect(rx, -3, 1, rl * .8); }
+  if (o.ribbon) { const rx = x0 + w * (.25 + rng() * .4), rl = 10 + rng() * 14; if (o.defer) o.defer.push({rx, rl, col: o.ribbon, seed: o.seed}); else drawRibbon(c, {rx, rl, col: o.ribbon, seed: o.seed}, t); } // deferred: the world draws it live over a cached shelf (drawRibbon)
   c.restore();
 }

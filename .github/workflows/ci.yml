@@ -57,6 +57,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.heavy == 'true'
     runs-on: ubuntu-latest
+    # 25, not 16: the browser guards run in series here, and the onboarding halo guard (#386) added a few minutes to them.
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -99,6 +100,7 @@ jobs:
           node scripts/ra-fixes.mjs & rafix=$!
           node scripts/ember-log.mjs & ember=$!
           node scripts/pwa-check.mjs & pwa=$!
+          node scripts/a11y.mjs & a11y=$!
           node scripts/restore-check.mjs & rest=$!
           node scripts/review-shelf.mjs & review=$!
           rc=0
@@ -111,6 +113,7 @@ jobs:
           wait $rafix || rc=1
           wait $ember || rc=1
           wait $pwa || rc=1
+          wait $a11y || rc=1
           wait $review || rc=1
           wait $rest || rc=1
           node scripts/first-note-clear.mjs || rc=1
@@ -125,9 +128,13 @@ jobs:
           node scripts/nemesis-check.mjs
           node scripts/a11y-axe.mjs
           node scripts/a11y-focus.mjs
+          node scripts/onboarding-halo.mjs
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
       - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)
         run: node scripts/perf-budget.mjs --rooms hall,science,body
+      # Input to next paint at 4x CPU: room switch, settings book, answer submit (desktop and phone), plus the rule that a room's save runs after its first painted frame.
+      - name: Input latency budget (room switch, book open, submit at 4x CPU)
+        run: node scripts/latency-budget.mjs
       # Memory and frame time: heap after the judge warms (its data lives in a worker), heap/DOM/listeners kept across laps of
       # every room and a long Unlimited run, and the worst frozen frame of a throttled room walk. Leaves traces on failure.
       - name: Memory and frame-time budget (leaks across room laps and long runs, worst frame)

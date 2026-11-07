@@ -1,5 +1,6 @@
 /* The Ember Log row in the Room Ledger: its number keeps its natural width, and its label wraps instead.
-   The row is flex with the label (span.lg-k) and the number (span.lg-v) side by side; in a narrow ledger the
-   number was squeezed to a few pixels (.lg-v has min-width:0 and overflow:hidden), so the "0" streak was clipped. */
+   The row is a div (welcome.js row()) with span.lg-k (label) and span.lg-v (number) side by side; in a narrow
+   ledger the number was squeezed to a few pixels while the label stayed put, so the "0" streak was clipped.
+   The earlier rules named dd/dt, which this markup does not have, so they matched nothing. */
 .home .lg-streak .lg-v{flex:0 0 auto}
 .home .lg-streak .lg-k{min-width:0;white-space:normal;overflow-wrap:anywhere}

@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Nemesis rematch (NM1): open the Almanac on your phone and turn to the Wanted page. This week's hardest word sits there as a wanted poster, and the Rematch button is also on its row in the hardest-words list. Tap "Face it this week" and answer. Say whether the poster and the rematch feel right, and which option you want (A, B or C in NM1).
+- Onboarding halo (ON1, this PR): on a fresh profile, the first home visit lights the Room Ledger spine. The halo should sit on the spine, not beside it, and the side-door line on desktop should light the left door. Tell me if either still looks off (screenshots in screenshots/onboarding-halo/).
 - Restoration follow-ups (MR2 to MR4, this PR): open the bench from the bottom-left door on your phone. The first page of each room today is its Daily, and its frame on the wall says Daily. Restore all three entries on a page and a Wax seal plaque drops over the open bench, in the Almanac's library row. Tell me if the plaque should wait until you close the bench instead.
 - Restoration bench (MR1, this PR): a new door at the bottom-left of home, "Restoration bench". Open it, write what each faded word means, type the smudged word, and check the wall. A, B or C mixes are in screenshots/restoration/option-*; B (two faded, one smudged) is built. Reply with a letter if you want another mix.
 - To review (RV1): open the Shelf, tap To review, then Try again on a word and write it from memory. Tell me if 46 is the right bar to win a word back, and whether To review should stay inside the Shelf (now) or get its own spine on the home. Screenshots: screenshots/review-shelf/.
@@ -94,7 +95,8 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [~] Tactile hover/press/focus everywhere (#82)
 - [x] Rare tier reveals: particle overhaul (pooled sprite engine, prewarmed, per-tier recipes; this PR)
 - [~] Screen-to-screen transitions
-- [~] Keyboard controls and accessibility (axe and focus guards and Card/door label fixes in PR #358; aria-live and contrast sampling still open)
+- [~] Keyboard controls and accessibility (one guard, `scripts/a11y.mjs`, from #358 and #378; AX2 in #387; AX3 is with the other accessibility thread; AX4 open)
+  - AX2 shelf tap areas: built option C (desktop at least 800px tall: 44px tap areas, same drawn spines; phones and shorter laptops stay as they are). Logged alternatives: A, keep as is (24px spaced targets); B, taller books at 44px everywhere (pushes the phone's bottom row below the fold). Renders in `screenshots/a11y-shelf-height/`.
 - [~] Judge accuracy on tricky answers
 - [~] Difficulty ramp and word pool
 - [x] Hints and skip (#86)
@@ -2132,6 +2134,27 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### TY3. One range style for floor ranges
 **Pitch:** The depth tracker writes "0–101 ft" with an en dash, while the Floors book and the Card's floor row write "0 to 101 ft". Pick one and use it on every screen.
 **Brief:** Goal: one range helper in `src/core/numFmt.js` used by `src/ui/tracker.js`, `src/ui/floorLeaves.js` and the floor banner. Files: those three files, plus a test in `test/number-format.test.js`. **Conflicts:** Card floor row (TA7), Floors book.
+## ON. Onboarding (2026-11-07)
+
+### [x] ON1. Onboarding halo sits on its target (this PR)
+**Pitch:** The first-visit halo on the Room Ledger spine sat up and left of the spine and ran into the Stats spine below it. Every first-visit note (Daily, Unlimited, the side doors, the Ledger) now follows its target frame by frame, and a side-door note waits until the doors are placed.
+**Brief:** Done: `src/ui/firstNotes.js` (`followNote`, `showHomeNoteSoon`), `src/app/home.js`. Guard: `scripts/onboarding-halo.mjs` (every home note in all seven rooms at 1920 and 375, motion on and reduced). Unit tests: `test/onboarding-halo.test.js`.
+
+### [ ] ON2. Halo ring crosses the next spine
+**Pitch:** The 5px ring around a spine overlaps the top or bottom edge of the spine beside it (ROOMS over STATS). nate asked for nothing to sit over the highlight, so the ring should stay inside its neighbours.
+**Brief:** Goal: a ring that stays within the target's neighbours in a stack, at every size. Options: a 3px ring, or a ring drawn inside the spine's edge. Files: `src/ui/firstNotes.css`, `src/ui/firstNotes.js` (`followNote` ring offset). Done when: `scripts/onboarding-halo.mjs` also asserts the ring does not cross a neighbour's edge. Show nate both options as screenshots first.
+**Conflicts:** firstNotes.js (ON1 is done, so no conflict now).
+
+### [ ] ON3. Notes fade in, not pop
+**Pitch:** A first-visit note appears all at once. Give the halo and panel the same short fade-in as the rest of the motion language (#125) and keep it still under reduced motion.
+**Brief:** Goal: the halo and panel fade in over the motion token, with the fade-out kept. Files: `src/ui/firstNotes.css`. Done when: the reduced-motion case in `scripts/onboarding-halo.mjs` shows no transition, and motion-on frames show the opacity rising.
+**Conflicts:** firstNotes.css.
+
+### [ ] ON4. Phones get a line for the side doors
+**Pitch:** On a phone the side doors are hidden, so a first-visit note for them never shows. Decide whether phones get a different line for rooms, such as one under the Ledger, or nothing.
+**Brief:** Goal: a phone first visit explains how to reach the topic rooms. Options: A, the Ledger note says "Rooms: words met, per room"; B, a line on the Rooms book; C, nothing, since the Ledger already covers it. Show nate all three on a phone in screenshots/onboarding-halo/ before building.
+**Conflicts:** home.js notes list (HOME_NOTES).
+
 ## MR. Manuscript restoration (2026-11-07, nate: "something more unique")
 ### MR1. [x] Restoration bench: a damaged page per room, ink returns, finished pages hang on a wall (this PR)
 Brief: a water-damaged page from the room you are in. Two faded entries: the headword shows, the definition has run, and you write what it means in your own words; the judge scores it, and the real entry comes back in ink at 14 or better. One smudged entry: its definition is clear, the headword has gaps, and you type the word (a letter can be given). Leave an entry and it stays damaged. A finished page pins to the wall. Code: `src/restore/` (pages, store, markup, ui, entry). Screenshots: `screenshots/restoration/`. Guards: `test/restore-*.test.js`, `scripts/restore-check.mjs` (CI).
@@ -2330,3 +2353,17 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 ### NO1. [x] First-time notes clear when the player acts (this PR)
 **Done:** a first-visit home note (the gold halo and its panel) no longer sits over the card that opens next. Opening a card clears every note, and any click clears them before its handler runs. Files: `src/ui/firstNotes.js`, `src/app/card.js`, `src/main.js`. Guard: `scripts/first-note-clear.mjs` in CI, `test/first-note-clear.test.js`. The walk's "doubled stop" on the "You wrote" line was a false positive (the closing quote), so it is not in this change.
 **Touches:** every card and the home first-visit lines. **Conflicts:** none open.
+
+## PL. Input latency (2026-11-07, room switch, book open, submit)
+
+### PL1. [x] Room switch paints its first frame before the room's work (this PR)
+**Done:** the room's save, word lists and home rebuild run after the first glide frame has painted. Desktop keydown-to-paint at 4x CPU went from 570-750 ms to 410-520 ms. `scripts/latency-budget.mjs` (CI) budgets input-to-paint for room switch, settings book and submit on desktop and phone, and checks the save-after-paint order (the pre-fix build fails it). **Files:** `src/app/roomGo.js`, `scripts/latency-budget.mjs`, CI step.
+
+### PL2. [x] Full-screen canvases cost a copy every frame at 4x CPU (this PR)
+**Done:** the row-0 shelf books were redrawn live each frame (about 2300 canvas fills a frame). They now render once into a cached offscreen bitmap, with only the ribbons and the tier-6 books drawn live. Idle canvas fills fell from about 18000 a second to a few hundred, and the idle frame rate went from 7 to 8.4 fps at 4x. Desktop room switch keydown-to-paint is about 230-320 ms at 4x, down from about 470. The latency guard now also budgets idle canvas fills a second. Remaining cost is the full-canvas background fill and the per-frame blits, which need a layer restructure (follow-up). **Files:** `src/world/world.js`, `src/ui/bookArt.js`, `scripts/latency-budget.mjs`.
+
+### PL3. [ ] Book open is raster-bound during the open
+**Pitch:** Each frame of the settings book costs about 100 ms of commit while the main thread is about 15-30 ms, so the book opens in a few steps at 4x. **Brief:** Goal: find the layer that repaints each frame during `.bs-spread` open (box-shadow, filter, or a large background) and keep it on the compositor. Files: `src/ui/bookStyle.css`, `src/ui/bookOpenFx.css`. Done when: book-open budget cut and transitions guard still passes. **Conflicts:** book threads.
+
+### PL4. [ ] One world plate draw takes 250-400 ms on the first frame of a room switch
+**Pitch:** During a room switch one `floorProp` plate draw (`src/world/world.js`) costs 250-400 ms at 4x. The same draw is about 1 ms when idle, and font and canvas state look clean, so the cost is likely a raster flush. **Brief:** Goal: find what the first frame after the key flushes (a deferred draw from the previous room, or a bitmap). Files: `src/world/world.js`. Done when: first-frame long task under 150 ms at 4x. **Conflicts:** world.js.

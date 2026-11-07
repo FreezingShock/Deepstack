@@ -20,7 +20,7 @@ export function initA11y(doc=document){
  label('#gauge','presentation','');
  for(const s of ['#world','#fx','#gauge','#skiph','#shelfcap'])$(s)&&$(s).setAttribute('aria-hidden','true');
  const ui=$('#ui');if(ui)ui.setAttribute('role','main');
- const bar=$('#bar');if(bar)bar.setAttribute('role','banner');
+ const bar=$('#bar');if(bar){bar.setAttribute('role','group');bar.setAttribute('aria-label','Library bar');}
  const g=$('#gauge');if(g)g.removeAttribute('aria-label');
 
  /* modal dialogs: role, trap Tab, restore focus */
@@ -43,6 +43,29 @@ export function initA11y(doc=document){
   else if(e.shiftKey&&a===first){e.preventDefault();last.focus();}
   else if(!e.shiftKey&&a===last){e.preventDefault();first.focus();}
  });
+
+ /* open menu books are dialogs: the room behind them goes inert (no Tab stops, no clicks), and focus goes back to the
+   book's button when it closes. A book is a .bk-spread appended to body, marked .intro once it is on screen. */
+ let booksOpen=null,booksReturn=null,booksInert=[];
+ const openBook=()=>doc.querySelector('.bk-spread.intro');
+ const syncBooks=()=>{
+  const b=openBook();
+  if(b&&!booksOpen){
+   booksOpen=b;const a=doc.activeElement;booksReturn=a&&a!==doc.body?a:null;
+   booksInert=[...doc.body.children].filter(c=>c!==b&&!c.contains(b)&&c.id!=='sr'&&!c.hasAttribute('inert'));
+   booksInert.forEach(c=>c.setAttribute('inert',''));
+  }else if(!b&&booksOpen){
+   booksOpen=null;booksInert.forEach(c=>c.removeAttribute('inert'));booksInert=[];
+   const r=booksReturn;booksReturn=null;
+   if(r&&r.isConnected&&!r.closest('[inert],[hidden]'))r.focus({preventScroll:true});
+  }
+ };
+ new MutationObserver(ms=>{
+  for(const m of ms)for(const n of m.addedNodes)if(n.nodeType===1&&n.classList.contains('bk-spread'))watchBook(n);
+  syncBooks();
+ }).observe(doc.body,{childList:true});
+ const watchBook=sp=>new MutationObserver(syncBooks).observe(sp,{attributes:true,attributeFilter:['class']});
+ doc.querySelectorAll('.bk-spread').forEach(watchBook);
 
  /* the word screen */
  const stage=$('#stage');let prevLeft=null;
