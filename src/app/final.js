@@ -22,6 +22,7 @@ import {dailyNumber} from '../core/daily.js';
 import {riddleDayShare} from '../core/riddleDaily.js';
 export const BLK='▁▂▃▄▅▆▇';
 export function shareText(d){if(d.mode==='riddle'&&d.day)return riddleDayShare(d.day,d,BLK);
+ if(d.mode==='weekly')return `Deepstack \u00b7 ${d.themeName} \u00b7 day ${d.dayIdx+1} of 7\nDepth ${fmtNum(d.depth)} ft \u00b7 closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' \u00b7 ')}`;
  if(isDailyRun(d))return dailyShareText(d,{room:roomById(currentRoom(S)).name,no:dailyNumber(runDay(d,utc())),floorName:d.floor?FLOORS[d.floor].name:'',tierNames:TIERS.map(t=>t.name),keys:Object.keys(S.daily||{}),today:utc()});
  return `Deepstack ${d.mode==='riddle'?'':roomShareTag()}${d.mode==='riddle'?'Riddle \u00b7 '+d.solved+' of '+d.of+' solved':d.mode==='unlimited'?'Unlimited \u00b7 Lexicon '+d.lex:'No. '+dailyNo()}\nDepth ${fmtNum(d.depth)} ft${d.floor?' · '+FLOORS[d.floor].name:''} · average closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' · ')}`;}
 export async function showFinal(d,fromHome){
