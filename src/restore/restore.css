@@ -2,6 +2,9 @@
    that fades as entries come back. Motion: the stain glides, a restored entry comes up in ink, a wrong answer shakes once.
    Reduced motion turns every animation and transition off; the result still shows. */
 
+/* a stamp earned on the bench (the wax seal) drops over the open bench, not under it */
+body:has(.rs-bench.on) #stamptoast{z-index:1001}
+
 .rs-entry{position:fixed;left:max(10px,env(safe-area-inset-left,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:baseline;gap:8px;min-height:36px;padding:6px 12px;border:1px solid var(--c-brass);border-radius:6px;background:var(--c-oak-16);color:var(--c-parchment);font:inherit;cursor:pointer;box-shadow:0 6px 18px var(--c-black-alpha-bb);transition:background-color .25s var(--e-cruise)}
 .rs-entry:hover,.rs-entry:focus-visible{background:var(--c-oak-24);outline:none;box-shadow:0 0 0 2px var(--c-brass),0 6px 18px var(--c-black-alpha-bb)}
 .rs-entry:active{transform:translateY(1px)}
@@ -84,6 +87,9 @@
 .rs-line.lost em{font-size:calc(14px*var(--ts))}
 .rs-empty{text-align:center;color:var(--c-parchment);padding:40px 12px;font-size:calc(18px*var(--ts))}
 .rs-wall-empty,.rs-empty p{margin:0 0 14px}
+/* a Daily page: its frame is lit brass and its tag reads Daily on the wall */
+.rs-frame.daily{border-color:var(--c-brass-75);box-shadow:0 8px 20px var(--c-black-alpha-bb),inset 0 0 0 1px var(--c-oak-24)}
+.rs-tag{display:inline-block;padding:0 6px;border:1px solid var(--c-brass-75);border-radius:3px;color:var(--c-brass);letter-spacing:.12em;line-height:1.6}
 
 @media (max-width:640px){
   .rs-stage{padding:14px 16px 24px}

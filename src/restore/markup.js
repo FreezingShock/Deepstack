@@ -4,6 +4,8 @@ import {smudgedShown, pageComplete, pageDamage} from './pages.js';
 
 export const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 export const roomName = id => roomById(id).name;
+/** The page's number on the bench and the wall: a Daily is named, the rest are numbered. */
+export const pageNo = pg => (pg.daily ? 'Daily' : `Page ${pg.seed}`);
 
 
 /** One passage. A faded entry shows the headword and ink blots until it is restored; a smudged one shows its definition and the headword with gaps. */
@@ -72,7 +74,8 @@ export function sheetHTML(pg, freshI = -1) {
 /** One frame on the wall: the page's entries, with any left unrestored shown as lost. */
 export function frameHTML(pg) {
   const rows = pg.passages.map(p => `<p class="rs-line${p.restored ? '' : ' lost'}"><b>${esc(p.w)}</b> ${p.restored ? esc(p.def) : `<em>${p.kind === 'smudged' ? 'The word stayed smudged.' : 'The rest of this entry has run.'}</em>`}</p>`).join('');
-  return `<figure class="rs-frame"><figcaption><span>${esc(roomName(pg.room))}</span><span>Page ${pg.seed}${pg.at ? ' · ' + esc(pg.at) : ''}</span></figcaption><div class="rs-paper">${rows}</div></figure>`;
+  const tag = pg.daily ? `<b class="rs-tag">Daily</b>${pg.at ? ' · ' + esc(pg.at) : ''}` : `Page ${pg.seed}${pg.at ? ' · ' + esc(pg.at) : ''}`;
+  return `<figure class="rs-frame${pg.daily ? ' daily' : ''}"><figcaption><span>${esc(roomName(pg.room))}</span><span>${tag}</span></figcaption><div class="rs-paper">${rows}</div></figure>`;
 }
 
 export function wallHTML(list) {
