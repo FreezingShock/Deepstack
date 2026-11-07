@@ -35,7 +35,7 @@
    The 44px input is the target now, so the row drops its own padding. */
 .bk-spread.panel .sb-slider.tprow{padding-top:0;padding-bottom:0}
 /* with 44px touch targets the Settings page is 26px too tall at desktop; a little less air around the hints and groups closes it */
-.bk-spread.panel .tphint{margin:2px 0 2px;padding-bottom:4px}
+.bk-spread.panel .tphint{margin:2px 0 2px;padding-bottom:2px}
 .bk-spread.panel .sb-group{margin:0 0 4px}
 .bk-spread.panel .sb-h{margin:10px 0 2px}
 .bk-spread.panel .tprow,.bk-spread.panel .tpseg{padding:6px 0}

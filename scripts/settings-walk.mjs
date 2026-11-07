@@ -143,7 +143,8 @@ async function walkGroup(view, osReduce) {
       for (const h of await page.evaluate(auditBook)) problems.push(`${tag} ${scene} ${h.where}: ${h.why}`);
     };
     try {
-      await page.goto('about:blank');
+      // localStorage belongs to the page's origin, so the settings are written from the app's own origin, then the app reloads with them
+      await page.goto(url, {waitUntil: 'load'});
       await page.evaluate(s => { try { localStorage.setItem('deepstack.settings.v1', JSON.stringify(s)); } catch {} }, {text, motion, contrast});
       await page.goto(url, {waitUntil: 'load'});
       await page.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T});
