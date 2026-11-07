@@ -40,6 +40,19 @@ export function reviewItems(S) {
 export const reviewCount = S => reviewItems(S).length;
 
 /**
+ * How many distinct words of one run are still to win back (RV2: the result card's link). A run's book whose word is
+ * not on the review list (it was won back, or never missed) does not count. Pure: reads the run and the save only.
+ */
+export function runWordsToReview(S, books) {
+  const open = new Set(reviewItems(S).map(it => it.key)), words = new Set();
+  for (const b of Array.isArray(books) ? books : []) {
+    const k = keyOf(b && b.w);
+    if (k && open.has(k)) words.add(k);
+  }
+  return words.size;
+}
+
+/**
  * Records one re-try. Adds no book and no depth; only the re-try record changes. Returns the stored record.
  * `cleared` sticks once a re-try reaches REVIEW_BELOW.
  */

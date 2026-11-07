@@ -43,9 +43,9 @@ const SEED = {shelf: [
 ], daily: {}, streak: {last: '', n: 0}, bestDepth: 0, bestFloor: 0, sound: false};
 const EXPECT_WORDS = 7;
 
-async function newPage(width, height) {
+async function newPage(width, height, seed = SEED) {
   const ctx = await browser.newContext({viewport: {width, height}, reducedMotion: 'reduce'});
-  await ctx.addInitScript(s => { if (!sessionStorage.getItem('rv-seeded')) { localStorage.clear(); localStorage.setItem('deepstack.v1', s); sessionStorage.setItem('rv-seeded', '1'); } }, JSON.stringify(SEED));
+  await ctx.addInitScript(s => { if (!sessionStorage.getItem('rv-seeded')) { localStorage.clear(); localStorage.setItem('deepstack.v1', s); sessionStorage.setItem('rv-seeded', '1'); } }, JSON.stringify(seed));
   const page = await ctx.newPage();
   await page.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
   page.on('pageerror', e => fail(`pageerror: ${e.message}`));
@@ -130,13 +130,38 @@ async function guard(width, height) {
   await page.context().close();
 }
 
+/* RV3 and RV4: the Shelf spine counts the words to review, and with two rooms the review view shows room chips that
+   narrow the contents. Two of the seven words are from the Observatory, so the room chips appear. */
+async function filters() {
+  const seed = structuredClone(SEED);
+  seed.shelf[0].room = 'science'; seed.shelf[1].room = 'science'; // abandon and lucid; the rest are in the Reading Room
+  const page = await newPage(1280, 800, seed);
+  await page.goto(url, {waitUntil: 'load'});
+  await page.waitForSelector('#home:not([hidden]) #bAll', {timeout: T});
+  const spine = await page.textContent('#bAll .hb-rv', {timeout: T});
+  if (+spine !== EXPECT_WORDS) fail(`filters: the Shelf spine tag shows ${spine}, expected ${EXPECT_WORDS}`);
+  await page.click('#bAll');
+  await page.waitForTimeout(2200);
+  await page.click('.sv-tab[data-view="review"]');
+  await page.waitForSelector('.rv-filter[data-k="room"][data-v="science"]', {timeout: T});
+  const sci = await page.textContent('.rv-filter[data-k="room"][data-v="science"] small');
+  if (+sci !== 2) fail(`filters: the Observatory chip shows ${sci}, expected 2`);
+  await page.click('.rv-filter[data-k="room"][data-v="science"]');
+  await page.waitForFunction(() => [...document.querySelectorAll('.kicker')].some(k => k.textContent.includes('2 of 7 words to win back')), null, {timeout: T}).catch(() => fail('filters: the Observatory filter did not narrow the overview to 2 of 7'));
+  await page.waitForFunction(() => document.querySelectorAll('.rv-jump').length === 2, null, {timeout: T}).catch(() => fail('filters: the contents after the Observatory filter did not show 2 rows'));
+  await page.click('.rv-filter[data-k="room"][data-v=""]');
+  await page.waitForFunction(() => [...document.querySelectorAll('.kicker')].some(k => k.textContent.includes('7 words to win back')), null, {timeout: T}).catch(() => fail('filters: All did not restore the 7 words'));
+  await page.context().close();
+}
+
 try {
   await guard(1280, 800);
   await guard(375, 812);
+  await filters();
 } catch (e) {
   if (e.message !== 'stop') fail(`review-shelf: ${e.message.split('\n').slice(0,12).join(' | ')}`);
 }
 await browser.close();
 server.close();
 if (problems.length) { console.error('review-shelf: FAILED\n  ' + problems.join('\n  ')); process.exit(1); }
-console.log('review-shelf: ok (tab count, contents, every word page fits, re-try records, shelf untouched)');
+console.log('review-shelf: ok (tab count, contents, every word page fits, re-try records, shelf untouched, room filter and spine count)');

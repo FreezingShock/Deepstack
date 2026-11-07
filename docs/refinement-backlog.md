@@ -2154,19 +2154,22 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### [x] RV1. To review: words to win back, with a quick re-try (PR #342)
 **Done:** the Shelf book has a Shelf / To review switch. To review lists every word whose best answer is under 46 (skips count as 0) with its real meaning, what you wrote and the ideas you missed. Each word has a re-try judged by the full judge: 46 or better wins it back, and a re-try adds no book and no depth. Guard: `scripts/review-shelf.mjs` in CI and `test/review-shelf.test.js`. Screenshots: screenshots/review-shelf/.
 
-### RV2. Review from the end of a run
+### [x] RV2. Review from the end of a run (this PR)
+**Done:** a run with words still to win back shows "Words to win back (N)" on its result card (`runWordsToReview`, `src/app/final.js`, `src/ui/results.js`). It opens the Shelf on To review. Hidden on a clean run.
 **Serves:** honest answers, and the "look at the books I missed" choice on the ledger.
 **Pitch:** After a descent the result page offers "Words to win back (N)" that opens the To review view, so missed words are one tap away.
 **Brief:** Goal: a link on the result ledger that opens the Shelf book on its To review view when there are words to win back, and stays hidden on a clean run. Files: `src/app/final.js`, `src/ui/results.js`, `src/ui/bookMenus.js` (its `view` state). Done when: a run with a miss shows the link and a clean run does not.
 **Touches:** result card. **Conflicts:** result-card threads.
 
-### RV3. Filter To review by room and rarity
+### [x] RV3. Filter To review by room and rarity (this PR)
+**Done:** To review shows room and rarity chips (each with its count) that narrow the contents. The room chips appear once two rooms have words. Guard: the Observatory check in `scripts/review-shelf.mjs`.
 **Serves:** books that are readable and usable.
 **Pitch:** Once there are many misses, the review list narrows to one room or one rarity, the same way the shelf already does.
 **Brief:** Goal: reuse the shelf's room and rarity chips inside the To review view. Files: `src/ui/reviewPages.js`, `src/ui/bookMenus.js`. Done when: a save with two rooms shows the room chips and the contents follow them.
 **Touches:** shelf. **Conflicts:** shelf-filters threads.
 
-### RV4. Count the words to review on the Shelf spine
+### [x] RV4. Count the words to review on the Shelf spine (this PR)
+**Done:** the Shelf spine on the home carries a small count tag at its right edge when words are waiting (`src/ui/home.js`, `src/styles/reviewSpine.css`). The spine's tooltip names the count too.
 **Serves:** discovery. The feature sits behind the Shelf book today.
 **Pitch:** The Shelf spine on the home says how many words are waiting to review, so nobody has to open the book to find out.
 **Brief:** Goal: badge the Shelf spine with the count from `reviewCount` (`src/core/reviewShelf.js`) in `src/ui/home.js`. Done when: the home snapshot and text-fit checks pass at 375 and 1280 with the badge on.
