@@ -10,7 +10,7 @@ const page=(opts={})=>{const p=settingsPages({st:{...DEFAULTS,...opts.st},sound:
 
 test('the book holds every control topbar.js wires, once each',()=>{
  const html=page();
- for(const id of ['sSound','sVol','sMus','sFx','sMotion','sText','sQual','sContrast','sFloorRules','sReset','sConfirm','scKeep','scGo']){
+ for(const id of ['sSound','sVol','sMus','sFx','sMotion','sText','sQual','sContrast','sFloorRules','sHaptics','sReset','sConfirm','scKeep','scGo']){
   assert.equal(ids(html).filter(x=>x===id).length,1,id);
  }
 });
