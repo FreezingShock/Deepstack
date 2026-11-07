@@ -2118,7 +2118,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** The share card's header takes the room's fire colour, so a Chronicle share looks red and a Gallery share purple (text only, no emoji).
 **Brief:** Goal: a colour line via `ROOMS[].rgb` in the share card's header (HTML sheet only). Files: `src/ui/results.js`, `src/ui/dailyShare.css`. **Conflicts:** SH1.
 
-### [x] RV1. To review: words to win back, with a quick re-try (this PR)
+### [x] RV1. To review: words to win back, with a quick re-try (PR #342)
 **Done:** the Shelf book has a Shelf / To review switch. To review lists every word whose best answer is under 46 (skips count as 0) with its real meaning, what you wrote and the ideas you missed. Each word has a re-try judged by the full judge: 46 or better wins it back, and a re-try adds no book and no depth. Guard: `scripts/review-shelf.mjs` in CI and `test/review-shelf.test.js`. Screenshots: screenshots/review-shelf/.
 
 ### RV2. Review from the end of a run
