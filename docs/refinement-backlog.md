@@ -2058,8 +2058,8 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Brief:** Done: `src/ui/settings.js` (new `music`, `effects` fields; `motion` is now system / reduce / full), `src/ui/settingsBook.js` + `settingsBook.css` (page markup), `src/ui/progressReset.js` (erases `deepstack.v1`, `deepstack.cabinet.v1`, `deepstack.flipHint`; never settings), `src/feel.js` (Music and Effects buses, each with its own reverb send), `src/ui/topbar.js` (wiring). Tests: `test/settings.test.js`, `test/settings-book.test.js`; smoke step "settings: sliders save and reset asks first". Before/after: screenshots/settings-overhaul/.
 **Done:** PR pending (draft). Placement is open: see "What nate needs to do".
 
-### ST2. Reach Settings from a phone's card catalogue
-**Status:** waiting on the placement pick. Option A or C already opens Settings from the phone's gear, so this is only needed if B is chosen.
+### [x] ST2. Reach Settings from a phone's card catalogue
+**Done (option C):** nate picked C (gear everywhere, cabinet drawer on desktop). The phone's top-bar gear already opens the Settings book at 375 px, so no code change was needed. Screenshot: screenshots/settings-overhaul/after-375-settings.png.
 **Pitch:** The card catalogue and its Settings drawer exist only on desktop, so on a phone the Settings book is reachable only from the gear.
 **Brief:** Goal: a phone player can open Settings in one tap from home, in the way nate picks (see ST1 placement). Files: `src/ui/cabinet.js`, `src/ui/topbarRail.js`. Done when: a phone test taps the chosen entry and the book opens. **Touches:** settings, home. **Conflicts:** card catalogue and rail threads.
 
