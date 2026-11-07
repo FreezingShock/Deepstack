@@ -42,12 +42,12 @@ const repeatsHeadword = (sense, w) => {
   return sense.toLowerCase().replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(Boolean).some(t => match(stem(t), ws) >= .9 || (t.length >= 5 && w.startsWith(t.slice(0, 5)) && t.length <= w.length + 3));
 };
 // The answer to type: the room's own definition of the word, else the word's first sense that does not repeat it.
+// The Reading Room has no room entries, so its words use the pool's own definition (public/data/words.json).
+const poolDef = new Map(JSON.parse(await readFile(join(root, 'data', 'words.json'), 'utf8')).words.map(e => [e.w, e.def]));
 const answerFor = (id, w) => {
   const own = (roomWords[id] || []).find(e => e[0] === w)?.[2];
-  if (own && !repeatsHeadword(own, w)) return own;
   const e = senses[w];
-  if (!e) return null;
-  const cands = [...(e.alt || []).map(a => a[1]), ...(e.syn || []).map(s => s[1])];
+  const cands = [own, poolDef.get(w), ...(e?.alt || []).map(a => a[1]), ...(e?.syn || []).map(s => s[1])];
   return cands.find(s => s && !repeatsHeadword(s, w)) || null;
 };
 const BLOCKED = /^https?:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|huggingface\.co|[^/]*\.hf\.co|cdn\.jsdelivr\.net)\//;
