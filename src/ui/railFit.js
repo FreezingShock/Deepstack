@@ -47,11 +47,16 @@ export function syncFlame(doc, bar, cue) {
   const on = bar.classList.contains('fit-nogauge'), n = doc.querySelector('#bgStreak'), dot = doc.querySelector('#bgStreakRoom .rl-dot');
   let el = cue.querySelector('.ach-flame');
   if (!on || !n) { if (el) el.hidden = true; return; }
-  if (!el) { el = doc.createElement('span'); el.className = 'ach-flame'; el.setAttribute('aria-hidden', 'true'); cue.appendChild(el); }
+  if (!el) {
+    el = doc.createElement('span'); el.className = 'ach-flame';
+    el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0'); el.setAttribute('title', 'Open the Ember Log');
+    cue.appendChild(el);
+  }
   el.hidden = false;
   el.style.setProperty('--c', (dot && dot.style.getPropertyValue('--c')) || '255,140,60');
   el.innerHTML = '<svg viewBox="0 0 16 16" width="11" height="11"><path d="M8 1.5c.4 2.2-1.9 3.2-1.9 5.4 0 .8.3 1.3.7 1.7-.1-1 .5-1.8 1.2-2.4.2 1.5 1.7 2.3 1.7 4A2.6 2.6 0 0 1 8 13a3.3 3.3 0 0 1-3.3-3.3C4.7 6 8 5 8 1.5z" fill="currentColor"/></svg><b></b>';
   el.querySelector('b').textContent = n.textContent;
+  el.insertAdjacentHTML('beforeend', '<span class="ach-flame-l">Ember Log</span>');
 }
 
 /** Call once; refits on resize and when the rail's parts change size (gauges filling in, text scale). */
