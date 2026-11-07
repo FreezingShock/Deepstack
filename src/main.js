@@ -1,3 +1,4 @@
+import {fmtNum} from './core/numFmt.js';
 import './ui/bookArt.js';
 import './ui/perf.js';
 import './ui/prewarm.js'; // idle prewarm of glow sprites, lighting and serif fonts (PF2)
@@ -28,6 +29,7 @@ import './ui/results.css';
 import './ui/finalPage.css';
 import './ui/dailyShare.css';
 import './ui/card.css';
+import './ui/coreLoop.css';
 import './ui/bookCard.css';
 import './ui/cardFit.js';
 import './ui/pageFit.js';
@@ -119,6 +121,8 @@ import './ui/candle.css';
 import './ui/runScreen.js';
 import './ui/hintSlips.js';
 import './ui/hintSlips.css';
+import './ui/hintTags.css';
+import './ui/hintTags.js';
 import './ui/firstNotes.css';
 import './ui/feedback.js';
 import './core/feedback.js';
@@ -151,7 +155,7 @@ initTopbar({Sfx});initTopbarRail({S,Sfx});installUiSounds(Sfx);
 watchHomeLayout(ui.home);
 World.onLedge(initLedge({tiers:TIERS,canActivate:()=>ui.stage.hidden&&$('#cardlayer').hidden,onOpen:b=>openCard(b,{fresh:false}),showTip,hideTip}));
 const browse=initBrowse({world:World,floors:FLOORS,startOf:floorStartFt,ft:FT,rm:RM});
-World.onDepth(v=>{browse.update(v);const e=$('#dnum');if(e.textContent!==String(v))e.textContent=v;
+World.onDepth(v=>{browse.update(v);const e=$('#dnum');if(e.textContent!==fmtNum(v))e.textContent=fmtNum(v);
  const f=floorAtFt(v);$('#dfloor').textContent=f.id?f.name:'';tintRail(f);
  if(run&&f.id>run.floor){run.floor=f.id;S.bestFloor=Math.max(S.bestFloor,f.id);announceFloor(f);}});
 ui.gauge.innerHTML=TIERS.map(t=>`<div data-t="${t.id}" style="color:${t.spine}"><span>${t.name}</span><i></i></div>`).join('');
@@ -171,7 +175,7 @@ initCurios({world:World,canvas:cvEl,enabled:()=>!World.busy,...initCurioFx({S,sa
 onModelStatus(paintJudge);
 addEventListener('keydown',e=>{
  if(!$('#cardlayer').hidden&&cardOpts&&cardOpts.nav&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){const b=$(e.key==='ArrowLeft'?'#cprev':'#cnext');if(b&&!b.disabled){e.preventDefault();b.click();}return;}
- if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'){e.preventDefault();closeCard();return;}
+ if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'&&!e.defaultPrevented){e.preventDefault();closeCard();return;} // a press that hurried the reveal (card.js) is already handled
  if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
  if(World.descending&&(e.key===' '||e.key==='Escape'||e.key==='Enter')){e.preventDefault();World.skipDown();}
 });

@@ -119,7 +119,7 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
 @media(prefers-reduced-motion:reduce){.rm-leaf{transition:none}}
 /* "47 of 118 met": how much of a room the player has seen (TA2) */
 .rm-plate .rm-met{font-style:normal;opacity:.8;letter-spacing:.04em;margin-top:2px}
-.hz-title .tagline .rm-met{font-size:.7em;font-style:normal;opacity:.75;letter-spacing:.04em;white-space:nowrap}
+.hz-title .tagline .rm-met{font-size:max(calc(10px*var(--ts,1)),.7em);font-style:normal;opacity:.75;letter-spacing:.04em;white-space:nowrap}
 /* RS2: on phones the ring of lights is the way into the Rooms book, so each light gets a 44 px square to hit. The row's own height stays as it was (the negative margin), and on very narrow screens the squares shrink together rather than wrap. */
 @media(pointer:coarse),(max-width:560px){
  #home .rm-ring{gap:0;width:100%;max-width:308px}
@@ -147,3 +147,7 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
 .rl-toc .rl-dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;background:conic-gradient(rgb(var(--c)) calc(var(--s,0)*1turn),rgba(var(--c),.22) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1px));mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1px))}
 .rl-toc .rl-dot.nosets::after{display:none}
 .home .cb-met{margin:calc(2px*var(--ts)) 0 calc(8px*var(--ts));text-align:center;font:italic 400 calc(14px*var(--ts)) var(--serif);color:var(--rt)}
+/* DS-door: each side-door plate says whether that room's Daily for today is done or still open (doorHTML's done flag) */
+.rm-plate .rm-daily{font-style:normal;opacity:.8;letter-spacing:.04em;margin-top:2px}
+.rm-plate .rm-daily.done{opacity:1;color:rgb(var(--ci))}
+.rm-plate .rm-daily.done::after{content:' \2713'}

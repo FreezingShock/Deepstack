@@ -27,7 +27,7 @@ html .attic-down .adl-frame{top:calc((var(--barH,52px) - 12px)/2)}
 
 /* RA2: railFit.js hides these step by step when the rail is too narrow for the hatch to sit clear of every button. */
 #bar.fit-nogauge #barGauges,#bar.fit-nokeys #bKeys{display:none}
-html .attic-cue-home[data-tight="1"] .ach-word{font-size:calc(8px*var(--ts));letter-spacing:.08em;text-indent:.08em;margin-left:4px}
+html .attic-cue-home[data-tight="1"] .ach-word{font-size:calc(10px*var(--ts));letter-spacing:.08em;text-indent:.08em;margin-left:4px}
 #bar.fit-smallmark #mark{zoom:.72}
 /* RA9: streak flame tag beside the cord when the streak plate is hidden for room */
 .ach-flame{position:absolute;left:calc(var(--hw) + 14px);top:calc(var(--bh,52px) + 3px);display:flex;align-items:center;gap:3px;padding:3px 7px 3px 5px;border-radius:3px 3px 8px 8px;pointer-events:auto;cursor:pointer;

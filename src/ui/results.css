@@ -57,7 +57,7 @@
 .fin .rbooks{margin-top:8px}
 .fin .rbook{grid-template-columns:12px minmax(0,1fr) 70px 24px 52px;gap:8px;padding:4px 6px;font-size:calc(15px*var(--ts))}
 .fin .rbook .rm{display:none}
-.fin .rbook .rt{font-size:calc(9px*var(--ts));letter-spacing:.1em}
+.fin .rbook .rt{font-size:calc(10px*var(--ts));letter-spacing:.1em}
 .fin .rbook .rs{font-size:calc(13px*var(--ts))}
 .fin .rbook .rf{font-size:calc(11px*var(--ts))}
 .fin .rsets{margin-top:6px}.fin .rset{font-size:calc(12px*var(--ts));padding:1px 0}

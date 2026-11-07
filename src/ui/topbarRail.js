@@ -1,3 +1,4 @@
+import {fmtNum} from '../core/numFmt.js';
 /* Top bar rail: the live readouts (streak flame, deepest ft), a Keys button, and sound volume pips.
    Hooked from main.js with one line. Reads the save, never writes it; the Sound/Settings/Credits buttons stay in topbar.js. */
 import './topbarRail.css';
@@ -19,7 +20,7 @@ export function initTopbarRail({S,Sfx,doc=document}={}){
  g.innerHTML=`<span class="bg bg-streak" role="button" tabindex="0" title="Daily streak">${SVG(FLAME)}<b id="bgStreak">0</b><i>day streak</i><i class="scope" id="bgStreakRoom"></i></span><span class="bg bg-deep" title="Deepest descent, all rooms">${SVG(DEEP)}<b id="bgDeep">0</b><i>ft deepest</i><i class="scope">${ALL}</i></span>`;
  doc.querySelector('#mark').after(g);
  const eR=g.querySelector('#bgStreakRoom'),eS=g.querySelector('#bgStreak'),eD=g.querySelector('#bgDeep'),gs=g.querySelector('.bg-streak');
- let rid='';const paint=()=>{const sr=scopeRoom(S);if(sr.id!==rid){rid=sr.id;eR.innerHTML=`<span class="rl-dot" style="--c:${sr.rgb}"></span>${sr.short}`;gs.title=`Daily streak in ${sr.name} (each room keeps its own)`;}const v=railValues(S,dayKey());const a=String(v.streak),b=String(v.deepest);
+ let rid='';const paint=()=>{const sr=scopeRoom(S);if(sr.id!==rid){rid=sr.id;eR.innerHTML=`<span class="rl-dot" style="--c:${sr.rgb}"></span>${sr.short}`;gs.title=`Daily streak in ${sr.name} (each room keeps its own)`;}const v=railValues(S,dayKey());const a=String(v.streak),b=fmtNum(v.deepest);
   if(eS.textContent!==a){eS.textContent=a;gs.classList.toggle('lit',v.streak>0);}
   if(eD.textContent!==b)eD.textContent=b;
   g.hidden=!doc.querySelector('#depthHud').hidden;};
