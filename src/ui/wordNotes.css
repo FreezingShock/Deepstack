@@ -1,0 +1,24 @@
+/* Margin note on the result card: a ribbon tab that hangs from the page, and a tucked sheet that unfolds under it. */
+.book .mn{width:min(100%,36ch);margin:4px auto 0;opacity:0;transition:opacity var(--m-smooth) var(--e-settle) var(--m-quick)}
+.book.open .mn{opacity:1}
+/* Turned to the note: the definition, meanings, your answer and the feedback step aside so the sheet has the whole page. */
+.book.mn-on .page .inner>:not(h2):not(.chips):not(.mn):not(#go):not(.cardnav):not(.favbtn){display:none}
+.book .mn-tab{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:5px 16px 9px;background:var(--tc);color:var(--ti);font:600 calc(11px*var(--ts))/1 var(--label);letter-spacing:.16em;text-transform:uppercase;clip-path:polygon(0 0,100% 0,100% 100%,50% 76%,0 100%);box-shadow:0 2px 0 color-mix(in srgb,var(--c-black) 35%,transparent)}
+.book .mn-tab::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform var(--m-base) var(--e-cruise)}
+.book .mn.open .mn-tab::after{transform:translateY(1px) rotate(-135deg)}
+.book .mn-tab:focus-visible{outline:2px solid var(--tx);outline-offset:3px}
+.book .mn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--m-smooth) var(--e-settle)}
+.book .mn.open .mn-body{grid-template-rows:1fr}
+.book .mn-in{min-height:0;overflow:hidden}
+.book .mn-page{margin-top:8px;padding:9px 14px 10px 13px;border-left:2px solid var(--tc);background:color-mix(in srgb,var(--tm) 9%,transparent);text-align:left;font-family:var(--serif);color:var(--tx)}
+.book .mn-row+.mn-row{margin-top:8px}
+.book .mn-page small{display:block;font:600 calc(10px*var(--ts))/1.2 var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--tm)}
+.book .mn-page p{margin:2px 0 0;font-size:calc(14px*var(--ts));line-height:1.42;overflow-wrap:anywhere}
+.book .mn-ex{font-style:italic;color:var(--tm)}
+.book .mn-ex em{font-style:normal;color:var(--tx);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.book .mn-rel{display:flex;flex-wrap:wrap;gap:2px 12px;margin:3px 0 0;padding:0;list-style:none;font-size:calc(14px*var(--ts));font-style:italic}
+.book .mn-rel li+li::before{content:"\25C6";font-style:normal;font-size:calc(7px*var(--ts));margin-right:12px;color:var(--th);opacity:.7;vertical-align:2px}
+.book .mn-page .mn-src{margin-top:8px;font-size:calc(10px*var(--ts));letter-spacing:.06em;opacity:.7}
+.book .mn-page .mn-none{font-style:italic;font-size:calc(13px*var(--ts));color:var(--tm)}
+html[data-motion="reduce"] .book .mn,html[data-motion="reduce"] .book .mn-body,html[data-motion="reduce"] .book .mn-tab::after{transition:none}
+@media (prefers-reduced-motion:reduce){.book .mn,.book .mn-body,.book .mn-tab::after{transition:none}}

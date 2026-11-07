@@ -1,0 +1,31 @@
+/* The Patrons book (patronsBook.js). Pages reuse the book's own .pg-* type and the .bs-start / .bs-again buttons;
+   this file adds the bust, the answer slip and the link row. Colours are tokens, and the room's light arrives as
+   --pt-rgb on each page. Reduced motion needs nothing here: the book itself is static under it. */
+.bk-spread .pt-desk,.bk-spread .pt-req{display:flex;flex-direction:column;gap:clamp(6px,1.4vh,12px);min-height:0}
+.bk-spread .pt-figure{display:flex;justify-content:flex-start;margin:0}
+.bk-spread .pt-svg{width:clamp(64px,13vh,96px);height:auto;display:block;overflow:visible}
+.bk-spread .pt-svg .pt-coat{fill:rgba(var(--pt-rgb,255,140,60),.55)}
+.bk-spread .pt-svg .pt-shirt{fill:var(--c-parchment)}
+.bk-spread .pt-svg .pt-face{fill:var(--c-parchment);stroke:var(--ink);stroke-width:1.1}
+.bk-spread .pt-svg .pt-hat,.bk-spread .pt-svg .pt-hair{fill:var(--ink);opacity:.82}
+.bk-spread .pt-svg .pt-eye{fill:var(--ink)}
+.bk-spread .pt-svg .pt-mouth,.bk-spread .pt-svg .pt-lens{fill:none;stroke:var(--ink);stroke-width:1.1;stroke-linecap:round}
+.bk-spread .pt-svg .pt-prop{fill:var(--c-bronze-33)}
+.bk-spread .pt-tally{margin:0;font:italic 400 calc(13px*var(--ts,1))/1.45 var(--serif);color:var(--ink);opacity:.82}
+.bk-spread .pt-ask{margin:0;padding:2px 0 2px 12px;border-left:2px solid rgba(var(--pt-rgb,255,140,60),.8);font:italic 400 clamp(calc(15px*var(--ts,1)),2vw,calc(18px*var(--ts,1)))/1.45 var(--serif);color:var(--ink)}
+.bk-spread .pt-lab{font:600 calc(11px*var(--ts,1)) var(--label);letter-spacing:.24em;text-transform:uppercase;color:var(--c-bronze-33)}
+.bk-spread .pt-ans{width:100%;box-sizing:border-box;min-height:44px;margin:0;padding:8px 2px;resize:none;background:transparent;border:0;border-bottom:1px solid var(--c-bronze-33);border-radius:0;font:400 clamp(calc(16px*var(--ts,1)),2vw,calc(19px*var(--ts,1)))/1.35 var(--serif);color:var(--ink);outline:none}
+.bk-spread .pt-ans:focus{border-bottom-color:rgba(var(--pt-rgb,255,140,60),1);box-shadow:0 1px 0 0 rgba(var(--pt-rgb,255,140,60),.9)}
+.bk-spread .pt-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bk-spread .pt-send{min-height:44px;min-width:44px;padding:0 18px;background:var(--bk);color:var(--c-parchment);border:1px solid var(--bk-gild);border-radius:3px;font:600 calc(12px*var(--ts,1)) var(--label);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.bk-spread .pt-send:hover:not(:disabled){filter:brightness(1.2)}
+.bk-spread .pt-send:disabled{opacity:.55}
+.bk-spread .pt-kbd{font:400 calc(12px*var(--ts,1)) var(--label);color:var(--ink);opacity:.7}
+.bk-spread .pt-say{margin:0;min-height:2.6em;font:italic 400 calc(14px*var(--ts,1))/1.45 var(--serif);color:var(--ink)}
+.bk-spread .pt-reward{margin:0;font:400 calc(15px*var(--ts,1))/1.45 var(--serif);color:var(--ink)}
+.bk-spread .pt-links{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:4px}
+.bk-spread .pt-link{min-height:44px;padding:0 4px;background:none;border:0;border-bottom:1px dotted currentColor;font:600 calc(12px*var(--ts,1)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);cursor:pointer}
+.bk-spread .pt-link:focus-visible{outline:2px solid rgba(var(--pt-rgb,255,140,60),.9);outline-offset:2px}
+.bk-spread .pt-roll li,.bk-spread .pt-entries li{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.bk-spread .pt-roll b,.bk-spread .pt-entries small{font:600 calc(13px*var(--ts,1)) var(--label);color:var(--ink)}
+.bk-spread .pt-entries small{font-weight:400;opacity:.7}
