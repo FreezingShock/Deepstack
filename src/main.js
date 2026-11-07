@@ -28,6 +28,7 @@ import './ui/results.js';
 import './ui/results.css';
 import './ui/finalPage.css';
 import './ui/dailyShare.css';
+import './ui/shareCard.css';
 import './ui/card.css';
 import './ui/coreLoop.css';
 import './ui/bookCard.css';

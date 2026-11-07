@@ -43,16 +43,19 @@ async function open(ctxOpts = {}) {
   const ctx = await browser.newContext({viewport: {width: 375, height: 667}, ...ctxOpts});
   await ctx.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
   const page = await ctx.newPage();
+  // set just before the test closes the context: requests still in flight then are cut off by the close, not by the app
+  const state = {closing: false};
   page.on('pageerror', e => fail(`pageerror: ${e.message}`));
   page.on('requestfailed', r => { if (process.env.PWA_DEBUG) console.log('requestfailed', r.url().slice(0, 140), r.failure()?.errorText); });
   page.on('console', m => {
     if (m.type() !== 'error') return;
     if (process.env.PWA_DEBUG) console.log('console.error at', m.location()?.url, m.text());
     if (BLOCKED.test(m.location()?.url || '')) return;
+    if (state.closing && /Failed to load resource/.test(m.text())) return;
     if (/Failed to load resource/.test(m.text()) && (!m.location()?.url?.startsWith(url) || /\/(models|ort)\//.test(m.location().url))) return;
     fail(`console.error: ${m.text()} (at ${m.location()?.url || 'unknown url'})`);
   });
-  return {ctx, page};
+  return {ctx, page, state};
 }
 
 // An install prompt as Chromium makes one: beforeinstallprompt is cancelable and carries prompt() and userChoice.
@@ -158,10 +161,14 @@ try {
   }
 
   // Reduced motion: the launch screen still goes, with no fade to wait for.
-  const {ctx: c3, page: p3} = await open({reducedMotion: 'reduce'});
+  const {ctx: c3, page: p3, state: s3} = await open({reducedMotion: 'reduce'});
   await p3.goto(url, {waitUntil: 'load'});
   await homeVisible(p3);
   log('reduced motion: launch screen removed, home drawn');
+  // the page still has background fetches (the scorer's model, the word data) in flight; the close cuts them off, and Chromium
+  // reports each as a page error on the file's own URL. Those are ours, so the close is marked before it happens.
+  await p3.waitForLoadState('networkidle', {timeout: 15000}).catch(() => {});
+  s3.closing = true;
   await c3.close();
 } catch (e) {
   fail(`stopped: ${e.message.split('\n')[0]}`);

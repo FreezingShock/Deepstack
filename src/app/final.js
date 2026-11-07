@@ -16,14 +16,24 @@ import {showHome} from './home.js';
 import {setRun} from './run.js';
 import {snapSpines,beginBind,playBind,isDailyRun} from '../ui/dailyBind.js';
 import {dailyShareText,shareDaily} from '../ui/dailyShare.js';
+import {shareCardBlob,cardFileName} from '../ui/dailyShareImage.js';
 import {runDay} from '../core/streak.js';
 
 import {dailyNumber} from '../core/daily.js';
 import {riddleDayShare} from '../core/riddleDaily.js';
 export const BLK='▁▂▃▄▅▆▇';
+/* What the Daily share (text and picture) reads: the room, its Daily number, floor, tier names and saved Daily keys. */
+export const dailyOpts=d=>{const r=roomById(currentRoom(S));return {room:r.name,no:dailyNumber(runDay(d,utc())),floorName:d.floor?FLOORS[d.floor].name:'',tierNames:TIERS.map(t=>t.name),keys:Object.keys(S.daily||{}),today:utc(),rgb:r.rgb};};
+/* The share picture is drawn a moment after the page shows, so Share can attach it straight away (a browser may refuse
+   a share that waits on a render). box.file is null until the render is done, and when it fails the text still goes. */
+function cardPicture(d){
+ const o=dailyOpts(d),box={file:null,blob:null,name:cardFileName(o.no)};
+ box.ready=new Promise(res=>setTimeout(res,900)).then(()=>shareCardBlob(d,o,'stamp')).then(b=>{box.blob=b;if(b)box.file=new File([b],box.name,{type:'image/png'});}).catch(()=>{});
+ return box;
+}
 export function shareText(d){if(d.mode==='riddle'&&d.day)return riddleDayShare(d.day,d,BLK);
  if(d.mode==='weekly')return `Deepstack \u00b7 ${d.themeName} \u00b7 day ${d.dayIdx+1} of 7\nDepth ${fmtNum(d.depth)} ft \u00b7 closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' \u00b7 ')}`;
- if(isDailyRun(d))return dailyShareText(d,{room:roomById(currentRoom(S)).name,no:dailyNumber(runDay(d,utc())),floorName:d.floor?FLOORS[d.floor].name:'',tierNames:TIERS.map(t=>t.name),keys:Object.keys(S.daily||{}),today:utc()});
+ if(isDailyRun(d))return dailyShareText(d,dailyOpts(d));
  return `Deepstack ${d.mode==='riddle'?'':roomShareTag()}${d.mode==='riddle'?'Riddle \u00b7 '+d.solved+' of '+d.of+' solved':d.mode==='unlimited'?'Unlimited \u00b7 Lexicon '+d.lex:'No. '+dailyNo()}\nDepth ${fmtNum(d.depth)} ft${d.floor?' · '+FLOORS[d.floor].name:''} · average closeness ${d.avg}\n${d.books.map(b=>BLK[b.tier]).join('')}\n${d.books.map(b=>TIERS[b.tier].name).join(' · ')}`;}
 export async function showFinal(d,fromHome){
  if(fromHome){ui.home.hidden=true;ui.cap.hidden=true;await coverWorld();World.setShelf([]);
@@ -32,12 +42,13 @@ export async function showFinal(d,fromHome){
   if(L.finalRow>0){await World.glide(L.finalRow);if(!ui.home.hidden)return;}}
  ui.hud.hidden=false;$('#dnum').textContent=fmtNum(d.depth);
  World.openNiche(World.restRow,{label:'FINIS',books:[]});
- const txt=shareText(d);const el=ui.final;el.hidden=false;el.className='center fadein';
+ const txt=shareText(d);const pic=isDailyRun(d)?cardPicture(d):null;const el=ui.final;el.hidden=false;el.className='center fadein';
  el.innerHTML=finalHTML(d,S,{txt,share:isDailyRun(d),rarest:TIERS[d.best].name,no:dailyNo(),dayNo:d.day?dailyNumber(d.day):0,floorName:d.floor?FLOORS[d.floor].name:'',levelTitle,spines:d.books.map((b,i)=>spineImg(b,i,'final',132)).join('')});
  countUp($('#cnt'),d.depth,1200,0,fmtNum);
  bindRecap(el,d.books,openCard);
  $$('#sp img').forEach(im=>{im.onclick=()=>openCard(d.books[+im.dataset.i],{fresh:false});});
  $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(txt);$('#cp').textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents($('#shr'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('#cp').textContent='Selected. Copy it.';}};
- const shb=$('#sh');if(shb)shb.onclick=async()=>{const r=await shareDaily(txt,'Deepstack');const label={shared:'Shared',copied:'Copied',cancelled:'Share',failed:'Share'}[r];shb.textContent=label;if(r==='failed'){const rg=document.createRange();rg.selectNodeContents($('#shr'));const s=getSelection();s.removeAllRanges();s.addRange(rg);shb.textContent='Selected. Copy it.';}};
+ const spb=$('#spic');if(spb)spb.onclick=async()=>{if(pic)await pic.ready;if(!pic||!pic.blob){spb.textContent='No picture';return;}const a=document.createElement('a');a.href=URL.createObjectURL(pic.blob);a.download=pic.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);spb.textContent='Saved';};
+ const shb=$('#sh');if(shb)shb.onclick=async()=>{const r=await shareDaily(txt,'Deepstack',pic&&pic.file);const label={shared:'Shared',copied:'Copied',cancelled:'Share',failed:'Share'}[r];shb.textContent=label;if(r==='failed'){const rg=document.createRange();rg.selectNodeContents($('#shr'));const s=getSelection();s.removeAllRanges();s.addRange(rg);shb.textContent='Selected. Copy it.';}};
  $('#up').onclick=async()=>{const bind=!fromHome&&isDailyRun(d)?snapSpines(ui.final):null;if(bind)beginBind();ui.final.hidden=true;ui.hud.hidden=true;setRun(null);await World.ascend();showHome();if(bind)playBind(bind,ui.home,d,d.day||utc());};
 }
