@@ -162,6 +162,9 @@ try {
   await p3.goto(url, {waitUntil: 'load'});
   await homeVisible(p3);
   log('reduced motion: launch screen removed, home drawn');
+  // let the page's own background fetches (the scorer's model) finish before the context closes: a request cut off by the close
+  // is reported by Chromium as a page error, which the filter above cannot tell apart from a real one
+  await p3.waitForLoadState('networkidle', {timeout: 15000}).catch(() => {});
   await c3.close();
 } catch (e) {
   fail(`stopped: ${e.message.split('\n')[0]}`);
