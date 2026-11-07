@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
+- Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
 - Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
 - Pick the stamp look and place (TA5): placement A is an Almanac Stamps page, B the room's title line, C the Librarian's Card row (desktop only); look X is a wax seal, Y a bookplate, Z a gilt medallion. Answer like "TA5: A, Z". Desktop and phone screenshots are in screenshots/room-stamps/.
