@@ -1,5 +1,5 @@
 /* Settings book pages: markup only (testable as a string). topbar.js opens the book and wires these controls.
-   Left page: Sound (switch, master, Music, Effects) and Motion (Match system / Calm / Full).
+   Left page: Sound (switch, master, Music, Effects, Room sounds, Haptics) and Motion (Match system / Calm / Full).
    Right page: Display (text size, graphics, high contrast), Play (floor rules) and Progress (reset, with a confirm step).
    Look: settingsBook.css, on the panel-book classes from panelBook.css. Every control keeps the ids and data attributes
    topbar.js reads, so the page can repaint on a turn without losing its state. */
@@ -19,6 +19,8 @@ export function settingsPages({st,sound=true,prefs=[],pref='auto',floorRules=fal
    ${slider('sMus','Music',st.music)}
    ${slider('sFx','Effects',st.effects)}
    <p class="tphint">Music is the room's tone, the depth hum and the score. Effects are page turns, quills, seals and drips. Sound off silences both.</p>
+   <div class="tprow"><span id="lRoo">Room sounds</span>${sw('sRoomSnd','lRoo',st.roomSounds!==false)}</div>
+   <p class="tphint">Each topic room plays one faint sound of its own: a clock, beads, a bell, a quill, a chord or a heartbeat. Turn it off to keep the rest of Music. Sound must be on for any of it.</p>
    <div class="tprow"><span id="lHap">Haptics</span>${sw('sHaptics','lHap',st.haptics!==false)}</div>
    <p class="tphint">On a phone that supports it, the device buzzes softly as a verdict lands. Reduce motion turns the buzz off.</p>
   </section>

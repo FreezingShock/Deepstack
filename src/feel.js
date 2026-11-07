@@ -5,6 +5,7 @@ import { motionNow } from './ui/settings.js';
 import { createScribe } from './sound/scribe.js';
 import { createAmbience } from './sound/ambience.js';
 import { createRoomTone } from './sound/roomTone.js';
+import { loadSettings } from './ui/settings.js';
 import { createSting } from './sound/thresholdSting.js';
 import { createScore } from './sound/score.js';
 import { createMaterials } from './sound/materials.js';
@@ -134,9 +135,11 @@ export const Sfx = (() => {
   function stopAmbient() { timers.forEach(clearTimeout); timers = []; }
 
   const floorTone = createAmbience({ ctx: () => ctx, on: () => on, dest: () => musicBus, send: () => musicSend, noiseBuf });
-  const roomTone = createRoomTone({ ctx: () => ctx, on: () => on, dest: () => musicBus, noiseBuf }); // each topic room's own accents (src/sound/roomTone.js)
+  // each topic room's own accents (src/sound/roomTone.js). Off with the Room sounds switch, and in the low quality tier (like the score)
+  let roomsOn = loadSettings().roomSounds !== false;
+  const roomTone = createRoomTone({ ctx: () => ctx, on: () => on, dest: () => musicBus, noiseBuf, allowed: () => roomsOn && Quality.tier() !== 'low' });
   const score = createScore({ ctx: () => ctx, on: () => on, dest: () => musicBus, send: () => musicSend }, { allowed: () => Quality.tier() !== 'low' });
-  Quality.subscribe(() => score.refresh());
+  Quality.subscribe(() => { score.refresh(); roomTone.refresh(); });
   const mats = createMaterials({ ctx: () => ctx, on: () => on, out, noiseBuf }, { fine: () => Quality.tier() !== 'low' });
   const scribe = createScribe({ ctx: () => ctx, on: () => on, out, noiseBuf });
   const sting = createSting({ ctx: () => ctx, on: () => on, out, noiseBuf });
@@ -145,6 +148,8 @@ export const Sfx = (() => {
     threshold: key => { if (sting.play(key)) score.duck(2.5); },
     /** the room the player is now in (src/app/roomGo.js, src/app/home.js): its accents crossfade in */
     room: id => roomTone.setRoom(id),
+    /** the Room sounds switch (Settings): on or off for the topic-room accents only; a change glides at once */
+    roomAccents(v) { roomsOn = !!v; roomTone.refresh(); },
     /** candle fraction 1..0: the score thins as the flame burns down */
     candle: fr => score.setCandle(fr),
     /** one cue from the sound palette (src/sound/materials.js): turn, lift, shut, hatch, rung, knock, tick, crackle ... */

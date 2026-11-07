@@ -65,7 +65,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Run progress ledge: each finished word leaves a muted tier-coloured spine in the row above the word, skipped words leave a dashed gap, chained words get a brass link, newest spine slides in (none under reduced motion); replaces the diamonds | `src/ui/runLedge.js`, `src/ui/runLedge.css`, `pipsHTML` in `src/app/run.js` | B | Spines not yet interactive (G6a). |
 | Run screen write-in: candle, pips, word, clock, slip and hints rise in staggered for each new word and when the camera snaps back from browsing; reduced motion instant, low graphics one fade | `src/ui/runWriteIn.js`, hook in `src/app/run.js`, `src/ui/browse.js` | B | Riddle screen and result card not yet staggered (backlog 22c). |
 | Motion language: named durations/easings as CSS tokens + JS helpers, reduced motion in one place | `src/ui/motion.js`, `motion.css` | B | Raw easings banned by test. JS waits and delay literals not yet migrated (backlog 66, 68). |
-| Settings book: Sound switch, Master, Music and Effects sliders, Motion (Match system / Calm / Full, follows the OS by default), text size, graphics, high contrast, floor rules, and Reset progress behind a confirm step (keeps settings) | `src/ui/settings.js`, `settingsBook.js`, `settingsBook.css`, `progressReset.js`, `feel.js` buses | B | Own key `deepstack.settings.v1`. Text size sets `--ts` (1 / 1.15 / 1.3); every font size is `calc(Npx*var(--ts))` so it reaches all screens, and fixed-size furniture (Descend, cabinet, ledger, spines) uses the gentler `--tsf` cap (`src/ui/textScale.css`). Home tier counts big text as a shorter room. No keybinding or colour-blind options. |
+| Settings book: Sound switch, Master, Music and Effects sliders, Room sounds switch (TR20), Motion (Match system / Calm / Full, follows the OS by default), text size, graphics, high contrast, floor rules, and Reset progress behind a confirm step (keeps settings) | `src/ui/settings.js`, `settingsBook.js`, `settingsBook.css`, `progressReset.js`, `feel.js` buses | B | Own key `deepstack.settings.v1`. Text size sets `--ts` (1 / 1.15 / 1.3); every font size is `calc(Npx*var(--ts))` so it reaches all screens, and fixed-size furniture (Descend, cabinet, ledger, spines) uses the gentler `--tsf` cap (`src/ui/textScale.css`). Home tier counts big text as a shorter room. No keybinding or colour-blind options. |
 | Low-end mode: quality tiers (auto from device hints and slow frames, or manual Graphics setting) | `src/ui/quality.js`, hooks in `world.js`, `fx.js`, `ambient.js`, `topbar.js` | B | Own key `deepstack.quality.v1`. Dust, particles, DPR, 30 fps cap, creatures. New effects must read `Quality.params()`. |
 | Cached glow sprites for the lamp vignette, flame glow and tier glow | `src/ui/glowSprite.js`, hooks in `world.js` | B | Gradients no longer rebuilt per frame. Headless gain is within noise (raster dominates); needs a real-GPU check (R5, P1). Wall/row gradients still per frame (P2). |
 | Idle prewarm of glow sprites, lighting falloff map and Anthropic Serif weights after first paint | `src/ui/prewarm.js`, `src/ui/glowDefs.js` | B | One job per idle slice; glow keys shared with the frame code so they cannot drift. Particle sprites already warm in `revealFx.js`. Needs a real-GPU `?perf` check. |
@@ -78,7 +78,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Feature | Files | Q | State and known gaps |
 |---|---|---|---|
 | Synthesised audio (WebAudio, no assets): room tone, reverb, key ticks, page flip, thud, chime and sting per tier, drips, steps | `src/feel.js` | B | Calm by design. Per-floor room tone bed (paper, stone, water, wind, abyss drone) crossfades with depth via `src/sound/ambience.js` (tested). A generative score (`src/sound/score.js`, tested): slow strings plus low piano, a scale and tempo per floor, thinner as the candle burns, a bloom on Folio+, ducked under door and reveal stings; off with sound off or low quality. |
-| Topic room accents: each topic room has sparse one-shot sounds of its own (Chronicle clock tick, Counting House abacus beads, Observatory chime, Scriptorium quill, Gallery chord, Anatomy heartbeat), one gain per room, crossfaded on every walk and on the home mount | `src/sound/roomTone.js`, `test/room-tone.test.js` | B | Calm: gaps of 6 to 20 s, voice cap, silent in the Reading Room, off with sound off and while the tab is hidden. Sound only: the look (desk prop or motes) waits on nate's letter (TR17). Not yet listened to on a device. |
+| Topic room accents: each topic room has sparse one-shot sounds of its own (Chronicle clock tick, Counting House abacus beads, Observatory chime, Scriptorium quill, Gallery chord, Anatomy heartbeat), one gain per room, crossfaded on every walk and on the home mount | `src/sound/roomTone.js`, `test/room-tone.test.js` | B | Calm: gaps of 6 to 20 s, voice cap, silent in the Reading Room, off with sound off and while the tab is hidden. Sound only: the look (desk prop or motes) waits on nate's letter (TR17). Room sounds switch in Settings (TR20): off silences the accents, and the low graphics tier does too. Not yet listened to on a device. |
 | Topic room desk props: one small object per topic room on the alcove desk (clock, abacus, armillary, scroll, framed picture, skull) beside the inkwell; phones at the desk's right end | `src/ui/roomProps.js`, `src/ui/alcoveArt.js` | B | Static, read from `<html data-room>`, nothing in the Reading Room. Tested with a fake canvas (`test/room-props.test.js`). Not yet checked on a phone with several books standing on the desk. |
 | Desk sounds: quill scratch while typing, paper on page turns/reveal, wax-seal press on submit, heavy book landing (rate limited, voice cap, fake-context test) | `src/sound/scribe.js`, `test/sfx.test.js` | B | Hooked via `Sfx.quill/paper/seal/land`. Not yet tied to the motion presets (item 22). Seal does not vary by tier yet. |
 | Light map: depth darkens the unlit world, lit pools shrink per floor, lanterns/lamp/lore books/pointer light punch holes, alcoves never dark (backlog 2, #141) | `src/ui/lighting.js` (hooks in `World`, `lanterns.js`, `cursorLight.js`) | B | One 1/4-res offscreen map and a cached falloff sprite, one composite per frame; skipped on the Stacks; flicker per floor, none in reduced motion. `addLight()` is the API for new lit props. |
@@ -119,7 +119,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/app/home.js` | 70 |  | book-open-fx, book-page-flip, book-style, book-switch, door-daily-state, first-notes, home-book-stacks, home-books, home-close-fade, home-layout, home-niche, home-plaque, home, lazy-screens, mantel, page-flip-affordances, patrons, pen-ink, phone-book-pages, unlimited-book |
 | `src/app/riddle.js` | 107 | Riddle Shelf: the reverse of the Daily. A slip shows a definition and you write the word. | lexicon-worker |
 | `src/app/roomGo.js` | 35 | Walking to another room from home (side doors, [ and ], the ring of lights, the Rooms book | - |
-| `src/app/rooms.js` | 18 | Entering a topic room: swap the per-room save data, narrow the word pool, save. The home s | door-daily-state, patrons, ra-fixes, room-depth, room-mastery, room-props, room-run, room-tone, room-words, scope-labels, topic-rooms-ui, topic-rooms, unlimited-room-repeats |
+| `src/app/rooms.js` | 18 | Entering a topic room: swap the per-room save data, narrow the word pool, save. The home s | door-daily-state, patrons, ra-fixes, room-depth, room-mastery, room-props, room-run, room-sounds, room-tone, room-words, scope-labels, topic-rooms-ui, topic-rooms, unlimited-room-repeats |
 | `src/app/run.js` | 136 |  | daily-judge-policy, first-notes, ink-input |
 | `src/app/state.js` | 25 |  | lit-props-eyes |
 | `src/app/util.js` | 10 |  | motion-live |
@@ -151,7 +151,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/core/roomDepth.js` | 87 | How deep a topic room really is (TA2). Pure: no DOM, no storage. | room-depth, room-mastery |
 | `src/core/roomPool.js` | 74 | The word pool of the active room. WORDS (core/words.js) is what every picker reads (Daily, | data-cache, room-depth, room-mastery, room-words, stamps-look, stamps, topic-rooms-ui, topic-rooms, unlimited-room-repeats |
 | `src/core/roomStore.js` | 62 | Per-room save data. Each topic room has its own Daily (S.daily, S.dailyRun, S.streak) and  | door-daily-state, scope-labels, topic-rooms-ui, topic-rooms |
-| `src/core/rooms.js` | 45 | Topic rooms: the same fireplace home, each with its own fire and its own words. | door-daily-state, patrons, ra-fixes, room-depth, room-mastery, room-props, room-run, room-tone, room-words, scope-labels, topic-rooms-ui, topic-rooms, unlimited-room-repeats |
+| `src/core/rooms.js` | 45 | Topic rooms: the same fireplace home, each with its own fire and its own words. | door-daily-state, patrons, ra-fixes, room-depth, room-mastery, room-props, room-run, room-sounds, room-tone, room-words, scope-labels, topic-rooms-ui, topic-rooms, unlimited-room-repeats |
 | `src/core/shelf.js` | 35 |  | shelf-bays, shelf, topic-rooms-ui |
 | `src/core/shelfRooms.js` | 14 | Shelf room tabs (TR7): every book earned in a topic room carries `room` (src/app/run.js);  | topic-rooms-ui |
 | `src/core/stamps.js` | 104 | Achievement stamps: a small set per topic room, and a few library-wide. Pure: no DOM, no s | stamps-look, stamps |
@@ -163,8 +163,8 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/core/verdict.js` | 21 | One-line verdict under a scored answer. The line must agree with the score: tier 0 covers  | verdict-partial |
 | `src/core/wordPool.js` | 114 | Builds the playable word pool from public/data/words.json (see scripts/build-words.mjs). | difficulty-ramp, embedding, hints-no-spelling, hints, riddle-hints, riddle, room-depth, room-words, sets, topic-rooms, unlimited-room-repeats, word-blocklist |
 | `src/core/words.js` | 50 | [word,pos,difficulty,definition,hintSentence,[[label,weight,"term, term, multi word"]...], | data-cache, difficulty-ramp, embedding, feedback, hints-no-spelling, hints, riddle-hints, riddle, room-depth, room-words, scorer, sets, topic-rooms, unlimited-room-repeats, unlimited, word-blocklist |
-| `src/feel.js` | 215 | Sound, ambience and "juice". Everything is synthesized with WebAudio (no assets). | - |
-| `src/main.js` | 201 |  | attic-overhaul, audit-fixes, book-style, buttons, daily-share, data-cache, first-notes, hint-tags, lazy-screens, lexicon-worker, mantel, menu-wear, patrons |
+| `src/feel.js` | 220 | Sound, ambience and "juice". Everything is synthesized with WebAudio (no assets). | room-sounds |
+| `src/main.js` | 203 |  | attic-overhaul, audit-fixes, book-style, buttons, daily-share, data-cache, first-notes, hint-tags, lazy-screens, lexicon-worker, mantel, menu-wear, patrons, room-sounds |
 | `src/scorer/antonyms.js` | 74 | Embeddings place antonyms close together ("lasting forever" ~ "lasting briefly"), so the e | embedding |
 | `src/scorer/embedding.js` | 88 | Pure scoring math for the embedding judge (no model code, so it runs in Node tests). | embedding, judge-lenient, judge-relations |
 | `src/scorer/engine.js` | 51 | The actual model loader/runner. Runs inside the judge worker (worker.js) or, as a fallback | - |
@@ -182,8 +182,9 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/sets/sets.js` | 98 | Collectible book sets: themed groups of words. Answer every word in a set (at least a Pape | pen-ink, room-depth, sets, sigil-pages-crests, sigil-set-ring, topic-rooms-ui, unlimited-room-repeats, word-blocklist |
 | `src/sets/ui.js` | 32 |  | css-sanity, load-path, sigil-pages-crests |
 | `src/sound/ambience.js` | 93 | Per-floor room tone. Five always-running layers (paper hush, stone, water, hollow wind, ab | floor-ambience |
+| `src/sound/gesture.js` | 15 | Runs fn once, on the first press, tap or key the page gets. Sound uses it for a returning  | room-sounds |
 | `src/sound/materials.js` | 88 | The sound palette: five materials (paper, leather, wood, stone, brass) plus fire. Every UI | materials |
-| `src/sound/roomTone.js` | 127 | Each topic room has a few sparse, quiet sound accents of its own: a clock ticking in the C | room-tone |
+| `src/sound/roomTone.js` | 135 | Each topic room has a few sparse, quiet sound accents of its own: a clock ticking in the C | room-sounds, room-tone |
 | `src/sound/score.js` | 121 | A slow score that follows the descent: soft strings and a low piano, a different scale and | score |
 | `src/sound/scribe.js` | 66 | Tactile desk sounds: quill scratch, paper, wax-seal press, heavy book landing. | sfx |
 | `src/sound/thresholdSting.js` | 34 | A one-line sound for passing a floor door: each floor answers in its own room tone, quietl | threshold-pass |
@@ -389,9 +390,9 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/scope.js` | 22 | Which numbers belong to the room you stand in and which cover the whole library. One place | scope-labels |
 | `src/ui/screenFx.css` | 12 | Soft entrances for the chrome that used to pop in with the screens, plus the world dip (sc | screen-fx |
 | `src/ui/screenFx.js` | 27 | A short dark dip over the canvas world, used to hide an instant swap of what the world sho | screen-fx |
-| `src/ui/settings.js` | 73 | Player settings: sound (master volume, music, effects), motion, text size, high contrast. | motion-live, settings-book, settings |
-| `src/ui/settingsBook.css` | 24 | Settings book (settingsBook.js). Uses the panel-book tokens (--bs-ink, --bs-mute, --bs-rul | settings-book, verdict-feel |
-| `src/ui/settingsBook.js` | 50 | Settings book pages: markup only (testable as a string). topbar.js opens the book and wire | settings-book, verdict-feel |
+| `src/ui/settings.js` | 74 | Player settings: sound (master volume, music, effects), motion, text size, high contrast. | motion-live, room-sounds, settings-book, settings |
+| `src/ui/settingsBook.css` | 24 | Settings book (settingsBook.js). Uses the panel-book tokens (--bs-ink, --bs-mute, --bs-rul | room-sounds, settings-book, verdict-feel |
+| `src/ui/settingsBook.js` | 52 | Settings book pages: markup only (testable as a string). topbar.js opens the book and wire | room-sounds, settings-book, verdict-feel |
 | `src/ui/shelfBays.css` | 33 | Shelf bays: brass labels with a count, a leaning library ladder with a rail, piled copies, | places, shelf-bays |
 | `src/ui/shelfBays.js` | 41 |  | places, shelf-bays |
 | `src/ui/shelfFilters.css` | 13 | Shelf filter page (audit Q4): the four filter lists share a compact written column so they | shelf-filters |
@@ -414,8 +415,8 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/thresholds.js` | 451 | Floors as chapters: a threshold you pass through at the top of every floor (beam or arch,  | thresholds |
 | `src/ui/tierFrames.css` | 50 | Tier dressing for the result-card book (loaded after bookCard.css). Pure CSS, tokens only. | tier-frames |
 | `src/ui/todayMet.js` | 12 | RA8: the Today card's "N of M met" line. The room's word list loads a moment after the hom | - |
-| `src/ui/topbar.css` | 84 | Library top bar: a carved walnut lintel with a bronze plaque, lantern glow at each end, | book-style, panel-book, settings-graphics-wrap, text-size, verdict-feel |
-| `src/ui/topbar.js` | 132 |  | book-style, panel-book, settings-graphics-wrap, text-size, verdict-feel |
+| `src/ui/topbar.css` | 84 | Library top bar: a carved walnut lintel with a bronze plaque, lantern glow at each end, | book-style, panel-book, room-sounds, settings-graphics-wrap, text-size, verdict-feel |
+| `src/ui/topbar.js` | 134 |  | book-style, panel-book, room-sounds, settings-graphics-wrap, text-size, verdict-feel |
 | `src/ui/topbarRail.css` | 66 | Top bar rail (overhaul): a carved oak rail with a brass inlay line, rivets, brass medallio | css-sanity |
 | `src/ui/topbarRail.js` | 51 |  | - |
 | `src/ui/topbarRailCore.js` | 9 | Pure values for the top bar rail (no DOM, unit tested). | topbar-rail |
