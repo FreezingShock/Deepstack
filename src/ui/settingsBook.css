@@ -39,3 +39,9 @@
 .bk-spread.panel .sb-group{margin:0 0 4px}
 .bk-spread.panel .sb-h{margin:10px 0 2px}
 .bk-spread.panel .tprow,.bk-spread.panel .tpseg{padding:6px 0}
+/* the switch slop is 10px each side: 26px drawn plus slop is 44px, and the gap to the next switch keeps both slops clear */
+.bk-spread.panel .tpsw::after{inset:-10px 0}
+/* High contrast and Floor rules are two switches one section apart: the Floor rules row opens 4px more above, so each
+   switch's 9px touch slop reaches 44px without the other's slop covering it. Groups keep a 2px gap below. */
+.bk-spread.panel .tprow:has(#sFloorRules){padding-top:10px}
+.bk-spread.panel .sb-group{margin:0 0 2px}
