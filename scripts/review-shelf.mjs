@@ -154,14 +154,61 @@ async function filters() {
   await page.context().close();
 }
 
+/* RV2: the result card's "Words to win back" link. Seeds today's finished Daily, opens it from the home ("Today's
+   result"), and checks the link shows its count only when the run has misses still to win back, and that it opens the
+   Shelf on To review. The day key is built in the page, the same local yyyy-mm-dd the game uses. */
+const run = (books) => ({mode: 'daily', books, avg: 40, best: 2, depth: 120, floor: 0});
+const runBooks = [
+  {...row('abandon', 'leave it', 22, 1, day(1)), ft: 40, combo: null},  // still to win back
+  {...row('obfuscate', 'make hard', 14, 1, day(5)), ft: 30, combo: null}, // still to win back
+  {...row('ephemeral', 'short', 58, 3, day(2)), ft: 50, combo: null},  // won back in the seed (best 61), so not counted
+];
+const cleanBooks = [{...row('ephemeral', 'short', 58, 3, day(2)), ft: 50, combo: null}];
+async function resultLink(width, height, books, expect) {
+  const tag = `result ${width}x${height} (${expect === null ? 'clean' : 'misses'})`;
+  const seed = structuredClone(SEED);
+  seed.todayRun = run(books);
+  const ctx = await browser.newContext({viewport: {width, height}, deviceScaleFactor: 1, reducedMotion: 'reduce'});
+  await ctx.addInitScript(({s}) => {
+    if (sessionStorage.getItem('rv-seeded')) return;
+    const o = JSON.parse(s), d = new Date(), p = n => String(n).padStart(2, '0');
+    if (o.todayRun) { o.daily = {[`${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`]: o.todayRun}; delete o.todayRun; }
+    localStorage.clear(); localStorage.setItem('deepstack.v1', JSON.stringify(o)); sessionStorage.setItem('rv-seeded', '1');
+  }, {s: JSON.stringify(seed)});
+  const page = await ctx.newPage();
+  page.on('pageerror', e => fail(`${tag} pageerror: ${e.message}`));
+  await page.goto(url, {waitUntil: 'load'});
+  await page.waitForSelector('#home:not([hidden]) #bRes', {timeout: T});
+  await page.click('#bRes');
+  await page.waitForSelector('#up', {timeout: T});
+  const link = page.locator('#rvw');
+  if (expect === null) {
+    if (await link.count()) fail(`${tag}: a clean run shows the link`);
+    await ctx.close();
+    return;
+  }
+  await link.waitFor({state: 'visible', timeout: T}).catch(() => fail(`${tag}: no visible "Words to win back" link`));
+  const label = (await link.textContent().catch(() => '')).trim();
+  if (label !== `Words to win back (${expect})`) fail(`${tag}: link reads "${label}", expected "Words to win back (${expect})"`);
+  await link.click();
+  await page.waitForSelector('.sv-tab[data-view="review"][aria-pressed="true"]', {timeout: T}).catch(() => fail(`${tag}: the link did not open the Shelf on To review`));
+  const n = await page.locator('.rv-filter, .rv-jump, .rv-entry').count();
+  if (n === 0) fail(`${tag}: the To review view shows no words`);
+  await ctx.close();
+}
+
 try {
   await guard(1280, 800);
   await guard(375, 812);
   await filters();
+  await resultLink(1280, 800, runBooks, 2);
+  await resultLink(375, 812, runBooks, 2);
+  await resultLink(1280, 800, cleanBooks, null);
+  await resultLink(375, 812, cleanBooks, null);
 } catch (e) {
   if (e.message !== 'stop') fail(`review-shelf: ${e.message.split('\n').slice(0,12).join(' | ')}`);
 }
 await browser.close();
 server.close();
 if (problems.length) { console.error('review-shelf: FAILED\n  ' + problems.join('\n  ')); process.exit(1); }
-console.log('review-shelf: ok (tab count, contents, every word page fits, re-try records, shelf untouched, room filter and spine count)');
+console.log('review-shelf: ok (tab count, contents, every word page fits, re-try records, shelf untouched, room filter, spine count, result-card link)');
