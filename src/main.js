@@ -126,6 +126,7 @@ import './core/feedback.js';
 import './ui/feedback.css';
 import './ui/alsoAccepted.css';
 import './ui/alsoMeans.css';
+import './ui/wordNotes.css';
 import './ui/textScale.css';
 import './ui/cabinet.css';
 import './ui/auditFixes.css';
