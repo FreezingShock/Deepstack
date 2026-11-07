@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
 - Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
@@ -320,7 +321,7 @@ Coming back from looking up the descent no longer snaps: the candle, pips, word,
 **Brief:** Goal: layered ambience (paper hush, stone drips, water, hollow wind, abyss drone). Files: new `src/sound/ambience.js`. Done when: silent when sound off, no clicks on start/stop, node cap tested.
 **Touches:** FEEL hook. **Conflicts:** 23.
 
-### 25. Haptics
+### 25. [x] Haptics: verdict buzz and sound (PR pending)
 **Serves:** tactile on phones.
 **Pitch:** Light vibration on tier reveals, combo links and page flips.
 **Brief:** Files: new `src/ui/haptics.js`, Settings toggle (additive). Done when: guarded by `navigator.vibrate`, pattern table per tier, stubbed test.
@@ -2131,3 +2132,20 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### CF3. Judge wait shows a real progress note
 **Pitch:** When the librarian is still arriving the wait is silent for up to 6 s before a note appears.
 **Brief:** Goal: start the "Reading your answer" note with a small candle-flicker on the slip, not after the 6 s fallback. Files: `src/scorer/index.js` (onWait timing), `src/ui/coreLoop.css`. Done when: a test pins the note at 300 ms.
+
+## VF. Verdict feel follow-ups (2026-11-07, from the verdict sound and haptics thread)
+
+### VF1. Replay the verdict line
+**Pitch:** Once the card is read, the verdict's quill strokes are gone for good. A tap on the verdict line should write it again so the sound can be heard without answering.
+**Brief:** Goal: tapping the verdict line replays its quills and page turn through `landVerdict`, rate limited by the existing quill gap. Files: `src/app/card.js`, `src/ui/verdictFeel.js`. Done when: silent with Sound off, one replay per second at most, keyboard reachable, and a CI guard covers the tap wiring.
+**Touches:** card. **Conflicts:** card catalogue follow-ups.
+
+### VF2. A single buzz when a stamp is earned
+**Pitch:** Earning a stamp shows a toast on the Almanac, but a phone gives no sign. One short buzz would match it.
+**Brief:** Goal: call the buzz helper once from the stamp toast, using the Haptics switch and the same reduced motion and Low Power rules as the verdict. Files: `src/ui/stampToast.js` (or where the toast lives), `src/ui/verdictFeel.js`. Done when: one pulse per new stamp, none when Haptics is off, tested with a stubbed `navigator.vibrate`.
+**Touches:** stamps, settings. **Conflicts:** stamps thread.
+
+### VF3. Pick the verdict strokes by room
+**Pitch:** Every room writes its verdict with the same pen. The topic rooms each have their own accent, so their verdict could sound like it.
+**Brief:** Goal: each topic room gives its verdict strokes a pitch from its room tone (the Science bell, the Art brush). Files: `src/sound/verdictFeel.js`, `src/sound/roomTone.js`. Done when: the room id is passed through `landVerdict`, the Hall keeps the plain pen, and a test pins each room's pitch inside the room's tone range.
+**Touches:** room tone, verdict feel. **Conflicts:** room tone threads.

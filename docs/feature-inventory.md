@@ -62,7 +62,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Run progress ledge: each finished word leaves a muted tier-coloured spine in the row above the word, skipped words leave a dashed gap, chained words get a brass link, newest spine slides in (none under reduced motion); replaces the diamonds | `src/ui/runLedge.js`, `src/ui/runLedge.css`, `pipsHTML` in `src/app/run.js` | B | Spines not yet interactive (G6a). |
 | Run screen write-in: candle, pips, word, clock, slip and hints rise in staggered for each new word and when the camera snaps back from browsing; reduced motion instant, low graphics one fade | `src/ui/runWriteIn.js`, hook in `src/app/run.js`, `src/ui/browse.js` | B | Riddle screen and result card not yet staggered (backlog 22c). |
 | Motion language: named durations/easings as CSS tokens + JS helpers, reduced motion in one place | `src/ui/motion.js`, `motion.css` | B | Raw easings banned by test. JS waits and delay literals not yet migrated (backlog 66, 68). |
-| Settings book: Sound switch, Master, Music and Effects sliders, Motion (Match system / Calm / Full, follows the OS by default), text size, graphics, high contrast, floor rules, and Reset progress behind a confirm step (keeps settings) | `src/ui/settings.js`, `settingsBook.js`, `settingsBook.css`, `progressReset.js`, `feel.js` buses | B | Own key `deepstack.settings.v1`. Text size sets `--ts` (1 / 1.15 / 1.3); every font size is `calc(Npx*var(--ts))` so it reaches all screens, and fixed-size furniture (Descend, cabinet, ledger, spines) uses the gentler `--tsf` cap (`src/ui/textScale.css`). Home tier counts big text as a shorter room. No keybinding or colour-blind options. |
+| Settings book: Sound switch, Master, Music and Effects sliders, Haptics switch (phone buzz on verdicts), Motion (Match system / Calm / Full, follows the OS by default), text size, graphics, high contrast, floor rules, and Reset progress behind a confirm step (keeps settings) | `src/ui/settings.js`, `settingsBook.js`, `settingsBook.css`, `progressReset.js`, `feel.js` buses | B | Own key `deepstack.settings.v1`. Text size sets `--ts` (1 / 1.15 / 1.3); every font size is `calc(Npx*var(--ts))` so it reaches all screens, and fixed-size furniture (Descend, cabinet, ledger, spines) uses the gentler `--tsf` cap (`src/ui/textScale.css`). Home tier counts big text as a shorter room. No keybinding or colour-blind options. |
 | Low-end mode: quality tiers (auto from device hints and slow frames, or manual Graphics setting) | `src/ui/quality.js`, hooks in `world.js`, `fx.js`, `ambient.js`, `topbar.js` | B | Own key `deepstack.quality.v1`. Dust, particles, DPR, 30 fps cap, creatures. New effects must read `Quality.params()`. |
 | Cached glow sprites for the lamp vignette, flame glow and tier glow | `src/ui/glowSprite.js`, hooks in `world.js` | B | Gradients no longer rebuilt per frame. Headless gain is within noise (raster dominates); needs a real-GPU check (R5, P1). Wall/row gradients still per frame (P2). |
 | Idle prewarm of glow sprites, lighting falloff map and Anthropic Serif weights after first paint | `src/ui/prewarm.js`, `src/ui/glowDefs.js` | B | One job per idle slice; glow keys shared with the frame code so they cannot drift. Particle sprites already warm in `revealFx.js`. Needs a real-GPU `?perf` check. |
@@ -74,6 +74,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 ## Sound, feel, look
 | Feature | Files | Q | State and known gaps |
 |---|---|---|---|
+| Verdict feel: quill strokes (one to five by tier, a page turn from Folio up) and a phone buzz as the verdict line lands. Reduce motion keeps one stroke and no buzz; Low Power keeps two strokes; the Haptics switch silences the buzz | `src/sound/verdictFeel.js`, `src/ui/verdictFeel.js` | A | Pure rules tested in `test/verdict-feel.test.js`. Not yet heard or felt on a real phone. |
 | Synthesised audio (WebAudio, no assets): room tone, reverb, key ticks, page flip, thud, chime and sting per tier, drips, steps | `src/feel.js` | B | Calm by design. Per-floor room tone bed (paper, stone, water, wind, abyss drone) crossfades with depth via `src/sound/ambience.js` (tested). A generative score (`src/sound/score.js`, tested): slow strings plus low piano, a scale and tempo per floor, thinner as the candle burns, a bloom on Folio+, ducked under door and reveal stings; off with sound off or low quality. |
 | Topic room accents: each topic room has sparse one-shot sounds of its own (Chronicle clock tick, Counting House abacus beads, Observatory chime, Scriptorium quill, Gallery chord, Anatomy heartbeat), one gain per room, crossfaded on every walk and on the home mount | `src/sound/roomTone.js`, `test/room-tone.test.js` | B | Calm: gaps of 6 to 20 s, voice cap, silent in the Reading Room, off with sound off and while the tab is hidden. Sound only: the look (desk prop or motes) waits on nate's letter (TR17). Not yet listened to on a device. |
 | Topic room desk props: one small object per topic room on the alcove desk (clock, abacus, armillary, scroll, framed picture, skull) beside the inkwell; phones at the desk's right end | `src/ui/roomProps.js`, `src/ui/alcoveArt.js` | B | Static, read from `<html data-room>`, nothing in the Reading Room. Tested with a fake canvas (`test/room-props.test.js`). Not yet checked on a phone with several books standing on the desk. |
@@ -109,7 +110,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 
 | File | Lines | Purpose (first comment) | Tests |
 |---|---|---|---|
-| `src/app/card.js` | 73 |  | audit-fixes, panel-book, sigil-pages-crests |
+| `src/app/card.js` | 74 |  | audit-fixes, panel-book, sigil-pages-crests, verdict-feel |
 | `src/app/chrome.js` | 19 |  | - |
 | `src/app/final.js` | 42 |  | - |
 | `src/app/fx.js` | 21 |  | - |
@@ -182,6 +183,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/sound/scribe.js` | 66 | Tactile desk sounds: quill scratch, paper, wax-seal press, heavy book landing. | sfx |
 | `src/sound/thresholdSting.js` | 34 | A one-line sound for passing a floor door: each floor answers in its own room tone, quietl | threshold-pass |
 | `src/sound/uiHooks.js` | 11 | Wires the sound palette to the page: a brass tick on any button press, a faint one on hove | - |
+| `src/sound/verdictFeel.js` | 47 | The verdict feel: when the one line under a scored answer lands on the card, the pen write | verdict-feel |
 | `src/styles/base.css` | 64 | Layout: the dark library canvas is the world; every interface element is a white Wikipedia | pwa |
 | `src/styles/fit-headword.css` | 4 | One line per headword; src/ui/fitHeadword.js shrinks the font to fit. | css-sanity |
 | `src/styles/fit.css` | 64 | Fit: the home room at small and odd window sizes. Appended last so it wins over earlier la | css-sanity |
@@ -238,10 +240,10 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/candle.js` | 62 | The 45 s timer as a candle: how tall the flame stands and how fast it flickers for the tim | candle |
 | `src/ui/candleLight.js` | 54 | The run-screen candle as a real light. The old glow was a CSS gradient inside the answer b | candle-light, room-run |
 | `src/ui/canvasCover.js` | 22 | Throttle the library canvas while something dark and (almost) opaque sits on top of it. | canvas-cover |
-| `src/ui/card.css` | 33 | Book result card: dark leather page, tier name and rarity are the hero. | audit-fixes, panel-book, sigil-pages-crests |
+| `src/ui/card.css` | 33 | Book result card: dark leather page, tier name and rarity are the hero. | audit-fixes, panel-book, sigil-pages-crests, verdict-feel |
 | `src/ui/cardFit.js` | 22 | Result card: shrink the whole book to fit the window instead of letting .page grow a scrol | - |
 | `src/ui/chain.js` | 136 | The run's story on the alcove ledge, read from the books already earned (no new run data,  | ledge-story |
-| `src/ui/coreLoop.css` | 10 | Core loop polish (answer and result). The answer slip holds still while the judge reads it | css-sanity |
+| `src/ui/coreLoop.css` | 13 | Core loop polish (answer and result). The answer slip holds still while the judge reads it | css-sanity |
 | `src/ui/coverLock.css` | 73 | Cover closures: tape, twine, strap, clasp, wax seal, chain, glowing seam. One per tier, so | cover-lock |
 | `src/ui/coverLock.js` | 16 | What holds a book shut, per tier. The ceremony table (revealRecipes.js) names the style; t | cover-lock |
 | `src/ui/coverSigil.css` | 7 | Big sigil stamped on the result-card front cover (see coverSigil.js). Sized from the cover | sigil-pages-crests |
@@ -376,9 +378,9 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/scope.js` | 22 | Which numbers belong to the room you stand in and which cover the whole library. One place | scope-labels |
 | `src/ui/screenFx.css` | 12 | Soft entrances for the chrome that used to pop in with the screens, plus the world dip (sc | screen-fx |
 | `src/ui/screenFx.js` | 27 | A short dark dip over the canvas world, used to hide an instant swap of what the world sho | screen-fx |
-| `src/ui/settings.js` | 72 | Player settings: sound (master volume, music, effects), motion, text size, high contrast. | motion-live, settings-book, settings |
-| `src/ui/settingsBook.css` | 24 | Settings book (settingsBook.js). Uses the panel-book tokens (--bs-ink, --bs-mute, --bs-rul | settings-book |
-| `src/ui/settingsBook.js` | 48 | Settings book pages: markup only (testable as a string). topbar.js opens the book and wire | settings-book |
+| `src/ui/settings.js` | 73 | Player settings: sound (master volume, music, effects), motion, text size, high contrast. | motion-live, settings-book, settings |
+| `src/ui/settingsBook.css` | 24 | Settings book (settingsBook.js). Uses the panel-book tokens (--bs-ink, --bs-mute, --bs-rul | settings-book, verdict-feel |
+| `src/ui/settingsBook.js` | 50 | Settings book pages: markup only (testable as a string). topbar.js opens the book and wire | settings-book, verdict-feel |
 | `src/ui/shelfBays.css` | 33 | Shelf bays: brass labels with a count, a leaning library ladder with a rail, piled copies, | places, shelf-bays |
 | `src/ui/shelfBays.js` | 40 |  | places, shelf-bays |
 | `src/ui/shelfFilters.css` | 13 | Shelf filter page (audit Q4): the four filter lists share a compact written column so they | shelf-filters |
@@ -401,14 +403,15 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/thresholds.js` | 451 | Floors as chapters: a threshold you pass through at the top of every floor (beam or arch,  | thresholds |
 | `src/ui/tierFrames.css` | 50 | Tier dressing for the result-card book (loaded after bookCard.css). Pure CSS, tokens only. | tier-frames |
 | `src/ui/todayMet.js` | 12 | RA8: the Today card's "N of M met" line. The room's word list loads a moment after the hom | - |
-| `src/ui/topbar.css` | 84 | Library top bar: a carved walnut lintel with a bronze plaque, lantern glow at each end, | book-style, panel-book, settings-graphics-wrap, text-size |
-| `src/ui/topbar.js` | 131 |  | book-style, panel-book, settings-graphics-wrap, text-size |
+| `src/ui/topbar.css` | 84 | Library top bar: a carved walnut lintel with a bronze plaque, lantern glow at each end, | book-style, panel-book, settings-graphics-wrap, text-size, verdict-feel |
+| `src/ui/topbar.js` | 132 |  | book-style, panel-book, settings-graphics-wrap, text-size, verdict-feel |
 | `src/ui/topbarRail.css` | 66 | Top bar rail (overhaul): a carved oak rail with a brass inlay line, rivets, brass medallio | css-sanity |
 | `src/ui/topbarRail.js` | 50 | Top bar rail: the live readouts (streak flame, deepest ft), a Keys button, and sound volum | - |
 | `src/ui/topbarRailCore.js` | 9 | Pure values for the top bar rail (no DOM, unit tested). | topbar-rail |
 | `src/ui/tracker.js` | 62 | Depth tracker: a side rail with one segment per themed floor, its depth range, and where y | phone-book-pages, tracker |
 | `src/ui/transitions.js` | 48 | Smooth screen transitions. Screens are toggled with the `hidden` attribute elsewhere; | screen-fx, transitions |
 | `src/ui/typewrite.js` | 45 | Typewriter for text that is already in the DOM, revealed from the middle of the line outwa | typewrite |
+| `src/ui/verdictFeel.js` | 18 | Plays the verdict feel (src/sound/verdictFeel.js) when a result card's verdict line lands: | verdict-feel |
 | `src/ui/welcome.css` | 81 | The home room's wall furniture frame: the card-catalogue cabinet on the left (cabinet.js / | cabinet, card-lamp, desk-props, ledgerBooks, scope-labels |
 | `src/ui/welcome.js` | 19 | The ledger on the home room's right wall (the Librarian's Card). The card catalogue on the | cabinet, card-lamp, desk-props, ledgerBooks, scope-labels |
 | `src/world/alcoveFit.js` | 44 | Vertical fit of the lit alcove: it sits centred in the window with half a shelf row of boo | alcove-fit, phone-alcove |
