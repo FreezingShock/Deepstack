@@ -8,7 +8,6 @@
 .runledge .spine.skipped{border:1px dashed var(--rule);opacity:.7}
 .runledge .spine.linked::before{content:"";position:absolute;left:-5px;top:50%;width:5px;height:2px;background:var(--c-brass-69)}
 .runledge .spine.fresh{animation:spine-in var(--m-smooth) var(--e-settle) both}
-@keyframes spine-in{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
-@media(prefers-reduced-motion:reduce){.runledge .spine.fresh{animation:none}}
+@keyframes spine-in{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}:where(html.rm) .runledge .spine.fresh{animation:none}
 /* phones: keep the row short so it clears the depth rail */
 @media(max-width:640px){.runledge{height:28px;gap:4px}.runledge .spine{width:9px;height:calc(var(--sh,22px) - 4px)}.runledge .spine.next,.runledge .spine.now{height:22px}}

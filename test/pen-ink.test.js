@@ -2,6 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {penMark,penPlay} from '../src/ui/penInk.js';
+import {refreshMotion} from '../src/ui/settings.js';
 
 const read=f=>readFileSync(new URL('../'+f,import.meta.url),'utf8');
 const BOOK_CSS=['src/ui/bookpages.css','src/ui/penInk.css','src/ui/dailyBook.css','src/sets/sets.css'].map(read).join('\n');
@@ -19,7 +20,7 @@ test('written actions use the shared pen stroke and keep a visible focus ring',(
  assert.match(BOOK_CSS,/\.fchip\[aria-pressed="true"\]::after[^}]*var\(--pen-stroke\)/);
  assert.match(css,/\.fchip:focus-visible[^}]*outline:2px/);
  assert.match(css,/\.pen-ink:focus-visible::after/);
- assert.match(css,/prefers-reduced-motion/);
+ assert.match(css,/html\.rm/);
  assert.match(read('src/ui/home.js'),/bs-start pen-ink/);
  assert.match(read('src/ui/dailyBook.js'),/dly-go pen-ink/);
 });
@@ -41,7 +42,7 @@ function fakeRoot({prev,next}){
  return {a,b,root:{querySelector:s=>chips.find(c=>s===`[data-k="${c.dataset.k}"]`)}};
 }
 test('pen slides between choices on one line and draws in otherwise',()=>{
- globalThis.matchMedia=()=>({matches:false});
+ refreshMotion({motion:'system'},()=>false);
  let f=fakeRoot({prev:rect(10,100,40),next:rect(110,102,80)});
  penMark(f.root,'sB');penPlay(f.root);
  assert.equal(f.b.calls.length,1);
@@ -50,9 +51,9 @@ test('pen slides between choices on one line and draws in otherwise',()=>{
  f=fakeRoot({prev:rect(10,100,40),next:rect(10,160,80)});
  penMark(f.root,'sB');penPlay(f.root);
  assert.equal(f.b.calls.length,0);assert.equal(f.b.classList.added,'pen');
- globalThis.matchMedia=()=>({matches:true});
+ refreshMotion({motion:'system'},()=>true);
  f=fakeRoot({prev:rect(10,100,40),next:rect(110,100,80)});
  penMark(f.root,'sB');penPlay(f.root);
  assert.equal(f.b.calls.length,0);assert.equal(f.b.classList.added,'pen');
- delete globalThis.matchMedia;
+ refreshMotion({motion:'system'},()=>false);
 });

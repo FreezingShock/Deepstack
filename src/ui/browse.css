@@ -50,8 +50,7 @@ body.browsing .center *{pointer-events:none!important}
  #tracker::before,#tracker::after{left:50%;margin-left:-4px}
  #tracker .rail{margin-right:0;width:20px}
  #tracker ol{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-}
-@media(prefers-reduced-motion:reduce){#tracker,#tracker *,#snapback{transition:none!important}#tracker .you b{animation:none}}
+}:where(html.rm) #tracker,:where(html.rm) #tracker *,:where(html.rm) #snapback{transition:none!important}:where(html.rm) #tracker .you b{animation:none}
 
 /* phones: the rail is the tap target (wider hit area, no plaques) */
 @media(max-width:700px){#tracker{width:44px;padding:14px 12px}#tracker .rail{pointer-events:auto;cursor:pointer;width:20px}}

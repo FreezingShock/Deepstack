@@ -34,5 +34,5 @@ test('lock vars: animation ends at the swing, reduced motion removes the wait', 
 });
 test('css styles each closure and hides them for reduced motion', () => {
   for (const s of COVER_STYLES) assert.ok(css.includes('.cvl-' + s), s);
-  assert.match(css, /prefers-reduced-motion:reduce\)\{\.cvl\{display:none\}/);
+  assert.match(css, /where\(html\.rm\) \.cvl\{display:none\}/);
 });

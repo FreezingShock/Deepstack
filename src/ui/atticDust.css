@@ -6,5 +6,4 @@
  transition:background var(--m-smooth) var(--e-settle),border-color var(--m-smooth) var(--e-settle)}
 .shelve-f button b{font:600 calc(13px*var(--ts))/1.1 var(--serif)}
 .shelve-f button small{font:calc(11px*var(--ts))/1.2 "Special Elite",monospace;color:var(--tm)}
-.shelve-f button:hover,.shelve-f button:focus-visible{background:var(--c-white-alpha-22);border-color:var(--tc);outline:none}
-@media(prefers-reduced-motion:reduce){.shelve-f button{transition:none}}
+.shelve-f button:hover,.shelve-f button:focus-visible{background:var(--c-white-alpha-22);border-color:var(--tc);outline:none}:where(html.rm) .shelve-f button{transition:none}

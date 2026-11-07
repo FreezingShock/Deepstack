@@ -8,4 +8,4 @@ test('tier frames use tokens only, no raw hex',()=>{assert.doesNotMatch(css.repl
 test('every var() resolves to a generated token',()=>{
  const tok=readFileSync('src/theme/tokens.css','utf8'),local=new Set(['--tc','--th','--ts']);
  for(const m of css.matchAll(/var\((--[\w-]+)/g))assert.ok(local.has(m[1])||tok.includes(m[1]+':'),m[1]);});
-test('reduced motion stops the moving layers',()=>{assert.match(css,/prefers-reduced-motion:reduce\)\{\.book \.page::after\{animation:none/);});
+test('reduced motion stops the moving layers',()=>{assert.match(css,/:where\(html\.rm\) \.book \.page::after\{animation:none/);});

@@ -14,5 +14,5 @@ test('AE3: the way down is a rope ladder from the hatch, still named "Down the l
  assert.match(js,/setAttribute\('aria-label','Down the ladder'\)/);
  assert.match(css,/@keyframes adl-drop/);
  assert.ok(!/border-bottom:2px solid var\(--c-brass-67-alpha-88\)/.test(css),'old plaque styling is gone');
- assert.match(css,/html\[data-motion="reduce"\] [^{]*\.adl-ladder/);
+ assert.match(css,/html\.rm [^{]*\.adl-ladder/);
 });
