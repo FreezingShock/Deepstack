@@ -94,7 +94,8 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [~] Tactile hover/press/focus everywhere (#82)
 - [x] Rare tier reveals: particle overhaul (pooled sprite engine, prewarmed, per-tier recipes; this PR)
 - [~] Screen-to-screen transitions
-- [~] Keyboard controls and accessibility (one guard, `scripts/a11y.mjs`, from #358 and #378; AX2 to AX4 open)
+- [~] Keyboard controls and accessibility (one guard, `scripts/a11y.mjs`, from #358 and #378; AX2 in #387; AX3 is with the other accessibility thread; AX4 open)
+  - AX2 shelf tap areas: built option C (desktop at least 800px tall: 44px tap areas, same drawn spines; phones and shorter laptops stay as they are). Logged alternatives: A, keep as is (24px spaced targets); B, taller books at 44px everywhere (pushes the phone's bottom row below the fold). Renders in `screenshots/a11y-shelf-height/`.
 - [~] Judge accuracy on tricky answers
 - [~] Difficulty ramp and word pool
 - [x] Hints and skip (#86)
