@@ -56,6 +56,7 @@ export function showHome(opts){
  bindDeskProps(ui.home,{sfx:Sfx});
  const hearth=mountHearth(ui.home,{sfx:Sfx,mood:hearthMood(S,st.streak),reuse:!!held});
  mountIdleRoom(ui.home,{sfx:Sfx,hearth});
+ Sfx.room(currentRoom(S)); // this room's accents (no-op when the room is already the one playing)
  mountRoomHome(ui.home,{room:currentRoom(S),go:goRoom,openLedger:()=>$('#bRooms')&&$('#bRooms').click(),met:id=>roomMetLabel(S,id)});
  if(!keep)showHomeNote(S,save,ui.home); // one first-visit line per home visit, under the plaque
  setBookSfx(n=>n==="whoosh"?Sfx.cue("lift"):n==="thud"?Sfx.cue("shut"):n==="flip"?Sfx.cue("turn"):Sfx[n]&&Sfx[n]());

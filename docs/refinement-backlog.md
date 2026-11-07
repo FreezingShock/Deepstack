@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
+- Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
 - Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
 - Pick the stamp look and place (TA5): placement A is an Almanac Stamps page, B the room's title line, C the Librarian's Card row (desktop only); look X is a wax seal, Y a bookplate, Z a gilt medallion. Answer like "TA5: A, Z". Desktop and phone screenshots are in screenshots/room-stamps/.
 - Settings placement (ST1): A gear in the top bar, B card catalogue drawer (desktop only, the phone has no cabinet), C both (recommended). Mockups in screenshots/settings-overhaul/ (where-A, where-B, where-C at 1280 and 375). Reply with a letter and I will act on it.
@@ -1828,6 +1829,23 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### TR11. Room-coloured Daily binding and share card
 **Pitch:** The Daily book's dated tab and the share text's block colours take the room's fire colour, so a Chronicle Daily reads crimson and an Observatory one green.
 **Brief:** Goal: `placeDailyTab` and the result share read `--rm-rgb`. Files: `src/ui/dailyBind.css`, `src/app/final.js`. **Conflicts:** Daily binding, results threads.
+
+### [x] TR16. Each topic room has its own sound accents (room ambience PR)
+**Done:** `src/sound/roomTone.js`: Chronicle clock tick, Counting House abacus beads, Observatory pentatonic chime, Scriptorium quill, Gallery low chord, Anatomy heartbeat. Sparse (6 to 20 s gaps), one gain per room, crossfade on every walk (old room out, new room in, about the colour glide). Reading Room silent. Test `test/room-tone.test.js` (10 tests). Look unchanged: the before and after screens in screenshots/room-ambience/ match (small differences in two 1280 shots come from run-to-run noise, not from this change).
+
+### [x] TR17. A small prop on the alcove desk for each topic room (nate picked A: 7A; room-props PR)
+**Done:** `src/ui/roomProps.js` draws one object per room beside the inkwell (phones: the desk's right end): a clock (Chronicle), abacus (Counting House), armillary (Observatory), scroll (Scriptorium), framed picture (Gallery), skull (Anatomy Theatre). It stays still, drawn in the canvas desk (`drawNook`). Tests `test/room-props.test.js`. Before and after run screens: screenshots/room-props/.
+
+**Pitch:** Each topic room gets one object on the alcove's desk (a clock, abacus, armillary, scroll, framed picture, skull) so a glance tells you the room, or room-coloured motes drifting in the nook.
+**Brief:** Goal: after nate picks A, B or C, add the chosen look to `src/ui/alcoveArt.js` per room, static under reduced motion, phone spot on the ledge. Files: new `src/ui/roomProps.js`, one-line hook in `alcoveArt.js`. Mockups: screenshots/room-ambience/mockups/. **Conflicts:** alcove, run threads.
+
+### TR18. Accents answer the answer (room bell on a correct word)
+**Pitch:** A correct word in the Observatory rings its bell and a Chronicle word ticks once more, so each room's sound also reacts to play, not just sits behind it.
+**Brief:** Goal: `Sfx.room` plays a one-shot from the room's accent on `judge` success (Observatory chime, Scriptorium quill, Anatomy heartbeat once). Files: `src/sound/roomTone.js`, `src/app/run.js` hook. **Conflicts:** score, run threads.
+
+### TR19. Duck the room accents under the open book
+**Pitch:** While a book is open or the Card is up, the room accents drop under the page sounds, the same way the floor bed ducks (item 829).
+**Brief:** Goal: `roomTone` gain drops by half while `#bk` is open, back over .6 s on close. Files: `src/sound/roomTone.js`, `src/feel.js` hook. **Conflicts:** book-open threads.
 
 ### TR12. Room streak flames on the doors
 **Pitch:** Each side door's lamp burns brighter the longer your streak in that room, and a small number on the plate shows it, so you can see which room is waiting for today's Daily.
