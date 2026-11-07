@@ -3,7 +3,6 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
-- Room props (TR17): pick a letter for the look inside each topic room's alcove. A = one small prop on the desk per room (clock, abacus, armillary, scroll, framed picture, skull), B = room-coloured motes drifting in the nook, C = both. Recommended A (it keeps the labels clear). Screenshots: screenshots/room-ambience/mockups/sheet-1280.png and sheet-375.png. Reply with the letter.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
 - Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
 - Pick the stamp look and place (TA5): placement A is an Almanac Stamps page, B the room's title line, C the Librarian's Card row (desktop only); look X is a wax seal, Y a bookplate, Z a gilt medallion. Answer like "TA5: A, Z". Desktop and phone screenshots are in screenshots/room-stamps/.
@@ -1833,7 +1832,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### [x] TR16. Each topic room has its own sound accents (room ambience PR)
 **Done:** `src/sound/roomTone.js`: Chronicle clock tick, Counting House abacus beads, Observatory pentatonic chime, Scriptorium quill, Gallery low chord, Anatomy heartbeat. Sparse (6 to 20 s gaps), one gain per room, crossfade on every walk (old room out, new room in, about the colour glide). Reading Room silent. Test `test/room-tone.test.js` (10 tests). Look unchanged: the before and after screens in screenshots/room-ambience/ match (small differences in two 1280 shots come from run-to-run noise, not from this change).
 
-### TR17. A small prop or motes in each room's alcove (waiting on nate's letter)
+### [x] TR17. A small prop on the alcove desk for each topic room (nate picked A: 7A; room-props PR)
+**Done:** `src/ui/roomProps.js` draws one object per room beside the inkwell (phones: the desk's right end): a clock (Chronicle), abacus (Counting House), armillary (Observatory), scroll (Scriptorium), framed picture (Gallery), skull (Anatomy Theatre). It stays still, drawn in the canvas desk (`drawNook`). Tests `test/room-props.test.js`. Before and after run screens: screenshots/room-props/.
+
 **Pitch:** Each topic room gets one object on the alcove's desk (a clock, abacus, armillary, scroll, framed picture, skull) so a glance tells you the room, or room-coloured motes drifting in the nook.
 **Brief:** Goal: after nate picks A, B or C, add the chosen look to `src/ui/alcoveArt.js` per room, static under reduced motion, phone spot on the ledge. Files: new `src/ui/roomProps.js`, one-line hook in `alcoveArt.js`. Mockups: screenshots/room-ambience/mockups/. **Conflicts:** alcove, run threads.
 
