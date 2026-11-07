@@ -62,3 +62,15 @@
 #stamptoast .stp-foot{display:flex;justify-content:space-between;gap:1em;padding:.35em .9em .45em;font-style:italic;font-size:calc(12px*var(--ts,1));opacity:.7;
   border-top:1px solid color-mix(in srgb,var(--c-brass-cdbb92) 30%,transparent)}:where(html.rm) #stamptoast,:where(html.rm) #stamptoast .stp-seal,:where(html.rm) #stamptoast::after{transition:none;animation:none}:where(html.rm) #stamptoast::after{display:none}
 html.rm #stamptoast,html.rm #stamptoast .stp-seal,html.rm #stamptoast::after{animation:none}
+
+/* The stamp plaque steps aside (stampToast.js): a small brass tab at the top corner that opens the full plaque on tap. */
+#stamptoast{left:auto;right:8px;top:56px;width:46px;height:46px;min-width:0;max-width:none;padding:0;border-radius:50%;transform:translateY(-14px);pointer-events:none}
+#stamptoast.on{transform:none;pointer-events:auto}
+#stamptoast.open{left:8px;width:auto;height:auto;border-radius:4px;transform:none}
+#stamptoast .stp-tab{all:unset;box-sizing:border-box;display:grid;place-items:center;width:100%;height:100%;min-height:44px;cursor:pointer;color:var(--c-parchment);font:600 calc(16px*var(--ts,1))/1 var(--serif);font-variant-numeric:lining-nums}
+#stamptoast .stp-tab:focus-visible{outline:2px solid var(--c-amber);outline-offset:2px;border-radius:50%}
+#stamptoast .stp-plaque{display:none}
+#stamptoast.open .stp-tab{display:none}
+#stamptoast.open .stp-plaque{display:block}
+#stamptoast.open{cursor:pointer}
+:where(html.rm) #stamptoast{transition:none}

@@ -152,12 +152,49 @@ jobs:
           path: snapshot-diffs/
           if-no-files-found: ignore
 
+  # Motion-on overlap guard: a book's bookmark ribbon and the stamp tab must not cover text or the header seal.
+  # Its own job, so it never adds time to the build job's 22-minute limit. Reduced motion hides the ribbon, so only this run sees it.
+  overlap:
+    needs: scope
+    if: needs.scope.outputs.heavy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: public/models
+          key: model-${{ hashFiles('src/scorer/model.js') }}
+      - run: npm run build
+      - name: Get Playwright version
+        id: pw
+        run: echo "v=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: pwcache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.v }}
+      - name: Install Chromium
+        run: |
+          if [ "${{ steps.pwcache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - name: Motion-on overlap guard (ribbon and stamp tab)
+        run: node scripts/motion-overlap.mjs
+
   # The single required status check: name it "check" in branch protection / rulesets.
   # Runs even when upstream jobs fail or are skipped; passes only if none failed or were cancelled
   # (skipped is fine: that is the docs-only path).
   check:
     if: always()
-    needs: [scope, test, build]
+    needs: [scope, test, build, overlap]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
