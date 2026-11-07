@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Daily cover on a desktop (new-modes playtest, PR #390 built as option A): Riddle and Practice moved to a desk spread after the calendar, so the cover fits at 1280 with reduced motion. Reply A, B or C: A = desk spread (built, recommended); B = keep the cover scrolling; C = shrink the calendar. Mockups: screenshots/new-modes-playtest/mockups/.
+- Nemesis rematch (NM1): open the Almanac on your phone and turn to the Wanted page. This week's hardest word sits there as a wanted poster, and the Rematch button is also on its row in the hardest-words list. Tap "Face it this week" and answer. Say whether the poster and the rematch feel right, and which option you want (A, B or C in NM1).
 - Phone rooms line (ON4, this PR): on a phone, the first-visit door line lights the ring of room lights and says "Tap a light to pick a room." The other two options (the Ledger line, or no phone line) are in screenshots/onboarding-halo/ON4-*. Say B or C if you'd rather have one of those.
 - Onboarding halo (ON1, this PR): on a fresh profile, the first home visit lights the Room Ledger spine. The halo should sit on the spine, not beside it, and the side-door line on desktop should light the left door. Tell me if either still looks off (screenshots in screenshots/onboarding-halo/).
 - Restoration follow-ups (MR2 to MR4, this PR): open the bench from the bottom-left door on your phone. The first page of each room today is its Daily, and its frame on the wall says Daily. Restore all three entries on a page and a Wax seal plaque drops over the open bench, in the Almanac's library row. Tell me if the plaque should wait until you close the bench instead.
@@ -2305,6 +2306,27 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 **Brief:** Goal: a reload during today's weekly word resumes it. Files: `src/core/dailyRun.js` (pattern), `src/app/run.js`. Done when: a reload test in `scripts/weekly-check.mjs` resumes the word.
 **Touches:** RUN, WEEKLY. **Conflicts:** WK1.
 
+
+## NM. Nemesis rematch (2026-11-07, from the Nemesis thread)
+
+### NM1. [x] Nemesis: the word you keep missing comes back as a weekly rematch (this PR)
+**Serves:** a recurring reason to return, a personal rival, a reward for turning a weak word into a strong one.
+**Pitch:** Each week the hardest word in your answers (lowest average closeness) that you have not beaten becomes your Nemesis. It shows as a wanted poster on the Almanac's Closeness page, with a Rematch button on its row in the hardest-words list. One swing a week. Folio or better (46+) captures it and earns the "Rematch won" stamp, and it never comes back. Anything lower and the word is wanted again next Monday.
+**Options (changeable, lettered):** A, built: one swing a week, poster on the Closeness page. B: unlimited retries within the week, with the best score counting (see NM2). C: a wanted poster on the Daily book's cover instead of the Almanac. Change `src/core/nemesis.js` (`recordNemesis`, one swing) and `src/ui/nemesis.js` (placement is in `almanacProgress.js`).
+**Brief:** Goal: a weekly, pinned, personal duel word with a poster, a result and a reward. Files: `src/core/nemesis.js`, `src/ui/nemesis.js`, `src/ui/nemesis.css`, `src/ui/almanacProgress.js`, `src/app/run.js`, `src/app/final.js`, `src/core/stamps.js`. Done when: `test/nemesis.test.js` passes, `scripts/nemesis-check.mjs` passes at 375 and 1280 with reduced motion in every room and plays the duel to the result card.
+**Touches:** ALMANAC, RUN, STAMPS. **Conflicts:** AS1 (progress page), stamps.
+
+### NM2. A rematch that stays open for the whole week
+**Serves:** a fair second try after a bad first one.
+**Pitch:** The duel is one swing a week (option A in NM1). Option B lets the player retry until Sunday, keeping the best score. Pick B if A feels too strict after a real play.
+**Brief:** Goal: an open duel stays open until the week ends, scored by the best swing. Files: `src/core/nemesis.js` (`recordNemesis`, `duelState`). Done when: the test covers two swings in one week with the best one counted.
+**Touches:** RUN, ALMANAC. **Conflicts:** NM1.
+
+### NM3. Nemesis words from the topic rooms
+**Serves:** a Nemesis for players who only answer in one room.
+**Pitch:** Today the Nemesis is drawn from the whole library, so a word that only lives in a topic room's own list is skipped. Draw from the room's list too, and judge it with its own definition.
+**Brief:** Goal: every answered word in any room can become a Nemesis. Files: `src/core/nemesis.js` (`pickNemesis`), `src/core/roomPool.js` (`roomEntries`). Done when: a test with a room-only word picks it and `scripts/nemesis-check.mjs` duels it in that room.
+**Touches:** RUN, ROOMS. **Conflicts:** topic-room word lists.
 
 ## PT. Patrons follow-ups (2026-11-07, from the Patrons thread)
 
