@@ -93,6 +93,7 @@ jobs:
           node scripts/smoke.mjs & smoke=$!
           node scripts/snapshots.mjs & snaps=$!
           node scripts/text-fit.mjs & fit=$!
+          node scripts/settings-walk.mjs & walk=$!
           node scripts/transitions.mjs & trans=$!
           node scripts/room-switch.mjs & rooms=$!
           node scripts/room-visuals.mjs & rvis=$!
@@ -105,6 +106,7 @@ jobs:
           wait $smoke || rc=1
           wait $snaps || rc=1
           wait $fit || rc=1
+          wait $walk || rc=1
           wait $trans || rc=1
           wait $rooms || rc=1
           wait $rvis || rc=1
