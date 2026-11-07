@@ -136,7 +136,14 @@ function createHearth(home, sfx, mood) {
   const undo = () => { for (const [el, k, was] of touched.splice(0).reverse()) { if (k[0] === '-') { if (was) el.style.setProperty(k, was); else el.style.removeProperty(k); } else el.style[k] = ''; } home.classList.remove('hearth-wide', 'hearth-flow', 'hearth-narrow', 'hearth-compact', 'hearth-bare', 'hearth-tiny'); };
 
   /* ----- layout ----- */
+  // The fit reads boxes right after it changes classes. With transitions on (Reduce Motion still gives each one 0.01 ms), those
+  // reads return the box from before the change, so the fit flip-flopped compact on and off and the Descend button jumped
+  // about 55px every few frames. Solve with transitions off, then let them back.
   function layout() {
+    home.classList.add('hearth-measure');
+    try { solveLayout(); } finally { home.classList.remove('hearth-measure'); }
+  }
+  function solveLayout() {
     if (dead) return;
     undo();
     const hr = home.getBoundingClientRect();

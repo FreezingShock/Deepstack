@@ -53,6 +53,7 @@ import './ui/homeTight.css';
 import './ui/deskProps.css';
 import './ui/mantel.css';
 import './ui/hearth.css';
+import './ui/hearthMeasure.css';
 import './ui/homeSpineSub.css';
 import './ui/homeSpineSub.js';
 import './ui/idleRoom.css';
