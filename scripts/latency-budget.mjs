@@ -21,6 +21,7 @@ const noFail = process.argv.includes('--no-fail');
 // Milliseconds from input to next paint, median of `runs`, at `cpu`x throttling. Measured on the code this PR fixed:
 // before it, desktop room switch ~570-750 ms; after it ~430-520 ms. Budgets sit above the fixed numbers and catch a return to the slow path.
 const BUDGET = {
+  idleFillsPerSec: 6000,
   desktop: {roomSwitch: 650, bookOpen: 600, submit: 500},
   phone: {roomSwitch: 600, bookOpen: 300, submit: 250},
 };
@@ -54,7 +55,9 @@ const seed = {shelf: [], sound: false, streak: {last: today, n: 2}, room: 'hall'
 
 // Page hooks, installed before the app runs: Event Timing entries, long tasks, and the save/timer order for the room walk.
 const HOOKS = () => {
-  window.__ev = []; window.__order = []; window.__seq = 0; window.__armed = false;
+  window.__ev = []; window.__order = []; window.__seq = 0; window.__armed = false; window.__fills = 0;
+  const fillRect = CanvasRenderingContext2D.prototype.fillRect; // counts canvas fills: the idle world's cost in kind
+  CanvasRenderingContext2D.prototype.fillRect = function (...a) { window.__fills++; return fillRect.apply(this, a); };
   new PerformanceObserver(l => { for (const e of l.getEntries()) window.__ev.push([e.name, e.duration]); }).observe({type: 'event', durationThreshold: 16, buffered: true});
   const setItem = Storage.prototype.setItem;
   Storage.prototype.setItem = function (k, v) {
@@ -113,6 +116,13 @@ for (const vpName of Object.keys(VIEWPORTS)) {
     }
     R.roomOrder = walk.order.every(o => o.indexOf('timer') >= 0 && o.indexOf('timer') < o.indexOf('save')) ? 'ok' : 'fail';
   }
+}
+
+// 1b. the idle home world: canvas fills per second at 4x. Row 0's shelf is cached; drawn live it was ~2300 fills a frame (~18000 a second).
+{
+  const fillsPerSec = await session('desktop', async page => page.evaluate(() => new Promise(res => { window.__fills = 0; const t0 = performance.now(); setTimeout(() => res(Math.round(window.__fills / ((performance.now() - t0) / 1000))), 2000); })));
+  R.idleFillsPerSec = fillsPerSec;
+  if (fillsPerSec > BUDGET.idleFillsPerSec) problems.push(`idle home: ${fillsPerSec} canvas fills a second > budget ${BUDGET.idleFillsPerSec} (4x CPU)`);
 }
 
 // 2. settings book open, and 3. answer submit: one session per run each
