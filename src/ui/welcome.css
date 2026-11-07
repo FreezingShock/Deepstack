@@ -4,6 +4,8 @@
    Both scale with --hs (how much wider than the old 760 px niche the room is) and --hv (the same, for height).
    Loaded after home.css. All motion uses the shared --m-* / --e-* presets, which collapse when motion is reduced. */
 .home .hz-plaque{position:relative}
+/* the niche never shows a sideways scrollbar: the book spines at its edges can overhang by a sub-pixel */
+#home{overflow-x:hidden}
 .home .cat-card{display:block}
 .home .cc-cab{display:none}
 .home .cat-card,.home .ledger{--fw:calc(366px*var(--hs,1) - 186px);--fh:calc(236px*var(--hv,1));--wall:calc(-46px*var(--hs,1))}
