@@ -32,7 +32,7 @@ export function registerLedgerBooks({S,FLOORS,floorStartFt,today=()=>new Date().
   if(e.key!=='Enter'&&e.key!==' ')return;
   const tagKey=e.target.closest&&e.target.closest('.ach-flame');
   if(tagKey&&!tagKey.hidden){e.preventDefault();e.stopPropagation();tagKey.click();return;}
-  const row=e.target.closest&&e.target.closest('.lg-row[role="button"],.bg-streak[role="button"]');if(!row)return;
+  const row=e.target.closest&&e.target.closest('.bg-streak[role="button"]');if(!row)return; /* ledger values are real buttons: Enter already clicks them */
   e.preventDefault();row.click();
  });
 }

@@ -1,0 +1,80 @@
+/* Accessibility pass (scripts/a11y.mjs): every control is at least 44px on each side, and every control that takes the
+   keyboard shows a ring. Most targets keep their drawn size and get a transparent hit slop (::after) instead, so the look
+   does not change. Imported last in main.js so these rules win the cascade. */
+
+/* Top bar icon buttons keep their drawn size (the bar is tight at 320px); a hit slop makes the tap area 44px */
+/* Top bar icon buttons: a 44px box (the drawn frame is 38px tall and grows to 44px wide, icon centred). Neighbours are 4-7px
+   apart and the bar is packed by font width, so a hit slop cannot reach 44px in every layout (CI's fonts are wider).
+   Not at 320px: the attic hatch sits over the Sound button there (test/ra-fixes). */
+@media (min-width:360px){#bar #bSound,#bar #bSettings,#bar #bCredits,#bar #bKeys{min-width:44px;justify-content:center;box-sizing:border-box}}
+#bar #bSound::after,#bar #bSettings::after,#bar #bCredits::after,#bar #bKeys::after{content:"";position:absolute;inset:-4px;pointer-events:auto}
+
+/* Title plaque (home mark): hit slop above and below the plaque */
+#mark{position:relative}
+#mark::after{content:"";position:absolute;inset:-6px -4px;pointer-events:auto}
+
+/* Home menu books: a hit slop reaches 44px tall whatever the book's drawn height */
+.home .hbook::before{content:"";position:absolute;inset:-3px 0;pointer-events:auto}
+
+/* Ring of room lights and the card catalogue tab */
+/* Ring of lights on wide screens sit about 21px apart, so their slop is 2px: 25px targets that cannot cover a neighbour */
+#home .rm-dot::after{content:"";position:absolute;inset:-2px;pointer-events:auto}
+/* .cc-tab is position:fixed already, which makes it the containing block for its slop */
+.cc-tab::after{content:"";position:absolute;inset:-8px;pointer-events:auto}
+
+/* Desk props (brass bell, due-date stamp): .dp is position:absolute already, so it is the containing block for the slop */
+/* the bell's bottom edge sits on the card catalogue's tag, so its slop reaches up (46px in all) */
+#dp-bell::after{content:"";position:absolute;left:-7px;right:-7px;top:-14px;bottom:0;pointer-events:auto}
+#dp-stamp::after{content:"";position:absolute;inset:-7px -8px;pointer-events:auto}
+
+/* Word screen: the hint and skip buttons */
+#stage .row #hint.hs-btn,#stage .row #skip.hs-btn{min-height:44px;box-sizing:border-box}
+
+/* Menu books are lazy-loaded CSS that lands after this file, so their size floors use !important.
+   Menu books: search, filter chips, calendar days, links and the day list */
+.bk-spread.menu #fq{min-height:44px;box-sizing:border-box}
+.bk-spread.menu #fq:focus-visible{outline:2px solid var(--bk);outline-offset:4px}
+.bk-spread.menu .chipgroup .fchip{min-height:44px;box-sizing:border-box;align-items:center}
+.bk-spread .fold{min-height:44px!important;box-sizing:border-box}
+.bk-spread .dly .dly-act,.bk-spread .dly .btn{min-height:44px!important;box-sizing:border-box}
+/* On small phones the Daily page is shrunk with CSS zoom (fit.css), which shrinks the tap area too: keep 44 screen px */
+@media (max-width:420px) and (max-height:760px){.bk-spread .dly .dly-act,.bk-spread .dly .btn{min-height:calc(44px / .74)!important}}
+@media (max-width:380px){.bk-spread .dly .dly-act,.bk-spread .dly .btn{min-height:calc(44px / .68)!important}}
+@media (max-width:340px){.bk-spread .dly .dly-act,.bk-spread .dly .btn{min-height:calc(44px / .58)!important}}
+.bk-spread.menu .alm-ember{min-height:44px;display:inline-flex;align-items:center;box-sizing:border-box}
+.bk-spread.menu .dly.cal .cal-d{position:relative}
+.bk-spread .dly.cal .cal-d::before{content:"";position:absolute;inset:-4px;pointer-events:auto} /* ::before, because today's underline owns ::after; the button's 2px border is inside the slop */
+.bk-spread.menu .dly.cal .cal-d:focus-visible{outline:2px solid var(--bk);outline-offset:3px}
+/* Result card's main button: the card is a .book zoomed by --fz on phones, so its 44px floor is divided by that zoom */
+#cardlayer #go{min-height:calc(44px / var(--fz,1));box-sizing:border-box}
+/* Settings: volume and effects sliders (17px tall as drawn) and the Reset progress button (36px) */
+.bk-spread.panel .sb-slider input[type="range"]{min-height:44px;box-sizing:border-box}
+.bk-spread.panel .sb-reset{min-height:44px!important;box-sizing:border-box}
+/* Top bar Ember Log chip: hit slop above and below */
+#bar .bg-streak[role="button"]{position:relative}
+#bar .bg-streak[role="button"]::after{content:"";position:absolute;inset:-8px 0;pointer-events:auto}
+
+/* Depth tracker floor buttons (tabindex -1, mouse only): a horizontal slop reaches 44px wide */
+nav[aria-label="Depth tracker"] li button{width:45px;margin:0 -13px;padding:0}
+
+/* Settings panel (topbar.js): switches, text-size buttons, volume, and the links in Credits */
+.tpsw::after{content:"";position:absolute;inset:-10px 0;pointer-events:auto}
+.tpseg button{min-height:44px!important;min-width:44px!important}
+#sVol{min-height:44px}
+.tpcred a{display:inline-block;padding:13px 2px;margin:-13px -2px}
+
+/* Restoration bench entry (fixed corner button) and the Shelf / To review switch (a filter chip) */
+.rs-entry{min-height:44px;box-sizing:border-box}
+.bk-spread.menu .sv-tab{min-height:44px!important;box-sizing:border-box;align-items:center}
+/* Home: the Descend button is the main thumb target on a phone (35px as drawn) */
+.home .descend{min-height:44px;box-sizing:border-box}
+/* Daily page: the week link ("Open the week") gets the same floor as the other Daily buttons, zoomed like them on phones */
+.bk-spread .dly .dly-go{min-height:44px!important;box-sizing:border-box;align-items:center}
+@media (max-width:420px) and (max-height:760px){.bk-spread .dly .dly-go{min-height:calc(44px / .74)!important}}
+@media (max-width:380px){.bk-spread .dly .dly-go{min-height:calc(44px / .68)!important}}
+@media (max-width:340px){.bk-spread .dly .dly-go{min-height:calc(44px / .58)!important}}
+/* Margin note tab (result card, books): a 44px tab. Its clip-path clips hit slop too, so the tab itself grows, zoomed with the card */
+.book .mn-tab{min-height:calc(44px / var(--fz,1))!important;box-sizing:border-box;align-items:center}
+
+/* Calendar days: 44px cells (the grid keeps its shape; the cells were 40px) */
+.bk-spread .dly.cal .cal-d{width:min(44px,100%)!important;max-height:44px!important}

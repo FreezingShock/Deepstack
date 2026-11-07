@@ -94,7 +94,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [~] Tactile hover/press/focus everywhere (#82)
 - [x] Rare tier reveals: particle overhaul (pooled sprite engine, prewarmed, per-tier recipes; this PR)
 - [~] Screen-to-screen transitions
-- [~] Keyboard controls and accessibility (axe and focus guards and Card/door label fixes in PR #358; aria-live and contrast sampling still open)
+- [~] Keyboard controls and accessibility (one guard, `scripts/a11y.mjs`, from #358 and #378; AX2 to AX4 open)
 - [~] Judge accuracy on tricky answers
 - [~] Difficulty ramp and word pool
 - [x] Hints and skip (#86)
