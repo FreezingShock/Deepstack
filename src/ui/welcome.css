@@ -4,6 +4,8 @@
    Both scale with --hs (how much wider than the old 760 px niche the room is) and --hv (the same, for height).
    Loaded after home.css. All motion uses the shared --m-* / --e-* presets, which collapse when motion is reduced. */
 .home .hz-plaque{position:relative}
+/* the niche never shows a sideways scrollbar: the book spines at its edges can overhang by a sub-pixel */
+#home{overflow-x:hidden}
 .home .cat-card{display:block}
 .home .cc-cab{display:none}
 .home .cat-card,.home .ledger{--fw:calc(366px*var(--hs,1) - 186px);--fh:calc(236px*var(--hv,1));--wall:calc(-46px*var(--hs,1))}
@@ -20,7 +22,7 @@
  background:repeating-linear-gradient(90deg,transparent 0 9px,var(--c-black-alpha-33) 9px 10px),linear-gradient(180deg,var(--c-oak-5a3d22),var(--c-oak-3d2916));
  box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 0 0 1px var(--c-black),0 16px 22px -12px var(--c-black)}
 /* a slab on top for the prop; it overhangs a little, like the cornice of a built-in */
-.home .cc-top{position:relative;height:8px;margin:0 -5px;border-radius:2px 2px 0 0;
+.home .cc-top{position:relative;height:8px;margin:0;border-radius:2px 2px 0 0;
  background:linear-gradient(180deg,var(--c-oak-24),var(--c-oak-21));box-shadow:0 1px 0 var(--c-white-alpha-40) inset,0 0 0 1px var(--c-black)}
 /* four brass screws at the corners of each frame */
 .home .cc-run::after,.home .lg-frame::after{content:"";position:absolute;inset:5px;pointer-events:none;
@@ -36,8 +38,8 @@
 .home .lg-page{margin:0;height:100%;box-sizing:border-box;padding:6px 10px 4px;display:flex;flex-direction:column;justify-content:space-around;
  background:repeating-linear-gradient(180deg,transparent 0 25px,color-mix(in srgb,var(--c-oak-4a3a22) 30%,transparent) 25px 26px),radial-gradient(120% 90% at 30% 10%,var(--c-parchment-85),var(--c-parchment-dim));
  box-shadow:0 0 0 1px var(--c-black-alpha-66),inset 0 2px 5px var(--c-black-alpha-33);border-radius:1px}
-.home .lg-row{--lg-ink:var(--c-book-red);display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin:0;font:400 calc(13px*var(--ts))/calc(26px*var(--ts)) var(--mono);color:var(--c-oak-1a1208);white-space:nowrap}
-.home .lg-row dt{margin:0}
+.home .lg-row{--lg-ink:var(--c-book-red);display:flex;justify-content:space-between;align-items:center;gap:6px;margin:0;font:400 calc(13px*var(--ts))/calc(26px*var(--ts)) var(--mono);color:var(--c-oak-1a1208);white-space:nowrap}
+.home .lg-row dt{margin:0;text-align:left}
 .home .lg-row dd{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;font:700 calc(17px*var(--ts))/calc(26px*var(--ts)) var(--pen-hand,'Fuzzy Bubbles',cursive);color:var(--lg-ink)}
 /* Librarian's Card colour: quiet labels, the streak in ember and dominant, depth in deep ink, books/floor in their tier/floor colour, each value underlined like a ruled entry */
 .home .lg-row dt{font-size:calc(11px*var(--ts));letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,var(--c-oak-1a1208) 55%,transparent)}
