@@ -19,6 +19,8 @@ import {judgeAnswer} from '../scorer/index.js';
 import {fullPool} from '../core/roomPool.js';
 import {verdictFor} from '../core/verdict.js';
 import {stampsLeaves} from './stampsPage.js';
+import {relicCodexLeaves,descentHistoryLeaves} from './relicCodex.js';
+import './relicCodex.css';
 import './stamps.css';
 import './nemesis.css';
 import {BOOK_ACTS} from './home.js';
@@ -29,7 +31,7 @@ export function buildBookPages({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideT
  return {
   bAll:shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOORS,reduceMotion:()=>RM,review}),
   bDaily:{...dailyBook({S,today:utc,streak:()=>computeStats(S,utc()).streak,wordsReady,wordsLoaded}),keepOnEsc},
-  bStats:{...sb,spreads:()=>[...sb.spreads(),...toSpreads(roomStatsLeaves(S,{today:utc(),computeStats,lexicon:core.lexicon})),...toSpreads(stampsLeaves(S)),...toSpreads(curioLeaves(S,r=>floorAtFt(r*FT),r=>Math.round(r*FT)))],keepOnEsc,
+  bStats:{...sb,spreads:()=>[...sb.spreads(),...toSpreads(roomStatsLeaves(S,{today:utc(),computeStats,lexicon:core.lexicon})),...toSpreads(stampsLeaves(S)),...toSpreads(curioLeaves(S,r=>floorAtFt(r*FT),r=>Math.round(r*FT))),...toSpreads([...relicCodexLeaves(S),...descentHistoryLeaves(S)])],keepOnEsc,
    /* the Almanac's streak link: the way into the Ember Log on phones, where the Librarian's Card and its Streak row are hidden */
    onPaint:(sp,api)=>{sp.querySelectorAll('.alm-ember').forEach(b=>{b.onclick=()=>{const row=document.getElementById('bStreak'),from=document.getElementById('bStats');if(!row)return;row.__from=()=>{row.__from=null;return from.getBoundingClientRect();};api.close();row.click();};});
     /* the Nemesis duel (Wanted poster and the Rematch button): the book closes, then the duel starts from the home room */
