@@ -119,6 +119,7 @@ jobs:
           wait $review || rc=1
           wait $frames || rc=1
           wait $patrons || rc=1
+          node scripts/first-note-clear.mjs || rc=1
           exit $rc
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
       - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)

@@ -2263,3 +2263,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** A patron who has commended you three times should bring a second, harder request (a rarer word from a higher tier), so the desk grows with the player.
 **Brief:** Goal: after three commendations from one patron, their request draws from words of tier 3 and up (`src/core/patrons.js`, the pool filter), labelled "A harder one". Done when: the rule is a pure function with a test and the desk shows the label at 375 and 1280.
 **Touches:** Patrons. **Conflicts:** none.
+
+## NO. Notes and cards (2026-11-07, from the Unlimited walk)
+
+### NO1. [x] First-time notes clear when the player acts (this PR)
+**Done:** a first-visit home note (the gold halo and its panel) no longer sits over the card that opens next. Opening a card clears every note, and any click clears them before its handler runs. Files: `src/ui/firstNotes.js`, `src/app/card.js`, `src/main.js`. Guard: `scripts/first-note-clear.mjs` in CI, `test/first-note-clear.test.js`. The walk's "doubled stop" on the "You wrote" line was a false positive (the closing quote), so it is not in this change.
+**Touches:** every card and the home first-visit lines. **Conflicts:** none open.
