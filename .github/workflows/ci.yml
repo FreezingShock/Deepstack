@@ -103,6 +103,7 @@ jobs:
           node scripts/almanac-progress.mjs & almanac=$!
           node scripts/pwa-check.mjs & pwa=$!
           node scripts/patrons.mjs & patrons=$!
+          node scripts/states.mjs & states=$!
           rc=0
           wait $smoke || rc=1
           wait $snaps || rc=1
@@ -117,6 +118,7 @@ jobs:
           wait $pwa || rc=1
           wait $frames || rc=1
           wait $patrons || rc=1
+          wait $states || rc=1
           exit $rc
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
       - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)

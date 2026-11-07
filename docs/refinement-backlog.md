@@ -7,6 +7,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
 
 - Patrons (PT1): open the Patrons book on the home shelf (bottle-green spine) in any topic room, answer the patron's request, and tell me if the phone flow feels right (on a phone the answer slip is on page two, so you turn the page to answer). Screenshots: screenshots/patrons/.
+- Empty, error and loading states (this PR): on your phone turn on Airplane mode and reload. A plaque should say the word cabinet is locked, with Try again; turn the network back on and Try again should clear it. Also open the Almanac on a brand-new save: the empty pages should show a sketch and a line, not bare text.
 - Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
@@ -2241,3 +2242,20 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** A patron who has commended you three times should bring a second, harder request (a rarer word from a higher tier), so the desk grows with the player.
 **Brief:** Goal: after three commendations from one patron, their request draws from words of tier 3 and up (`src/core/patrons.js`, the pool filter), labelled "A harder one". Done when: the rule is a pure function with a test and the desk shows the label at 375 and 1280.
 **Touches:** Patrons. **Conflicts:** none.
+## E. Empty, error and loading states (2026-11-07)
+
+### [x] E1. Problem plaques, empty pages and a visible wait for lazy books (this PR)
+**Serves:** nothing fails silently, and every empty page says what fills it.
+**Pitch:** A word list, topic room list, lazy book or save that cannot load shows a brass plaque in the stamp-toast style, with Try again where a retry can work (a failed book chunk reloads the page, because the browser keeps a failed import). Storage that is full or blocked is reported; a save that will not parse is copied aside before the next save. The judge's failure line gets a Try again, and stays on phones. Almanac, Curios and the shelf filter get pen-sketch empties, and the filter's empty page has a Clear action. A book whose pages are still arriving keeps a pending mark on its spine.
+**Brief:** Goal: every empty, error and loading state has on-theme copy, a recovery action where one exists, and a CI guard. Files: `src/core/stateEvents.js`, `src/core/saveStore.js`, `src/ui/stateNotices.js`, `src/ui/stateCopy.js`, `src/ui/stateNotices.css`, `src/ui/emptyStates.css`, `scripts/states.mjs` (CI step in `ci.yml`). Done when: `node scripts/states.mjs` passes at 375 and 1280 in every topic room, and the tests in `test/states-*.test.js` pass.
+**Touches:** SAVE, HOME top bar, BOOK, ALMANAC. **Conflicts:** RUN, shelf filter edits (bookMenus.js).
+
+### E2. Restore a smudged ledger
+**Serves:** a save that breaks is recoverable, not just kept.
+**Pitch:** The "A page of the ledger is smudged" plaque gets a second button, "Restore my copy", that writes the kept copy back over the save after a confirm line.
+**Brief:** Goal: one tap restores the copy that `deepstack.v1.unreadable` holds. Files: `src/ui/stateCopy.js`, `src/ui/stateNotices.js`, `src/core/saveStore.js`. Done when: a test restores the copy and a CI guard reloads the page and sees the shelf back. **Touches:** SAVE. **Conflicts:** E1.
+
+### E3. The Daily waits for its words with a candle, not a blank
+**Serves:** a slow connection reads as a shelf being carried up, not a stall.
+**Pitch:** When Descend is pressed before the word list has arrived, the fire shows a small pending candle and "The shelves are still being carried up", and the run starts the moment the words land.
+**Brief:** Goal: a pending note on the Descend path while `wordsLoaded` is false. Files: `src/app/run.js`, `src/ui/stateNotices.css`. Done when: a CI guard holds the word list for 3 s and sees the note, then the first word shows. **Touches:** RUN, HOME. **Conflicts:** G12, G15.

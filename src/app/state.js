@@ -1,6 +1,7 @@
 import {backfill as backfillSets,SETS} from '../sets/sets.js';
 import * as core from '../core/index.js';
 import {deferAfterPaint} from '../core/boot.js';
+import {makeStore} from '../core/saveStore.js';
 import {installRooms,currentRoom} from '../core/roomStore.js';
 import {captureFullPool,loadRoomLists,applyRoomPool,setRoomExtras} from '../core/roomPool.js';
 /* every set can be finished inside its own room: its words join that room's pool */
@@ -13,7 +14,8 @@ export let wordsLoaded=false;
 wordsReady.then(()=>{wordsLoaded=true;},()=>{wordsLoaded=true;});
 /* storage */
 export const mem={};
-export const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return k in mem?mem[k]:d}},set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+export const store=makeStore(mem); // see src/core/saveStore.js: failures are reported, never thrown
+
 export let S=Object.assign({shelf:[],daily:{},streak:{last:'',n:0},bestDepth:0,bestFloor:0,sound:false},store.get('deepstack.v1',{}));
 S.rating=core.loadRating(S.rating);
 installRooms(S); // per-room Daily and rating (core/roomStore.js); S.room, S.rooms are additive

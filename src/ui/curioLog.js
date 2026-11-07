@@ -2,7 +2,8 @@ import {fmtNum} from '../core/numFmt.js';
 // The curio cabinet: finds are kept additively in S.curios = {found:{"row:seed":{r,s,k,t}}}.
 // Nothing about a curio's text is stored (it is a pure function of row and seed); the unlocked
 // lines of the margin letter are derived from how many have been found. Pure, so it tests without a DOM.
-import {esc} from './bookpages.js';
+import {esc} from './bookpages.js';import {emptyBlock} from './emptyPages.js';
+
 import {curioText, KIND_LABEL} from './curios.js';
 
 export const KEPT_KINDS = ['page', 'ribbon', 'sealed', 'note'];
@@ -42,7 +43,7 @@ export function curioLeaves(S, floorAtRow = () => ({name: ''}), ft = r => Math.r
   const n = found.length, got = unlockedLines(n);
   const kinds = KEPT_KINDS.map(k => `<li class="${found.some(f => f.k === k) ? 'on' : ''}"><span>${esc(KIND_LABEL[k])}</span><b>${found.filter(f => f.k === k).length}</b></li>`).join('');
   const letter = LETTER.map(([need, t], i) => i < got ? `<p class="cl-line">${esc(t)}</p>` : `<p class="cl-line cl-dim">… (${need - n} more ${need - n === 1 ? 'find' : 'finds'})</p>`).join('');
-  const head = `<div class="alm cur"><h1>Curios</h1><div class="kicker">Things between the books</div>${n ? `<p class="hand">${n} kept.</p>` : `<p class="empty hand">Nothing kept yet.</p><p class="note">Click the thin spines with a loose page, a ribbon or a clasp as you descend.</p>`}<ul class="cl-kinds">${kinds}</ul><h2>A letter, in pieces</h2>${letter}</div>`;
+  const head = `<div class="alm cur"><h1>Curios</h1><div class="kicker">Things between the books</div>${n ? `<p class="hand">${n} kept.</p>` : emptyBlock('shelf','Nothing kept yet. Click the thin spines with a loose page, a ribbon or a clasp as you descend.','compact')}<ul class="cl-kinds">${kinds}</ul><h2>A letter, in pieces</h2>${letter}</div>`;
   const leaves = [head];
   for (let i = 0; i < n; i += PER_LEAF) {
     leaves.push(`<div class="alm cur"><h1>${i ? 'More finds' : 'Finds'}</h1><ul class="cl-list">${found.slice(i, i + PER_LEAF).map(f => {

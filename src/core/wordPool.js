@@ -7,6 +7,7 @@ import {stem, match} from '../scorer/lexical.js';
 import {isSpecialist, effectiveDifficulty} from './difficulty.js';
 import {isBlocked} from './blocklist.js';
 import {dataUrl} from './dataUrl.js';
+import {reportState, clearState} from './stateEvents.js';
 
 const POS_OK = new Set(['noun', 'verb', 'adjective', 'adverb']);
 // Glosses that only point at another word, or describe a form rather than a meaning.
@@ -94,7 +95,8 @@ export function buildPool(data) {
 }
 
 let loading = null;
-/** Replaces the contents of WORDS in place (references stay valid). Falls back to the 38-word bank on failure. */
+/** Replaces the contents of WORDS in place (references stay valid). Falls back to the 38-word bank on failure, and says so
+ *  through src/core/stateEvents.js ('words-unavailable') so the player can try again. */
 export function loadWords(url = dataUrl('words.json')) {
   return loading ||= (async () => {
     try {
@@ -104,10 +106,18 @@ export function loadWords(url = dataUrl('words.json')) {
       if (pool.length < 500) throw new Error('word list too small');
       WORDS.length = 0; WORDS.push(...pool);
       GHOSTS.length = 0; GHOSTS.push(...(pool.ghosts || []));
+      clearState('words-unavailable');
       return {ok: true, count: pool.length};
     } catch (err) {
       console.warn('Using built-in word bank:', err);
+      reportState('words-unavailable', {retry: retryWords});
       return {ok: false, count: WORDS.length};
     }
   })();
+}
+
+/** Forgets the failed attempt and downloads the word list again. Resolves like loadWords. */
+export function retryWords(url) {
+  loading = null;
+  return url ? loadWords(url) : loadWords();
 }

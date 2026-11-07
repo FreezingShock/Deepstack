@@ -1,6 +1,6 @@
 import * as core from '../core/index.js';
 import {Sfx} from '../feel.js';
-import {modelStatus} from '../scorer/index.js';
+import {modelStatus,retryModelLoad} from '../scorer/index.js';
 import {judgeLabel} from '../ui/judgeLabel.js';
 import {homeHTML,bookify,BOOK_ACTS,BOOK_INTROS} from '../ui/home.js';
 import {setBookSfx} from '../ui/bookOpenFx.js';
@@ -66,4 +66,9 @@ export function showHome(opts){
 export async function leaveRun(){setRun(null);ui.stage.hidden=true;ui.final.hidden=true;ui.hud.hidden=true;await World.ascend();showHome();}
 /* ---------- judge status (model download) ---------- */
 export function paintJudge(st){const el=$('#jstat');if(!el)return;
- const t=judgeLabel(st);el.dataset.state=st.state;el.title=st.state==='error'?t:'';el.textContent=t;}
+ const t=judgeLabel(st);el.dataset.state=st.state;el.title=st.state==='error'?t:'';
+ if(st.state!=='error'){el.textContent=t;return;}
+ const note=document.createElement('span');note.className='judge-note';note.textContent=t; // phones hide the note and keep the button
+ const b=document.createElement('button');b.type='button';b.className='judge-retry';b.textContent='Try again';b.onclick=()=>{b.disabled=true;retryModelLoad();}; // a failed judge can be called up again from here
+ el.replaceChildren(note,' ',b);
+}

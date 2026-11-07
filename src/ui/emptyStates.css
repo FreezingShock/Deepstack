@@ -1,0 +1,11 @@
+/* Empty pages outside the menu books (emptyPages.js builders used in the Almanac, Curios and the shelf filter), the shelf
+   filter's Clear action, and the pending mark on a lazy book's spine while its pages are fetched (home.js bookify).
+   Colours are tokens only; the pending mark stops moving when the OS asks for reduced motion. */
+.alm .ep-empty{display:flex;flex-direction:column;align-items:center;gap:4px;margin:14px 0 6px;text-align:center}
+.alm .ep-sketch{display:block;width:min(96px,40%);height:auto;color:var(--mute);opacity:.55;transform:rotate(-1.5deg)}
+.alm .ep-empty.compact .ep-sketch{width:76px}
+.alm .ep-empty .hand{margin:2px 0 0;font:500 calc(19px*var(--ts,1))/1.25 var(--bs-hand,var(--serif));color:var(--ink)}
+.fclear-row{margin:8px 0 0;text-align:center}
+.hbook.fetching{outline:1px dashed var(--c-brass-cdbb92);outline-offset:4px;animation:bookWait 1.2s var(--e-settle,ease-in-out) infinite}
+@keyframes bookWait{0%,100%{opacity:1}50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.hbook.fetching{animation:none}}

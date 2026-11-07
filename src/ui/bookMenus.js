@@ -1,6 +1,7 @@
 /* Shelf and Stats as pages of an open book. Pure leaf builders are exported for tests; the open* functions wire
    them to the paged book view. Main passes in what it owns (spine renderer, card opener, tooltips). */
-import {chunk,esc,toSpreads} from './bookpages.js';
+import {chunk,esc,toSpreads} from './bookpages.js';import {emptyBlock} from './emptyPages.js';
+
 import {statsLeaves} from './statsPages.js';
 export {statsLeaves};
 import {penMark,penPlay} from './penInk.js';
@@ -73,7 +74,7 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOOR
    <div class="chipgroup"><div class="kicker">Show</div><div class="chips"><button class="fchip" id="ffav" data-k="fav" aria-pressed="${fFav}"${favN||fFav?'':' disabled'}>\u2605 Favourites <small>${favN}</small></button></div></div>
    ${roomChips()}
    <div class="chipgroup"><div class="kicker">Rarity</div><div class="chips"><button class="fchip" data-t="-1" data-k="t-1" aria-pressed="${fTier<0}">All</button>${TIERS.map(t=>`<button class="fchip" data-t="${t.id}" data-k="t${t.id}" aria-pressed="${fTier===t.id}"${counts[t.id]?'':' disabled'}><i class="dot" style="background:${t.spine}"></i>${t.name} <small>${counts[t.id]}</small></button>`).join('')}</div></div>`;
-  if(!list.length)return [ctrl,S.shelf.length?`<p class="empty">No book matches.</p>`:`<div class="empty-shelf"><svg viewBox="0 0 260 120" aria-hidden="true"><path d="M14 98 L246 97"/><path d="M14 106 L246 105"/><path d="M40 97 C39 70 41 52 40 40 L62 41 C63 60 62 80 62 96" stroke-dasharray="5 6"/><path d="M92 96 L148 94 M92 96 L92 82 L148 80 L148 94" stroke-dasharray="5 6"/><path d="M178 58 q16 -22 34 0" opacity=".6"/><path d="M195 74 v-10 m-5 5 l5 5 l5 -5" opacity=".6"/></svg><p class="empty">Nothing here yet. Your first answer becomes your first book.</p></div>`];
+  if(!list.length)return [ctrl,S.shelf.length?`${emptyBlock('slip','No book matches this find and these chips.','compact')}<p class="fclear-row"><button type="button" class="fchip" id="fclear">Clear the find and the chips</button></p>`:`<div class="empty-shelf"><svg viewBox="0 0 260 120" aria-hidden="true"><path d="M14 98 L246 97"/><path d="M14 106 L246 105"/><path d="M40 97 C39 70 41 52 40 40 L62 41 C63 60 62 80 62 96" stroke-dasharray="5 6"/><path d="M92 96 L148 94 M92 96 L92 82 L148 80 L148 94" stroke-dasharray="5 6"/><path d="M178 58 q16 -22 34 0" opacity=".6"/><path d="M195 74 v-10 m-5 5 l5 5 l5 -5" opacity=".6"/></svg><p class="empty">Nothing here yet. Your first answer becomes your first book.</p></div>`];
   if(!groups.length)return [ctrl,`<p class="empty">No book here has a floor yet. Earlier finds wait in the attic: close this book and scroll up on the home screen.</p>`];
   const pages=shelfPlan(groups).map(secs=>secs.map(s=>`<section class="ssec"><div class="splaque"><span>${esc(s.label)}${s.cont?' \u00b7 cont.':''}<b>${s.count}</b></span>${s.sub&&!s.cont?`<em>${esc(s.sub)}</em>`:''}</div><div class="scase"${ladderSide(s.key,s.shelves.length)?` data-lad="${ladderSide(s.key,s.shelves.length)}"`:''}>${s.shelves.map(shelf).join('')}</div></section>`).join(''));
   return [ctrl,...pages];
@@ -85,6 +86,7 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOOR
   root.querySelectorAll('.fchip[data-g]').forEach(c=>c.onclick=()=>{fGroup=c.dataset.g;redo(c.dataset.k);});
   root.querySelectorAll('.fchip[data-r]').forEach(c=>c.onclick=()=>{fRoom=c.dataset.r;redo(c.dataset.k);});
   const fav=root.querySelector('#ffav');if(fav)fav.onclick=()=>{fFav=!fFav;redo('fav');};
+  const fc=root.querySelector('#fclear');if(fc)fc.onclick=()=>{fQ='';fTier=-1;fFav=false;fRoom='';ctl.setSpreads(toSpreads(build()),0);};
   const fq=root.querySelector('#fq');
   /* typing repaints only the results page; the search box and the rest of the left page stay untouched */
   if(fq)fq.oninput=()=>{fQ=fq.value;ctl.setSpreads(toSpreads(build()),0,'r');const c=root.querySelector('[data-count]');if(c)c.textContent=countText;};

@@ -8,7 +8,7 @@ import {lexReady, prepAnswer, refTexts, lexEntries} from './lexicon.js';
 export {lexReady, lexEntries, relEntry, senEntry} from './lexicon.js';
 export {loadSenses} from './senses.js';
 export {loadRelations} from './relations.js';
-export {startModelLoad, onModelStatus, modelStatus, whenReady} from './model.js';
+export {startModelLoad, retryModelLoad, onModelStatus, modelStatus, whenReady} from './model.js';
 
 const refCache = new Map(); // word -> Promise<{texts, vecs}>
 const refsFor = w => {

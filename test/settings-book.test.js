@@ -41,7 +41,7 @@ test('eraseProgress removes the save and records, and keeps every setting',()=>{
   'deepstack.v1':'{"shelf":[]}','deepstack.cabinet.v1':'{}','deepstack.flipHint':'2',
   'deepstack.settings.v1':'{"volume":0.3}','deepstack.quality.v1':'{"pref":"low"}','deepstack.floorrules.v1':'false',
  });
- assert.equal(eraseProgress(st),3);
+ assert.equal(eraseProgress(st),4);
  for(const k of PROGRESS_KEYS)assert.equal(k in st.m,false,k);
  assert.equal(st.m[SETTINGS_KEY],'{"volume":0.3}');
  assert.equal(st.m['deepstack.quality.v1'],'{"pref":"low"}');
