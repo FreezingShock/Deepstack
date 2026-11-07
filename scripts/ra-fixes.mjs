@@ -114,6 +114,7 @@ for (const room of Object.keys(ROOMS)) {
 }
 // PN: phone layout nits (audit A-F), checked at 320 to 430 wide with reduced motion, in the Reading Room.
 //  A: the streak flame tag keeps 12px clear of the attic hatch's cord tag.  E: it starts 6px or more below the rail's bottom edge, not tucked under it.
+//  D: the candle's plate overhangs the answer slip by 20px at most, and the wax stays beside the card.
 //  F: on tall phones (760px and up) the Descend block sits within 14px of the shelf spines.
 //  B/C: the open Room filter has no blank band under its last row (at most 12px) and each colour dot is level with its label.
 const PN_ROOMS = ['hall', 'history', 'math', 'science', 'english', 'art', 'body', 'hall'];
@@ -140,6 +141,18 @@ for (const [w, h] of PN_SIZES) {
     if (home.flame && home.tag && home.flame.l - home.tag.r < 12) problems.push(`${tag}: streak flame is ${(home.flame.l - home.tag.r).toFixed(1)}px from the attic hatch tag (needs 12, PN-A)`);
     if (home.flame && home.bar && home.flame.t < home.bar.b + 6) problems.push(`${tag}: streak flame starts ${(home.flame.t - home.bar.b).toFixed(1)}px below the rail, too close to its bottom edge to read clear (needs 6, PN-E)`);
     if (home.tall && home.plaque && home.stack && home.stack.t - home.plaque.b > 14) problems.push(`${tag}: ${(home.stack.t - home.plaque.b).toFixed(1)}px dead band between Descend and the shelf spines (PN-F)`);
+    // D: the candle on a run
+    await page.locator('#bPlay, #bUnl').first().click({timeout: T});
+    const primary = page.locator('[role=dialog].intro button.bs-primary:not([data-act])').first();
+    if (await primary.count()) await primary.click({timeout: T});
+    await page.locator('#candle').waitFor({state: 'attached', timeout: T});
+    await page.waitForTimeout(900);
+    const run = await page.evaluate(() => {
+      const vis = e => e && e.getClientRects().length > 0;
+      const slip = [...document.querySelectorAll('.slip')].find(vis), plate = document.querySelector('#candle .plate');
+      return slip && plate ? {slipR: slip.getBoundingClientRect().right, plateR: plate.getBoundingClientRect().right} : null;
+    });
+    if (run && run.plateR > run.slipR + 20) problems.push(`${tag}: candle plate overhangs the answer slip by ${(run.plateR - run.slipR).toFixed(1)}px (needs 20 or less, PN-D)`);
     // B and C: the Room filter on the shelf
     await page.goto(url, {waitUntil: 'load'});
     await page.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T});

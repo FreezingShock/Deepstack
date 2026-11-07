@@ -1,3 +1,5 @@
 /* Phone layout nits (audit A-F). Loaded last so it wins over the earlier rules it adjusts. */
+/* D: on phones the candle ledge (plate) was 44px wide and stuck out about 32px past the answer slip. The plate now matches the wax (22px) and the candle moves 6px toward the slip, so the wax clears the card by about 2px and the plate overhangs by about 17px (about 10px is not reachable without the wax covering the placeholder). */
+@media(max-width:640px){html #stage.center .slipwrap>.candle,html #stage .slipwrap>.candle{margin-left:-8px}html #stage .slipwrap>.candle .plate{width:22px}}
 /* F: on tall phones the Descend block sat high, leaving a dead band above the shelf spines and the fire looked stranded. Nudge the block down into the band (short phones keep their layout). */
 @media(max-width:640px) and (min-height:760px){html .home .hz-plaque{position:relative;top:18px}}
