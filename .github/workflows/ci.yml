@@ -102,6 +102,7 @@ jobs:
           node scripts/stamps-look.mjs & stamps=$!
           node scripts/almanac-progress.mjs & almanac=$!
           node scripts/pwa-check.mjs & pwa=$!
+          node scripts/review-shelf.mjs & review=$!
           node scripts/patrons.mjs & patrons=$!
           rc=0
           wait $smoke || rc=1
@@ -115,6 +116,7 @@ jobs:
           wait $stamps || rc=1
           wait $almanac || rc=1
           wait $pwa || rc=1
+          wait $review || rc=1
           wait $frames || rc=1
           wait $patrons || rc=1
           exit $rc
