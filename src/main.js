@@ -41,7 +41,7 @@ import './ui/reveal.js';
 import * as core from './core/index.js';
 import {Sfx} from './feel.js';
 import {installUiSounds} from './sound/uiHooks.js';
-import {onModelStatus,startModelLoad,judgeAnswer,prepareWords,lexReady} from './scorer/index.js';
+import {onModelStatus,modelStatus,startModelLoad,judgeAnswer,prepareWords,lexReady} from './scorer/index.js';
 import {BOOK_PAGES} from './ui/home.js';
 import {lazyBooks} from './ui/lazyScreens.js';
 import {registerLedgerBooks} from './ui/ledgerBooks.js';
@@ -197,4 +197,4 @@ wordsReady.catch(()=>{}).then(()=>deferAfterPaint(()=>{const m=startModelLoad();
  // once the model is up, warm the distractor embeddings in idle time so the first answer isn't slow
  .then(ok=>ok&&deferAfterPaint(()=>prepareWords([]),600)).catch(()=>{});
  // judge model downloads after first paint and the word list
-window.__deepstack={openCard,S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,lexReady,get run(){return run;}};
+window.__deepstack={openCard,S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,modelStatus,lexReady,get run(){return run;}};
