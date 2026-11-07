@@ -79,6 +79,7 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 home cabinet: the Library Rules drawer was a weak, off-style menu and Tiers A-M / Sets N-Z were fake -> every drawer must do something real; wants small box drawers (Credits, Instructions and so on) so the cabinet is part of the game, and the cabinet and the whole fireplace room allowed to be much bigger on big windows.
 
 ## Changelog
+- 2026-11-07 asked for unique, on-theme features (a rival word that comes back each week) rather than more of the same; built the Nemesis rematch as a wanted poster, with lettered options in NM1.
 
 - 2026-11-07 Patrons (PT1): six visitors at the library desk, each asking for one word, served into the Shelf with a commendation in the desk ledger (PR)
 - 2026-11-04 initial version from project chat history.
@@ -167,3 +168,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-07 onboarding: "shouldn't really use the same lined paper mechanism", wants "a highlight with a panel that appears, less intrusive, more on theme, and more variety" -> first-run notes light their target with a halo and a small themed panel (plate, pinned card, ribbon tag, wax seal), never ruled paper (thread: onboarding overhaul)
 - 2026-11-07 manuscript restoration: "something more unique" -> a new word-repair mode built on the judge and room words (MR1).
 - 2026-11-07 Input latency: wants room switches and book opens to feel instant on a throttled phone; a switch should show its colour change at once, nothing resetting.
+- 2026-11-07 Onboarding highlight: nate's screenshot showed the first-visit halo on the Room Ledger spine offset up and left and running into the Stats spine ("fix this highlight error"). Every first-visit halo must sit exactly on its target at every size, follow it while the home settles, and never be covered (ON1).

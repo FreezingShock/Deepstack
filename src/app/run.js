@@ -7,6 +7,7 @@ import {recordMet,recordMastery} from '../core/roomDepth.js';
 import {recordStamps} from '../core/stamps.js';
 import {dayWord,recordWeekly,weekStartOf,weekdayIndex,weeklyWords,dayName,dayRecord} from '../core/weekly.js';
 import {fullPool} from '../core/roomPool.js';
+import {pinNemesis,recordNemesis,BEAT_SCORE} from '../core/nemesis.js';
 import {toastStamps} from '../ui/stampToast.js';
 import '../ui/stamps.css';
 import {toastSetsDone} from '../sets/ui.js';
@@ -76,6 +77,22 @@ export async function startWeekly(){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
+/* ---------- nemesis: this week's rematch word, one swing a week (core/nemesis.js). Strict judge, like the weekly word; kept in S.nemesis. ---------- */
+export async function startNemesis(){
+ await wordsReady;
+ if(modelStatus().state==='loading')await whenReady(8000);
+ const day=utc(),wk=weekStartOf(day),pool=fullPool();
+ const rec=pinNemesis(S,wk,pool);
+ if(!rec||rec.duel)return;
+ const w=pool.find(x=>x.w===rec.w);
+ if(!w)return;
+ save(); // keeps the week's pinned word even if the player closes the book now
+ prepareWords([w]).catch(()=>{});
+ World.reset();World.setShelf([]);
+ run={mode:'nemesis',practice:false,day,wk,wlabel:`Nemesis \u00b7 ${dayName(day)}`,i:0,words:[w],results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true};
+ ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
+ showWord();
+}
 /* Today's weekly result, read back from S.weekly for the Daily book's button (null until today's word is answered). */
 export function weeklyFinal(){
  const day=utc(),rec=dayRecord(S,day);if(!rec)return null;
@@ -87,7 +104,7 @@ export function showWord(){
  if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();const fr_=ruleFor(floorAtRow(World.restRow).key,run,loadEnabled());run.rule=fr_;run.whispered=false;run.limit=limitFor(fr_);
  const el=ui.stage;el.hidden=false;el.className='center';
  el.innerHTML=`<div class="candle" id="candle" aria-hidden="true"><div class="wax" id="wax"><i class="flame"></i><i class="wick"></i></div><div class="plate"></div></div><div class="sheet">${pipsHTML()}
-  <div class="wlabel">${run.mode==='weekly'?esc(run.wlabel):`Word ${run.i+1} of ${run.words.length}`}</div>${fr_?`<div class="floorrule">${esc(fr_.line)}</div>`:''}${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
+  <div class="wlabel">${run.wlabel?esc(run.wlabel):`Word ${run.i+1} of ${run.words.length}`}</div>${fr_?`<div class="floorrule">${esc(fr_.line)}</div>`:''}${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
   <div class="word${fr_&&fr_.smear?' smeared':''}" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
   <div class="pos">${esc(w.pos)}</div><div class="clock" id="clock" aria-hidden="true">${Math.floor(run.limit/60000)}:${String(run.limit/1000%60).padStart(2,'0')}</div>
   <div class="timer" id="tbar"><i id="tfill"></i></div>
@@ -137,8 +154,8 @@ export async function submit(skipped){
  World.fillNiche(nicheRow,{w:w.w,pos:w.pos,answer:text,score:j.score,tier:t,ft:book.ft,verdict:book.verdict,skipped},run.results.slice());
  if(cb.chain)setTimeout(()=>Sfx.link(cb.chain),120);else if(cb.broke)setTimeout(()=>Sfx.clunk(),200); // the ledge chain gains a link or lets go
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
- if(!run.practice){if(run.mode==='weekly')recordWeekly(S,run.day,book);recordMet(S,book);recordMastery(S,utc());S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}toastStamps(recordStamps(S,utc()));save();}
- if(!run.practice&&run.mode!=='unlimited'&&run.mode!=='weekly'){S.dailyRun=snapshotRun(run);save();}
+ if(!run.practice){if(run.mode==='weekly')recordWeekly(S,run.day,book);if(run.mode==='nemesis')recordNemesis(S,run.wk,book);recordMet(S,book);recordMastery(S,utc());S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}toastStamps(recordStamps(S,utc()));save();}
+ if(!run.practice&&run.mode!=='unlimited'&&run.mode!=='weekly'&&run.mode!=='nemesis'){S.dailyRun=snapshotRun(run);save();}
  const depth1=Math.round((World.restRow+rows)*FT);
  openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length;if(!last&&run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id));prepareWords([run.words[run.i]]).catch(()=>{});}const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
 }
@@ -149,6 +166,7 @@ export function finishRun(){
  const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});}
  else if(r.mode==='weekly'){Object.assign(d,{mode:'weekly',weekKey:r.wk,themeKey:r.theme.key,themeName:r.theme.name,dayIdx:weekdayIndex(r.day)});toastStamps(recordStamps(S,utc()));save();}
+ else if(r.mode==='nemesis'){Object.assign(d,{mode:'nemesis',word:books[0].w,beat:books[0].score>=BEAT_SCORE,wk:r.wk});toastStamps(recordStamps(S,utc()));save();}
  else if(!r.practice){delete S.dailyRun;if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);toastStamps(recordStamps(S,utc()));save();}
  showFinal(d,false);
 }

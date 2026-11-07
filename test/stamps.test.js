@@ -8,9 +8,9 @@ const ids = S => earnedStamps(S).map(s => s.id);
 const eight = Array.from({length: 8}, (_, i) => 'maths' + i);
 const perfectBooks = (n = 7, score = PERFECT_SCORE) => Array.from({length: n}, (_, i) => ({w: 'p' + i, answer: 'an answer', score, skipped: false}));
 
-test('the catalogue has six stamps per topic room and five library-wide, each with a unique id', () => {
+test('the catalogue has six stamps per topic room and six library-wide, each with a unique id', () => {
   assert.equal(TOPIC_ROOMS.length, 6);
-  assert.equal(CATALOG.length, 6 * 6 + 6);
+  assert.equal(CATALOG.length, 6 * 6 + 7);
   assert.equal(new Set(CATALOG.map(s => s.id)).size, CATALOG.length);
   assert.equal(stampTally({}).total, CATALOG.length);
   assert.ok(CATALOG.every(s => s.name && s.hint), 'every stamp says what it is and how to earn it');
@@ -98,5 +98,5 @@ test('stampRows lists one room in catalogue order, with the day it was earned or
   const legacy = stampRows({shelf: [], met: {maths0: 1}}, 'math')[0];
   assert.equal(legacy.earned, true, 'a save from before this feature still shows what it already earned');
   assert.equal(legacy.day, null);
-  assert.equal(stampRows(S, null).length, 6, 'the library-wide row set');
+  assert.equal(stampRows(S, null).length, 7, 'the library-wide row set');
 });

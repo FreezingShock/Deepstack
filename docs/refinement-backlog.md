@@ -4,6 +4,9 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Daily cover on a desktop (new-modes playtest, PR pending): the left page holds Daily, Daily Riddle, Week of the Sea and Practice. At 1280x800 with reduced motion they run about 250px past the page and the cover scrolls; with motion on the page fitter shrinks it and it fits. Pick one: A = Week and Practice move to their own cover spread (recommended); B = keep scrolling; C = shrink the calendar to make room. Screenshots: screenshots/new-modes-playtest/before/1280/hall-daily-cover.png and after/1280/hall-daily-cover.png.
+- Nemesis rematch (NM1): open the Almanac on your phone and turn to the Wanted page. This week's hardest word sits there as a wanted poster, and the Rematch button is also on its row in the hardest-words list. Tap "Face it this week" and answer. Say whether the poster and the rematch feel right, and which option you want (A, B or C in NM1).
+- Phone rooms line (ON4, this PR): on a phone, the first-visit door line lights the ring of room lights and says "Tap a light to pick a room." The other two options (the Ledger line, or no phone line) are in screenshots/onboarding-halo/ON4-*. Say B or C if you'd rather have one of those.
+- Onboarding halo (ON1, this PR): on a fresh profile, the first home visit lights the Room Ledger spine. The halo should sit on the spine, not beside it, and the side-door line on desktop should light the left door. Tell me if either still looks off (screenshots in screenshots/onboarding-halo/).
 - Restoration follow-ups (MR2 to MR4, this PR): open the bench from the bottom-left door on your phone. The first page of each room today is its Daily, and its frame on the wall says Daily. Restore all three entries on a page and a Wax seal plaque drops over the open bench, in the Almanac's library row. Tell me if the plaque should wait until you close the bench instead.
 - Restoration bench (MR1, this PR): a new door at the bottom-left of home, "Restoration bench". Open it, write what each faded word means, type the smudged word, and check the wall. A, B or C mixes are in screenshots/restoration/option-*; B (two faded, one smudged) is built. Reply with a letter if you want another mix.
 - To review (RV1): open the Shelf, tap To review, then Try again on a word and write it from memory. Tell me if 46 is the right bar to win a word back, and whether To review should stay inside the Shelf (now) or get its own spine on the home. Screenshots: screenshots/review-shelf/.
@@ -2133,6 +2136,27 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### TY3. One range style for floor ranges
 **Pitch:** The depth tracker writes "0–101 ft" with an en dash, while the Floors book and the Card's floor row write "0 to 101 ft". Pick one and use it on every screen.
 **Brief:** Goal: one range helper in `src/core/numFmt.js` used by `src/ui/tracker.js`, `src/ui/floorLeaves.js` and the floor banner. Files: those three files, plus a test in `test/number-format.test.js`. **Conflicts:** Card floor row (TA7), Floors book.
+## ON. Onboarding (2026-11-07)
+
+### [x] ON1. Onboarding halo sits on its target (this PR)
+**Pitch:** The first-visit halo on the Room Ledger spine sat up and left of the spine and ran into the Stats spine below it. Every first-visit note (Daily, Unlimited, the side doors, the Ledger) now follows its target frame by frame, and a side-door note waits until the doors are placed.
+**Brief:** Done: `src/ui/firstNotes.js` (`followNote`, `showHomeNoteSoon`), `src/app/home.js`. Guard: `scripts/onboarding-halo.mjs` (every home note in all seven rooms at 1920 and 375, motion on and reduced). Unit tests: `test/onboarding-halo.test.js`.
+
+### [ ] ON2. Halo ring crosses the next spine
+**Pitch:** The 5px ring around a spine overlaps the top or bottom edge of the spine beside it (ROOMS over STATS). nate asked for nothing to sit over the highlight, so the ring should stay inside its neighbours.
+**Brief:** Goal: a ring that stays within the target's neighbours in a stack, at every size. Options: a 3px ring, or a ring drawn inside the spine's edge. Files: `src/ui/firstNotes.css`, `src/ui/firstNotes.js` (`followNote` ring offset). Done when: `scripts/onboarding-halo.mjs` also asserts the ring does not cross a neighbour's edge. Show nate both options as screenshots first.
+**Conflicts:** firstNotes.js (ON1 is done, so no conflict now).
+
+### [ ] ON3. Notes fade in, not pop
+**Pitch:** A first-visit note appears all at once. Give the halo and panel the same short fade-in as the rest of the motion language (#125) and keep it still under reduced motion.
+**Brief:** Goal: the halo and panel fade in over the motion token, with the fade-out kept. Files: `src/ui/firstNotes.css`. Done when: the reduced-motion case in `scripts/onboarding-halo.mjs` shows no transition, and motion-on frames show the opacity rising.
+**Conflicts:** firstNotes.css.
+
+### [x] ON4. Phones get a line for the side doors (this PR)
+**Pitch:** On a phone the side doors are hidden, so the door note never showed. Phones now get a line that lights the ring of room lights under the title.
+**Brief:** Done: `src/ui/firstNotes.js` (`noteSelector`, `PHONE_DOOR_TEXT`, `phoneAboveFor`). The line reads "Tap a light to pick a room." and sits below the ring, so it does not cover the wordmark. Guard: `scripts/onboarding-halo.mjs` now checks phones (64 notes, none skipped) and the panel text. Unit test: `test/onboarding-halo.test.js`.
+**Alternatives logged (not shipped):** B, the Room Ledger line on phones (what phones showed before, since the Ledger is their way into the rooms); C, no phone line at all. Screenshots: `screenshots/onboarding-halo/ON4-A-ring-375.png`, `ON4-B-ledger-375.png`, `ON4-C-none-375.png`.
+**Conflicts:** none open. Owns the phone branch of `home.doors` in `firstNotes.js`.
 ## MR. Manuscript restoration (2026-11-07, nate: "something more unique")
 ### MR1. [x] Restoration bench: a damaged page per room, ink returns, finished pages hang on a wall (this PR)
 Brief: a water-damaged page from the room you are in. Two faded entries: the headword shows, the definition has run, and you write what it means in your own words; the judge scores it, and the real entry comes back in ink at 14 or better. One smudged entry: its definition is clear, the headword has gaps, and you type the word (a letter can be given). Leave an entry and it stays damaged. A finished page pins to the wall. Code: `src/restore/` (pages, store, markup, ui, entry). Screenshots: `screenshots/restoration/`. Guards: `test/restore-*.test.js`, `scripts/restore-check.mjs` (CI).
@@ -2282,6 +2306,27 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 **Brief:** Goal: a reload during today's weekly word resumes it. Files: `src/core/dailyRun.js` (pattern), `src/app/run.js`. Done when: a reload test in `scripts/weekly-check.mjs` resumes the word.
 **Touches:** RUN, WEEKLY. **Conflicts:** WK1.
 
+
+## NM. Nemesis rematch (2026-11-07, from the Nemesis thread)
+
+### NM1. [x] Nemesis: the word you keep missing comes back as a weekly rematch (this PR)
+**Serves:** a recurring reason to return, a personal rival, a reward for turning a weak word into a strong one.
+**Pitch:** Each week the hardest word in your answers (lowest average closeness) that you have not beaten becomes your Nemesis. It shows as a wanted poster on the Almanac's Closeness page, with a Rematch button on its row in the hardest-words list. One swing a week. Folio or better (46+) captures it and earns the "Rematch won" stamp, and it never comes back. Anything lower and the word is wanted again next Monday.
+**Options (changeable, lettered):** A, built: one swing a week, poster on the Closeness page. B: unlimited retries within the week, with the best score counting (see NM2). C: a wanted poster on the Daily book's cover instead of the Almanac. Change `src/core/nemesis.js` (`recordNemesis`, one swing) and `src/ui/nemesis.js` (placement is in `almanacProgress.js`).
+**Brief:** Goal: a weekly, pinned, personal duel word with a poster, a result and a reward. Files: `src/core/nemesis.js`, `src/ui/nemesis.js`, `src/ui/nemesis.css`, `src/ui/almanacProgress.js`, `src/app/run.js`, `src/app/final.js`, `src/core/stamps.js`. Done when: `test/nemesis.test.js` passes, `scripts/nemesis-check.mjs` passes at 375 and 1280 with reduced motion in every room and plays the duel to the result card.
+**Touches:** ALMANAC, RUN, STAMPS. **Conflicts:** AS1 (progress page), stamps.
+
+### NM2. A rematch that stays open for the whole week
+**Serves:** a fair second try after a bad first one.
+**Pitch:** The duel is one swing a week (option A in NM1). Option B lets the player retry until Sunday, keeping the best score. Pick B if A feels too strict after a real play.
+**Brief:** Goal: an open duel stays open until the week ends, scored by the best swing. Files: `src/core/nemesis.js` (`recordNemesis`, `duelState`). Done when: the test covers two swings in one week with the best one counted.
+**Touches:** RUN, ALMANAC. **Conflicts:** NM1.
+
+### NM3. Nemesis words from the topic rooms
+**Serves:** a Nemesis for players who only answer in one room.
+**Pitch:** Today the Nemesis is drawn from the whole library, so a word that only lives in a topic room's own list is skipped. Draw from the room's list too, and judge it with its own definition.
+**Brief:** Goal: every answered word in any room can become a Nemesis. Files: `src/core/nemesis.js` (`pickNemesis`), `src/core/roomPool.js` (`roomEntries`). Done when: a test with a room-only word picks it and `scripts/nemesis-check.mjs` duels it in that room.
+**Touches:** RUN, ROOMS. **Conflicts:** topic-room word lists.
 
 ## PT. Patrons follow-ups (2026-11-07, from the Patrons thread)
 

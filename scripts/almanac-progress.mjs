@@ -84,25 +84,40 @@ async function run(label, {width, height, room}) {
     }
     if (!shown) { fail(`${label}: the progress pages never came into view`); await ctx.close(); return; }
     await page.waitForTimeout(300);
-    const report = await page.evaluate(() => {
+    /* Every spread is checked, not just the first one that shows: the Closeness page has to fit its frame too.
+       A page's content must fit inside its own scroll box (no internal scroll) and inside the page frame. */
+    const check = () => page.evaluate(() => {
       const out = [];
       if (document.documentElement.scrollWidth > innerWidth) out.push('page scrolls sideways');
       for (const a of document.querySelectorAll('.alm.pg')) {
         if (!a.getBoundingClientRect().width) continue;
         const p = a.parentElement.getBoundingClientRect(), r = a.getBoundingClientRect();
-        if (a.scrollHeight > a.clientHeight + 2 || r.bottom > p.bottom + 1) out.push(`${a.querySelector('h1').textContent} runs ${Math.round(Math.max(a.scrollHeight - a.clientHeight, r.bottom - p.bottom))}px past its page`);
-        if (a.scrollWidth > a.clientWidth + 1) out.push(`${a.querySelector('h1').textContent} is wider than its page`);
+        const name = a.querySelector('h1').textContent;
+        if (a.scrollHeight > a.clientHeight + 2 || r.bottom > p.bottom + 1) out.push(`${name} runs ${Math.round(Math.max(a.scrollHeight - a.clientHeight, r.bottom - p.bottom))}px past its page`);
+        const box = a.parentElement;
+        if (box.scrollHeight > box.clientHeight + 2) out.push(`${name} scrolls inside its page (${box.scrollHeight - box.clientHeight}px more than the page holds)`);
+        for (const d of a.querySelectorAll('*')) {
+          if (!d.getBoundingClientRect().width || d.closest('.nm, .pg-chart')) continue;
+          const db = d.getBoundingClientRect();
+          if (db.bottom > box.getBoundingClientRect().bottom + 1) { out.push(`${name}: "${(d.textContent || d.className).trim().slice(0, 28)}" sits ${Math.round(db.bottom - box.getBoundingClientRect().bottom)}px below its page`); break; }
+        }
+        if (a.scrollWidth > a.clientWidth + 1) out.push(`${name} is wider than its page`);
       }
       for (const n of document.querySelectorAll('.alm.pg .pg-n, .alm.pg .pg-w, .alm.pg .pg-tier, .alm.pg .pg-hard b')) {
         if (!n.getBoundingClientRect().width) continue;
         if (n.scrollWidth > n.clientWidth + 1) out.push(`clipped label "${n.textContent.trim().slice(0, 30)}"`);
       }
-      if (!document.querySelector('.alm.pg .pg-bars li')) out.push('no room bars drawn');
-      if (!document.querySelector('.alm.pg .pg-chart')) out.push('no closeness chart drawn');
-      if (!document.querySelector('.alm.pg .pg-hard li')) out.push('no hardest words listed');
       return out;
     });
-    for (const m of report) fail(`${label}: ${m}`);
+    /* what the progress pages must hold, checked once (the pages are all in the book) */
+    for (const [sel, msg] of [['.alm.pg .pg-bars li', 'no room bars drawn'], ['.alm.pg .pg-chart', 'no closeness chart drawn'], ['.alm.pg .pg-hard li', 'no hardest words listed']]) {
+      if (!(await page.evaluate(q => !!document.querySelector(q), sel))) fail(`${label}: ${msg}`);
+    }
+    const seen = new Set();
+    for (let turn = 0; turn < 14; turn++) {
+      for (const m of await check()) if (!seen.has(m)) { seen.add(m); fail(`${label}: ${m}`); }
+      await page.keyboard.press('ArrowRight'); await page.waitForTimeout(350);
+    }
   } catch (e) { fail(`${label}: ${e.message.split('\n')[0]}`); }
   await ctx.close();
 }
