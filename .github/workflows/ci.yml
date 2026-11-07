@@ -98,9 +98,7 @@ jobs:
           node scripts/room-visuals.mjs & rvis=$!
           node scripts/ra-fixes.mjs & rafix=$!
           node scripts/ember-log.mjs & ember=$!
-          node scripts/stamps-look.mjs & stamps=$!
           node scripts/pwa-check.mjs & pwa=$!
-          node scripts/patrons.mjs & patrons=$!
           node scripts/restore-check.mjs & rest=$!
           node scripts/review-shelf.mjs & review=$!
           rc=0
@@ -112,19 +110,17 @@ jobs:
           wait $rvis || rc=1
           wait $rafix || rc=1
           wait $ember || rc=1
-          wait $stamps || rc=1
           wait $pwa || rc=1
-          wait $frames || rc=1
-          wait $patrons || rc=1
           wait $review || rc=1
           wait $rest || rc=1
           node scripts/first-note-clear.mjs || rc=1
           exit $rc
-      # Alone on the runner: their 15 s and 5 s waits time out beside the twelve other browsers in the batch (they pass alone).
+      # Alone on the runner: their 15 s and 5 s waits (#bStats, .pt-desk, .bk-spread) time out beside the other browsers in the batch (they pass alone).
       - name: Timing-sensitive guards (run alone after the batch)
         run: |
           node scripts/home-frames.mjs
           node scripts/almanac-progress.mjs
+          node scripts/stamps-look.mjs
           node scripts/patrons.mjs
           node scripts/nemesis-check.mjs
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
