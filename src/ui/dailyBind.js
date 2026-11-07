@@ -4,9 +4,10 @@
    placeDailyTab on every render). Uniform motion language (#125): one ease, staggered, nothing bouncy. */
 import {TIERS} from '../core/tiers.js';
 import {motionNow} from './settings.js';
+import {EASE as TOKEN} from './motion.js';
 
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-export const EASE='cubic-bezier(.2,.8,.2,1)';
+export const EASE=TOKEN.settle;
 export const tabLabel=key=>{const m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(key||'');return m?`${+m[3]} ${MON[+m[2]-1]}`:'';};
 export const bindTimings=(n=7,reduce=false)=>reduce?{stagger:0,fly:0,tab:0,total:0}
  :{stagger:90,fly:520,tab:260,total:90*Math.max(0,n-1)+520+260};
