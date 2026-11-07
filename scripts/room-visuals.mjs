@@ -44,6 +44,11 @@ async function open(view, room, bestFloor) {
   await page.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
   await page.goto(url, {waitUntil: 'load'});
   await page.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T});
+  // The guard blocks Google Fonts, so the Card's floor name falls back to the runner's own cursive face, whose width
+  // differs between machines (CI's clipped where a dev box fits). Pin one generic face for the measurement and wait
+  // for fonts to settle, so the check measures the layout, not the runner's font list.
+  await page.addStyleTag({content: '.home .lg-row.lg-floor dd{font-family:sans-serif!important}'});
+  await page.evaluate(() => document.fonts && document.fonts.ready);
   await page.waitForTimeout(500);
   return {ctx, page};
 }

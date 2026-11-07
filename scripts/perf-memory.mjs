@@ -102,22 +102,28 @@ try {
   await page.locator('#home').click({position: {x: 5, y: 400}}).catch(() => {});
   await lap();
   const lap1 = await metrics();
-  // one throttled walk, traced: the busiest moment on home
+  // throttled walks, traced: the busiest moment on home. One walk's worst frame is noisy on a shared runner (a single
+  // software-rendered frame can spike once), so the guard takes the median of WALKS walks to the next rooms.
   await cdp.send('Emulation.setCPUThrottlingRate', {rate: 4});
   if (traceDir) await browser.startTracing(page, {path: join(traceDir, 'room-walk-trace.json'), screenshots: false});
-  const tw = await now();
-  await page.keyboard.press(']'); await page.waitForTimeout(150); await idleHome(); await page.waitForTimeout(300);
-  R.walkLongTaskMs = Math.round(await longSince(tw)); R.walkWorstMs = Math.round(await worstSince(tw));
+  const WALKS = 3, worsts = [];
+  let walkLong = 0;
+  for (let w = 0; w < WALKS; w++) {
+    const tw = await now();
+    await page.keyboard.press(']'); await page.waitForTimeout(150); await idleHome(); await page.waitForTimeout(300);
+    worsts.push(Math.round(await worstSince(tw))); walkLong = Math.max(walkLong, Math.round(await longSince(tw)));
+  }
   if (traceDir) await browser.stopTracing();
   await cdp.send('Emulation.setCPUThrottlingRate', {rate: 1});
-  for (let i = 1; i < n; i++) { await page.keyboard.press(']'); await page.waitForTimeout(150); await idleHome(); await page.waitForTimeout(250); } // finish that lap
+  R.walkLongTaskMs = walkLong; R.walkWorstMs = [...worsts].sort((a, b) => a - b)[Math.floor(WALKS / 2)]; R.walkWorstAll = worsts;
+  for (let i = WALKS; i < n; i++) { await page.keyboard.press(']'); await page.waitForTimeout(150); await idleHome(); await page.waitForTimeout(250); } // finish that lap
   for (let l = 1; l < LAPS; l++) await lap();
   const lapN = await metrics(), laps = LAPS; // laps after lap 1 = LAPS (the traced lap + LAPS-1)
   R.roomLap = {heapMB: (lapN.heapMB - lap1.heapMB) / laps, nodes: (lapN.nodes - lap1.nodes) / laps, listeners: (lapN.listeners - lap1.listeners) / laps, end: lapN};
   over('heap kept per lap of the rooms (MB)', R.roomLap.heapMB, BUDGET.roomLapHeapMB);
   over('DOM nodes kept per lap of the rooms', R.roomLap.nodes, BUDGET.roomLapNodes);
   over('listeners kept per lap of the rooms', R.roomLap.listeners, BUDGET.roomLapListeners);
-  over('longest task in one room walk at 4x CPU (ms)', R.walkWorstMs, BUDGET.walkWorstMs);
+  over('longest task in one room walk at 4x CPU, median of 3 walks (ms)', R.walkWorstMs, BUDGET.walkWorstMs);
 
   // 3. a long Unlimited run: answer, skip the descent, close the card, next word
   await page.evaluate(() => window.__deepstack.startUnlimited());
