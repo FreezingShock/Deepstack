@@ -3,6 +3,8 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
+
 - Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
@@ -323,7 +325,7 @@ Coming back from looking up the descent no longer snaps: the candle, pips, word,
 **Brief:** Goal: layered ambience (paper hush, stone drips, water, hollow wind, abyss drone). Files: new `src/sound/ambience.js`. Done when: silent when sound off, no clicks on start/stop, node cap tested.
 **Touches:** FEEL hook. **Conflicts:** 23.
 
-### 25. Haptics
+### 25. [x] Haptics: verdict buzz and sound (PR #353)
 **Serves:** tactile on phones.
 **Pitch:** Light vibration on tier reveals, combo links and page flips.
 **Brief:** Files: new `src/ui/haptics.js`, Settings toggle (additive). Done when: guarded by `navigator.vibrate`, pattern table per tier, stubbed test.
@@ -2162,10 +2164,11 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### [x] WN1. Margin note on the result card: etymology, usage and related words
 **Pitch:** After a judgement, a player can turn to a short margin note on the word: where it comes from, one sentence that uses it, and a few related words. It sits under the meanings as a ribbon tab and opens a tucked sheet, so the card stays quiet until asked.
 **Brief:** Goal: fetch one letter's note shard on first open, never at boot. Files: `src/ui/wordNotes.js`, `wordNotes.css`, `scripts/build-word-notes.mjs`, `scripts/lib/notesData.mjs`, `public/data/word-notes-*.json`. **Conflicts:** none (the card gets one line).
-### WN2. Keep the margin note open from one card to the next
-**Pitch:** Once a player has turned to the note, the next card in a run opens with the sheet already unfolded, so reading through a run's words does not need a tap each time.
-**Brief:** Goal: a session-only flag (no save field) read by `wireMarginNote`. Files: `src/ui/wordNotes.js`. **Conflicts:** WN1.
-### WN3. Only show related words the game knows
+### [x] WN2. Keep the margin note open from one card to the next
+**Done:** the note stays open for the next card, but only after the player has seen the meaning: a shelf card opens with it at once, and a judged card opens with it once its verdict shows. Turning back clears the choice. Guard: `scripts/word-notes-check.mjs` checks the next judged card in every topic room.
+
+### [x] WN3. Only show related words the game knows (fragments dropped, real words only)
+**Done:** builder keeps a related word only when it is a Wiktionary headword with a usable sense or a word the game knows; a fragment of the headword is dropped. Guard: `test/word-notes.test.js` (shipped shards have no fragments).
 **Pitch:** Some related words in the note are odd fragments ("hemeral" under ephemeral). Keep only related words that are in the game's own word lists or the synonym data, so the list reads as a set of real neighbours.
 **Brief:** Goal: filter `r` against `words.json`, `room-words.json` and `senses.json` in the builder, then rebuild the shards. Files: `scripts/lib/notesData.mjs`, `scripts/build-word-notes.mjs`. **Conflicts:** WN1.
 
@@ -2178,6 +2181,22 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### SP4. Card catalogue tab covers the tagline and the first room dot
 **Pitch:** At 320 the round card catalogue tab sits on top of "Every word is a step into the dark." and over the Reading Room dot, so the first letters of the tagline are hidden.
 **Brief:** Goal: move the tab onto the top bar or below the tagline on phones and make its target 44px. Files: `src/ui/cabinet.css`, `src/styles/small-phone.css`. **Conflicts:** home room threads (tagline, attic tag), G12.
+## VF. Verdict feel follow-ups (2026-11-07, from the verdict sound and haptics thread)
+
+### VF1. Replay the verdict line
+**Pitch:** Once the card is read, the verdict's quill strokes are gone for good. A tap on the verdict line should write it again so the sound can be heard without answering.
+**Brief:** Goal: tapping the verdict line replays its quills and page turn through `landVerdict`, rate limited by the existing quill gap. Files: `src/app/card.js`, `src/ui/verdictFeel.js`. Done when: silent with Sound off, one replay per second at most, keyboard reachable, and a CI guard covers the tap wiring.
+**Touches:** card. **Conflicts:** card catalogue follow-ups.
+
+### VF2. A single buzz when a stamp is earned
+**Pitch:** Earning a stamp shows a toast on the Almanac, but a phone gives no sign. One short buzz would match it.
+**Brief:** Goal: call the buzz helper once from the stamp toast, using the Haptics switch and the same reduced motion and Low Power rules as the verdict. Files: `src/ui/stampToast.js` (or where the toast lives), `src/ui/verdictFeel.js`. Done when: one pulse per new stamp, none when Haptics is off, tested with a stubbed `navigator.vibrate`.
+**Touches:** stamps, settings. **Conflicts:** stamps thread.
+
+### VF3. Pick the verdict strokes by room
+**Pitch:** Every room writes its verdict with the same pen. The topic rooms each have their own accent, so their verdict could sound like it.
+**Brief:** Goal: each topic room gives its verdict strokes a pitch from its room tone (the Science bell, the Art brush). Files: `src/sound/verdictFeel.js`, `src/sound/roomTone.js`. Done when: the room id is passed through `landVerdict`, the Hall keeps the plain pen, and a test pins each room's pitch inside the room's tone range.
+**Touches:** room tone, verdict feel. **Conflicts:** room tone threads.
 
 ### G17. [x] Phone hints: newest in the strip, the rest one tap away (changeable)
 **Serves:** easy to understand, hints you can re-read, nothing squeezes the answer slip.
