@@ -1,6 +1,7 @@
 // Ember Log guard: the Librarian's Card Streak row (desktop), the top-bar streak chip (wide screens) and the Almanac's
 // "The Ember Log" link (phones, where the card is hidden and the attic hatch leaves no room for the chip) must all open
-// the Ember Log, in every room, with and without reduced motion. The book's streak must be the room's own streak. Drives the built app in headless
+// the Ember Log, in every room, with and without reduced motion. On phones the labelled flame tag on the hatch opens it too,
+// without opening the attic, and must not overlap the top bar. The book's streak must be the room's own streak. Drives the built app in headless
 // Chromium; skips (exit 0) without a browser. Run after `npm run build`.
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
@@ -42,10 +43,25 @@ async function run(label, {width, height, reduce, room, via, bestFloor = 1}) {
   const page = await ctx.newPage();
   page.on('pageerror', e => fail(`${label}: page error ${e.message}`));
   await page.route('**/*', r => BLOCKED.test(r.request().url()) ? r.abort() : r.continue());
-  await page.addInitScript(s => localStorage.setItem('deepstack.v1', JSON.stringify(s)), seedFor(room, bestFloor));
+  const seed = seedFor(room, bestFloor);
+  if (via === 'tag') { // the attic hatch, and so the flame tag, only shows once the shelf holds a book
+    seed.shelf = [{w: 'ephemeral', tier: 2, score: 77, fl: 1, t: 1}];
+  }
+  await page.addInitScript(s => localStorage.setItem('deepstack.v1', JSON.stringify(s)), seed);
   await page.goto(url);
   try {
-    if (via === 'stats') { // phones: Stats book, then the link on its Almanac page
+    if (via === 'tag') { // phones: the labelled flame tag on the attic hatch (RA9, option C); it must not open the attic
+      await page.waitForSelector('.ach-flame', {state: 'visible', timeout: 15000});
+      await page.waitForTimeout(1500);
+      const ok = await page.evaluate(() => {
+        const t = document.querySelector('.ach-flame').getBoundingClientRect();
+        const btns = [...document.querySelectorAll('#barNav button, #mark')].filter(b => b.offsetParent).map(b => b.getBoundingClientRect());
+        return !btns.some(q => q.left < t.right - 1 && q.right > t.left + 1 && q.top < t.bottom - 1 && q.bottom > t.top + 1)
+          && document.documentElement.scrollWidth <= innerWidth;
+      });
+      if (!ok) fail(`${label}: the flame tag overlaps the top bar or the page scrolls sideways`);
+      await page.click('.ach-flame', {timeout: 5000});
+    } else if (via === 'stats') { // phones: Stats book, then the link on its Almanac page
       await page.waitForSelector('#bStats', {state: 'visible', timeout: 15000});
       await page.waitForTimeout(1500);
       await page.click('#bStats', {timeout: 5000});
@@ -75,6 +91,9 @@ await run('desktop chip', {width: 1280, height: 800, reduce: false, room: 'histo
 await run('desktop reduced motion', {width: 1280, height: 800, reduce: true, room: 'art', via: 'row'});
 await run('phone 375 reduced motion', {width: 375, height: 740, reduce: true, room: 'body', via: 'stats'});
 await run('phone 320', {width: 320, height: 640, reduce: false, room: 'math', via: 'stats'});
+await run('phone 320 tag', {width: 320, height: 640, reduce: false, room: 'math', via: 'tag'});
+await run('phone 375 tag', {width: 375, height: 740, reduce: false, room: 'art', via: 'tag'});
+await run('phone 414 tag reduced motion', {width: 414, height: 800, reduce: true, room: 'body', via: 'tag'});
 
 await browser.close(); server.close();
 if (problems.length) { console.error('ember-log: FAILED\n' + problems.join('\n')); process.exit(1); }

@@ -9,7 +9,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Settings placement (ST1): A gear in the top bar, B card catalogue drawer (desktop only, the phone has no cabinet), C both (recommended). Mockups in screenshots/settings-overhaul/ (where-A, where-B, where-C at 1280 and 375). Reply with a letter and I will act on it.
 - Pick the Daily share look (screenshots in screenshots/daily-share/): A is built and is the default (streak line added, Share button first). B is a boxed brass card and button, C uses coloured tier dots. Phones: the note is hidden today to fit one view; showing it (B or C) pushes the buttons below the fold, so say whether the phone should show it or keep it hidden (item 70).
 - Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
-- Pick a one-tap way into the Ember Log on phones (LC7): A flame tag, B fire, C labelled flame tag (recommended), D streak line under Descend. Screenshots in screenshots/ember-log-onetap/.
+- Ember Log on phones (LC7): tap the labelled flame tag on the attic hatch (option C, "7 Ember Log"). Please check it on your phone; the tag must not overlap the bar and tapping it must not open the attic.
 - Slow-network check (perf pass): on your phone, load the site once, then toggle airplane-mode-slow or a weak connection and reload; entering another room and the first answer should no longer stall. Tell me if any room still feels slow and which (numbers in screenshots/performance/results.md).
 - Phone check for the three audit fixes (RA2/RA5/RA7): the attic hatch should now sit between the wordmark and the buttons with Mute fully tappable (on very narrow phones the keyboard button hides and the wordmark shrinks a little; Keys is still in the card catalogue). Open the Rooms book (each row says "N of M met" and its swatch fills), and open the Today card in a few rooms (the footer names the room and the card takes its colour). Tell me if you would rather keep the keyboard button and lose the streak plate instead.
 - On your phone, open the Rooms book, tap a room in the contents list (try the Reading Room): it now turns to that room's page. CI also walks every room by door, keys, dots and the book on every push (TA4).
@@ -2070,9 +2070,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### LC6. Milestone stamps on the Ember Log
 **Pitch:** Earned milestones (3, 7, 14, 30, 100) get inked stamps on a third page.
 **Brief:** Goal: derive stamps from Daily history with no new saved fields. Files: `src/ui/streakLeaves.js`. **Conflicts:** LC2.
-### LC7. A one-tap way into the Ember Log on phones
-**Pitch:** On phones the Ember Log is two taps away (Stats, then the link); the attic hatch leaves no room for a streak chip in the rail.
-**Brief:** Goal: one tap from home, e.g. tap the hearth fire (the fire already reflects the streak). Files: `src/ui/hearth.js`, `src/ui/ledgerBooks.js`. **Conflicts:** fireplace layout threads, RA2 rail fit.
+### LC7. [x] A one-tap way into the Ember Log on phones (option C, this PR)
+**Pitch:** On phones the flame tag on the attic hatch (shown when the streak plate is hidden) now says "Ember Log" and opens the book. The Stats link stays as a second way in.
+**Brief:** Goal: the tag is a button in `syncFlame`; a capture-phase click stops the hatch from opening the attic. Files: `src/ui/railFit.js`, `src/ui/ledgerBooks.js`, `railHatch.css`. **Conflicts:** RA2 rail fit, attic hatch threads.
 
 ## P. Installable app (2026-11-06, the install PR)
 
