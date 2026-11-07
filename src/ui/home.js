@@ -3,6 +3,7 @@ import {BOOK_TIMING,bookTimings,dressBook,thud,bookSound} from './bookOpenFx.js'
 import {decorate as inkPage} from './ink.js';
 import {RIBBON_HTML,ribbonKey,remember,recall,ribbonTarget,paintRibbon} from './bookRibbon.js';
 import {cornersHTML,paintEdges,noteTurned,hintCurl} from './pageFlip.js';
+import {pushBack,popBack} from './backGesture.js';
 /* Home screen markup. Kept separate from main.js so other features can add
    entries (modes, links) by pushing onto HOME_LINKS / HOME_STEPS without
    touching the layout. */
@@ -111,6 +112,7 @@ export function introSpreads(intro){
    Returns {el, close}. */
 export const BOOK_FLY_MS=BOOK_TIMING.fly, BOOK_HOLD_MS=BOOK_TIMING.hold, BOOK_SWING_MS=BOOK_TIMING.swing;
 export const BOOK_OPEN_MS=BOOK_FLY_MS+BOOK_HOLD_MS+BOOK_SWING_MS;
+let bookSeq=0;
 export function openBook({from,colors={},title='',spreads=null,label='',cls='',keepOnEsc=null,onFly=()=>{},onClose=()=>{},onShut=()=>{}}){
  const sp=document.createElement('div');sp.className='bk-spread'+(cls?' '+cls:'');sp.setAttribute('aria-hidden','true');
  const r=from||{left:innerWidth/2,top:innerHeight/2,width:0,height:0};
@@ -122,6 +124,8 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches,T=bookTimings(reduce);
  dressBook(sp,T);
  document.body.appendChild(sp);bookSound('whoosh');
+ /* Back (phone or browser) closes this book; a book that stays open on Esc stays open on Back too */
+ const bid='book'+(++bookSeq);pushBack(bid,{close:()=>close(),keep:()=>!!(keepOnEsc&&keepOnEsc())});
  /* The closed book's size is the spine's, so it leaves the spine standing up and lands back on it lying down (AT8/AT9). */
  const footprint=()=>{if(r.width>0&&sp.offsetWidth){sp.style.setProperty('--sx',(r.width/(sp.offsetWidth/2)).toFixed(4));sp.style.setProperty('--sy',(r.height/sp.offsetHeight).toFixed(4));}};
  sp.style.transition='none';footprint();void sp.offsetWidth;sp.style.transition='';
@@ -130,7 +134,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  const t=(fn,ms)=>timers.push(setTimeout(fn,ms));
  /* Close: with pages the cover swings shut over them, the book slides back to its closed
     position, then flies back to where it came from. Without pages it just fades. */
- const close=()=>{if(closed)return;closed=true;onShut();timers.forEach(clearTimeout);document.removeEventListener('keydown',key,true);document.removeEventListener('pointerdown',away,true);
+ const close=()=>{if(closed)return;closed=true;onShut();popBack(bid);timers.forEach(clearTimeout);document.removeEventListener('keydown',key,true);document.removeEventListener('pointerdown',away,true);
   if(!(spreads&&spreads.length)){sp.classList.add('out');setTimeout(()=>{sp.remove();onClose();},400);return;}
   bookSound('flip');
   const swing=sp.classList.contains('open')?T.swing:0,fly=T.flyBack;

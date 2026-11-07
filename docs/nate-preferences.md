@@ -18,6 +18,8 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 
 ## 2. Other consistent preferences
 
+- 2026-11-07: "make all the books more readable and usable" (asked with four other threads on features, polish and books). Books should be easy to read and easy to work by hand: phone gestures and Back are part of that.
+
 - **Persistent world.** Scroll back through the descent. Past alcoves show word, answer and result. Today's Result replays the whole descent through its floors and ends at the result.
 - **Variety over repetition.** The pulled book should come from a random shelf spot (not always the bottom middle, not floating). He dislikes duplicate rows.
 - **Hints help meaning, never spelling.** "Why would it give me the first letter? I'm literally given the word." Sentence, related word, definition start.

@@ -9,11 +9,13 @@ export const SHORTCUT_GROUPS=[
   ['N','Descend: start your next run'],
   ['A','Climb to the attic'],
   [',','Open settings'],
+  ['[ / ] / ← / →','Previous or next room, from the home screen'],
  ]],
  ['On a word',[
   ['Enter','Submit your answer (Shift+Enter for a new line)'],
   ['Alt + H','Use a hint'],
   ['Alt + S','Skip the word'],
+  ['Enter on a result','Next word, or close the book'],
  ]],
  ['In books and the dark',[
   ['← →','Turn the pages of an open book, or move between books on a result'],
@@ -32,8 +34,18 @@ export const SHORTCUT_GROUPS=[
   ['?','Show this page'],
   ['Esc','Close a book, panel or card'],
  ]],
+ ['On a phone',[
+  ['Swipe sideways','On the hearth: previous or next room'],
+  ['Swipe sideways','On a result card: previous or next book'],
+  ['Swipe sideways','On an open book: turn the page'],
+  ['Swipe up / down','Climb into the attic and back down the ladder'],
+  ['Back','Closes the open book, card or key sheet instead of leaving the game'],
+ ]],
 ];
 export const SHORTCUTS=SHORTCUT_GROUPS.flatMap(g=>g[1]);
+
+/* room keys on the home screen: step round the ring of rooms (-1 previous, 1 next, 0 not a room key) */
+export function roomStep(key){return key==='['||key==='ArrowLeft'?-1:key===']'||key==='ArrowRight'?1:0;}
 
 /* home-screen keys: key -> selector of the control it presses */
 export const HOME_KEYS={'1':'#bDaily',d:'#bDaily','2':'#bUnl',u:'#bUnl','3':'#bAll',s:'#bAll','4':'#bRooms',r:'#bRooms','5':'#bStats',',':'#bSettings',a:'.attic-cue-home'};

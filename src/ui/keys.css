@@ -21,7 +21,8 @@
 .khbox .btn{color:var(--c-ink);margin-top:14px}
 .khbox :focus-visible{outline-color:var(--c-blood-34)}
 @media (max-width:480px){.khbox{padding:20px 16px 18px 40px}.khbox dl>div{flex-direction:column;gap:0}.khbox dt{flex:none}}
-.khbox kbd{white-space:nowrap}.khbox dt{flex-basis:190px}
+.khbox kbd{white-space:nowrap}
+@media (min-width:481px){.khbox dt{flex-basis:190px}} /* a fixed key column only beside the text; on phones each key sits above its line */
 
 /* K2: a visible focus ring everywhere keyboard users land (ink-red on paper, lamplight on the dark) */
 .bk-spread :focus-visible{outline:2px solid var(--c-blood-34);outline-offset:3px;border-radius:3px}

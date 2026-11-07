@@ -12,11 +12,16 @@ import {FX} from './fx.js';
 import {countUp} from './chrome.js';
 import {alsoAcceptedHTML} from '../ui/alsoAccepted.js';
 import {fillMeans} from '../ui/alsoMeans.js';
+import {pushBack,popBack} from '../ui/backGesture.js';
+import {attachSwipe} from '../ui/swipe.js';
 
 /* ---------- result card ---------- */
 export let cardOpts=null;
+let cardSwipeOn=false;
 export function openCard(b,opts={}){
- cardOpts=opts;const T=TIERS[b.tier],L=$('#cardlayer');
+ cardOpts=opts;
+ /* Back closes the card like Close does; a run result (Next word) stays until its button is pressed, as with Esc */
+ pushBack('card',{close:()=>closeCard(),keep:()=>!!(cardOpts&&cardOpts.onNext)});const T=TIERS[b.tier],L=$('#cardlayer');
  L.innerHTML=`<div class="book t${b.tier}" id="bk" style="--tc:${T.spine};--ti:${T.ink};--tf:${[PALETTE.ash13,PALETTE.ash13,PALETTE.white,PALETTE.white,PALETTE.ash13,PALETTE.white,PALETTE.ash13][b.tier]}">
   <div class="halo" id="halo"></div>
   <div class="page">
@@ -54,8 +59,10 @@ export function openCard(b,opts={}){
  const fv=$('#cfav');if(fv)fv.onclick=()=>{b.fav=!b.fav;if(!b.fav)delete b.fav;save();fv.setAttribute('aria-pressed',!!b.fav);fv.textContent=b.fav?'★ Favourite':'☆ Mark as favourite';};
  if(opts.nav){const step=n=>openCard(opts.nav.items[opts.nav.i+n],{...opts,stepped:true,nav:{...opts.nav,i:opts.nav.i+n}});$('#cprev').onclick=()=>step(-1);$('#cnext').onclick=()=>step(1);}
  L.onclick=e=>{if(e.target===L&&!opts.onNext)closeCard();};
+ /* a swipe sideways steps to the previous or next book on a shelf card (the ‹ › buttons, by touch) */
+ if(!cardSwipeOn){cardSwipeOn=true;attachSwipe(L,dir=>{const o=cardOpts;if(!o||!o.nav||(dir!=='left'&&dir!=='right'))return;const bt=$(dir==='left'?'#cnext':'#cprev');if(bt&&!bt.disabled)bt.click();});}
 }
-export function closeCard(){const L=$('#cardlayer');const o=cardOpts;cardOpts=null;
+export function closeCard(){popBack('card');const L=$('#cardlayer');const o=cardOpts;cardOpts=null;
  /* a shelf card swings shut before the layer fades; fresh results and reduced motion fade as before */
  const swing=!RM&&o&&!o.fresh&&!o.stepped&&!L.classList.contains('shutting')&&L.querySelector('#bk.open:not(.gone)');
  if(swing){L.classList.add('shutting');L.querySelector('#bk').classList.remove('open');}
