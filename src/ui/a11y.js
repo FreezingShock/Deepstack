@@ -62,9 +62,9 @@ export function initA11y(doc=document){
    tidyStage();
    const lab=stage.querySelector('.wlabel'),w=stage.querySelector('.word'),pos=stage.querySelector('.pos');
    if(!lab||!w)return;
-   const key=lab.textContent+w.getAttribute('aria-label');
+   const key=(lab.querySelector('.wl-n')||lab).textContent+w.getAttribute('aria-label');
    if(key===lastKey)return;lastKey=key;prevLeft=null;
-   say(`${lab.textContent}. ${w.getAttribute('aria-label')}, ${pos?pos.textContent:''}. Forty-five seconds. Press Enter to submit.`);
+   say(`${(lab.querySelector('.wl-n')||lab).textContent}. ${w.getAttribute('aria-label')}, ${pos?pos.textContent:''}. Forty-five seconds. Press Enter to submit.`);
   }).observe(stage,{childList:true,attributes:true,attributeFilter:['hidden']});
   setInterval(()=>{
    if(stage.hidden)return;const f=stage.querySelector('#tfill');if(!f)return;

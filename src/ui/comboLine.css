@@ -1,0 +1,6 @@
+/* A run's stage is a stack of fixed rows. Two things made it taller than a window of 660-860 px high: a live combo line
+   (now on the word-count row, see run.js) and a deep floor's rule line. Together they pushed #stage 12-32 px past its
+   height and it showed a stray scrollbar. In that band the answer slip gives the space back; taller windows have room. */
+#stage .wlabel:has(.combo.live){letter-spacing:.14em;margin-top:2px}
+#stage .wlabel .combo.live{display:inline;margin:0 0 0 .7em;font:inherit;letter-spacing:.14em;text-transform:inherit;white-space:nowrap}
+@media(max-height:860px){html #stage.center:has(.floorrule) .slip textarea{height:84px}}

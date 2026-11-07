@@ -17,7 +17,7 @@
 /* phones: the "quick judge" notice is quiet (still on hover/long-press via title); loading progress stays */
 @media(max-width:560px){#jstat[data-state=error]{display:none}}
 /* short viewports (landscape, or the on-screen keyboard open): give the word stage the room the shelf was using */
-@media(max-height:480px){:root{--nb:10px;--nt:60px}.center{padding-top:6px}.slip textarea{height:68px}.word{font-size:calc(clamp(32px,9vw,44px)*var(--ts))}.hintline{min-height:0}.wlabel,.pos,#depthHud{display:none}}
+@media(max-height:480px){:root{--nb:10px;--nt:60px}.center{padding-top:6px}.slip textarea{height:68px}.word{font-size:calc(clamp(32px,9vw,44px)*var(--ts))}.hintline{min-height:0}.wl-n,.pos,#depthHud{display:none}}
 /* Q8: stacks stand closer under the plaque; dust never reads as marks on the caption */
 [data-room=roomy] .home .hsecs{padding-top:calc(var(--hz-g,16px)*.4)}
 .home .hz-plaque .next{position:relative;isolation:isolate}

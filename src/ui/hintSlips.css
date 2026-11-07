@@ -60,6 +60,6 @@ html[data-motion="reduce"] .hs-pips i.snuff{animation:none}
 @media(max-height:860px) and (min-width:641px){#stage.center:has(.hintline:not(:empty)) .slip textarea{height:84px}}
 @media(max-width:640px){
   /* G12: the slip keeps its full height while a hint shows; the taller phone alcove (alcoveFit phone) makes room */
-  #stage.center:has(.hintline:not(:empty)) .pips,#stage.center:has(.hintline:not(:empty)) .wlabel{display:none}
+  #stage.center:has(.hintline:not(:empty)) .pips,#stage.center:has(.hintline:not(:empty)) .wl-n{display:none}
 }
 @media(max-width:640px){.hslip .hcap{display:none}.hslip{line-height:24px}}
