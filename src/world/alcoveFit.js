@@ -18,14 +18,17 @@ export function wantRow(H) {
  *   top/bottom the alcove's box (y of its top and bottom edge from the window top, resting state); h its height.
  */
 let memoKey = '', memo = null;
-export function alcoveFit(H, bar, BM) {
-  const key = H + '|' + bar + '|' + BM;
+/* Phones (phone = true) want the shortest shelves the fit allows, so the alcove is as tall as it can be: the answer
+   slip, its hint strip and the earned-books strip all live inside it (see nookMetrics). */
+export const PHONE_ROW = 64;
+export function alcoveFit(H, bar, BM, phone = false) {
+  const key = H + '|' + bar + '|' + BM + '|' + (phone ? 'p' : 'd');
   if (key === memoKey) return memo;
-  return (memo = compute(H, bar, BM), memoKey = key, memo);
+  return (memo = compute(H, bar, BM, phone), memoKey = key, memo);
 }
-function compute(H, bar, BM) {
+function compute(H, bar, BM, phone) {
   const base = H - BM - FOOT, room = base - bar;           // from the rail to the bottom row's plank
-  const want = wantRow(H), oldH = H - want - Math.max(BM, 20) - 10 - bar - FRAME; // the alcove before centring (its bottom margin was stuck at 20)
+  const want = phone ? PHONE_ROW : wantRow(H), oldH = H - wantRow(H) - Math.max(BM, 20) - 10 - bar - FRAME; // the alcove before centring (its bottom margin was stuck at 20)
   let best = null;
   for (let m = 1; m <= 30; m++) {
     const RH = room / (m + .5);
