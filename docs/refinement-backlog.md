@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
+- Pick the Almanac progress layout (AS1): reply A, B or C. B is built; say if you want A or C instead.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
 - Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
@@ -2131,3 +2132,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### CF3. Judge wait shows a real progress note
 **Pitch:** When the librarian is still arriving the wait is silent for up to 6 s before a note appears.
 **Brief:** Goal: start the "Reading your answer" note with a small candle-flicker on the slip, not after the 6 s fallback. Files: `src/scorer/index.js` (onWait timing), `src/ui/coreLoop.css`. Done when: a test pins the note at 300 ms.
+
+### AS1. [~] Almanac progress stats (words met per room, closeness over time, hardest words, best chain)
+**Pitch:** The Almanac gains a progress spread: words met per room, average closeness over the last 21 days, the three hardest words and the longest chain of Folio-or-better answers.
+**Brief:** Goal: pure figures in `src/core/almanacProgress.js` from saves that already exist, layout in `src/ui/almanacProgress.js`. Done when: guard `scripts/almanac-progress.mjs`, 375 and desktop with reduced motion, every room. **Touches:** BOOK. **Conflicts:** 12, 54, 55. **Status:** option B built, PR open as draft until nate picks a letter.

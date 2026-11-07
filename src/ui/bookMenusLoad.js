@@ -3,6 +3,7 @@
 import './dailyBook.css';
 import './dailyCalendar.css';
 import './statsPages.css';
+import './almanacProgress.css';
 import './shelfFilters.css';
 import './shelfBays.css';
 import './shelfSpineFit.css';

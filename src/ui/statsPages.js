@@ -7,6 +7,7 @@ import {ROOMS} from '../core/rooms.js';
 import {roomData} from '../core/roomStore.js';
 import {currentStreak} from '../core/streak.js';
 import {longestStreak,dayKey} from '../core/stats.js';
+import {progressLeaves} from './almanacProgress.js';
 
 /** Streak counting a day when any room's Daily was played: {n, best}. Falls back to each room's saved streak when no Dailies are kept. */
 export function anyRoomStreak(S,today=dayKey(Date.now())){
@@ -104,5 +105,6 @@ export function statsLeaves(st,S,{TIERS,FLOORS,floorStartFt}){
    ${total?spineColumns(counts,TIERS)+`<ul class="legend">${TIERS.map(t=>`<li><i class="dot" style="background:${t.spine}"></i><span>${esc(t.name)}</span><b>${counts[t.id]||0}</b></li>`).join('')}</ul>
    <p class="note">${rarest>=0?`Rarest book so far: ${esc(TIERS[rarest].name)}.`:''} ${st.books-st.answered>0?`${st.books-st.answered} skipped.`:''}</p>`:'<p class="empty hand">Nothing shelved yet.</p><p class="note">Your first answer becomes your first book.</p>'}</div>`,
   `<div class="alm"><h1>The Depths</h1><div class="kicker">A cross-section, down to ${st.deepest||0} ft</div><div class="scopes">${all}</div>${crossSection(FLOORS,floorStartFt,st.deepest||0,reached)}</div>`
+,...progressLeaves(S)
  ];
 }
