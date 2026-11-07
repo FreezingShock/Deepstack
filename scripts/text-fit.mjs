@@ -60,7 +60,7 @@ const problems = [];
 
 async function scan(page, tag) {
   await page.waitForTimeout(700); // let entrance transitions settle so we measure the final layout
-  for (const h of await page.evaluate(findClipped)) problems.push(`${tag}: ${h.el} "${h.text}": ${h.why}`);
+  for (const h of await page.evaluate(findClipped)) problems.push(`${tag}: ${h.el} "${h.text}": ${h.why} | in ${h.chain} | ${h.html}`);
   for (const h of await page.evaluate(findTiny, MIN_PX)) problems.push(`${tag}: ${h.el} "${h.text}": ${h.why}`);
 }
 
