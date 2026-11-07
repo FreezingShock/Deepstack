@@ -21,6 +21,7 @@ export async function goRoom(id,dir){
  busy=true;
  try{
   Sfx.cue&&Sfx.cue('door');
+  Sfx.room&&Sfx.room(id); // the new room's accents crossfade in as the old one's fade out (src/sound/roomTone.js)
   paintRoomVars(id,undefined,{settle:true}); // the fire, the light, the title and the labels glide to the new colours; the fireplace itself stays
   typeOnNextMount();
   await new Promise(r=>{requestAnimationFrame(()=>r());setTimeout(r,60);}); // let the first frame of the glide paint before the room's save swap and word lists load

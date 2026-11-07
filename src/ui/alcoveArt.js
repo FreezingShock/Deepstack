@@ -2,6 +2,7 @@
 // the candle's light pooling across the wood, and this run's books standing on the desk.
 // Also keeps floor effects (water, fog, vignette, tint) out of the alcove, so the nook stays visually clean.
 import {PALETTE} from '../theme/colors.js';
+import {propRoom, drawRoomProp} from './roomProps.js';
 
 // How deep the desk's top surface is, and how much room the page leaves for it. Wide screens let the books stand
 // beside the answer controls, so nothing is reserved; phones reserve a strip (`reserve`) so the earned books stand
@@ -91,5 +92,7 @@ export function drawNook(c, o) {
   c.save(); c.globalCompositeOperation = 'lighter'; c.fillStyle = lg; c.fillRect(x, top, w, m.S); c.restore();
   // props: an open book, then an inkwell with a quill (phones keep the bare desk: the books stand on it)
   if (!m.phone) { const bw = 90, bx = x + 78, by = y + h - m.S * .35; openBook(c, bx, by, bw, 16); inkwell(c, bx + bw + 20, y + h - m.S * .38, .85); }
+  // the topic room's own object on the desk (src/ui/roomProps.js): beside the inkwell, or at the desk's right end on phones
+  const rp = propRoom(); if (rp) drawRoomProp(c, rp, m.phone ? x + w - 34 : x + 226, y + h - 2, m.phone ? 22 : 34);
   c.restore();
 }
