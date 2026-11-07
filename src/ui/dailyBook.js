@@ -9,6 +9,8 @@ import {dailyKeys,dailyNumber,dailyWords} from '../core/daily.js';
 import {TIERS} from '../core/tiers.js';
 import {calendarLeaf,monthOf} from './dailyCalendar.js';
 import {riddleDay,riddleDayStreak} from '../core/riddleDaily.js';
+import {fullPool} from '../core/roomPool.js';
+import {weeklyCoverSection,weeklyLeaves} from './weeklyLeaf.js';
 
 export {longDate, shortDate, monthLabel} from '../core/dates.js';
 import {longDate, shortDate, monthLabel} from '../core/dates.js';
@@ -49,6 +51,7 @@ const coverLeaf=(S,today,entries,streak)=>{
    <p class="dly-line">${rid?`Solved ${rid.solved} of ${rid.of} today.`:'Seven definitions: write the word. One try a day.'}</p>
    <p class="dly-tally"><span><b>${rs}</b> day streak</span></p>
    <button class="dly-act pen-ink" data-act="dailyRiddle">${rid?'See today’s riddle result':'Open today’s riddle'}</button></section>
+  ${weeklyCoverSection(S,today,fullPool())}
   <section class="dly-sec" aria-label="Practice"><h2>Practice</h2>
    <p class="dly-line">No pressure: nothing here touches your streak, shelf or rating.</p>
    <button class="dly-act pen-ink" data-act="practice">Start Practice</button></section></div>`;
@@ -92,12 +95,12 @@ function baseDayLeaves(e){
 
 export function dailyLeaves(S,today,{wordsFor,streak=0,month=monthOf(today)}={}){
  const entries=dailyEntries(S,today,wordsFor);
- /* cover + calendar + contents come first; pad to a whole spread so every day starts on a left page */
+ /* cover + calendar + the weekly theme + contents come first; pad to a whole spread so every day starts on a left page */
  const nContents=contentsLeaves(entries,0).length;
- let prefix=2+nContents;const pad=prefix%2;
+ let prefix=4+nContents;const pad=prefix%2;
  const start=(prefix+pad)/2;
  const spreadOf=new Map(entries.map((e,i)=>[e.key,start+i]));
- const lead=[coverLeaf(S,today,entries,streak),calendarLeaf(S,today,month,{spreadOf:k=>spreadOf.get(k),streak}),...contentsLeaves(entries,start)];
+ const lead=[coverLeaf(S,today,entries,streak),calendarLeaf(S,today,month,{spreadOf:k=>spreadOf.get(k),streak}),...weeklyLeaves(S,today,fullPool()),...contentsLeaves(entries,start)];
  if(pad)lead.push(`<div class="dly"><h2>Memoranda</h2><p class="dly-empty">Every day since No. 1 is written in this book, one spread to a day. Words you have not played are still readable once the day is over.</p></div>`);
  return {entries,start,leaves:[...lead,...entries.flatMap(dayLeaves)]};
 }

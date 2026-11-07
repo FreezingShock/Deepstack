@@ -2181,6 +2181,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Some related words in the note are odd fragments ("hemeral" under ephemeral). Keep only related words that are in the game's own word lists or the synonym data, so the list reads as a set of real neighbours.
 **Brief:** Goal: filter `r` against `words.json`, `room-words.json` and `senses.json` in the builder, then rebuild the shards. Files: `scripts/lib/notesData.mjs`, `scripts/build-word-notes.mjs`. **Conflicts:** WN1.
 
+### AS1. [~] Almanac progress stats (words met per room, closeness over time, hardest words, best chain)
+**Pitch:** The Almanac gains a progress spread: words met per room, average closeness over the last 21 days, the three hardest words and the longest chain of Folio-or-better answers.
+**Brief:** Goal: pure figures in `src/core/almanacProgress.js` from saves that already exist, layout in `src/ui/almanacProgress.js`. Done when: guard `scripts/almanac-progress.mjs`, 375 and desktop with reduced motion, every room. **Touches:** BOOK. **Conflicts:** 12, 54, 55. **Status:** nate picked B (PR #350, ready for review). A or C would be a follow-up PR; the layout is one module (`src/ui/almanacProgress.js`).
 ## VF. Verdict feel follow-ups (2026-11-07, from the verdict sound and haptics thread)
 
 ### VF1. Replay the verdict line
@@ -2203,6 +2206,26 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
 **Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
 **Touches:** RUN. **Conflicts:** G12, G15.
+
+### WK1. [x] Weekly themed challenge (one themed word a day, Monday to Sunday)
+**Serves:** a reason to come back each week, and the whole library in one theme.
+**Pitch:** Each week has a theme, such as The Sea or Food, and seven of its words drawn from every room, one for each day. Monday is the gentlest, Sunday the hardest. Answer today's word from the Daily book. The book's cover turns to the week, with its days, rooms and scores, and a week with all seven answered earns the "A themed week" stamp.
+**Brief:** Goal: a seeded weekly theme with its own entry, progress and stamp. Files: `src/core/weekly.js`, `src/app/run.js`, `src/ui/weeklyLeaf.js`, `src/core/stamps.js`. Done when: `test/weekly.test.js` passes, `scripts/weekly-check.mjs` passes at 375 and 1280 with reduced motion in every room.
+**Touches:** RUN, DAILY BOOK, STAMPS. **Conflicts:** Daily book leaves (prefix count in `dailyBook.js`).
+**Follow-ups:** WK2 (tighter theme lists), WK3 (resume a weekly word after reload), WK4 (a whole-week run as an alternative, if nate prefers seven words at once).
+
+### WK2. [~] Tighter weekly theme lists (exclusion list and membership guard in PR #361; the rest of the lists is open)
+**Serves:** themes that feel right, with no odd words.
+**Pitch:** Some weekly matches are loose: "curtain" turns up under Weather and "butler" under Food. Hand-review the matched words for each theme and drop the odd ones, or add a short allow list per theme.
+**Brief:** Goal: every matched word clearly belongs to its theme. Files: `src/core/weekly.js` (THEMES). Done when: a sample of 30 matches per theme is reviewed and the odd ones are removed or listed as exceptions.
+**Touches:** WEEKLY. **Conflicts:** WK1.
+
+### WK3. Resume a weekly word after a reload
+**Serves:** no lost answer when the page is reloaded mid-word.
+**Pitch:** A weekly word is one run, and a reload mid-answer starts it again. Save the open weekly word like the Daily run is saved (`S.weeklyRun`), and resume it the same day.
+**Brief:** Goal: a reload during today's weekly word resumes it. Files: `src/core/dailyRun.js` (pattern), `src/app/run.js`. Done when: a reload test in `scripts/weekly-check.mjs` resumes the word.
+**Touches:** RUN, WEEKLY. **Conflicts:** WK1.
+
 
 ## PT. Patrons follow-ups (2026-11-07, from the Patrons thread)
 
