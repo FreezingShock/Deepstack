@@ -4,7 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Relic codex and descent history (DS3, #394): the Almanac now has two spreads after the curio pages, one for the relics (dated on their first carry) and one for recent descents with personal bests per room. Screenshots: screenshots/relic-codex/. Reply A or B: A = as built, a lost relic shows its name and effect greyed (recommended); B = a silhouette with "???" until carried (DS5).
-- Unlimited roguelike descent (descent thread, PR pending): play one Unlimited run on your phone and a desktop. Landings come before words 3, 5 and 7 with three doors: Hard room, Rest alcove, Curio shop. Tell me if a failed word (skip or Pamphlet) ends the run too harshly, and whether the three relics read clearly. Options A/B/C are in screenshots/descent/.
+- Unlimited roguelike descent (descent thread, #366): play one Unlimited run on your phone and a desktop. Landings come before words 3, 5 and 7 with three doors: Hard room, Rest alcove, Curio shop. Tell me if a failed word (skip or Pamphlet) ends the run too harshly, and whether the three relics read clearly. Options A/B/C are in screenshots/descent/.
 
 - Nemesis rematch (NM1): open the Almanac on your phone and turn to the Wanted page. This week's hardest word sits there as a wanted poster, and the Rematch button is also on its row in the hardest-words list. Tap "Face it this week" and answer. Say whether the poster and the rematch feel right, and which option you want (A, B or C in NM1).
 - Phone rooms line (ON4, this PR): on a phone, the first-visit door line lights the ring of room lights and says "Tap a light to pick a room." The other two options (the Ledger line, or no phone line) are in screenshots/onboarding-halo/ON4-*. Say B or C if you'd rather have one of those.
@@ -2289,7 +2289,7 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 **Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
 **Touches:** RUN. **Conflicts:** G12, G15.
 
-### DS1. [x] Unlimited as a roguelike descent: landings, relics and a run-ending cost (PR pending, `src/core/descent.js`, `src/ui/descentLanding.js`)
+### DS1. [x] Unlimited as a roguelike descent: landings, relics and a run-ending cost (#366, `src/core/descent.js`, `src/ui/descentLanding.js`)
 **Pitch:** Unlimited runs now have landings before words 3, 5 and 7 with three doors: Hard room (feet x1.5 on the next word, a harder word), Rest alcove (Spare breath, so one failed word does not end the run) and Curio shop (take one relic of two). Relics last the run: Index card (one more free hint), Slow wick (+10 seconds a word), Folio double (Folio or better earns twice the feet). A skipped or Pamphlet word ends the run unless Spare breath is carried. Scoring and depth are unchanged; the final page says how the descent ended.
 **Brief:** Options A/B/C in `screenshots/descent/`, A built. Guard: `scripts/descent-guard.mjs` (every topic room at 375 and 1280: fit, no clipping).
 
