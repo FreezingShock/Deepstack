@@ -50,7 +50,6 @@ html[data-motion="reduce"] .hs-pips i.snuff{animation:none}
 .hs-btn[disabled]{opacity:.8}
 @media(max-width:640px){
   .hslip .hcap{display:inline;margin-right:6px}.hslip .hbody{display:inline}.hslip{line-height:24px;font-size:calc(15px*var(--ts))}
-  #stage.center:has(.hintline:not(:empty)) .slip textarea{height:84px}
 }
 #stage .row #hint.hs-btn,#stage .row #skip.hs-btn{font:600 calc(20px*var(--ts))/1 'Fuzzy Bubbles','Newsreader',cursive;letter-spacing:.01em;padding:6px 16px;white-space:nowrap}
 #stage .row #skip.hs-btn{font-size:calc(18px*var(--ts));color:var(--c-parchment-92)}
@@ -58,9 +57,9 @@ html[data-motion="reduce"] .hs-pips i.snuff{animation:none}
 #stage.center .row #hint.hs-btn{flex:none}
 #stage .row #hint.hs-btn,#stage .row #hint.hs-btn:hover,#stage .row #hint.hs-btn:active{background:linear-gradient(180deg,var(--c-parchment-92),var(--c-parchment-ebe1c4));border-color:var(--c-steel-63-alpha-7a)}
 #stage .row #skip.hs-btn:hover{background:color-mix(in srgb,var(--c-parchment-92) 10%,transparent);border-color:color-mix(in srgb,var(--c-parchment-92) 40%,transparent)}
-@media(max-height:860px){#stage.center:has(.hintline:not(:empty)) .slip textarea{height:84px}}
+@media(max-height:860px) and (min-width:641px){#stage.center:has(.hintline:not(:empty)) .slip textarea{height:84px}}
 @media(max-width:640px){
-  #stage.center:has(.hintline:not(:empty)) .slip textarea{height:60px}
+  /* G12: the slip keeps its full height while a hint shows; the taller phone alcove (alcoveFit phone) makes room */
   #stage.center:has(.hintline:not(:empty)) .pips,#stage.center:has(.hintline:not(:empty)) .wlabel{display:none}
 }
 @media(max-width:640px){.hslip .hcap{display:none}.hslip{line-height:24px}}
