@@ -50,7 +50,7 @@
 .rv-entry.won .rv-word::after{content:' \2713';color:var(--c-bronze-42)}
 .rv-form.shake{animation:rvShake .34s linear}
 @keyframes rvShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-html.rm .rv-form.shake{animation:none}
+:where(html.rm) .rv-form.shake{animation:none}
 
 .rv-empty{margin-top:14px}
 

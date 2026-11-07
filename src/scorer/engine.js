@@ -1,5 +1,6 @@
 // The actual model loader/runner. Runs inside the judge worker (worker.js) or, as a fallback, on the main thread (model.js).
 // Weights come from <base>models/<revision>/ when self-hosted (npm run fetch:model), else from Hugging Face at a pinned revision.
+import {shareModelDownloads} from './fileShare.js';
 export const MODEL = {id: 'Xenova/all-MiniLM-L6-v2', revision: '751bff37182d3f1213fa05d7196b954e230abad9', dtype: 'q8'};
 
 async function hasSelfHosted(base) {
@@ -41,7 +42,10 @@ export async function loadEngine(base, progress) {
   await selfHostedOrt(env, base);
   // Single-threaded and no ORT proxy worker: nested workers need cross-origin isolation, and the judge already has its own thread.
   if (env.backends.onnx?.wasm) { env.backends.onnx.wasm.numThreads = 1; env.backends.onnx.wasm.proxy = false; }
-  const extractor = await pipeline('feature-extraction', MODEL.id, {dtype: MODEL.dtype, device: 'wasm', revision: MODEL.revision, progress_callback: progress});
+  // one download per model file, however many times the loader asks (src/scorer/fileShare.js)
+  const share = shareModelDownloads(env.fetch);
+  env.fetch = share;
+  const extractor = await pipeline('feature-extraction', MODEL.id, {dtype: MODEL.dtype, device: 'wasm', revision: MODEL.revision, progress_callback: progress}).finally(share.release);
   dropOldVersions();
   return {
     source: local ? 'self-hosted' : 'huggingface',

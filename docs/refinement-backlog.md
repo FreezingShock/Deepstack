@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Restoration bench (MR1, this PR): a new door at the bottom-left of home, "Restoration bench". Open it, write what each faded word means, type the smudged word, and check the wall. A, B or C mixes are in screenshots/restoration/option-*; B (two faded, one smudged) is built. Reply with a letter if you want another mix.
 - To review (RV1): open the Shelf, tap To review, then Try again on a word and write it from memory. Tell me if 46 is the right bar to win a word back, and whether To review should stay inside the Shelf (now) or get its own spine on the home. Screenshots: screenshots/review-shelf/.
 - Phone home in topic rooms (375x667, with a full shelf): the home used to scroll by 25px in the Chronicle, Counting House, Observatory, Scriptorium and Gallery, because their longer taglines froze the fit at a size that overflowed. They now use the compact type and spacing the Reading Room already gets at this height. Changeable: say if you would rather the topic rooms keep the full-size title on phones and drop a book or two instead.
 - Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
@@ -1593,6 +1594,26 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Building the word pool from words.json is still the longest task on a slow phone (~0.9 s at 4x CPU) right as home appears.
 **Brief:** Goal: precompute the pool's reject reasons at build time (or build it in a worker), same pool and same Daily words. Files: `src/core/wordPool.js`, `scripts/build-words.mjs`. Done when: `perf-memory` boot worst task halves, daily tests unchanged. **Touches:** performance. **Conflicts:** PF3.
 
+### PF11. [x] (first-visit pass: the judge model crosses the link once, not three times; judge ready on a cold slow phone at 133 s, down from 359 s; see docs/load-path.md) Judge model downloaded once per visit
+**Pitch:** On a cold visit the 23 MB judge model was fetched three times at once, so the copies shared the phone's bandwidth and the judge came up about three times later than it needed to.
+**Brief:** Done: `src/scorer/fileShare.js` wraps the loader's fetch so each model file is one streamed download (callers get clones of the same response). Guard: `scripts/perf-budget.mjs` fails if a cold visit fetches a model file twice or a repeat visit fetches any. **Touches:** scorer, performance. **Conflicts:** scorer threads.
+
+### PF12. Fetch the judge's wasm runtime with the model
+**Pitch:** The 3.5 MB (gzip) onnxruntime wasm starts only after the 22 MB model has finished, so on a slow link the judge waits about 17 s more for a file it could have had in parallel.
+**Brief:** Goal: start the `.wasm` download as soon as the worker starts (in `src/scorer/engine.js`), without slowing the word list. Done when: `scripts/first-load.mjs` shows the wasm finishing before the model, and the judge-ready time drops by about the wasm's share. **Touches:** scorer, performance. **Conflicts:** scorer threads.
+
+### PF13. Room lists after the judge, not 3 s after boot
+**Pitch:** Every first visit downloads rooms.json and room-words.json (about 120 KB gzip) three seconds after boot, for the word counts in the Room Ledger, while the model is still coming down the same link.
+**Brief:** Goal: load the room lists when the Ledger opens (its `onPaint` already loads them) or once the judge is ready, whichever comes first. Done when: the Ledger still shows counts at 375 and 1280, and the probe's room-list bytes move after the model. **Touches:** rooms, performance. **Conflicts:** room threads (roomLedger.js).
+
+### PF14. First word is CPU-bound on a slow phone
+**Pitch:** On a repeat visit at 4x CPU the first word lands about 9 s after the home screen, with almost no bytes left to wait for: boot, the word pool and the Descend animation are the cost, not the network.
+**Brief:** Goal: profile the path from `#bPlay` to the first `#stage .word` with `?perf` at 4x CPU and cut the largest task (PF9 covers the word pool). Done when: `scripts/first-load.mjs` repeat-visit first word drops by a third. **Touches:** performance, run. **Conflicts:** PF9.
+
+### PF15. Splash art is 9.4 MB
+**Pitch:** `public/splash/` holds 11 full-size launch PNGs for iOS home-screen launches. Only one is ever read per launch, but they are the largest files in the app.
+**Brief:** Goal: re-encode the splash images (or pick a smaller set) and check that the iOS launch still matches the device size. Done when: total splash bytes drop by at least half and `pwa-check` still passes. **Touches:** PWA. **Conflicts:** none.
+
 ### PF10. Real-phone check of low power mode
 **Pitch:** Headless numbers can't show iOS Low Power Mode (30 fps cap) or a real GPU. A quick on-device pass would confirm the quality step-down and the reduced-motion idle rate feel right.
 **Brief:** Goal: with `?perf`, record home, a room walk and a run on a phone in Low Power Mode and with Reduce Motion; tune `src/ui/quality.js` thresholds if it steps down too eagerly. Done when: numbers in screenshots/performance/. **Touches:** quality. **Conflicts:** none.
@@ -2109,6 +2130,16 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### TY3. One range style for floor ranges
 **Pitch:** The depth tracker writes "0–101 ft" with an en dash, while the Floors book and the Card's floor row write "0 to 101 ft". Pick one and use it on every screen.
 **Brief:** Goal: one range helper in `src/core/numFmt.js` used by `src/ui/tracker.js`, `src/ui/floorLeaves.js` and the floor banner. Files: those three files, plus a test in `test/number-format.test.js`. **Conflicts:** Card floor row (TA7), Floors book.
+## MR. Manuscript restoration (2026-11-07, nate: "something more unique")
+### MR1. [x] Restoration bench: a damaged page per room, ink returns, finished pages hang on a wall (this PR)
+Brief: a water-damaged page from the room you are in. Two faded entries: the headword shows, the definition has run, and you write what it means in your own words; the judge scores it, and the real entry comes back in ink at 14 or better. One smudged entry: its definition is clear, the headword has gaps, and you type the word (a letter can be given). Leave an entry and it stays damaged. A finished page pins to the wall. Code: `src/restore/` (pages, store, markup, ui, entry). Screenshots: `screenshots/restoration/`. Guards: `test/restore-*.test.js`, `scripts/restore-check.mjs` (CI).
+### MR2. Print one damaged page per room each day
+Brief: a day's restoration page per room, the same for everyone, like the Daily, with a "Daily" mark on the wall frame. Conflicts: `src/restore/store.js`, the home door in `src/app/home.js`.
+### MR3. Restored entries count toward "N of M met"
+Brief: an entry that comes back in ink counts as met for its room, so the Room Ledger shows the restoration work. Conflicts: `src/core/roomDepth.js`, `src/restore/ui.js`.
+### MR4. A finished page with every entry restored earns a wax seal
+Brief: a complete page (all three in ink) adds a seal to the Almanac stamps, with the toast. Conflicts: `src/core/stamps.js`, `src/restore/ui.js`.
+
 ## P. Installable app (2026-11-06, the install PR)
 
 ### PWA1. Offline note on the Daily
