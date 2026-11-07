@@ -9,9 +9,14 @@ const dropUnusedOrt = () => ({name: 'drop-unused-ort', apply: 'build', generateB
   for (const k of Object.keys(bundle)) if (/ort-wasm-simd-threaded\.asyncify-.*\.wasm$/.test(k)) delete bundle[k];
 }});
 // Builds src/sw/sw.js to /sw.js, naming its ONNX runtime cache after the installed onnxruntime-web version.
-const emitServiceWorker = () => ({name: 'emit-sw', apply: 'build', generateBundle() {
+const emitServiceWorker = () => ({name: 'emit-sw', apply: 'build', generateBundle(_, bundle) {
   const ort = JSON.parse(readFileSync('node_modules/onnxruntime-web/package.json', 'utf8')).version;
-  this.emitFile({type: 'asset', fileName: 'sw.js', source: readFileSync('src/sw/sw.js', 'utf8').replaceAll('__ORT_VERSION__', ort).replaceAll('__DATA_PRECACHE__', JSON.stringify(['words.json', 'rooms.json', 'room-words.json'].map(f => `data/${f}?v=${dataVersions[f]}`)))});
+  // The app shell: the page's own JS and CSS (not the judge's transformers.js, which only loads with the model) and the fonts, so one visit online is enough for the game to open offline.
+  const shell = [...Object.keys(bundle).filter(f => /^assets\/[^/]*\.(js|css)$/.test(f) && !/transformers/.test(f)).map(f => '/' + f),
+    ...['anthropic-serif', 'google'].flatMap(d => readdirSync('public/fonts/' + d).filter(f => f.endsWith('.woff2')).map(f => `/fonts/${d}/${f}`)),
+    // the install artwork and manifest: the browser asks for them offline too (favicon, install prompt); launch images stay with the OS
+    ...readdirSync('public/icons').filter(f => /\.(png|svg)$/.test(f)).map(f => `/icons/${f}`), '/manifest.webmanifest'];
+  this.emitFile({type: 'asset', fileName: 'sw.js', source: readFileSync('src/sw/sw.js', 'utf8').replaceAll('__ORT_VERSION__', ort).replaceAll('__DATA_PRECACHE__', JSON.stringify(['words.json', 'rooms.json', 'room-words.json'].map(f => `data/${f}?v=${dataVersions[f]}`))).replaceAll('__APP_SHELL__', JSON.stringify(shell))});
 }});
 // worker.format 'es': the judge worker is a module worker that lazily imports transformers.js (code-splitting needs ES output).
 // chunkSizeWarningLimit: the one chunk over 500 KB is transformers.js, fetched lazily by the judge worker only (never on first paint).

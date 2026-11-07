@@ -1,0 +1,4 @@
+/* Installed app and touch devices: no rubber-band bounce or pull-to-refresh over the game, and the page colour behind the
+   status bar (black-translucent in the manifest meta tags) matches the oak, so the top never flashes white. */
+html{background:#120c07;overscroll-behavior:none}
+body{overscroll-behavior:none}

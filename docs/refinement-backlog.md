@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
 - Pick the stamp look and place (TA5): placement A is an Almanac Stamps page, B the room's title line, C the Librarian's Card row (desktop only); look X is a wax seal, Y a bookplate, Z a gilt medallion. Answer like "TA5: A, Z". Desktop and phone screenshots are in screenshots/room-stamps/.
 - Settings placement (ST1): A gear in the top bar, B card catalogue drawer (desktop only, the phone has no cabinet), C both (recommended). Mockups in screenshots/settings-overhaul/ (where-A, where-B, where-C at 1280 and 375). Reply with a letter and I will act on it.
 - Pick the Daily share look (screenshots in screenshots/daily-share/): A is built and is the default (streak line added, Share button first). B is a boxed brass card and button, C uses coloured tier dots. Phones: the note is hidden today to fit one view; showing it (B or C) pushes the buttons below the fold, so say whether the phone should show it or keep it hidden (item 70).
@@ -520,6 +521,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Touches:** workflows. **Conflicts:** none.
 
 ### 52. PWA and deploy previews
+**Status:** [x] installable app: manifest, icons, launch screen, install tab, offline shell (install PR). Deploy previews still open.
 **Pitch:** Installable, offline Daily after first load, a preview URL per PR so nate can test from his phone.
 **Brief:** Files: manifest, service worker, deploy workflow. Done when: Lighthouse PWA check, cache version pinned to model version.
 **Touches:** `index.html`, `vite.config.js`. **Conflicts:** 39.
@@ -571,6 +573,7 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 **Touches:** CORE words, build script. **Conflicts:** judge and word pool threads.
 
 ### 81. Offline Daily
+**Status:** [x] the app shell and the Daily data are precached at install (install PR); airplane-mode check in `scripts/pwa-check.mjs`.
 **Pitch:** Cache the word list and judge model so the Daily works with no connection after the first visit.
 **Brief:** Files: a service worker plus a precache list. Done when: airplane-mode Daily plays through, cache version pinned to the model revision, `loadpath.mjs` shows zero requests on the second load.
 **Touches:** `index.html`, `vite.config.js`. **Conflicts:** 52.
@@ -2053,6 +2056,19 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On phones the Ember Log is two taps away (Stats, then the link); the attic hatch leaves no room for a streak chip in the rail.
 **Brief:** Goal: one tap from home, e.g. tap the hearth fire (the fire already reflects the streak). Files: `src/ui/hearth.js`, `src/ui/ledgerBooks.js`. **Conflicts:** fireplace layout threads, RA2 rail fit.
 
+## P. Installable app (2026-11-06, the install PR)
+
+### PWA1. Offline note on the Daily
+**Pitch:** When the Daily is played with no connection, a small pen note on its page says it is running from the saved library, so nothing looks broken.
+**Brief:** Files: `src/ui/dailyBook.js` (a read of `navigator.onLine` and the service worker's cache state, nothing new stored). Done when: `scripts/pwa-check.mjs` also checks the note shows with the network off and not online. **Touches:** Daily book. **Conflicts:** 81, PWA2.
+
+### PWA2. Keep-the-library tab on the wall
+**Pitch:** The install tab on home could sit as a brass plate on the cabinet's cornice instead of a corner tab, so it reads as part of the room.
+**Brief:** Files: `src/ui/installHint.js`, `installHint.css`, one slot in the home furniture. Done when: phone and desktop screenshots show no overlap with the spines or the cabinet, and the card still opens over a veil. **Touches:** home. **Conflicts:** E-section home furniture.
+
+### PWA3. Launch screen hands off to home
+**Pitch:** The launch screen could fade into the home screen's fireplace glow rather than cut off, so the first frame of the app feels lit.
+**Brief:** Files: the `#splash` block in `index.html` and `src/ui/splash.js`. Done when: a frame capture at 0, 250 and 500 ms shows no flash, and reduced motion still removes it at once. **Touches:** boot. **Conflicts:** PWA1.
 ### [x] ST1. Settings overhaul: one settings book (Music and Effects, Motion that follows the OS, reset progress with a confirm)
 **Pitch:** Reduced motion showed "off" while the OS asked for calm motion, Sound and Volume had no music/effects split, and there was no way to start over.
 **Brief:** Done: `src/ui/settings.js` (new `music`, `effects` fields; `motion` is now system / reduce / full), `src/ui/settingsBook.js` + `settingsBook.css` (page markup), `src/ui/progressReset.js` (erases `deepstack.v1`, `deepstack.cabinet.v1`, `deepstack.flipHint`; never settings), `src/feel.js` (Music and Effects buses, each with its own reverb send), `src/ui/topbar.js` (wiring). Tests: `test/settings.test.js`, `test/settings-book.test.js`; smoke step "settings: sliders save and reset asks first". Before/after: screenshots/settings-overhaul/.

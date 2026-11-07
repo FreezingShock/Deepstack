@@ -57,7 +57,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.heavy == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -98,6 +98,7 @@ jobs:
           node scripts/room-visuals.mjs & rvis=$!
           node scripts/ra-fixes.mjs & rafix=$!
           node scripts/ember-log.mjs & ember=$!
+          node scripts/pwa-check.mjs & pwa=$!
           rc=0
           wait $smoke || rc=1
           wait $snaps || rc=1
@@ -107,6 +108,7 @@ jobs:
           wait $rvis || rc=1
           wait $rafix || rc=1
           wait $ember || rc=1
+          wait $pwa || rc=1
           exit $rc
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
       - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)
