@@ -35,9 +35,9 @@ export function ringHTML(cur) {
 export function doorHTML(r, side, met = '') {
   const all = allMet(met) ? ' all' : ''; // TA2c: every word met -> a gilt swatch ring and a glint
   const m = /(\d+) of (\d+)/.exec(met), f = m && +m[2] ? Math.min(1, +m[1] / +m[2]).toFixed(3) : 0; // TA7a: the swatch fills with how much of the room you have met
-  return `<button type="button" class="rm-door rm-${side}" data-room="${r.id}" style="--c:${rgbOf(r)};--ci:${ink(r)}" aria-label="${side === 'prev' ? 'Previous' : 'Next'} room: ${esc(r.name)}, ${esc(r.topic)}" title="${esc(r.name)} (${side === 'prev' ? '[' : ']'})">
+  return `<button type="button" class="rm-door rm-${side}" data-room="${r.id}" style="--c:${rgbOf(r)};--ci:${ink(r)}" title="${esc(r.name)} (${side === 'prev' ? '[' : ']'})"><span class="sr-only">${side === 'prev' ? 'Previous' : 'Next'} room: </span>
  <span class="rm-plate"><b><span class="rm-sw${all}" style="--f:${f}" aria-hidden="true"></span>${esc(r.name)}</b><small>${esc(r.topic)}</small>${met ? `<small class="rm-met${all}">${esc(met)}</small>` : ''}</span>
- <span class="rm-arch" aria-hidden="true"><i class="rm-fire"></i><i class="rm-lamp"></i><i class="rm-boards"></i><i class="rm-leaf"></i><i class="rm-arrow">${side === 'prev' ? '‹' : '›'}</i></span>
+ <span class="rm-arch" aria-hidden="true"><i class="rm-fire"></i><i class="rm-lamp"></i><i class="rm-boards"></i><i class="rm-leaf"></i><i class="rm-arrow" data-arrow="${side === 'prev' ? '‹' : '›'}"></i></span>
  <span class="rm-spill" aria-hidden="true"></span></button>`;
 }
 

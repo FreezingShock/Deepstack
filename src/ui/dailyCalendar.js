@@ -50,7 +50,7 @@ function cell(S,key,today,spreadOf,order=0){
  const rec=(S.daily||{})[key];
  const ink=st==='played'?` style="--ink-tier:${tierInk(rec.best)};--i:${order}"`:'';
  const lbl=`No. ${dailyNumber(key)}, ${key}${st==='played'?`, played, average ${rec.avg}`:st==='today'?', today':', not played'}`;
- return `<button class="cal-d ${st}" data-spread="${spreadOf(key)}" aria-label="${esc(lbl)}"${ink}>${st==='played'?RING:''}${n}${riddleDay(S,key)?'<i class="cal-rid" title="Daily Riddle played that day"></i>':''}</button>`;
+ return `<button class="cal-d ${st}" data-spread="${spreadOf(key)}" aria-label="${n}, ${esc(lbl)}"${ink}>${st==='played'?RING:''}${n}${riddleDay(S,key)?'<i class="cal-rid" title="Daily Riddle played that day"></i>':''}</button>`;
 }
 
 /* The seven days ending today, as a strip: letter, number, and the day's average if played. */

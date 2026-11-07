@@ -53,6 +53,7 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
 .rm-fire{position:absolute;inset:0;background:radial-gradient(85% 55% at 50% 100%,rgba(var(--c),.6),rgba(var(--c),.14) 58%,transparent 84%);opacity:.78;transition:opacity var(--m-base) var(--e-cruise),transform var(--m-smooth) var(--e-settle);transform-origin:50% 100%;animation:rmFlick 3.2s ease-in-out infinite alternate}
 .rm-boards{position:absolute;left:12%;right:12%;bottom:0;height:68%;background:repeating-linear-gradient(90deg,transparent 0 13px,rgba(0,0,0,.28) 13px 15px);border-radius:50% 50% 0 0/18% 18% 0 0;opacity:.55}
 .rm-lamp{position:absolute;top:21%;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:rgb(var(--c));box-shadow:0 0 16px 5px rgba(var(--c),.5)}
+.rm-arrow::before{content:attr(data-arrow)}
 .rm-arrow{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font:600 calc(22px*var(--ts,1))/1 Cinzel,serif;font-style:normal;color:rgb(var(--ci));text-shadow:0 0 10px rgba(var(--c),.9);transition:transform var(--m-base) var(--e-settle)}
 .rm-spill{position:absolute;left:-22%;right:-22%;bottom:-24px;height:38px;background:radial-gradient(50% 50% at 50% 20%,rgba(var(--c),.4),transparent 70%);filter:blur(4px);pointer-events:none}
 .rm-plate{position:absolute;left:50%;bottom:calc(100% + 14px);transform:translateX(-50%);width:max-content;max-width:calc(var(--gap,200px) - 14px);box-sizing:border-box;text-align:center;

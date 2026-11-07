@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Accessibility pass (AX1): on your phone, try the Librarian's Card rows (tap Streak, Deepest, Books), the Settings switches and the Daily page buttons. They should be easy to hit with a thumb and show a ring when you tab to them with a keyboard. Before and after screenshots are in screenshots/a11y/. Tell me if any feels too big or too small.
 - Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
 - Pick a one-tap way into the Ember Log on phones (LC7): A flame tag, B fire, C labelled flame tag (recommended), D streak line under Descend. Screenshots in screenshots/ember-log-onetap/.
 - Slow-network check (perf pass): on your phone, load the site once, then toggle airplane-mode-slow or a weak connection and reload; entering another room and the first answer should no longer stall. Tell me if any room still feels slow and which (numbers in screenshots/performance/results.md).
@@ -76,7 +77,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [~] Tactile hover/press/focus everywhere (#82)
 - [x] Rare tier reveals: particle overhaul (pooled sprite engine, prewarmed, per-tier recipes; this PR)
 - [~] Screen-to-screen transitions
-- [~] Keyboard controls and accessibility
+- [~] Keyboard controls and accessibility (AX1 this PR; AX2 to AX4 open)
 - [~] Judge accuracy on tricky answers
 - [~] Difficulty ramp and word pool
 - [x] Hints and skip (#86)
@@ -2025,3 +2026,19 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### LC7. A one-tap way into the Ember Log on phones
 **Pitch:** On phones the Ember Log is two taps away (Stats, then the link); the attic hatch leaves no room for a streak chip in the rail.
 **Brief:** Goal: one tap from home, e.g. tap the hearth fire (the fire already reflects the streak). Files: `src/ui/hearth.js`, `src/ui/ledgerBooks.js`. **Conflicts:** fireplace layout threads, RA2 rail fit.
+
+### AX1. [x] Accessibility audit: 44px tap targets, focus rings, names, dialog focus (this PR)
+**Pitch:** Every screen a player reaches (home, each menu book, a word in play, a topic room, Settings, Credits) is checked by axe and by a hit test that measures tap areas and focus rings. The findings are fixed and CI keeps them fixed.
+**Brief:** Done. Files: `scripts/a11y.mjs` (CI step), `src/ui/a11yTargets.css`, `src/ui/a11y.js` (book dialogs go inert, focus returns), `src/ui/welcome.js` and `src/ui/ledgerLinks.css` (ledger values are buttons), `src/ui/roomHome.js` (door names), `src/ui/dailyCalendar.js`, `src/ui/pageFlip.js`, `test/a11y-markup.test.js`. **Conflicts:** top bar, home ledger, Daily calendar.
+
+### AX2. Depth tracker on phones: floor buttons at 44px
+**Pitch:** On phones the depth tracker is a rail of floor slivers about 19px wide, too small to tap reliably. It is the one exception left in the audit.
+**Brief:** Goal: a phone layout where each reached floor is a 44px tap target, without covering the word card. Files: `src/ui/browse.css`, `src/ui/tracker.js`. Done when: the exemption for the depth tracker is removed from `scripts/a11y.mjs` and the audit passes. **Conflicts:** run screen, tracker threads.
+
+### AX3. Let the audit reach the result card without the judge
+**Pitch:** The audit skips the result card when the judge does not answer, so the screen a player sees most is the one not checked here.
+**Brief:** Goal: a deterministic answer path for `scripts/a11y.mjs` (a judge fixture, or a longer wait) so the card is always audited. Done when: the audit lists the result card at both widths and never prints "skipped". Files: `scripts/a11y.mjs`. **Conflicts:** judge threads.
+
+### AX4. Screen reader pass on a real phone
+**Pitch:** The audit proves names and sizes, not how a screen reader reads a word, an answer and the result card aloud.
+**Brief:** Goal: VoiceOver on iPhone and TalkBack on Android walk one Descend, one result card and one Unlimited descent; fix what reads wrong. Files: `src/ui/a11y.js`, `src/ui/a11yCues.js`. **Conflicts:** run screen, result card.

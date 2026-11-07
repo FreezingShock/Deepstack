@@ -21,7 +21,7 @@ export function registerLedgerBooks({S,FLOORS,floorStartFt,today=()=>new Date().
  });
  doc.addEventListener('keydown',e=>{
   if(e.key!=='Enter'&&e.key!==' ')return;
-  const row=e.target.closest&&e.target.closest('.lg-row[role="button"],.bg-streak[role="button"]');if(!row)return;
+  const row=e.target.closest&&e.target.closest('.bg-streak[role="button"]');if(!row)return; /* ledger values are real buttons: Enter already clicks them */
   e.preventDefault();row.click();
  });
 }

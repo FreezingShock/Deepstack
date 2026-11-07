@@ -42,7 +42,8 @@ test('ring of lights and side doors name the rooms', async () => {
   const h = ringHTML('math');
   assert.equal((h.match(/class="rm-dot/g) || []).length, ROOMS.length);
   assert.match(h, /rm-dot on" data-room="math"/);
-  assert.match(doorHTML(ROOMS[1], 'prev'), /Previous room: The Chronicle/);
+  // the direction is a screen-reader prefix and the room name is the visible text (see test/a11y-markup.test.js)
+  assert.match(doorHTML(ROOMS[1], 'prev'), /sr-only">Previous room: <\/span>[\s\S]*The Chronicle/);
 });
 
 test('shelf room tabs: books without a room are Reading Room books', async () => {

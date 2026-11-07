@@ -1,11 +1,13 @@
-/* Librarian's Card rows you can open: a pen underline thickens on hover/focus, a press sinks the line. */
-.home .lg-row[role="button"]{pointer-events:auto;cursor:pointer;border-radius:2px;outline:none;-webkit-tap-highlight-color:transparent}
-.home .lg-row[role="button"] dd{transition:border-bottom-width var(--m-quick) var(--e-settle),text-shadow var(--m-quick) var(--e-settle)}
-.home .lg-row[role="button"]:hover dd,.home .lg-row[role="button"]:focus-visible dd{border-bottom-width:3px;text-shadow:0 0 6px color-mix(in srgb,var(--lg-ink) 45%,transparent)}
-.home .lg-row[role="button"]:focus-visible{box-shadow:0 0 0 2px color-mix(in srgb,var(--lg-ink) 70%,transparent)}
-.home .lg-row[role="button"]:active dd{transform:translateY(1px)}
-@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .lg-row[role="button"] dd{transition:none}}
-html[data-motion="reduce"] .home .lg-row[role="button"] dd{transition:none}
+/* Librarian's Card rows you can open: a pen underline thickens on hover/focus, a press sinks the line.
+   The value is a button inside the row's dd, so the keyboard focus ring sits on the button. */
+.home .lg-row.lg-link{pointer-events:auto;cursor:pointer;border-radius:2px;-webkit-tap-highlight-color:transparent}
+.home .lg-row.lg-link dd{transition:border-bottom-width var(--m-quick) var(--e-settle),text-shadow var(--m-quick) var(--e-settle)}
+.home .lg-row.lg-link .lg-val{all:unset;box-sizing:border-box;display:inline-block;cursor:pointer;color:inherit;font:inherit;letter-spacing:inherit;text-shadow:inherit;text-align:right;white-space:inherit;border-radius:2px;transition:text-shadow var(--m-quick) var(--e-settle)}
+.home .lg-row.lg-link:hover dd,.home .lg-row.lg-link dd:has(.lg-val:focus-visible){border-bottom-width:3px;text-shadow:0 0 6px color-mix(in srgb,var(--lg-ink) 45%,transparent)}
+.home .lg-row.lg-link .lg-val:focus-visible{outline:2px solid color-mix(in srgb,var(--lg-ink) 70%,transparent);outline-offset:3px}
+.home .lg-row.lg-link:active dd{transform:translateY(1px)}
+@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .lg-row.lg-link dd{transition:none}}
+html[data-motion="reduce"] .home .lg-row.lg-link dd{transition:none}
 /* The Floors book */
 .bk-spread.menu .flb-toc{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
 .bk-spread.menu .flb-toc li{display:flex;justify-content:space-between;gap:10px;font:500 calc(19px*var(--ts))/1.3 var(--hand);border-bottom:1px dotted var(--rule)}
