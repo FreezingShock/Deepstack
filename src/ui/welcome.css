@@ -45,7 +45,7 @@
 .home .lg-row .lg-k{font-size:calc(11px*var(--ts));letter-spacing:.06em;text-transform:uppercase;color:color-mix(in srgb,var(--c-oak-1a1208) 55%,transparent)}
 .home .lg-row .lg-v{text-shadow:0 0 .5px currentColor;border-bottom:1.5px solid color-mix(in srgb,var(--lg-ink) 45%,transparent)}
 .home .lg-streak{--lg-ink:color-mix(in srgb,var(--c-book-red) 55%,var(--c-brass-65))}
-.home .lg-streak dd{font-size:calc(23px*var(--ts));border-bottom-style:double;border-bottom-width:3px}
+.home .lg-streak .lg-v{font-size:calc(23px*var(--ts));border-bottom-style:double;border-bottom-width:3px}
 .home .lg-deep{--lg-ink:color-mix(in srgb,var(--c-book-blue) 55%,var(--c-book-green))}
 .home .lg-row .lg-k{color:color-mix(in srgb,var(--lg-ink) 50%,var(--c-oak-1a1208) 50%)}
 .home .lg-row .lg-v{border-bottom-color:color-mix(in srgb,var(--lg-ink) 70%,transparent)}

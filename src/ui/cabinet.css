@@ -133,7 +133,7 @@ html[data-motion="reduce"] .home .cc-slot{transform:translate(-50%,-50%) scale(v
 html[data-motion="reduce"] .home .cc-slot:not([data-s="on"]){display:none}
 html[data-motion="reduce"] .home .cc-new{animation:none}
 /* the ledger's big streak numeral keeps a little more line so it never clips in its row on a scaled-up wall */
-.home .ledger .lg-streak dd{line-height:1.3}
+.home .ledger .lg-streak .lg-v{line-height:1.3}
 
 /* ---- live tiers: how many books of each tier you hold; tiers still to be earned sit dim ---- */
 .home .cb-tiers li.miss{opacity:.55}
