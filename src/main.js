@@ -114,6 +114,7 @@ import './ui/particleMask.js';
 import './ui/polish.css';
 import {initCursorLight} from './ui/cursorLight.js';
 import './ui/cursorLight.css';
+import './ui/a11yTargets.css'; // last: the accessibility pass (44px targets, focus rings) wins the cascade
 import './ui/riddle.css';
 import './ui/runScreen.css';
 import './ui/runLedge.css';
