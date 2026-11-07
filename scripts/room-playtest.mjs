@@ -2,7 +2,8 @@
 // walks home, one Daily word and its result card, the Unlimited book and one Unlimited word and its result card, the Rooms
 // book, and on desktop one door to the next room. At each screen it fails on sideways scroll, a vertical scroll on home,
 // a pane that traps its content, clipped or overflowing text (not on the result cards, whose own wording is checked by
-// the answer flow), any console or page error, or a screen that cannot be reached.
+// the answer flow), a card catalogue or Librarian's Card cut by its own frame, any console or page error, or a screen that
+// cannot be reached.
 //   node scripts/room-playtest.mjs              run after `npm run build`
 //   node scripts/room-playtest.mjs --selftest   plant a sideways overflow and prove the check fires (needs a build)
 //   PLAYTEST_OUT=dir node scripts/room-playtest.mjs   also save a screenshot per screen and a JSON report into dir
@@ -60,7 +61,7 @@ async function layoutProblems(page) {
       if (e.tagName === 'TEXTAREA') return false; // a typed answer scrolls by design
       const cs = getComputedStyle(e);
       return /(auto|scroll)/.test(cs.overflowY) && e.scrollHeight > e.clientHeight + 2 && e.getClientRects().length && e.clientHeight > 20;
-    }).map(e => (e.id ? '#' + e.id : e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/)[0] : e.tagName));
+    }).map(e => `${e.id ? '#' + e.id : e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/)[0] : e.tagName} (scrolls by ${e.scrollHeight - e.clientHeight}px)`);
     return {sw: de.scrollWidth > de.clientWidth + 1, sh: de.scrollHeight - de.clientHeight, bars: [...new Set(bars)].slice(0, 8)};
   });
   return {sideways: r.sw, vertical: r.sh > 2 ? r.sh : 0, panes: r.bars, clipped: await page.evaluate(findClipped).catch(e => [{el: 'evaluate', text: '', why: e.message}])};
@@ -85,6 +86,13 @@ async function screen(page, key, name, check, opts = {}) {
   const tag = `${key} ${name}`;
   if (r.sideways) problems.push(`${tag}: page scrolls sideways`);
   if (check === 'home' && r.vertical) problems.push(`${tag}: home scrolls vertically by ${r.vertical}px`);
+  if (check === 'home') {
+    // The card catalogue and Librarian's Card must fit their own frames: a frame whose content is wider than its box is cut.
+    const frames = await page.evaluate(() => [...document.querySelectorAll('.cc-cab, aside.ledger')]
+      .filter(e => e.getClientRects().length && e.scrollWidth > e.clientWidth + 1)
+      .map(e => `${e.tagName.toLowerCase()}${e.className ? '.' + String(e.className).split(' ')[0] : ''} content ${e.scrollWidth}px in a ${e.clientWidth}px frame`));
+    for (const f of frames) problems.push(`${tag}: its edge is cut: ${f}`);
+  }
   if (r.panes.length) problems.push(`${tag}: a pane traps its content: ${r.panes.join(' ')}`);
   if (!opts.resultCard && r.clipped.length) {
     const first = r.clipped.slice(0, 3).map(c => `${c.el} "${(c.text || '').slice(0, 40)}" (${c.why})`).join('; ');
