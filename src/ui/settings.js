@@ -7,7 +7,7 @@ export const SETTINGS_KEY='deepstack.settings.v1';
 export const TEXT_SIZES=['normal','large','xlarge'];
 /* 'system' follows the OS prefers-reduced-motion setting; 'reduce' and 'full' override it. */
 export const MOTION_CHOICES=['system','reduce','full'];
-export const DEFAULTS=Object.freeze({volume:0.8,music:1,effects:1,motion:'system',text:'normal',contrast:false,haptics:true});
+export const DEFAULTS=Object.freeze({volume:0.8,music:1,effects:1,motion:'system',text:'normal',contrast:false,haptics:true,roomSounds:true});
 
 const unit=(x,d)=>{const v=Number(x);return Number.isFinite(v)?Math.min(1,Math.max(0,v)):d;};
 
@@ -21,6 +21,7 @@ export function sanitize(raw){
   text:TEXT_SIZES.includes(r.text)?r.text:DEFAULTS.text,
   contrast:r.contrast===true,
   haptics:r.haptics!==false,
+  roomSounds:r.roomSounds!==false,
  };
 }
 

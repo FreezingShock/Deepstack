@@ -10,6 +10,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
 - Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
+- Room sounds (TR20): with Sound on, Settings now has a Room sounds switch. Tell me if the accents are too loud or too frequent, or if one never plays, and which room. If you want a continuous bed per room instead (option B), say so and I will build it.
 - Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
 - Check the margin note: on a result card, tap the ribbon tab under the meanings ("Margin note"). It should unfold with an etymology, an example and related words. Screenshots in screenshots/word-notes/ (375 and 1280, each topic room).
 - Pick the stamp look and place (TA5): placement A is an Almanac Stamps page, B the room's title line, C the Librarian's Card row (desktop only); look X is a wax seal, Y a bookplate, Z a gilt medallion. Answer like "TA5: A, Z". Desktop and phone screenshots are in screenshots/room-stamps/.
@@ -1851,6 +1852,23 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### TR11. Room-coloured Daily binding and share card
 **Pitch:** The Daily book's dated tab and the share text's block colours take the room's fire colour, so a Chronicle Daily reads crimson and an Observatory one green.
 **Brief:** Goal: `placeDailyTab` and the result share read `--rm-rgb`. Files: `src/ui/dailyBind.css`, `src/app/final.js`. **Conflicts:** Daily binding, results threads.
+
+### [ ] TR21. First-visit hint bubble sits over the Settings book on a fresh profile
+**Pitch:** On a new profile the home first-visit line ("Daily is seven words for everyone.") slides across the open Settings book, over the Music row and the Haptics switch. Seen at 375 and 1280 before TR20 (screenshots/ambient-sound/before-settings-*.png).
+**Brief:** Goal: hide home hints while a book or panel is open (or dock them below the book). Files: the first-visit line code in `src/ui/home.js` or `src/app/chrome.js`. Done when: a test fails if a hint overlaps an open book's controls; 375 and 1280 screenshots. **Conflicts:** TA11 first-visit lines.
+
+### [ ] TR22. Pause the room sounds with the tab, not just skip their voices
+**Pitch:** Today a hidden tab keeps the accent timers ticking and only skips the voices. Cancel the timers on hide, restart them on show, so a background tab costs nothing.
+**Brief:** Goal: `visibilitychange` cancels the room accent timer and restarts it visible. Files: `src/sound/roomTone.js` (refresh on visibility), `src/feel.js` wiring. Done when: a test shows no timer while hidden and one after showing. **Conflicts:** TR20 (same module).
+
+### [x] TR20. Room sounds switch, and no sound until a gesture (this PR)
+**Done:** Settings > Sound has a Room sounds switch (default on; it only matters once Sound is on). Off keeps the rest of Music. `src/sound/roomTone.js` takes `allowed` and `refresh()`: a change glides the accents out or in at once and leaves no timer behind. Low graphics tier (and Data Saver, which sets it) silences the accents, like the score does. `src/sound/gesture.js` (`onFirstGesture`): a returning visitor with Sound left on sees the switch on, and the audio starts at the first press or key, so nothing plays on load. Guard: `test/room-sounds.test.js` (no start on load, switch and tier silence, gesture gate, Settings wiring, gzip budget 4 KB). Smoke note: `scripts/smoke.mjs` fails the same two checks (result card, Daily resume) on untouched main in an offline sandbox, so it is not from this change. Before/after: `screenshots/ambient-sound/`.
+**Note on low power:** web pages cannot read iOS Low Power Mode. The closest signals are the Graphics tier and Data Saver, and those are what silence the accents.
+**Options (changeable):**
+- A (shipped): one sparse accent per topic room, on the Music bus, switch in Settings.
+- B: a continuous bed per room instead (rain on glass in the Chronicle, a hearth crackle in the Scriptorium, wind in the Observatory, water in the Gallery), crossfaded on each walk like the floor ambience. Costs about 2 KB gzip and needs a node cap in CI. Its own PR if nate picks it.
+- C: accents on the Effects bus instead of Music, so they can be heard with Music at 0 (one line in `feel.js`).
+**Brief:** Goal: an optional, quiet ambience per topic room that nate can switch off on its own. Files: `src/sound/roomTone.js`, `src/sound/gesture.js`, `src/feel.js`, `src/main.js`, `src/ui/settingsBook.js`, `src/ui/topbar.js`. Done when: test guard green, switch wired, no sound on load, screenshots at 375 and 1280.
 
 ### [x] TR16. Each topic room has its own sound accents (room ambience PR)
 **Done:** `src/sound/roomTone.js`: Chronicle clock tick, Counting House abacus beads, Observatory pentatonic chime, Scriptorium quill, Gallery low chord, Anatomy heartbeat. Sparse (6 to 20 s gaps), one gain per room, crossfade on every walk (old room out, new room in, about the colour glide). Reading Room silent. Test `test/room-tone.test.js` (10 tests). Look unchanged: the before and after screens in screenshots/room-ambience/ match (small differences in two 1280 shots come from run-to-run noise, not from this change).

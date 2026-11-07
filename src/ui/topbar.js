@@ -89,6 +89,7 @@ export function initTopbar({Sfx,doc=document}={}){
   /* pages repaint on a turn: show the live values, not the ones the book was opened with */
   $('#sSound').setAttribute('aria-checked',sndOn());$('#sContrast').setAttribute('aria-checked',st.contrast);
   $('#sFloorRules').setAttribute('aria-checked',loadEnabled());$('#sHaptics').setAttribute('aria-checked',st.haptics!==false);
+  $('#sRoomSnd').setAttribute('aria-checked',st.roomSounds!==false);
   const pct=v=>Math.round(v*100);
   const showSlider=(id,v)=>{const el=$(id);if(!el)return;el.value=pct(v);el.setAttribute('aria-valuetext',pct(v)+' percent');$('#o'+id.slice(2)).textContent=pct(v)+'%';};
   showSlider('#sVol',st.volume);showSlider('#sMus',st.music);showSlider('#sFx',st.effects);
@@ -99,6 +100,7 @@ export function initTopbar({Sfx,doc=document}={}){
   sw($('#sContrast'),v=>set({contrast:v}));
   sw($('#sFloorRules'),v=>saveEnabled(v));
   sw($('#sHaptics'),v=>set({haptics:v}));
+  sw($('#sRoomSnd'),v=>{set({roomSounds:v});Sfx&&Sfx.roomAccents&&Sfx.roomAccents(v);});
   root.querySelectorAll('[data-motion-choice]').forEach(b=>b.onclick=()=>{set({motion:b.dataset.motionChoice});mark('[data-motion-choice]','motionChoice',st.motion);});
   root.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{Quality.setPref(b.dataset.q);mark('[data-q]','q',Quality.pref());});
   root.querySelectorAll('[data-text]').forEach(b=>b.onclick=()=>{set({text:b.dataset.text});mark('[data-text]','text',st.text);});

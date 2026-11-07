@@ -144,10 +144,12 @@ import {World} from './world/world.js';
 import {cardOpts,closeCard,openCard} from './app/card.js';
 import {run,startDaily,startUnlimited} from './app/run.js';
 import {leaveRun,paintJudge,showHome} from './app/home.js';
+import {onFirstGesture} from './sound/gesture.js';
 
 initCursorLight({reduced:RM});
 backfillFloors(S);
-function applySound(){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);Sfx.set(S.sound);}
+/* On a return visit with Sound left on, the audio waits for the first press or key (sound/gesture.js): nothing plays unprompted. */
+function applySound(boot){const b=$('#bSound');b.setAttribute('aria-pressed',S.sound);if(boot&&S.sound)onFirstGesture(()=>{if(S.sound)Sfx.set(true);});else Sfx.set(S.sound);}
 $('#bSound').onclick=()=>{S.sound=!S.sound;save();applySound();};
 initA11y();
 initRoomRun();
@@ -186,7 +188,7 @@ BOOK_PAGES.bRooms={...roomsBook(S,{go:id=>goRoom(id),today:utc,lexicon:core.lexi
 lazyBooks({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,utc,computeStats,floorAtFt,wordsReady,wordsLoaded:()=>wordsLoaded});
 registerLedgerBooks({S,FLOORS,floorStartFt:core.floorStartFt,today:utc,computeStats});
 const RHnow=()=>clamp(innerHeight*.22,108,172);
-applySound();
+applySound(true);
 initTransitions();
 showHome();
 initInstallHint({S,save});dismissSplash(); // launch screen off once home is drawn; install tag on home

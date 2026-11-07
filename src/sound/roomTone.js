@@ -29,11 +29,14 @@ export function createRoomTone(bus, {
   cancel = id => clearTimeout(id),
   hidden = () => typeof document !== 'undefined' && document.hidden,
   rand = rnd,
+  allowed = () => true, // the Room sounds switch and the quality tier (src/feel.js); false silences the accents at once
 } = {}) {
   let enabled = false, cur = HALL, timer = 0, live = 0, nodes = 0, noise = null;
   const gains = {};
   const mk = fn => { nodes++; return fn(); };
   const target = id => (ACCENTS[id] ? 1 : 0);
+  /** accents play only when sound is on and the room-sound switch allows them */
+  const playing = () => enabled && allowed();
 
   /** one gain per room, created the first time that room is needed */
   function roomGain(id) {
@@ -90,30 +93,35 @@ export function createRoomTone(bus, {
 
   function fire() {
     const kind = ACCENTS[cur], c = bus.ctx();
-    if (!enabled || !kind || !c || hidden() || live >= MAX_VOICES) return;
+    if (!playing() || !kind || !c || hidden() || live >= MAX_VOICES) return;
     VOICES[kind](c, roomGain(cur), c.currentTime);
   }
   /** the next accent of the current room, after a random gap; stopped when sound goes off or the room has none */
   function loop() {
     cancel(timer); timer = 0;
-    const kind = ACCENTS[cur]; if (!enabled || !kind) return;
+    const kind = ACCENTS[cur]; if (!playing() || !kind) return;
     const [a, b] = GAP[kind];
     timer = later(() => { timer = 0; fire(); loop(); }, rand(a, b) * 1000);
+  }
+  /** bring the sound in line with playing(): the current room glides in and its timer runs, or every room glides out
+   *  and no timer is left behind (so a switched-off room never makes a voice) */
+  function sync() {
+    const c = bus.ctx();
+    if (!playing()) { cancel(timer); timer = 0; if (c) for (const id in gains) gains[id].gain.setTargetAtTime(0, c.currentTime, FADE.out); return; }
+    if (!c) return;
+    roomGain(cur).gain.setTargetAtTime(target(cur), c.currentTime, FADE.in); loop();
   }
 
   return {
     /** sound on/off: the current room's accents start or stop; nothing is built until sound is on */
-    enable(v) {
-      enabled = !!v && bus.on(); const c = bus.ctx();
-      if (enabled && c) { roomGain(cur).gain.setTargetAtTime(target(cur), c.currentTime, FADE.in); loop(); return; }
-      cancel(timer); timer = 0;
-      if (c) for (const id in gains) gains[id].gain.setTargetAtTime(0, c.currentTime, FADE.out);
-    },
+    enable(v) { enabled = !!v && bus.on(); sync(); },
+    /** re-read `allowed` (the Room sounds switch, the quality tier): a change glides in or out at once */
+    refresh() { sync(); },
     /** the room the player is in now: crossfades from the old room's accents to the new one's */
     setRoom(id) {
       if (id === cur) return;
       const prev = cur; cur = id;
-      const c = bus.ctx(); if (!enabled || !c) return; // remembered; the bed starts when sound is on
+      const c = bus.ctx(); if (!playing() || !c) return; // remembered; the bed starts when sound is on
       if (gains[prev]) gains[prev].gain.setTargetAtTime(0, c.currentTime, FADE.out); // the old room glides out; its tail rings on
       roomGain(id).gain.setTargetAtTime(target(id), c.currentTime, FADE.in);
       loop();
