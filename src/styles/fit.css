@@ -28,7 +28,7 @@ body:has(.attic-cue-home:not([hidden])) #home .hz-title,body:has(.attic-cue-home
  #home .home .hshelf{flex:none;width:auto;flex-direction:row;gap:6px}
  #home .home .hshelf li{width:min(112px,calc((100vw - 64px)/5))}
  #home .home .hbook{height:24px}
- #home .home .hb-t{font-size:calc(10px*var(--ts,1));letter-spacing:.02em;padding:0;text-overflow:clip}
+ #home .home .hb-t{font-size:calc(10px*var(--ts,1));letter-spacing:.06em;padding:0;text-overflow:clip}
  #home .home .hb-t small{display:none}
 }
 @media(max-height:360px) and (min-aspect-ratio:1/1){#home.center{padding-top:8px;padding-bottom:10px}#home{--hz-g:3px!important}#home .home .hz-title .title{font-size:calc(26px*var(--ts,1));line-height:1}#home .home .hsecs{padding-top:2px;padding-bottom:0}#home .home .hbook{height:22px}#home .home .descend{padding-top:4px;padding-bottom:4px}#home .home .d-t{font-size:calc(17px*var(--ts,1))}#home .home .hz-title .title{font-size:calc(24px*var(--ts,1))}}
@@ -50,7 +50,7 @@ body:has(.attic-cue-home:not([hidden])) #home .hz-title,body:has(.attic-cue-home
  body .bk-spread.menu .chipgroup .chips{gap:0 9px}
  body .bk-spread.menu .chipgroup .fchip{font-size:calc(16px*var(--ts));padding-top:0;padding-bottom:2px;line-height:1.15}
  body .bk-spread.menu .chipgroup .fchip small{font-size:calc(11px*var(--ts))}
- body .bk-spread.menu .chipgroup>.kicker{font-size:calc(9px*var(--ts))}
+ body .bk-spread.menu .chipgroup>.kicker{font-size:calc(10px*var(--ts))}
 }
 /* the Daily ledger on narrow phones: a smaller hand so a page holds what it says before the turn */
 @media(max-width:420px) and (max-height:760px){body .bk-spread.menu .dly{zoom:.74}}

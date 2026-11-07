@@ -573,9 +573,18 @@ function createHearth(home, sfx, mood) {
   const onLeave = () => { px = py = -1e4; root.classList.remove('hearth-hover'); };
   const onDown = e => { if (busy(e)) return; const [x, y] = toLocal(e); if (inFire(x, y)) stoke(); };
   addEventListener('pointermove', onMove, {passive: true}); doc.addEventListener('pointerleave', onLeave); addEventListener('pointerdown', onDown, {passive: true});
-  let pend = 0; const relayout = () => { if (!pend) pend = requestAnimationFrame(() => { pend = 0; layout(); }); };
+  // The solver moves the home's own classes and margins, so its observers hear its own work. A relayout is skipped when the
+  // box sizes are the ones the last layout left behind. When the solver does not settle (a long tagline on a phone makes its
+  // title cycle through the same few heights), a layout that lands on a size it already produced freezes the observers until
+  // a real resize, a quality change or a font load: the Descend button then holds still instead of jittering every frame.
+  let pend = 0, lastSig = null, hist = [], frozen = false;
+  const boxSig = () => [home, home.querySelector('.hz-title'), home.querySelector('.hz-plaque')].map(el => { if (!el) return ''; const r = el.getBoundingClientRect(); return Math.round(r.width) + 'x' + Math.round(r.height); }).join('|');
+  const doLayout = () => { layout(); lastSig = boxSig(); };
+  const thaw = () => { frozen = false; hist = []; };
+  const relayout = () => { if (!pend) pend = requestAnimationFrame(() => { pend = 0; if (frozen || (lastSig !== null && boxSig() === lastSig)) return; doLayout(); if (hist.includes(lastSig)) frozen = true; hist.push(lastSig); if (hist.length > 6) hist.shift(); }); };
+  const relayoutNow = () => { thaw(); if (!pend) pend = requestAnimationFrame(() => { pend = 0; doLayout(); }); }; // quality, fonts and resizes change the paint or the text, so they never skip
   const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(relayout) : null; if (ro) { ro.observe(home); for (const part of home.querySelectorAll('.hz-title, .hz-plaque')) ro.observe(part); } // a room's caption lines change these without resizing #home, and the fit must be solved again (phone rooms lost their bottom spines)
-  addEventListener('resize', relayout);
+  addEventListener('resize', relayoutNow);
   const mo = new MutationObserver(() => { syncLit(); if (!layer.hidden && !G && !home.hidden) relayout(); kick(); });
   mo.observe(home, {attributes: true, attributeFilter: ['hidden', 'class']});
   // the hearth pops now and then (sound palette: fire); stops with the hearth, quiet in a hidden tab
@@ -583,10 +592,10 @@ function createHearth(home, sfx, mood) {
   const crackle = () => { if (dead) return; if (sfx && sfx.cue && !doc.hidden) try { sfx.cue('crackle'); } catch (e) {} crackleT = setTimeout(crackle, rr(900, 4200)); };
   crackleT = setTimeout(crackle, 1500);
   const onVis = () => kick(); doc.addEventListener('visibilitychange', onVis);
-  const unQ = Quality.subscribe(() => relayout());
+  const unQ = Quality.subscribe(() => relayoutNow());
   // fonts and the home's own tiering settle over the first frames: lay out once now and again when fonts are ready
-  layout();
-  if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(() => { if (!dead) relayout(); });
+  doLayout();
+  if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(() => { if (!dead) relayoutNow(); });
 
   return {
     stoke,
@@ -598,7 +607,7 @@ function createHearth(home, sfx, mood) {
     get geom() { return G; },
     destroy() {
       dead = true; clearTimeout(crackleT); cancelAnimationFrame(raf); raf = 0; if (pend) cancelAnimationFrame(pend);
-      if (ro) ro.disconnect(); mo.disconnect(); unQ && unQ(); removeEventListener('resize', relayout); doc.removeEventListener('visibilitychange', onVis);
+      if (ro) ro.disconnect(); mo.disconnect(); unQ && unQ(); removeEventListener('resize', relayoutNow); doc.removeEventListener('visibilitychange', onVis);
       removeEventListener('pointermove', onMove); doc.removeEventListener('pointerleave', onLeave); removeEventListener('pointerdown', onDown); root.classList.remove('hearth-hover');
       undo(); layer.remove(); root.classList.remove('hearth-lit');
     },

@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
 - Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
@@ -2076,6 +2077,15 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On phones the flame tag on the attic hatch (shown when the streak plate is hidden) now says "Ember Log" and opens the book. The Stats link stays as a second way in.
 **Brief:** Goal: the tag is a button in `syncFlame`; a capture-phase click stops the hatch from opening the attic. Files: `src/ui/railFit.js`, `src/ui/ledgerBooks.js`, `railHatch.css`. **Conflicts:** RA2 rail fit, attic hatch threads.
 
+### TY1. [x] (PR pending, copy and typography thread) Depth numbers and text under 10 px
+**Pitch:** Depths past 999 ft read as "1008 ft" and the small caps plates drew at 7 to 9.7 px. Every depth now takes a thousands comma (one helper, `src/core/numFmt.js`), and no text draws under 10 px at the Normal text size.
+**Brief:** Done: `src/core/numFmt.js`, depth labels in the floors, almanac, depth counter, Card, Daily ledger and share text; CSS sizes under 10 px raised to 10 px (`src/ui/*.css`); the scope tag keeps a 10 px floor. CI: `scripts/text-fit.mjs` now fails on text under 10 px or a depth without its comma, and sweeps the Almanac and Rooms too. Tests: `test/number-format.test.js`. Screenshots in screenshots/copy-typography/.
+### TY2. [x] (PR #326 follow-up) Tracking on uppercase home captions
+**Pitch:** The home captions (Daily, Shelf, Unlimited, Rooms, Stats) track at 0.04em, tighter than the 0.16em tier names and the plates around them, so they look cramped.
+**Brief:** Goal: one tracking value for uppercase home captions, checked at 1920 and 375 so the spines still fit. Files: `src/ui/home.css`, `src/ui/homeSpineSub.css`. **Conflicts:** home spine captions (PR #292), homeSpineSub fit.
+### TY3. One range style for floor ranges
+**Pitch:** The depth tracker writes "0–101 ft" with an en dash, while the Floors book and the Card's floor row write "0 to 101 ft". Pick one and use it on every screen.
+**Brief:** Goal: one range helper in `src/core/numFmt.js` used by `src/ui/tracker.js`, `src/ui/floorLeaves.js` and the floor banner. Files: those three files, plus a test in `test/number-format.test.js`. **Conflicts:** Card floor row (TA7), Floors book.
 ## P. Installable app (2026-11-06, the install PR)
 
 ### PWA1. Offline note on the Daily

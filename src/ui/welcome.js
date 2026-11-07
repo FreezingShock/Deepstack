@@ -1,3 +1,4 @@
+import {fmtNum} from '../core/numFmt.js';
 /* The ledger on the home room's right wall (the Librarian's Card). The card catalogue on the left wall lives in cabinet.js. */
 import {bandAt} from '../world/sky.js';
 import {roomTag,allTag} from './scope.js';
@@ -14,5 +15,5 @@ export function ledgerHTML({streak,deepest,books,floor,floorKey='',tierInk='',la
  const row=(k,v,cls,style='',go='',tip='',t='all')=>`<div class="lg-row ${cls}" title="${esc(tip||v)}${room?(t==='room'?' \u00b7 '+esc(room.name)+' only':' \u00b7 all rooms'):''}"${go?` role="button" tabindex="0" ${go==='bFloors'||go==='bStreak'?`id="${go}" `:`data-go="${go}" `}aria-label="${k}: ${esc(v)}. Opens ${go==='bFloors'?'the Floors book':go==='bStreak'?'the Ember Log':'Stats'}"`:''}${style?` style="${style}"`:''}><dt>${k}${tag(t)}</dt><dd>${esc(v)}</dd></div>`;
  const fk=/^[a-z]+$/.test(floorKey)?floorKey:'';
  return `<aside class="ledger" data-lamp="${lamp}" aria-label="Your records"><div class="cc-top" data-prop-slot="stamp"></div><div class="lg-frame"><div class="lg-plate">Librarian’s Card</div>
- <dl class="lg-page">${row('Streak',streak,'lg-streak','','bStreak','','room')}${row('Deepest',deepest+' ft','lg-deep','','bStats')}${row('Books',books,'lg-books',/^#[0-9a-f]{3,8}$/i.test(tierInk)?`--lg-ink:${tierInk}`:'','bStats')}${floor?row('Floor',floor,'lg-floor',fk?`--lg-ink:var(--floor-${fk}-ledge-hi)`:'','bFloors'):''}</dl></div></aside>`;
+ <dl class="lg-page">${row('Streak',streak,'lg-streak','','bStreak','','room')}${row('Deepest',fmtNum(deepest)+' ft','lg-deep','','bStats')}${row('Books',books,'lg-books',/^#[0-9a-f]{3,8}$/i.test(tierInk)?`--lg-ink:${tierInk}`:'','bStats')}${floor?row('Floor',floor,'lg-floor',fk?`--lg-ink:var(--floor-${fk}-ledge-hi)`:'','bFloors'):''}</dl></div></aside>`;
 }
