@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Pick the share picture look (SH2): screenshots in screenshots/share-card/ (card-history-stamp.png, card-history-plain.png, card-history-dots.png; results-history-375.png and -1280.png). A is shipped (date stamp in the room colour, spines). Reply A, B or C. Phone: the picture goes out with Share and the Save image link stays hidden on phones; say if you want it on phones too.
+- To review (RV1): open the Shelf, tap To review, then Try again on a word and write it from memory. Tell me if 46 is the right bar to win a word back, and whether To review should stay inside the Shelf (now) or get its own spine on the home. Screenshots: screenshots/review-shelf/.
 - Phone home in topic rooms (375x667, with a full shelf): the home used to scroll by 25px in the Chronicle, Counting House, Observatory, Scriptorium and Gallery, because their longer taglines froze the fit at a size that overflowed. They now use the compact type and spacing the Reading Room already gets at this height. Changeable: say if you would rather the topic rooms keep the full-size title on phones and drop a book or two instead.
 - Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
 
@@ -2162,6 +2163,27 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Brief:** Goal: a small stamp in the room colour on the slip, placed so no line of the copied text is covered. Files: `src/ui/results.js`, `src/ui/shareCard.css`. Done when: the share-text guard finds no overlap at 1280 and 1920. **Conflicts:** SH3.
 ### SH3. [~] Room colour on the share text
 **Done (display only):** the torn slip on the results page has a top edge in the room's colour (`src/ui/shareCard.css`). The copied text is unchanged; the colour is decoration, not text, so contrast is not affected. Not done: colouring the words themselves (would fail contrast on the parchment slip).
+
+### [x] RV1. To review: words to win back, with a quick re-try (PR #342)
+**Done:** the Shelf book has a Shelf / To review switch. To review lists every word whose best answer is under 46 (skips count as 0) with its real meaning, what you wrote and the ideas you missed. Each word has a re-try judged by the full judge: 46 or better wins it back, and a re-try adds no book and no depth. Guard: `scripts/review-shelf.mjs` in CI and `test/review-shelf.test.js`. Screenshots: screenshots/review-shelf/.
+
+### RV2. Review from the end of a run
+**Serves:** honest answers, and the "look at the books I missed" choice on the ledger.
+**Pitch:** After a descent the result page offers "Words to win back (N)" that opens the To review view, so missed words are one tap away.
+**Brief:** Goal: a link on the result ledger that opens the Shelf book on its To review view when there are words to win back, and stays hidden on a clean run. Files: `src/app/final.js`, `src/ui/results.js`, `src/ui/bookMenus.js` (its `view` state). Done when: a run with a miss shows the link and a clean run does not.
+**Touches:** result card. **Conflicts:** result-card threads.
+
+### RV3. Filter To review by room and rarity
+**Serves:** books that are readable and usable.
+**Pitch:** Once there are many misses, the review list narrows to one room or one rarity, the same way the shelf already does.
+**Brief:** Goal: reuse the shelf's room and rarity chips inside the To review view. Files: `src/ui/reviewPages.js`, `src/ui/bookMenus.js`. Done when: a save with two rooms shows the room chips and the contents follow them.
+**Touches:** shelf. **Conflicts:** shelf-filters threads.
+
+### RV4. Count the words to review on the Shelf spine
+**Serves:** discovery. The feature sits behind the Shelf book today.
+**Pitch:** The Shelf spine on the home says how many words are waiting to review, so nobody has to open the book to find out.
+**Brief:** Goal: badge the Shelf spine with the count from `reviewCount` (`src/core/reviewShelf.js`) in `src/ui/home.js`. Done when: the home snapshot and text-fit checks pass at 375 and 1280 with the badge on.
+**Touches:** home. **Conflicts:** home-layout threads.
 
 ### CF1. [x] Core loop: answer feedback, hurry the reveal, full "You wrote" (this PR)
 **Pitch:** Enter now answers at once: the slip holds, locks and says "Reading your answer", Enter or Space during the card reveal hurries it to the verdict, phone cards drop the Enter hint, and a long answer shows whole.
