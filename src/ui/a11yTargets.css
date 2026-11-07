@@ -3,6 +3,10 @@
    does not change. Imported last in main.js so these rules win the cascade. */
 
 /* Top bar icon buttons keep their drawn size (the bar is tight at 320px); a hit slop makes the tap area 44px */
+/* Top bar icon buttons: a 44px box (the drawn frame is 38px tall and grows to 44px wide, icon centred). Neighbours are 4-7px
+   apart and the bar is packed by font width, so a hit slop cannot reach 44px in every layout (CI's fonts are wider).
+   Not at 320px: the attic hatch sits over the Sound button there (test/ra-fixes). */
+@media (min-width:360px){#bar #bSound,#bar #bSettings,#bar #bCredits,#bar #bKeys{min-width:44px;justify-content:center;box-sizing:border-box}}
 #bar #bSound::after,#bar #bSettings::after,#bar #bCredits::after,#bar #bKeys::after{content:"";position:absolute;inset:-4px;pointer-events:auto}
 
 /* Title plaque (home mark): hit slop above and below the plaque */
