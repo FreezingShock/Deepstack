@@ -6,6 +6,8 @@ import {ROOMS, HALL, roomById, neighbours, rgbOf} from '../core/rooms.js';
 import {allMet} from '../core/roomDepth.js';
 import {loadRoomLists} from '../core/roomPool.js';
 import {typewrite} from './typewrite.js';
+import {roomStep} from './keysCore.js';
+import {attachSwipe} from './swipe.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const DOOR_MIN_W = 1000, DOOR_MIN_GAP = 124;
@@ -58,12 +60,13 @@ function patchDoor(el, r, side) {
 }
 export const typeOnNextMount = () => { typeNext = true; };
 
-let metFn = () => '', dailyFn = () => undefined, doors = null, keysOn = false, resizeOn = false, goFn = null, curRoom = HALL;
+let metFn = () => '', dailyFn = () => undefined, doors = null, keysOn = false, resizeOn = false, swipeOn = false, goFn = null, curRoom = HALL;
 const homeEl = () => document.getElementById('home');
 const homeIdle = () => {
   const h = homeEl();
   return h && !h.hidden && !h.classList.contains('book-opening') && !document.querySelector('.bk-spread') &&
-    (document.getElementById('cardlayer') || {}).hidden !== false && !document.body.classList.contains('browsing');
+    (document.getElementById('cardlayer') || {}).hidden !== false && !document.body.classList.contains('browsing') &&
+    !document.querySelector('.cat-card[data-open]:not([data-open=""])'); // an open card-catalogue drawer keeps the arrow keys
 };
 
 function placeDoors() {
@@ -117,11 +120,22 @@ export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = ()
   if (!keysOn) {
     keysOn = true;
     addEventListener('keydown', e => {
-      if ((e.key !== '[' && e.key !== ']') || e.ctrlKey || e.metaKey || e.altKey || !homeIdle()) return;
+      const step = roomStep(e.key);
+      if (!step || e.ctrlKey || e.metaKey || e.altKey || !homeIdle()) return;
       if (e.target && e.target.closest && e.target.closest('input,textarea,select,[contenteditable]')) return;
       const n = neighbours(curRoom); e.preventDefault();
-      const dr = doors && !doors.hidden && doors.querySelector(e.key === '[' ? '.rm-prev' : '.rm-next'); if (dr) dr.classList.add('go');
-      goFn(e.key === '[' ? n.prev.id : n.next.id, e.key === '[' ? -1 : 1);
+      const dr = doors && !doors.hidden && doors.querySelector(step < 0 ? '.rm-prev' : '.rm-next'); if (dr) dr.classList.add('go');
+      goFn(step < 0 ? n.prev.id : n.next.id, step);
+    });
+  }
+  /* phones: a quick swipe sideways anywhere on the home walks to the neighbouring room (right = previous, left = next).
+     The fire is drawn on the canvas beside #home, so the swipe listens on the document and only acts on the home screen. */
+  if (!swipeOn && home) {
+    swipeOn = true;
+    attachSwipe(document, dir => {
+      if ((dir !== 'left' && dir !== 'right') || !homeIdle()) return;
+      const n = neighbours(curRoom);
+      if (dir === 'left') goFn(n.next.id, 1); else goFn(n.prev.id, -1);
     });
   }
 }

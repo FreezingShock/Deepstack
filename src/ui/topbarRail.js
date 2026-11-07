@@ -28,7 +28,7 @@ export function initTopbarRail({S,Sfx,doc=document}={}){
 
  /* Keys button opens the existing ? page by sending the same key */
  const k=doc.createElement('button');k.type='button';k.id='bKeys';k.className='bbtn';k.setAttribute('aria-label','Keyboard shortcuts');k.dataset.tip='Shortcuts';k.dataset.key='?';
- k.innerHTML=SVG(KEYS);k.onclick=()=>{k.blur();dispatchEvent(new KeyboardEvent('keydown',{key:'?',bubbles:true}));};
+ k.innerHTML=SVG(KEYS);k.onclick=()=>{k.blur();doc.dispatchEvent(new KeyboardEvent('keydown',{key:'?',bubbles:true})); /* on the document: the key sheet listens there, not on the window */};
  nav.insertBefore(k,doc.querySelector('#bCredits')||null);
 
  /* tooltips as small engraved tags */

@@ -9,6 +9,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
 - Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
+- Phone check for the keys and gestures pass (KS1): on your phone, swipe the home screen sideways to change room, and press Android Back with a book or result card open. It should close that, not leave the game. On a computer or phone, the Keys button in the top bar should open the key sheet. Screenshots in screenshots/shortcuts/.
 - Check the margin note: on a result card, tap the ribbon tab under the meanings ("Margin note"). It should unfold with an etymology, an example and related words. Screenshots in screenshots/word-notes/ (375 and 1280, each topic room).
 - Pick the stamp look and place (TA5): placement A is an Almanac Stamps page, B the room's title line, C the Librarian's Card row (desktop only); look X is a wax seal, Y a bookplate, Z a gilt medallion. Answer like "TA5: A, Z". Desktop and phone screenshots are in screenshots/room-stamps/.
 - Settings placement (ST1): A gear in the top bar, B card catalogue drawer (desktop only, the phone has no cabinet), C both (recommended). Mockups in screenshots/settings-overhaul/ (where-A, where-B, where-C at 1280 and 375). Reply with a letter and I will act on it.
@@ -1945,7 +1946,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** There are four ways into a room (a side door on desktop, the Room Ledger, the dots above the fire, keyboard shortcuts) plus reload and leaving mid-run. Each could leave a different residue: a flash of the old fire, the old tagline, a stale Card, the wrong spine badges, the old room after a reload mid-Daily.
 **Brief:** Goal: a frame-capture check (like `scripts/transitions-guard`) that enters every room by every route, at 375 and 1280, and asserts within 150 ms: fire hue, tagline, Card, Daily plaque text and badges all match the new room; reload mid-run returns to the same room and word. Files: new `scripts/room-switch.mjs` (built: door, [ ] keys, ring of lights, Rooms book on a phone, reload and mid-Daily reload; one snapshot per animation frame, fails on a frame where fire, tagline, Daily tag, ring, doors, Rooms badge and Card streak name different rooms, a third room, a blank tagline or a rebuilt fireplace; ~50 s locally, runs beside the other guards). Done when: runs in CI under 30 s. **Conflicts:** W4 guard, V10 keys.
 
-### TA5. Swipe the hearth to change room on phones
+### TA5. [x] Swipe the hearth to change room on phones (KS1: a sideways swipe anywhere on the home walks rooms; PR pending)
 **Pitch:** On a phone the only quick room switch is seven 20 px dots on the mantel, too small to hit, or the Rooms book. The desktop has doors you walk through. A phone should let you swipe the fireplace sideways and the next room's fire slides in, with a small name label.
 **Brief:** Goal: horizontal swipe on the hearth region (and arrow keys) changes room with the same fire hand-off as the door walk; dots get 44 px hit areas and a name toast on press. Files: `src/ui/roomHome.js`, `hearth.js`. Done when: 375x667 frame strip, vertical scroll to the attic still works, reduced motion cross-fades. **Conflicts:** V3, attic scroll (#265).
 
@@ -2146,6 +2147,23 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** The share card's header takes the room's fire colour, so a Chronicle share looks red and a Gallery share purple (text only, no emoji).
 **Brief:** Goal: a colour line via `ROOMS[].rgb` in the share card's header (HTML sheet only). Files: `src/ui/results.js`, `src/ui/dailyShare.css`. **Conflicts:** SH1.
 
+## KS. Keys and phone gestures (follow-ups from the keys and gestures pass)
+
+### KS1. [x] Keys, Back and swipes (PR pending)
+**Pitch:** Shortcuts existed, but the top-bar Keys button never opened the sheet, the sheet left out the room keys, Android Back left the game with a book open, and phones could not swipe between rooms or cards.
+**Brief:** Goal: done. Back closes the book, card or key sheet (`src/ui/backGesture.js`); arrows and `[ ]` walk rooms from home; a sideways swipe on the home walks rooms and on a result card steps books (`src/ui/swipe.js`); the sheet lists the new keys and a phone group. Guards: `scripts/gestures.mjs`, `test/gestures.test.js`. **Conflicts:** keys, room home.
+
+### KS2. Back during a run asks before leaving
+**Pitch:** The one place Back still leaves the site is a run in progress, so one stray swipe loses the run.
+**Brief:** Goal: Back in a run shows a small slip on the desk, "Leave this run?", and keeps the run on Stay; use `pushBack` with a `keep()` check, as the result card does. Files: `src/ui/backGesture.js`, `src/app/run.js`. Done when: a Back press in a run shows the slip, Stay keeps the run, and `scripts/gestures.mjs` covers it. **Conflicts:** run screen threads.
+
+### KS3. Swipe down to close a book on phones
+**Pitch:** On a phone a book closes only by its small close control or Back. A downward swipe on the cover is the natural way to put a book down.
+**Brief:** Goal: a downward drag of about 80 px on the open book's cover closes it; page turns and the close control are unchanged. Files: `src/ui/home.js`, `src/ui/swipe.js`. Done when: a 375 frame strip, horizontal page turns still work, reduced motion closes at once. **Conflicts:** BOOK threads.
+
+### KS4. Key sheet leads with the gestures on touch screens
+**Pitch:** On a phone the sheet is about 2,000 px of mostly keyboard rows, and the swipe rules sit at the bottom.
+**Brief:** Goal: on touch screens list "On a phone" first and put the desktop keys after it. Files: `src/ui/keys.js`, `src/ui/keysCore.js`. Done when: the 375 screenshot shows the gestures above the fold, and a test pins the order per input type. **Conflicts:** V10 (keyboard pass).
 ### CF1. [x] Core loop: answer feedback, hurry the reveal, full "You wrote" (this PR)
 **Pitch:** Enter now answers at once: the slip holds, locks and says "Reading your answer", Enter or Space during the card reveal hurries it to the verdict, phone cards drop the Enter hint, and a long answer shows whole.
 **Done:** `src/app/run.js` (judging state), `src/app/card.js` (hurry), `src/main.js` (a hurried Enter does not also close the card), `src/ui/coreLoop.css`, guard `scripts/core-loop.mjs` (CL1 to CL4), `scripts/smoke.mjs` mid-reveal step updated to the hurry rule. Screenshots in `screenshots/core-loop/`.

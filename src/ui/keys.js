@@ -3,6 +3,7 @@
    touched. */
 import './keys.css';
 import {SHORTCUT_GROUPS,isTyping,actionFor} from './keysCore.js';
+import {pushBack,popBack} from './backGesture.js';
 
 export function initKeys({doc=document}={}){
  const $=s=>doc.querySelector(s);
@@ -29,7 +30,7 @@ export function initKeys({doc=document}={}){
  const modalOpen=()=>panelsOpen()||!!$('.bk-spread');
 
  function closeHelp(){
-  if(!panel)return;panel.remove();panel=null;
+  if(!panel)return;popBack('help');panel.remove();panel=null;
   const o=opener;opener=null;if(o&&o.isConnected)o.focus({preventScroll:true});
  }
  function openHelp(){
@@ -39,6 +40,7 @@ export function initKeys({doc=document}={}){
   const groups=SHORTCUT_GROUPS.map(([h,rows])=>`<h3>${h}</h3><dl>${rows.map(([k,d])=>`<div><dt>${k.split(' / ').map(x=>`<kbd>${x}</kbd>`).join(' or ')}</dt><dd>${d}</dd></div>`).join('')}</dl>`).join('');
   panel.innerHTML=`<div class="khbox"><h2 id="kh-t">Keys of the library</h2><p class="khsub">Press <kbd>?</kbd> any time you are not typing.</p>${groups}<button type="button" class="btn" id="khClose">Close</button></div>`;
   doc.body.appendChild(panel);
+  pushBack('help',{close:()=>closeHelp()});
   panel.addEventListener('click',e=>{if(e.target===panel)closeHelp();});
   panel.querySelector('#khClose').onclick=closeHelp;
   panel.querySelector('#khClose').focus({preventScroll:true});
