@@ -117,5 +117,7 @@ test('the Patrons book is on the home shelf and its page is registered in main.j
   const home = readFileSync(new URL('../src/ui/home.js', import.meta.url), 'utf8');
   const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
   assert.match(home, /\{id:'bPat',stack:0/);
-  assert.match(main, /BOOK_PAGES\.bPat=patronsBook\(/);
+  // the desk loads on first open (a lazy stub, like lazyBooks), so main.js imports it dynamically
+  assert.match(main, /BOOK_PAGES\.bPat=\{load:loadPatrons\}/);
+  assert.match(main, /import\('\.\/ui\/patronsBook\.js'\)/);
 });

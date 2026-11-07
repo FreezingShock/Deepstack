@@ -1,0 +1,39 @@
+/* Unlimited descents: the landing between words (src/ui/descentLanding.js) and the run's carry chips.
+   Own file so the global cascade is untouched; colours come from the theme tokens. */
+.dl-stage{justify-content:center}
+.dl{width:min(100%,760px);margin:auto;color:var(--c-parchment);text-align:center;text-shadow:0 2px 14px var(--c-black-alpha-cc);opacity:0;transform:translateY(8px);transition:opacity var(--m-smooth) var(--e-settle),transform var(--m-smooth) var(--e-settle)}
+.dl.on{opacity:1;transform:none}
+:where(html.rm) .dl{transition:none;transform:none}
+.dl-kicker{margin:0 0 6px;font-size:calc(12px * var(--ts));letter-spacing:.16em;text-transform:uppercase;color:var(--c-parchment-dim)}
+.dl-title{margin:0 0 6px;font-size:clamp(calc(22px * var(--ts)),4vw,calc(32px * var(--ts)));font-weight:600;line-height:1.15}
+.dl-lede{margin:0 auto 10px;max-width:520px;font-size:calc(15px * var(--ts));line-height:1.45;color:var(--c-parchment-dim)}
+.dl-carry{margin:0 0 18px;font-size:calc(13px * var(--ts));color:var(--c-lamplight);min-height:1.2em}
+.dl-doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;text-align:left}
+.dl-door{position:relative;display:flex;flex-direction:column;gap:6px;padding:20px 16px 16px;margin:10px 0 0;border:1px solid var(--c-parchment-alpha-40);border-radius:6px;background:linear-gradient(180deg,#3a2a1c,#26190f);color:var(--c-parchment);font:inherit;cursor:pointer;box-shadow:0 10px 24px var(--c-black-alpha-66);transition:transform var(--m-quick) var(--e-press),border-color var(--m-quick) var(--e-press),box-shadow var(--m-quick) var(--e-press)}
+.dl-door:hover:not(:disabled),.dl-door:focus-visible{transform:translateY(-2px);border-color:var(--c-lamplight);box-shadow:0 14px 28px var(--c-black-alpha-88)}
+.dl-door:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:3px}
+.dl-door:disabled,.dl-door.off{cursor:not-allowed;opacity:.5}
+.dl-key{position:absolute;top:-12px;left:14px;width:26px;height:26px;border-radius:50%;background:var(--c-lamplight);color:var(--c-black);font-weight:600;font-size:calc(14px * var(--ts));display:grid;place-items:center}
+.dl-name{font-size:calc(19px * var(--ts));font-weight:600;line-height:1.2;overflow-wrap:anywhere}
+.dl-fx{font-size:calc(13px * var(--ts));line-height:1.35;color:var(--c-lamplight);overflow-wrap:anywhere}
+.dl-line{font-size:calc(14px * var(--ts));line-height:1.45;color:var(--c-parchment-dim);overflow-wrap:anywhere}
+/* carry chips under a word (drawn from descentLanding.js, so this sheet loads with the landing) */
+.dc-carry{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0 0 10px}
+.dc-chip{font-size:calc(11px * var(--ts));font-weight:600;line-height:1.2;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border:1px solid var(--c-parchment-alpha-40);border-radius:2px;background:var(--c-black-alpha-66);color:var(--c-parchment);max-width:100%;overflow-wrap:anywhere}
+.dc-chip.relic{border-color:var(--c-lamplight);color:var(--c-lamplight)}
+.dc-chip.spare{color:var(--c-parchment-dim)}
+.dc-chip.path{border-style:dashed}
+/* phone: three short rows that fit a 375x667 stage without scrolling; the lede is dropped */
+@media (max-width:640px){
+ .dl-kicker{font-size:calc(11px * var(--ts));margin-bottom:2px}
+ .dl-title{font-size:calc(21px * var(--ts));margin-bottom:2px}
+ .dl-lede{display:none}
+ .dl-carry{font-size:calc(12px * var(--ts));margin:0 0 8px}
+ .dl-doors{grid-template-columns:minmax(0,1fr);gap:8px}
+ .dl-door{display:grid;grid-template-columns:minmax(0,1fr);gap:1px;padding:10px 12px 9px 44px;margin-top:8px;text-align:left}
+ .dl-key{top:50%;left:11px;transform:translateY(-50%);width:23px;height:23px;font-size:calc(12px * var(--ts))}
+ .dl-name{font-size:calc(16px * var(--ts))}
+ .dl-fx{font-size:calc(12px * var(--ts))}
+ .dl-line{font-size:calc(12.5px * var(--ts));line-height:1.3}
+}
+.dl-final{margin:14px auto 0;max-width:520px;font-size:calc(14px * var(--ts));line-height:1.45;color:var(--c-parchment-dim);text-align:center}

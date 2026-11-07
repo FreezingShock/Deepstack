@@ -139,7 +139,6 @@ import './ui/shelfGroups.css';
 import './ui/phonePolish.css';
 import './ui/dailyBind.css';
 import {deferAfterPaint} from './core/boot.js';
-import {patronsBook} from './ui/patronsBook.js';
 import {currentRoom} from './core/roomStore.js';
 import {$,$$,RM,clamp} from './app/util.js';
 import {FLOORS,FT,S,TIERS,WORDS,computeStats,dailyWords,floorAtFt,floorStartFt,hashStr,save,utc,wordsLoaded,wordsReady} from './app/state.js';
@@ -188,7 +187,14 @@ addEventListener('keydown',e=>{
 /* ---------- shelf, sets and stats: pages of the menu books (src/ui/bookMenus.js, home.js BOOK_PAGES) ---------- */
 const bookOpenCard=()=>!$('#cardlayer').hidden;
 BOOK_PAGES.bRooms={...roomsBook(S,{go:id=>goRoom(id),today:utc,lexicon:core.lexicon}),keepOnEsc:bookOpenCard};
-BOOK_PAGES.bPat=patronsBook({S,save,utc,dailyNo:()=>Math.max(1,core.dailyNumber(utc())),pool:()=>WORDS,room:()=>currentRoom(S)}); // the Patrons desk (src/ui/patronsBook.js)
+// The Patrons desk (src/ui/patronsBook.js) loads when its book is first opened, or after first paint, so the first screen ships without it. Same stub pattern as lazyBooks().
+let patronsP=null;
+const loadPatrons=()=>patronsP||(patronsP=import('./ui/patronsBook.js').then(m=>{
+ const real=m.patronsBook({S,save,utc,dailyNo:()=>Math.max(1,core.dailyNumber(utc())),pool:()=>WORDS,room:()=>currentRoom(S)});
+ delete BOOK_PAGES.bPat.load;Object.assign(BOOK_PAGES.bPat,real);return true;
+}).catch(e=>{patronsP=null;throw e;}));
+BOOK_PAGES.bPat={load:loadPatrons};
+deferAfterPaint(()=>loadPatrons().catch(()=>{}),3000);
 lazyBooks({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,utc,computeStats,floorAtFt,wordsReady,wordsLoaded:()=>wordsLoaded,save});
 registerLedgerBooks({S,FLOORS,floorStartFt:core.floorStartFt,today:utc,computeStats});
 const RHnow=()=>clamp(innerHeight*.22,108,172);
