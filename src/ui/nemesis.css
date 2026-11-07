@@ -3,7 +3,7 @@
    stamped seal; reduced motion (html.rm) shows it still, with no landing animation. Colours are tokens only (no raw hex). */
 .bk-spread.menu .nm{position:relative;margin:10px 0 2px;padding:8px 12px 10px;background:var(--c-parchment-e9d8b0);color:var(--ink);
   border:1.5px solid var(--c-book-red-dk,var(--bk));border-radius:3px;box-shadow:0 1px 0 var(--c-ink-alpha-22),0 6px 14px -10px var(--c-ink-alpha-80);
-  min-width:0;overflow-wrap:anywhere;transform:rotate(-.4deg);z-index:2;isolation:isolate}
+  min-width:0;overflow-wrap:anywhere;transform:rotate(-.4deg);z-index:10;isolation:isolate}
 .bk-spread.menu .nm::before{content:"";position:absolute;top:-6px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;
   background:radial-gradient(circle at 35% 35%,var(--c-book-red) 0 40%,var(--c-book-red-dk,var(--bk)) 41%);box-shadow:0 1px 2px var(--c-ink-alpha-80)}
 .bk-spread.menu .nm h2{margin:0}
