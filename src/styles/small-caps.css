@@ -1,0 +1,4 @@
+/* Small caps floor (copy-typography follow-up): uppercase kickers and inked sub-heads keep air between their letters.
+   Appended last so it sits after the page rules; .bk-spread.menu .kicker keeps its own .16em. */
+.kicker{letter-spacing:.14em}
+.bk-spread.menu h2.inked{letter-spacing:.08em}

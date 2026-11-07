@@ -4,6 +4,8 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
+
+- Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
 - Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
@@ -1378,6 +1380,22 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The first result card shows "0/100" and a tier name with no words for either. One pencil line on the first card only, using the same once-only flag in `S.seen`.
 **Brief:** Goal: one note near the score, under 34 characters. Files: `src/app/card.js` (fit-checked, so check the card at 375 and 1280). Done when: the card fit tests still pass.
 
+### G14. [x] Onboarding notes as a highlight and a themed panel (this PR)
+**Serves:** easy to understand, less intrusive, more on theme, more variety.
+**Pitch:** The first-run notes were pencil lines on ruled paper. Now each note lights the thing it is about (a lamp-gold halo) and a small panel beside it: a brass plate, a pinned card, a ribbon tag or a wax seal. They fade by themselves after nine seconds and never take a tap.
+**Brief:** Goal: same copy, same once-only flags, new look. Files: `src/ui/firstNotes.js`, `src/ui/firstNotes.css`. Done when: each note shows once on a real run or home screen at 375 and 1280, and reduced motion shows it with no fade.
+**Touches:** RUN, HOME. **Conflicts:** G12 (phone run sheet), G13 (result card note).
+
+### G15. Hint text in a panel too, not the ruled strip
+**Pitch:** The hint text still sits on the ruled strip under the answer slip. With two or more hints at 320x568 and 375x667 the strip is taller than the stage, so the slip is squeezed (see G12). A hint could light the Hint button and show as a ribbon tag beside it, like the G14 notes.
+**Brief:** Goal: hints out of the lined strip, one panel each, newest only on phones. Files: `src/ui/hintSlips.js`, `src/ui/hintSlips.css`. Done when: the slip keeps its height with two hints at 320x568.
+**Touches:** RUN. **Conflicts:** G12, run screen thread.
+
+### G16. First result card note in the same panel objects
+**Pitch:** G13 proposes a pencil line on the first result card. Use the G14 pinned card for it so the first-run notes stay one look.
+**Brief:** Goal: one panel near the score, once only. Files: `src/app/card.js` (fit-checked at 375 and 1280). Done when: the card fit tests still pass.
+**Touches:** RESULT. **Conflicts:** G13.
+
 ### G2. A score that explains itself
 **Serves:** scoring clarity, rarity is the hero, words fully readable, lenient judging.
 **Pitch:** The card says "Pamphlet, 0/100" and a vague line like "Nothing here points at the meaning yet", but not why. Show it: in "You wrote" underline the words the judge counted, and add one quiet handwritten caption saying what a stronger answer would have named. A long answer must never be cut with an ellipsis ("somethin…" today).
@@ -2077,6 +2095,15 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On phones the flame tag on the attic hatch (shown when the streak plate is hidden) now says "Ember Log" and opens the book. The Stats link stays as a second way in.
 **Brief:** Goal: the tag is a button in `syncFlame`; a capture-phase click stops the hatch from opening the attic. Files: `src/ui/railFit.js`, `src/ui/ledgerBooks.js`, `railHatch.css`. **Conflicts:** RA2 rail fit, attic hatch threads.
 
+### TY1. [x] (PR pending, copy and typography thread) Depth numbers and text under 10 px
+**Pitch:** Depths past 999 ft read as "1008 ft" and the small caps plates drew at 7 to 9.7 px. Every depth now takes a thousands comma (one helper, `src/core/numFmt.js`), and no text draws under 10 px at the Normal text size.
+**Brief:** Done: `src/core/numFmt.js`, depth labels in the floors, almanac, depth counter, Card, Daily ledger and share text; CSS sizes under 10 px raised to 10 px (`src/ui/*.css`); the scope tag keeps a 10 px floor. CI: `scripts/text-fit.mjs` now fails on text under 10 px or a depth without its comma, and sweeps the Almanac and Rooms too. Tests: `test/number-format.test.js`. Screenshots in screenshots/copy-typography/.
+### TY2. [x] (PR #326 follow-up) Tracking on uppercase home captions
+**Pitch:** The home captions (Daily, Shelf, Unlimited, Rooms, Stats) track at 0.04em, tighter than the 0.16em tier names and the plates around them, so they look cramped.
+**Brief:** Goal: one tracking value for uppercase home captions, checked at 1920 and 375 so the spines still fit. Files: `src/ui/home.css`, `src/ui/homeSpineSub.css`. **Conflicts:** home spine captions (PR #292), homeSpineSub fit.
+### TY3. One range style for floor ranges
+**Pitch:** The depth tracker writes "0–101 ft" with an en dash, while the Floors book and the Card's floor row write "0 to 101 ft". Pick one and use it on every screen.
+**Brief:** Goal: one range helper in `src/core/numFmt.js` used by `src/ui/tracker.js`, `src/ui/floorLeaves.js` and the floor banner. Files: those three files, plus a test in `test/number-format.test.js`. **Conflicts:** Card floor row (TA7), Floors book.
 ## P. Installable app (2026-11-06, the install PR)
 
 ### PWA1. Offline note on the Daily
@@ -2149,3 +2176,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Every room writes its verdict with the same pen. The topic rooms each have their own accent, so their verdict could sound like it.
 **Brief:** Goal: each topic room gives its verdict strokes a pitch from its room tone (the Science bell, the Art brush). Files: `src/sound/verdictFeel.js`, `src/sound/roomTone.js`. Done when: the room id is passed through `landVerdict`, the Hall keeps the plain pen, and a test pins each room's pitch inside the room's tone range.
 **Touches:** room tone, verdict feel. **Conflicts:** room tone threads.
+
+### G17. [x] Phone hints: newest in the strip, the rest one tap away (changeable)
+**Serves:** easy to understand, hints you can re-read, nothing squeezes the answer slip.
+**Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
+**Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
+**Touches:** RUN. **Conflicts:** G12, G15.

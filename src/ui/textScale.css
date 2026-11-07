@@ -5,11 +5,11 @@
 .home .descend,.home .cat-card,.home .ledger,.home .hsecs,.home .mantel,.home .hz-plaque .daily-tag{--ts:var(--tsf)}
 html:not([data-text="normal"]) .descend{min-width:0;max-width:100%;box-sizing:border-box;gap:12px;padding:12px 28px 12px 24px}
 html:not([data-text="normal"]) .d-t{letter-spacing:.2em;padding-left:.2em}
-html:not([data-text="normal"]) .hb-t{letter-spacing:.04em}
+html:not([data-text="normal"]) .hb-t{letter-spacing:.06em}
 html:not([data-text="normal"]) .hb-t small{display:none}
 /* the due stamp hangs off the board's corner instead of lying across the Floor row */
 .home .ledger .dp-mark{right:-6px;bottom:-14px}
-@media(max-width:700px){html:not([data-text="normal"]) .hb-t{font-size:calc(12px*var(--ts));padding:2px 0;letter-spacing:.02em}}
+@media(max-width:700px){html:not([data-text="normal"]) .hb-t{font-size:calc(12px*var(--ts));padding:2px 0;letter-spacing:.06em}}
 /* phones: the answer slip gives back the height the larger hint/skip row and word need */
 @media(max-width:640px){html:not([data-text="normal"]) #stage.center .slip textarea{height:clamp(64px,calc(100vh - 545px - 220px*(var(--ts) - 1)),150px)}}
 html:not([data-text="normal"]) .tpseg{flex-wrap:wrap;row-gap:6px}

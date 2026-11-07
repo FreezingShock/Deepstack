@@ -1,3 +1,4 @@
+import {fmtNum} from '../core/numFmt.js';
 import {dayKey as coreDayKey} from '../core/stats.js';
 /* Shelf bays: the Shelf book is a small library section. Books are shelved in labelled bays (by rarity, floor found,
    set, Daily date, or all together); each bay gets a brass label with a count and a second line of detail.
@@ -22,7 +23,7 @@ export function bayGroups(list,mode,ctx={}){
   const b=x.b;
   if(mode==='tier')put('t'+b.tier,()=>({label:(TIERS[b.tier]||{}).name||'Tier '+b.tier,sub:(TIERS[b.tier]||{}).rar||'',ord:-b.tier}),x);
   else if(mode==='floor'){const id=floorIdOf(b),f=FLOORS[id];
-   if(f)put('f'+id,()=>({label:f.name,sub:floorStartFt(f)+' ft and below',ord:id}),x);} // no floor: it waits in the attic
+   if(f)put('f'+id,()=>({label:f.name,sub:fmtNum(floorStartFt(f))+' ft and below',ord:id}),x);} // no floor: it waits in the attic
   else if(mode==='set'){const s=setOfWord(b.w);
    put(s?s.id:'loose',()=>s?{label:s.name,sub:s.blurb,ord:sets.indexOf(s)}:{label:'Loose volumes',sub:'Not part of a set',ord:99},x);}
   else{const k=dayKey(b)||'undated';

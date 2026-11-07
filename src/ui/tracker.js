@@ -1,3 +1,4 @@
+import {fmtNum} from '../core/numFmt.js';
 // Depth tracker: a side rail with one segment per themed floor, its depth range, and where you are.
 // railFraction is pure so it can be tested; buildTracker only touches the DOM it is given.
 export const TAIL_FT = 300; // how much of the open-ended last floor the rail represents
@@ -20,7 +21,7 @@ export function buildTracker(doc, floors, startOf, onJump) {
   nav.id = 'tracker';
   nav.setAttribute('aria-label', 'Depth tracker');
   nav.hidden = true;
-  const range = (f, i) => i + 1 < floors.length ? `${starts[i]}–${starts[i + 1]} ft` : `${starts[i]} ft and below`;
+  const range = (f, i) => i + 1 < floors.length ? `${fmtNum(starts[i])}–${fmtNum(starts[i + 1])} ft` : `${fmtNum(starts[i])} ft and below`;
   nav.innerHTML = `<ol>${floors.map((f, i) =>
     `<li data-i="${i}" style="--fc:rgb(${f.lamp.join(',')})"><button type="button" tabindex="-1"><b>${esc(f.name)}</b><small>${range(f, i)}</small></button></li>`).join('')}</ol>` +
     `<div class="rail" aria-hidden="true">${floors.map(f => `<i class="seg" style="--fc:rgb(${f.lamp.join(',')})"></i>`).join('')}<i class="view"></i><i class="you"><b></b></i></div>`;
@@ -54,7 +55,7 @@ export function buildTracker(doc, floors, startOf, onJump) {
       btns[i].disabled = !reached;
       btns[i].tabIndex = reached ? 0 : -1;
       if (i === cur) btns[i].setAttribute('aria-current', 'location'); else btns[i].removeAttribute('aria-current');
-      btns[i].title = reached ? `Look at ${floors[i].name}` : `Reach ${starts[i]} ft to unlock`;
+      btns[i].title = reached ? `Look at ${floors[i].name}` : `Reach ${fmtNum(starts[i])} ft to unlock`;
     });
   }
   return {el: nav, update};
