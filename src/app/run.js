@@ -5,6 +5,8 @@ import {comboNeeds,comboLabel,comboMultiplier,applyCombo} from '../core/combo.js
 import {recordBook as recordSetBook} from '../sets/sets.js';
 import {recordMet,recordMastery} from '../core/roomDepth.js';
 import {recordStamps} from '../core/stamps.js';
+import {dayWord,recordWeekly,weekStartOf,weekdayIndex,weeklyWords,dayName,dayRecord} from '../core/weekly.js';
+import {fullPool} from '../core/roomPool.js';
 import {toastStamps} from '../ui/stampToast.js';
 import '../ui/stamps.css';
 import {toastSetsDone} from '../sets/ui.js';
@@ -64,12 +66,30 @@ export async function startUnlimited(replace=false){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
+/* ---------- weekly run: today's themed word (one word a day, core/weekly.js). Strict judge, like the Daily; kept in S.weekly. ---------- */
+export async function startWeekly(){
+ await wordsReady;
+ if(modelStatus().state==='loading')await whenReady(8000);
+ const day=utc(),w=dayWord(day,fullPool()),{theme}=weeklyWords(weekStartOf(day),fullPool());
+ if(!w)return;
+ prepareWords([w]).catch(()=>{});
+ World.reset();World.setShelf([]);
+ run={mode:'weekly',practice:false,day,wk:weekStartOf(day),theme,wlabel:`${theme.name} \u00b7 ${dayName(day)}`,i:0,words:[w],results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true};
+ ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
+ showWord();
+}
+/* Today's weekly result, read back from S.weekly for the Daily book's button (null until today's word is answered). */
+export function weeklyFinal(){
+ const day=utc(),rec=dayRecord(S,day);if(!rec)return null;
+ const {theme}=weeklyWords(weekStartOf(day),fullPool());
+ return {books:[rec],avg:rec.score,best:rec.tier,depth:rec.ft||0,floor:rec.fl,practice:false,mode:'weekly',weekKey:weekStartOf(day),themeKey:theme.key,themeName:theme.name,dayIdx:weekdayIndex(day)};
+}
 export function pipsHTML(){return runLedgeHTML(run.words,run.results,run.i,TIERS);}
 export function showWord(){
  if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();const fr_=ruleFor(floorAtRow(World.restRow).key,run,loadEnabled());run.rule=fr_;run.whispered=false;run.limit=limitFor(fr_)+(run.dsc?limitBonusMs(run.dsc):0);
  const el=ui.stage;el.hidden=false;el.className='center';
  el.innerHTML=`<div class="candle" id="candle" aria-hidden="true"><div class="wax" id="wax"><i class="flame"></i><i class="wick"></i></div><div class="plate"></div></div><div class="sheet">${pipsHTML()}
-  <div class="wlabel">Word ${run.i+1} of ${run.words.length}</div>${fr_?`<div class="floorrule">${esc(fr_.line)}</div>`:''}${run.dsc?carryChipsHTML(run.dsc):''}${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
+  <div class="wlabel">${run.mode==='weekly'?esc(run.wlabel):`Word ${run.i+1} of ${run.words.length}`}</div>${fr_?`<div class="floorrule">${esc(fr_.line)}</div>`:''}${run.dsc?carryChipsHTML(run.dsc):''}${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
   <div class="word${fr_&&fr_.smear?' smeared':''}" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
   <div class="pos">${esc(w.pos)}</div><div class="clock" id="clock" aria-hidden="true">${Math.floor(run.limit/60000)}:${String(run.limit/1000%60).padStart(2,'0')}</div>
   <div class="timer" id="tbar"><i id="tfill"></i></div>
@@ -101,7 +121,7 @@ export async function submit(skipped){
  /* the press answers at once: the slip holds still, locks, and says it is being read (the judge can take a moment, or the librarian can still be arriving) */
  const fld0=$('#fld'),ta0=$('#ans');
  if(!skipped&&fld0&&ta0){ta0.readOnly=true;fld0.classList.add('judging');fld0.insertAdjacentHTML('beforeend','<div class="hslip reading" id="reading" role="status">Reading your answer…</div>');} // inside the slip, not the hint strip: a line added below would squeeze the slip
- const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w,run.practice||run.mode?undefined:{strict:true,onWait:()=>{const rd=$('#reading');if(rd){rd.textContent='The librarian is still arriving. Your answer is safe and will be read in a moment.';return;}const h=$('#hl');if(h)h.insertAdjacentHTML('beforeend','<div class="hslip" style="--tilt:-.6deg">The librarian is still arriving. Your answer is safe and will be read in a moment.</div>');}});
+ const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w,run.practice||run.mode==='unlimited'?undefined:{strict:true,onWait:()=>{const rd=$('#reading');if(rd){rd.textContent='The librarian is still arriving. Your answer is safe and will be read in a moment.';return;}const h=$('#hl');if(h)h.insertAdjacentHTML('beforeend','<div class="hslip" style="--tilt:-.6deg">The librarian is still arriving. Your answer is safe and will be read in a moment.</div>');}});
  $('#reading')?.remove();$('#fld')?.classList.remove('judging');
  const t=tierOf(j.score);
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
@@ -120,8 +140,8 @@ export async function submit(skipped){
  World.fillNiche(nicheRow,{w:w.w,pos:w.pos,answer:text,score:j.score,tier:t,ft:book.ft,verdict:book.verdict,skipped},run.results.slice());
  if(cb.chain)setTimeout(()=>Sfx.link(cb.chain),120);else if(cb.broke)setTimeout(()=>Sfx.clunk(),200); // the ledge chain gains a link or lets go
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
- if(!run.practice){recordMet(S,book);recordMastery(S,utc());S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}toastStamps(recordStamps(S,utc()));save();}
- if(!run.practice&&run.mode!=='unlimited'){S.dailyRun=snapshotRun(run);save();}
+ if(!run.practice){if(run.mode==='weekly')recordWeekly(S,run.day,book);recordMet(S,book);recordMastery(S,utc());S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}toastStamps(recordStamps(S,utc()));save();}
+ if(!run.practice&&run.mode!=='unlimited'&&run.mode!=='weekly'){S.dailyRun=snapshotRun(run);save();}
  const depth1=Math.round((World.restRow+rows)*FT);
  openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1||!!(run.dsc&&run.dsc.ended),onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length||!!(run.dsc&&run.dsc.ended);const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last){finishRun();return;}if(run.dsc&&isLanding(run.i)){run.dsc=await landingPick(ui.stage,run.dsc,{nextWord:run.i+1,of:run.words.length});if(run.dsc.freeExtra>0&&!run.freeHint){run.freeHint=true;run.dsc.freeExtra--;}}if(run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id),undefined,undefined,run.dsc?run.dsc.bump:0);prepareWords([run.words[run.i]]).catch(()=>{});}showWord();}});
 }
@@ -130,7 +150,8 @@ export function finishRun(){
  const r=run;const books=r.results;const avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length);const best=Math.max(...books.map(b=>b.tier));
  const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,isDaily=r.mode!=='unlimited',depth=isDaily?worldDepth:worldDepth+setBonus; // Daily depth is words only: set bonuses depend on each player's collection, so they stay out of the shared score
  const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
- if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});if(r.dsc)d.descent=descentSummary(r.dsc,r.words.length);}
+  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});if(r.dsc)d.descent=descentSummary(r.dsc,r.words.length);}
+  else if(r.mode==='weekly'){Object.assign(d,{mode:'weekly',weekKey:r.wk,themeKey:r.theme.key,themeName:r.theme.name,dayIdx:weekdayIndex(r.day)});toastStamps(recordStamps(S,utc()));save();}
  else if(!r.practice){delete S.dailyRun;if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);toastStamps(recordStamps(S,utc()));save();}
  showFinal(d,false);
 }

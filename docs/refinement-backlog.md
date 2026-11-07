@@ -4,6 +4,9 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Unlimited roguelike descent (descent thread, PR pending): play one Unlimited run on your phone and a desktop. Landings come before words 3, 5 and 7 with three doors: Hard room, Rest alcove, Curio shop. Tell me if a failed word (skip or Pamphlet) ends the run too harshly, and whether the three relics read clearly. Options A/B/C are in screenshots/descent/.
+
+- To review (RV1): open the Shelf, tap To review, then Try again on a word and write it from memory. Tell me if 46 is the right bar to win a word back, and whether To review should stay inside the Shelf (now) or get its own spine on the home. Screenshots: screenshots/review-shelf/.
+- Phone home in topic rooms (375x667, with a full shelf): the home used to scroll by 25px in the Chronicle, Counting House, Observatory, Scriptorium and Gallery, because their longer taglines froze the fit at a size that overflowed. They now use the compact type and spacing the Reading Room already gets at this height. Changeable: say if you would rather the topic rooms keep the full-size title on phones and drop a book or two instead.
 - Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
 
 - Patrons (PT1): open the Patrons book on the home shelf (bottle-green spine) in any topic room, answer the patron's request, and tell me if the phone flow feels right (on a phone the answer slip is on page two, so you turn the page to answer). Screenshots: screenshots/patrons/.
@@ -2150,6 +2153,27 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** The share card's header takes the room's fire colour, so a Chronicle share looks red and a Gallery share purple (text only, no emoji).
 **Brief:** Goal: a colour line via `ROOMS[].rgb` in the share card's header (HTML sheet only). Files: `src/ui/results.js`, `src/ui/dailyShare.css`. **Conflicts:** SH1.
 
+### [x] RV1. To review: words to win back, with a quick re-try (PR #342)
+**Done:** the Shelf book has a Shelf / To review switch. To review lists every word whose best answer is under 46 (skips count as 0) with its real meaning, what you wrote and the ideas you missed. Each word has a re-try judged by the full judge: 46 or better wins it back, and a re-try adds no book and no depth. Guard: `scripts/review-shelf.mjs` in CI and `test/review-shelf.test.js`. Screenshots: screenshots/review-shelf/.
+
+### RV2. Review from the end of a run
+**Serves:** honest answers, and the "look at the books I missed" choice on the ledger.
+**Pitch:** After a descent the result page offers "Words to win back (N)" that opens the To review view, so missed words are one tap away.
+**Brief:** Goal: a link on the result ledger that opens the Shelf book on its To review view when there are words to win back, and stays hidden on a clean run. Files: `src/app/final.js`, `src/ui/results.js`, `src/ui/bookMenus.js` (its `view` state). Done when: a run with a miss shows the link and a clean run does not.
+**Touches:** result card. **Conflicts:** result-card threads.
+
+### RV3. Filter To review by room and rarity
+**Serves:** books that are readable and usable.
+**Pitch:** Once there are many misses, the review list narrows to one room or one rarity, the same way the shelf already does.
+**Brief:** Goal: reuse the shelf's room and rarity chips inside the To review view. Files: `src/ui/reviewPages.js`, `src/ui/bookMenus.js`. Done when: a save with two rooms shows the room chips and the contents follow them.
+**Touches:** shelf. **Conflicts:** shelf-filters threads.
+
+### RV4. Count the words to review on the Shelf spine
+**Serves:** discovery. The feature sits behind the Shelf book today.
+**Pitch:** The Shelf spine on the home says how many words are waiting to review, so nobody has to open the book to find out.
+**Brief:** Goal: badge the Shelf spine with the count from `reviewCount` (`src/core/reviewShelf.js`) in `src/ui/home.js`. Done when: the home snapshot and text-fit checks pass at 375 and 1280 with the badge on.
+**Touches:** home. **Conflicts:** home-layout threads.
+
 ### CF1. [x] Core loop: answer feedback, hurry the reveal, full "You wrote" (this PR)
 **Pitch:** Enter now answers at once: the slip holds, locks and says "Reading your answer", Enter or Space during the card reveal hurries it to the verdict, phone cards drop the Enter hint, and a long answer shows whole.
 **Done:** `src/app/run.js` (judging state), `src/app/card.js` (hurry), `src/main.js` (a hurried Enter does not also close the card), `src/ui/coreLoop.css`, guard `scripts/core-loop.mjs` (CL1 to CL4), `scripts/smoke.mjs` mid-reveal step updated to the hurry rule. Screenshots in `screenshots/core-loop/`.
@@ -2174,6 +2198,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Some related words in the note are odd fragments ("hemeral" under ephemeral). Keep only related words that are in the game's own word lists or the synonym data, so the list reads as a set of real neighbours.
 **Brief:** Goal: filter `r` against `words.json`, `room-words.json` and `senses.json` in the builder, then rebuild the shards. Files: `scripts/lib/notesData.mjs`, `scripts/build-word-notes.mjs`. **Conflicts:** WN1.
 
+### AS1. [~] Almanac progress stats (words met per room, closeness over time, hardest words, best chain)
+**Pitch:** The Almanac gains a progress spread: words met per room, average closeness over the last 21 days, the three hardest words and the longest chain of Folio-or-better answers.
+**Brief:** Goal: pure figures in `src/core/almanacProgress.js` from saves that already exist, layout in `src/ui/almanacProgress.js`. Done when: guard `scripts/almanac-progress.mjs`, 375 and desktop with reduced motion, every room. **Touches:** BOOK. **Conflicts:** 12, 54, 55. **Status:** nate picked B (PR #350, ready for review). A or C would be a follow-up PR; the layout is one module (`src/ui/almanacProgress.js`).
 ## VF. Verdict feel follow-ups (2026-11-07, from the verdict sound and haptics thread)
 
 ### VF1. Replay the verdict line
@@ -2212,6 +2239,27 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### DS4. Say why a run ends, on the card
 **Pitch:** When a run ends on a failed word, the card says "The run ends here" and nothing more. Name the door that would have kept it going (Rest alcove) in the same line.
 **Brief:** Goal: one line on the card for a run-ending word naming the Rest alcove. Files: `src/app/run.js`, `src/ui/results.js`. Done when: a test pins the line for a skip and for a Pamphlet. **Conflicts:** DS1.
+
+### WK1. [x] Weekly themed challenge (one themed word a day, Monday to Sunday)
+**Serves:** a reason to come back each week, and the whole library in one theme.
+**Pitch:** Each week has a theme, such as The Sea or Food, and seven of its words drawn from every room, one for each day. Monday is the gentlest, Sunday the hardest. Answer today's word from the Daily book. The book's cover turns to the week, with its days, rooms and scores, and a week with all seven answered earns the "A themed week" stamp.
+**Brief:** Goal: a seeded weekly theme with its own entry, progress and stamp. Files: `src/core/weekly.js`, `src/app/run.js`, `src/ui/weeklyLeaf.js`, `src/core/stamps.js`. Done when: `test/weekly.test.js` passes, `scripts/weekly-check.mjs` passes at 375 and 1280 with reduced motion in every room.
+**Touches:** RUN, DAILY BOOK, STAMPS. **Conflicts:** Daily book leaves (prefix count in `dailyBook.js`).
+**Follow-ups:** WK2 (tighter theme lists), WK3 (resume a weekly word after reload), WK4 (a whole-week run as an alternative, if nate prefers seven words at once).
+
+### WK2. [~] Tighter weekly theme lists (exclusion list and membership guard in PR #361; the rest of the lists is open)
+**Serves:** themes that feel right, with no odd words.
+**Pitch:** Some weekly matches are loose: "curtain" turns up under Weather and "butler" under Food. Hand-review the matched words for each theme and drop the odd ones, or add a short allow list per theme.
+**Brief:** Goal: every matched word clearly belongs to its theme. Files: `src/core/weekly.js` (THEMES). Done when: a sample of 30 matches per theme is reviewed and the odd ones are removed or listed as exceptions.
+**Touches:** WEEKLY. **Conflicts:** WK1.
+
+### WK3. Resume a weekly word after a reload
+**Serves:** no lost answer when the page is reloaded mid-word.
+**Pitch:** A weekly word is one run, and a reload mid-answer starts it again. Save the open weekly word like the Daily run is saved (`S.weeklyRun`), and resume it the same day.
+**Brief:** Goal: a reload during today's weekly word resumes it. Files: `src/core/dailyRun.js` (pattern), `src/app/run.js`. Done when: a reload test in `scripts/weekly-check.mjs` resumes the word.
+**Touches:** RUN, WEEKLY. **Conflicts:** WK1.
+
+
 ## PT. Patrons follow-ups (2026-11-07, from the Patrons thread)
 
 ### PT1. [x] Patrons: library desk visitors with word requests (this PR)

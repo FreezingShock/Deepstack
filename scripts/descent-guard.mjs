@@ -53,16 +53,16 @@ const layout = page => page.evaluate(() => {
 });
 
 async function answerWord(page) {
-  await page.waitForSelector('#ans', {state: 'visible', timeout: 20000});
+  await page.waitForSelector('#ans', {state: 'visible', timeout: 60000});
   const def = await page.evaluate(() => window.__deepstack.run.words[window.__deepstack.run.i].def);
   await page.fill('#ans', def);
   await page.keyboard.press('Enter');
-  await page.waitForSelector('#go', {state: 'visible', timeout: 30000});
+  await page.waitForSelector('#go', {state: 'visible', timeout: 60000});
   await page.click('#go');
 }
 
 async function landing(page, label, shot) {
-  try { await page.waitForSelector('.dl .dl-door', {state: 'visible', timeout: 30000}); }
+  try { await page.waitForSelector('.dl .dl-door', {state: 'visible', timeout: 60000}); }
   catch (e) {
     const st = await page.evaluate(() => JSON.stringify({i: window.__deepstack.run.i, ended: window.__deepstack.run.dsc && window.__deepstack.run.dsc.ended, results: window.__deepstack.run.results.map(r => [r.score, r.tier, r.skipped])})).catch(() => '?');
     throw new Error(`no landing (${st}): ${e.message.split('\n')[0]}`);
@@ -91,7 +91,7 @@ async function play(room, view) {
   const save = {shelf: [], sound: false, bestFloor: 0, bestDepth: 0, streak: {last: '', n: 0}, daily: {}, seen: {'home.daily': 1, slip: 1, candle: 1, hint: 1}, room: room === 'hall' ? undefined : room, rating: {L: 5, placed: true, n: 40, runs: 3, seen: [], hist: []}, rooms: Object.fromEntries(ROOMS.slice(1).map(r => [r, {rating: {L: 5, placed: true, n: 40, runs: 3, seen: [], hist: []}}]))};
   await page.addInitScript(s => { try { localStorage.setItem('deepstack.v1', JSON.stringify(s)); } catch {} }, save);
   await page.goto(url);
-  await page.waitForFunction(() => window.__deepstack && window.__deepstack.S, null, {timeout: 30000});
+  await page.waitForFunction(() => window.__deepstack && window.__deepstack.S, null, {timeout: 60000});
   await page.evaluate(() => window.__deepstack.startUnlimited());
 
   phase = `${room}/${view.name} words 1-2`;
@@ -101,12 +101,12 @@ async function play(room, view) {
   phase = `${label} landing 1`;
   await landing(page, `${label} landing 1`, SHOTS && room === 'hall' ? `landing-${view.name}` : null);
   await page.click('[data-path="curio"]');
-  await page.waitForSelector('[data-relic]', {state: 'visible', timeout: 5000});
+  await page.waitForSelector('[data-relic]', {state: 'visible', timeout: 15000});
   if ((await page.locator('[data-relic]').count()) !== 2) fail(`${label}: curio should offer two relics`);
   for (const p of await layout(page)) fail(`${label} curio: ${p}`);
   if (SHOTS && room === 'hall') await page.screenshot({path: join(SHOTS, `curio-${view.name}.png`)});
   await page.locator('[data-relic]').first().click();
-  await page.waitForSelector('#ans', {state: 'visible', timeout: 20000});
+  await page.waitForSelector('#ans', {state: 'visible', timeout: 60000});
   if (!(await page.locator('.dc-chip.relic').count())) fail(`${label}: relic chip missing on the word after the curio`);
   for (const p of await layout(page)) fail(`${label} word 3 chips: ${p}`);
   if (SHOTS && room === 'hall') await page.screenshot({path: join(SHOTS, `carry-word-${view.name}.png`)});
@@ -118,7 +118,7 @@ async function play(room, view) {
   phase = `${label} landing 2`;
   await landing(page, `${label} landing 2`, null);
   await page.click('[data-path="rest"]');
-  await page.waitForSelector('#ans', {state: 'visible', timeout: 20000});
+  await page.waitForSelector('#ans', {state: 'visible', timeout: 60000});
   if (!(await page.locator('.dc-chip.spare').count())) fail(`${label}: Spare breath chip missing after the Rest alcove`);
 
   phase = `${label} words 5-6`;

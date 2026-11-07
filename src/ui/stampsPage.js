@@ -6,7 +6,7 @@ import {TOPIC_ROOMS, stampRows, stampTally} from '../core/stamps.js';
 import {rgbOf} from '../core/rooms.js';
 
 const ROOM_GLYPH = {first: '✦', quarter: '¼', half: '½', mastered: '★', week: '7', perfect: '✓'};
-const LIBRARY_GLYPH = {doors: '⌂', shelves: '❀', week: '7', hundred: '100'};
+const LIBRARY_GLYPH = {doors: '⌂', shelves: '❀', week: '7', hundred: '100', theme: '✿'};
 const day = d => new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'});
 
 /** One seal. `room` is a room id (its colour is set from the room) or null for the library's gilt seals. */
@@ -32,7 +32,7 @@ export function stampsLeaves(S) {
   const lib = row('The library', stampRows(S, null), null);
   const head = `<h1>Stamps</h1><div class="kicker stp-kick">${t.earned} of ${t.total} earned</div>`;
   const first = `<div class="alm stp-page">${head}
-   <p class="note">Earned once, and kept. Each room has six. The last four are for the whole library.</p>${rooms.slice(0, 3).join('')}</div>`;
+   <p class="note">Earned once, and kept. Each room has six. The last five are for the whole library.</p>${rooms.slice(0, 3).join('')}</div>`;
   const second = `<div class="alm stp-page">${rooms.slice(3).join('')}${lib}
    <p class="note">Each seal is labelled with how it is earned.</p></div>`;
   return [first, second];
