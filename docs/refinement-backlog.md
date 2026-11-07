@@ -3,8 +3,10 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Phone home in topic rooms (375x667, with a full shelf): the home used to scroll by 25px in the Chronicle, Counting House, Observatory, Scriptorium and Gallery, because their longer taglines froze the fit at a size that overflowed. They now use the compact type and spacing the Reading Room already gets at this height. Changeable: say if you would rather the topic rooms keep the full-size title on phones and drop a book or two instead.
 - Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
 
+- Patrons (PT1): open the Patrons book on the home shelf (bottle-green spine) in any topic room, answer the patron's request, and tell me if the phone flow feels right (on a phone the answer slip is on page two, so you turn the page to answer). Screenshots: screenshots/patrons/.
 - Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
@@ -2172,6 +2174,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Some related words in the note are odd fragments ("hemeral" under ephemeral). Keep only related words that are in the game's own word lists or the synonym data, so the list reads as a set of real neighbours.
 **Brief:** Goal: filter `r` against `words.json`, `room-words.json` and `senses.json` in the builder, then rebuild the shards. Files: `scripts/lib/notesData.mjs`, `scripts/build-word-notes.mjs`. **Conflicts:** WN1.
 
+### AS1. [~] Almanac progress stats (words met per room, closeness over time, hardest words, best chain)
+**Pitch:** The Almanac gains a progress spread: words met per room, average closeness over the last 21 days, the three hardest words and the longest chain of Folio-or-better answers.
+**Brief:** Goal: pure figures in `src/core/almanacProgress.js` from saves that already exist, layout in `src/ui/almanacProgress.js`. Done when: guard `scripts/almanac-progress.mjs`, 375 and desktop with reduced motion, every room. **Touches:** BOOK. **Conflicts:** 12, 54, 55. **Status:** nate picked B (PR #350, ready for review). A or C would be a follow-up PR; the layout is one module (`src/ui/almanacProgress.js`).
 ## VF. Verdict feel follow-ups (2026-11-07, from the verdict sound and haptics thread)
 
 ### VF1. Replay the verdict line
@@ -2194,3 +2199,45 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
 **Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
 **Touches:** RUN. **Conflicts:** G12, G15.
+
+### WK1. [x] Weekly themed challenge (one themed word a day, Monday to Sunday)
+**Serves:** a reason to come back each week, and the whole library in one theme.
+**Pitch:** Each week has a theme, such as The Sea or Food, and seven of its words drawn from every room, one for each day. Monday is the gentlest, Sunday the hardest. Answer today's word from the Daily book. The book's cover turns to the week, with its days, rooms and scores, and a week with all seven answered earns the "A themed week" stamp.
+**Brief:** Goal: a seeded weekly theme with its own entry, progress and stamp. Files: `src/core/weekly.js`, `src/app/run.js`, `src/ui/weeklyLeaf.js`, `src/core/stamps.js`. Done when: `test/weekly.test.js` passes, `scripts/weekly-check.mjs` passes at 375 and 1280 with reduced motion in every room.
+**Touches:** RUN, DAILY BOOK, STAMPS. **Conflicts:** Daily book leaves (prefix count in `dailyBook.js`).
+**Follow-ups:** WK2 (tighter theme lists), WK3 (resume a weekly word after reload), WK4 (a whole-week run as an alternative, if nate prefers seven words at once).
+
+### WK2. [~] Tighter weekly theme lists (exclusion list and membership guard in PR #361; the rest of the lists is open)
+**Serves:** themes that feel right, with no odd words.
+**Pitch:** Some weekly matches are loose: "curtain" turns up under Weather and "butler" under Food. Hand-review the matched words for each theme and drop the odd ones, or add a short allow list per theme.
+**Brief:** Goal: every matched word clearly belongs to its theme. Files: `src/core/weekly.js` (THEMES). Done when: a sample of 30 matches per theme is reviewed and the odd ones are removed or listed as exceptions.
+**Touches:** WEEKLY. **Conflicts:** WK1.
+
+### WK3. Resume a weekly word after a reload
+**Serves:** no lost answer when the page is reloaded mid-word.
+**Pitch:** A weekly word is one run, and a reload mid-answer starts it again. Save the open weekly word like the Daily run is saved (`S.weeklyRun`), and resume it the same day.
+**Brief:** Goal: a reload during today's weekly word resumes it. Files: `src/core/dailyRun.js` (pattern), `src/app/run.js`. Done when: a reload test in `scripts/weekly-check.mjs` resumes the word.
+**Touches:** RUN, WEEKLY. **Conflicts:** WK1.
+
+
+## PT. Patrons follow-ups (2026-11-07, from the Patrons thread)
+
+### PT1. [x] Patrons: library desk visitors with word requests (this PR)
+**Pitch:** A unique, on-theme feature: a patron comes to the desk with a word they need, and the player answers it in the library's own voice.
+**Brief:** Goal: six patrons, one per topic room, asking for one word each day, judged by the existing Riddle and Daily judges, served into the Shelf with a commendation in the desk ledger. Files: `src/core/patrons.js`, `src/ui/patronsBook.js`, `src/ui/patronArt.js`, `src/ui/patrons.css`. Done when: 375 and 1280 pass, every room, reduced motion, guard in CI.
+**Touches:** home shelf, Shelf book. **Conflicts:** none open.
+
+### PT2. A stamp for a patron's third commendation
+**Pitch:** Patrons give a reward that links to the Almanac. Three commendations from one patron should earn a small stamp on the Stamps page, so the desk shows progress as well as the Shelf.
+**Brief:** Goal: one stamp per patron ("Friend of the desk"), derived from `S.patrons.served`, shown on the Almanac Stamps page. Files: `src/core/stamps.js`, `test/stamps.test.js` (catalogue count), `src/ui/stampsPage.js`. Done when: stamps page shows six new slots at 375 and 1280 with no clipping, `stamps-look` guard passes, and the catalogue test is updated on purpose.
+**Touches:** Stamps, Almanac. **Conflicts:** stamps follow-ups.
+
+### PT3. Answer on the first page on phones
+**Pitch:** On a phone the answer slip sits on page two, so the request is read, then the page is turned to answer. The slip should sit under the request on page one.
+**Brief:** Goal: at phone width, put the answer slip on the desk page below the request (one page), keep the desktop layout. Files: `src/ui/patronsBook.js`, `src/ui/patrons.css`. Done when: the answer slip is reachable without a page turn at 375 and `scripts/patrons.mjs` asserts it.
+**Touches:** Patrons book. **Conflicts:** none.
+
+### PT4. A harder request for a patron who knows you
+**Pitch:** A patron who has commended you three times should bring a second, harder request (a rarer word from a higher tier), so the desk grows with the player.
+**Brief:** Goal: after three commendations from one patron, their request draws from words of tier 3 and up (`src/core/patrons.js`, the pool filter), labelled "A harder one". Done when: the rule is a pure function with a test and the desk shows the label at 375 and 1280.
+**Touches:** Patrons. **Conflicts:** none.

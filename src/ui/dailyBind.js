@@ -11,7 +11,7 @@ export const EASE=TOKEN.settle;
 export const tabLabel=key=>{const m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(key||'');return m?`${+m[3]} ${MON[+m[2]-1]}`:'';};
 export const bindTimings=(n=7,reduce=false)=>reduce?{stagger:0,fly:0,tab:0,total:0}
  :{stagger:90,fly:520,tab:260,total:90*Math.max(0,n-1)+520+260};
-export const isDailyRun=d=>!!d&&d.mode!=='unlimited'&&d.mode!=='riddle'&&!d.practice;
+export const isDailyRun=d=>!!d&&d.mode!=='unlimited'&&d.mode!=='riddle'&&d.mode!=='weekly'&&!d.practice;
 
 const reduced=()=>motionNow();
 export let binding=false;

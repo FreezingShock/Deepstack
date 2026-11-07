@@ -1,0 +1,38 @@
+/* The weekly themed challenge in the Daily book: the cover section and the two weekly leaves (Monday to Wednesday, then
+   Thursday to Sunday). Inks come from the book's tokens (--ink, --mute, --rule, --bk, --hand, --ts), so the leaves read like the
+   rest of the ledger. Each day keeps its full definition, so text wraps instead of being cut off. Phones: the status sits on the
+   word's line and the day column is narrower. Reduced motion: nothing here animates. */
+.bk-spread .dly.wk{min-width:0}
+.bk-spread .dly.wk .kicker{overflow-wrap:anywhere}
+.bk-spread .dly.wk h1{font-size:calc(26px*var(--ts));line-height:1.05;margin:0}
+.bk-spread .dly.wk .wk-motto{margin:2px 0 4px;font:italic 500 calc(18px*var(--ts))/1.25 var(--hand);color:var(--mute)}
+.bk-spread .dly.wk .wk-prog{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin:0 0 4px;font:500 calc(18px*var(--ts))/1.2 var(--hand);color:var(--ink)}
+.bk-spread .dly.wk .wk-prog b{font-weight:700}
+.wk-pips{display:inline-flex;gap:5px}
+.wk-pips i{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--rule);display:inline-block;box-sizing:border-box}
+.wk-pips i.on{background:var(--tc,var(--bk));border-color:var(--tc,var(--bk))}
+.wk-pips i.miss{background:transparent;border-color:var(--mute);opacity:.55}
+.wk-pips i.now{border-style:dashed;border-color:var(--bk)}
+.bk-spread .dly.wk .wk-days{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:5px}
+.bk-spread .dly.wk .wk-day{display:grid;grid-template-columns:46px minmax(0,1fr);gap:0 10px;align-items:start;padding:0 0 5px;border-bottom:1px dashed var(--rule)}
+.bk-spread .dly.wk .wk-dn{font:600 calc(19px*var(--ts))/1.1 var(--hand);color:var(--bk)}
+.bk-spread .dly.wk .wk-dn small{display:block;font:500 calc(14px*var(--ts))/1.2 var(--hand);color:var(--mute)}
+.bk-spread .dly.wk .wk-main{min-width:0;overflow-wrap:anywhere}
+.bk-spread .dly.wk .wk-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px}
+.bk-spread .dly.wk .wk-top .w{font:600 calc(22px*var(--ts))/1.15 var(--hand);color:var(--ink)}
+.bk-spread .dly.wk .wk-top small{font:italic 500 calc(16px*var(--ts)) var(--hand);color:var(--mute)}
+.bk-spread .dly.wk .wk-st{margin-left:auto;display:inline-flex;align-items:baseline;gap:4px;font:500 calc(15px*var(--ts))/1.15 var(--hand);color:var(--mute);white-space:nowrap}
+.bk-spread .dly.wk .wk-st b{font:700 calc(19px*var(--ts))/1 var(--hand);color:var(--ink)}
+.bk-spread .dly.wk .wk-st .dot{width:9px;height:9px;border-radius:50%;display:inline-block;align-self:center}
+.bk-spread .dly.wk .wk-main .d{display:block;margin-top:1px;font:500 calc(15px*var(--ts))/1.2 var(--hand);color:var(--bs-ink2,var(--ink))}
+.bk-spread .dly.wk .wk-top .room{font:600 calc(12px*var(--ts))/1.2 var(--hand);letter-spacing:.06em;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+.bk-spread .dly.wk .wk-day.missed .wk-top .w{color:var(--mute)}
+.bk-spread .dly.wk .wk-day.sealed .wk-dn,.bk-spread .dly.wk .wk-day.today .wk-dn{color:var(--mute)}
+.bk-spread .dly.wk .wk-day.today .wk-st span{color:var(--bk);font-weight:700}
+.bk-spread .dly.wk .wk-note{margin:12px 0 10px;font:italic 500 calc(16px*var(--ts))/1.3 var(--hand);color:var(--mute)}
+.bk-spread .dly.wk .dly-act{margin-top:6px}
+@media (max-width:420px){
+  .bk-spread .dly.wk .wk-day{grid-template-columns:40px minmax(0,1fr);gap:0 8px}
+  .bk-spread .dly.wk .wk-main .d{font-size:calc(15px*var(--ts))}
+}
+@media (prefers-reduced-motion:reduce){.bk-spread .dly.wk *{transition:none!important;animation:none!important}}
