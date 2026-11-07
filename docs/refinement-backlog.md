@@ -1368,7 +1368,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: contextual first-time notes, not a tutorial screen or pop-up. Flag each in additive `S.seen.*`. Files: new `src/ui/firstNotes.js` plus css, one hook in `showWord`. Done when: each note shows once, reduced motion shows it static, Daily timing is not changed by it, 14-letter word and 375 checked.
 **Touches:** RUN, HOME. **Conflicts:** run screen thread, 29 (welcome).
 
-### G12. [ ] Phone run sheet has no room for a hint or a note
+### G12. [x] Phone run sheet has no room for a hint or a note (PR #333: taller alcove on phones; 320x568 and two-plus hints still open, see decision)
 **Pitch:** At 375x667 and 360x640 the hint strip (and now the first-run notes) takes about 60px from the run sheet, so the answer slip shrinks from 132px to about 70px and the typed text scrolls. Screenshots: /mnt/project-files/screenshots/onboarding/before-375-b-hint.png.
 **Brief:** Goal: give the run sheet a fixed budget on phones (tighter word size or top padding, or notes that float in the empty alcove wall under the row). Files: `src/styles/phone-run.css`. Done when: the slip keeps its height with a hint and with a note at 320x568, 360x640 and 375x667.
 
