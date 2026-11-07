@@ -11,9 +11,9 @@ test('Unlimited and Practice may still use the quick judge',()=>{
   assert.equal(mayUseQuickJudge(undefined),true);
   assert.equal(mayUseQuickJudge({}),true);
 });
-test('the Daily and the weekly word ask for the strict judge; Unlimited and Practice do not',()=>{
+test('the Daily, the weekly word and Unlimited ask for the strict judge; Practice does not',()=>{
   const run=readFileSync(new URL('../src/app/run.js',import.meta.url),'utf8');
-  assert.match(run,/judgeAnswer\(text,w,run\.practice\|\|run\.mode==='unlimited'\?undefined:\{strict:true/);
+  assert.match(run,/judgeAnswer\(text,w,run\.practice\?undefined:\{strict:true/);
 });
 test('the strict path has no route to the lexical fallback',()=>{
   const src=readFileSync(new URL('../src/scorer/index.js',import.meta.url),'utf8');

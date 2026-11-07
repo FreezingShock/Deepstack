@@ -139,7 +139,7 @@ export async function submit(skipped){
  /* the press answers at once: the slip holds still, locks, and says it is being read (the judge can take a moment, or the librarian can still be arriving) */
  const fld0=$('#fld'),ta0=$('#ans');
  if(!skipped&&fld0&&ta0){ta0.readOnly=true;fld0.classList.add('judging');fld0.insertAdjacentHTML('beforeend','<div class="hslip reading" id="reading" role="status">Reading your answer…</div>');} // inside the slip, not the hint strip: a line added below would squeeze the slip
- const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w,run.practice||run.mode==='unlimited'?undefined:{strict:true,onWait:()=>{const rd=$('#reading');if(rd){rd.textContent='The librarian is still arriving. Your answer is safe and will be read in a moment.';return;}const h=$('#hl');if(h)h.insertAdjacentHTML('beforeend','<div class="hslip" style="--tilt:-.6deg">The librarian is still arriving. Your answer is safe and will be read in a moment.</div>');}});
+ const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w,run.practice?undefined:{strict:true,onWait:()=>{const rd=$('#reading');if(rd){rd.textContent='The librarian is still arriving. Your answer is safe and will be read in a moment.';return;}const h=$('#hl');if(h)h.insertAdjacentHTML('beforeend','<div class="hslip" style="--tilt:-.6deg">The librarian is still arriving. Your answer is safe and will be read in a moment.</div>');}});
  $('#reading')?.remove();$('#fld')?.classList.remove('judging');
  const t=tierOf(j.score);
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
