@@ -9,6 +9,10 @@ import {roomById, HALL} from '../core/rooms.js';
 /** the prop each topic room stands on the desk */
 export const PROP_KIND = {history: 'clock', math: 'abacus', science: 'armillary', english: 'scroll', art: 'frame', body: 'skull'};
 const TAU = Math.PI * 2;
+/* Phones: the prop sits at the desk's right end, `PHONE_PROP_INSET` in from the alcove edge and `PHONE_PROP_S` wide. The
+   desk's books are centred in a strip under the controls (src/ui/ledge.js ledgeLayout), so with few books they stop well
+   short of it. Past PHONE_PROP_MAX_BOOKS the prop is left off rather than drawn under a book; the test pins that. */
+export const PHONE_PROP_MAX_BOOKS = 8, PHONE_PROP_INSET = 12, PHONE_PROP_S = 22;
 
 /** the room whose prop belongs on the desk now (null in the Reading Room or outside the browser) */
 export function propRoom() {

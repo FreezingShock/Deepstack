@@ -224,7 +224,7 @@ export const World=(()=>{
   ctx.save();ctx.translate(0,0);const p2=()=>{ctx.beginPath();ctx.moveTo(x-6,y+h);ctx.lineTo(x-6,y+r);ctx.arc(x+r,y+r,r+6,Math.PI,1.5*Math.PI);ctx.lineTo(x+w-r,y-6);ctx.arc(x+w-r,y+r,r+6,1.5*Math.PI,2*Math.PI);ctx.lineTo(x+w+6,y+h);};p2();ctx.lineWidth=1;ctx.strokeStyle=PALETTE.blackAlpha99;ctx.stroke();ctx.restore();
   // ledge
   ctx.fillStyle=PALETTE.oak35241a;ctx.fillRect(x-14,y+h,w+28,12);ctx.fillStyle=PALETTE.bronze6a4a30;ctx.fillRect(x-14,y+h,w+28,2);ctx.fillStyle=PALETTE.blackAlpha88;ctx.fillRect(x-14,y+h+10,w+28,2);
-  drawNook(ctx,{x,y,w,h,lc}); // desk surface, open book and inkwell
+  drawNook(ctx,{x,y,w,h,lc,deskBooks:nv.books?nv.books.length:0}); // desk surface, open book, inkwell and the room's own prop
   // cobwebs in the alcove corners, thicker when deeper
   if(a>.05){const m=mulberry(row*31+7);drawWeb({k:'corner',x:x+10,y:0,dir:1,s:40+a*90,seed:(m()*999)|0},y+10,a);drawWeb({k:'corner',x:x+w-10,y:0,dir:-1,s:40+a*90,seed:(m()*999)|0},y+10,a);}
   // wall lanterns, hung from chains on the arch

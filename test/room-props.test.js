@@ -1,7 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {ROOMS, HALL} from '../src/core/rooms.js';
-import {PROP_KIND, drawRoomProp} from '../src/ui/roomProps.js';
+import {PROP_KIND, drawRoomProp, PHONE_PROP_MAX_BOOKS, PHONE_PROP_INSET, PHONE_PROP_S} from '../src/ui/roomProps.js';
+import {ledgeLayout} from '../src/ui/ledge.js';
 
 // A canvas context that counts drawing calls, so a test can tell what was painted without a browser.
 function fakeCanvas() {
@@ -38,5 +39,20 @@ test('the prop is static: the same calls every time it is drawn', () => {
     const a = fakeCanvas(), b = fakeCanvas();
     drawRoomProp(a.c, id, 10, 40, 30); drawRoomProp(b.c, id, 10, 40, 30);
     assert.deepEqual(a.calls, b.calls, id);
+  }
+});
+
+test('on phones the prop clears every desk book up to the cap, at the usual phone widths', () => {
+  // book widths in the range shelfDims gives real books and skipped ones (20 px); the cap is in roomProps.js
+  const dims = b => ({w: b.w, h: 40});
+  for (const w of [320, 360, 375, 414, 500, 639]) {
+    const propX = w - PHONE_PROP_INSET - PHONE_PROP_S, propR = w - PHONE_PROP_INSET;
+    for (let n = 0; n <= PHONE_PROP_MAX_BOOKS; n++) {
+      for (const width of [30, 60]) {
+        const books = Array.from({length: n}, (_, i) => (i % 3 === 0 ? {skipped: true, w: 20} : {w: width, tier: 0}));
+        const L = ledgeLayout(books, w, b => dims(b), 56);
+        for (const it of L.items) assert.ok(it.dx + it.w <= propX - 2 || it.dx >= propR + 2, `w=${w} n=${n}: book ${it.i} reaches the prop`);
+      }
+    }
   }
 });
