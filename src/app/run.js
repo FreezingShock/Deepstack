@@ -26,7 +26,6 @@ import {feedbackData} from '../core/feedback.js';
 import {runLedgeHTML} from '../ui/runLedge.js';
 import {currentRoom} from '../core/roomStore.js';
 import {newDescent,isLanding,isFailure,rowsWithPath,endWord,resolveFailure,limitBonusMs,descentSummary} from '../core/descent.js';
-import {landingPick,carryChipsHTML} from '../ui/descentLanding.js';
 import {FT,S,TIERS,dailyNo,dailyWords,floorAtFt,floorAtRow,save,tierOf,utc,wordsReady} from './state.js';
 import {World} from '../world/world.js';
 import {ui} from './chrome.js';
@@ -54,6 +53,8 @@ export async function startDaily(practice){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
+/* the descent's landing and chips, loaded when a run first reaches a landing (keeps them out of the entry bundle) */
+let descentUI=null;
 export async function startUnlimited(replace=false){
  await wordsReady;
  if(modelStatus().state==='loading')await whenReady(8000);
@@ -89,7 +90,7 @@ export function showWord(){
  if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();const fr_=ruleFor(floorAtRow(World.restRow).key,run,loadEnabled());run.rule=fr_;run.whispered=false;run.limit=limitFor(fr_)+(run.dsc?limitBonusMs(run.dsc):0);
  const el=ui.stage;el.hidden=false;el.className='center';
  el.innerHTML=`<div class="candle" id="candle" aria-hidden="true"><div class="wax" id="wax"><i class="flame"></i><i class="wick"></i></div><div class="plate"></div></div><div class="sheet">${pipsHTML()}
-  <div class="wlabel">${run.mode==='weekly'?esc(run.wlabel):`Word ${run.i+1} of ${run.words.length}`}</div>${fr_?`<div class="floorrule">${esc(fr_.line)}</div>`:''}${run.dsc?carryChipsHTML(run.dsc):''}${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
+  <div class="wlabel">${run.mode==='weekly'?esc(run.wlabel):`Word ${run.i+1} of ${run.words.length}`}</div>${fr_?`<div class="floorrule">${esc(fr_.line)}</div>`:''}${run.dsc&&descentUI?descentUI.carryChipsHTML(run.dsc):''}${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
   <div class="word${fr_&&fr_.smear?' smeared':''}" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
   <div class="pos">${esc(w.pos)}</div><div class="clock" id="clock" aria-hidden="true">${Math.floor(run.limit/60000)}:${String(run.limit/1000%60).padStart(2,'0')}</div>
   <div class="timer" id="tbar"><i id="tfill"></i></div>
@@ -143,7 +144,7 @@ export async function submit(skipped){
  if(!run.practice){if(run.mode==='weekly')recordWeekly(S,run.day,book);recordMet(S,book);recordMastery(S,utc());S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}toastStamps(recordStamps(S,utc()));save();}
  if(!run.practice&&run.mode!=='unlimited'&&run.mode!=='weekly'){S.dailyRun=snapshotRun(run);save();}
  const depth1=Math.round((World.restRow+rows)*FT);
- openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1||!!(run.dsc&&run.dsc.ended),onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length||!!(run.dsc&&run.dsc.ended);const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last){finishRun();return;}if(run.dsc&&isLanding(run.i)){run.dsc=await landingPick(ui.stage,run.dsc,{nextWord:run.i+1,of:run.words.length});if(run.dsc.freeExtra>0&&!run.freeHint){run.freeHint=true;run.dsc.freeExtra--;}}if(run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id),undefined,undefined,run.dsc?run.dsc.bump:0);prepareWords([run.words[run.i]]).catch(()=>{});}showWord();}});
+ openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1||!!(run.dsc&&run.dsc.ended),onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length||!!(run.dsc&&run.dsc.ended);const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last){finishRun();return;}if(run.dsc&&isLanding(run.i)){descentUI=descentUI||await import('../ui/descentLanding.js');run.dsc=await descentUI.landingPick(ui.stage,run.dsc,{nextWord:run.i+1,of:run.words.length});if(run.dsc.freeExtra>0&&!run.freeHint){run.freeHint=true;run.dsc.freeExtra--;}}if(run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id),undefined,undefined,run.dsc?run.dsc.bump:0);prepareWords([run.words[run.i]]).catch(()=>{});}showWord();}});
 }
 export {verdictFor} from '../core/verdict.js';
 export function finishRun(){
