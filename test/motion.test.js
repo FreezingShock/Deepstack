@@ -26,8 +26,8 @@ test('durations ascend by role', () => {
 test('reduced motion collapses durations in one place', () => {
   assert.equal(dur('page', true), RM_MS);
   assert.equal(dur('page', false), DUR.page);
-  assert.match(css, /data-motion="reduce"/);
-  assert.match(css, /prefers-reduced-motion:reduce/);
+  assert.match(css, /html\.rm/);
+  
   assert.throws(() => dur('nope'));
   assert.throws(() => ease('nope'));
   assert.equal(ease('settle'), EASE.settle);

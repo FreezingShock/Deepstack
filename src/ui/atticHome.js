@@ -7,11 +7,12 @@ import {Sfx} from '../feel.js';
 import {atticAll,atticTidy} from '../core/attic.js';
 import {fitRail,initRailFit} from './railFit.js';
 import './attic.css';
+import {motionNow} from './settings.js';
 
 let cue=null,down=null,home=null,count=0,wired=false,depthEl=null,pulling=0;
 const WHEEL_STEP=70,ROW_REST=420;
 const PULL_MS=520; // cord pull + lid swing + light on the panel, then the climb starts
-const reduced=()=>{const r=document.documentElement,m=r.getAttribute('data-motion');return m==='reduce'||(m!=='full'&&matchMedia('(prefers-reduced-motion:reduce)').matches);};
+const reduced=()=>motionNow();
 const ui=()=>({live:!!home&&!home.hidden&&home.isConnected&&World.canAttic&&!document.querySelector('.bk-spread,[role=dialog]:not([hidden]),#cardlayer.on')});
 function sync(open){
  if(home)home.classList.toggle('attic-away',open);
@@ -42,10 +43,10 @@ function rideHome(px,t){
 function paintCue(){
  if(!cue)return;
  if(!cue.firstChild)cue.innerHTML='<span class="ach-hatch" aria-hidden="true"><span class="ach-glow"></span><span class="ach-lid"><span class="ach-word">Attic</span></span></span>'
-  +'<span class="ach-cord" aria-hidden="true"><span class="ach-rope"></span><span class="ach-tag"><b></b></span></span>';
+  +'<span class="ach-cord" aria-hidden="true"><span class="ach-rope"></span><span class="ach-tag"><b></b></span></span><span class="sr-only"></span>';
  cue.querySelector('.ach-tag b').textContent=count;
  fitRail();
- cue.setAttribute('aria-label',`Pull the cord and climb up to the attic: ${count} ${count===1?'book':'books'}`);
+ cue.querySelector('.sr-only').textContent=`Attic: pull the cord and climb up, ${count} ${count===1?'book':'books'}`; // a name from content, not aria-label: the count badge is visible text
 }
 /* After a book is dusted off: re-list what the attic holds and refresh the entrance. */
 export function refreshAttic(shelf){

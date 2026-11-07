@@ -1,9 +1,10 @@
+import {motionNow} from './settings.js';
 /* Quill and ink for the answer slip. The real <textarea> stays (IME, mobile keyboards, selection, scrolling all keep working);
    its letters are made transparent and an aria-hidden mirror draws the same text on top. Letters typed in the last moment are
    "wet" (dark, glossy) and settle to dry ink; a small quill rests at the caret; Enter drops a blotter over the slip.
    Pure helpers (editRange, inkRuns) are exported for tests. */
 export const DRY_MS=1000;
-const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduced=()=>motionNow();
 
 /** What changed between two strings: common prefix/suffix, so `births` can be spliced in step with the text. */
 export function editRange(a,b){

@@ -171,3 +171,20 @@ export function showHomeNote(S, save, root = globalThis.document) {
  }
  return null;
 }
+
+/** Takes down every note on screen, its halo and its panel. A note is about the thing it lights, so once the player acts
+ *  (opens a book, a card or a room) the note goes, rather than sitting over the new screen. Returns how many went. */
+export function clearAllNotes(root = globalThis.document) {
+ if (!root || typeof root.querySelectorAll !== 'function') return 0;
+ const gone = root.querySelectorAll('.fcall, .fhalo');
+ gone.forEach(n => n.remove());
+ return gone.length;
+}
+
+/** Installs the click listener once: any click (or Enter on a button, which also clicks) clears the notes before its handler runs. */
+export function initNoteClear(doc = globalThis.document) {
+ if (!doc || typeof doc.addEventListener !== 'function' || doc.__noteClear) return false;
+ doc.__noteClear = true;
+ doc.addEventListener('click', () => clearAllNotes(doc), true);
+ return true;
+}

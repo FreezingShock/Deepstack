@@ -2,5 +2,4 @@
 .bk-spread .bs-ribbon i{display:block;width:22px;height:64px;background:linear-gradient(90deg,var(--c-wine,#6e1d24),#8d2a33 55%,#5a1219);clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%);box-shadow:0 2px 3px rgba(0,0,0,.4)}
 .bk-spread .bs-ribbon:hover,.bk-spread .bs-ribbon:focus-visible{transform:translateY(5px)}
 .bk-spread .bs-ribbon:active{transform:translateY(12px)}
-.bk-spread.one .bs-ribbon{left:auto;right:10%;margin-left:0}
-@media (prefers-reduced-motion:reduce){.bk-spread .bs-ribbon{transition:none}}
+.bk-spread.one .bs-ribbon{left:auto;right:10%;margin-left:0}:where(html.rm) .bk-spread .bs-ribbon{transition:none}

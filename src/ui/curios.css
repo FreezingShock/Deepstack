@@ -3,6 +3,5 @@
 #curio[hidden]{display:none}
 #curio.on{opacity:1;transform:none}
 #curio b{font:600 calc(12px*var(--ts)) Cinzel,Georgia,serif;letter-spacing:.08em;text-transform:uppercase;color:var(--c-bronze-6a5638)}
-#curio p{margin:5px 0 0;font:italic 400 calc(14px*var(--ts))/1.4 Newsreader,Georgia,serif}
-@media (prefers-reduced-motion:reduce){#curio{transition:none;transform:none}}
+#curio p{margin:5px 0 0;font:italic 400 calc(14px*var(--ts))/1.4 Newsreader,Georgia,serif}:where(html.rm) #curio{transition:none;transform:none}
 #curio small{display:block;margin:6px 0 0;font:400 calc(11px*var(--ts)) Cinzel,Georgia,serif;letter-spacing:.08em;color:var(--c-bronze-6a5638);opacity:.85}

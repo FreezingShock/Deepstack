@@ -33,6 +33,5 @@
 
 @media(max-width:640px){.fcall{font-size:calc(15px*var(--ts));padding:6px 12px;max-width:min(92vw,260px)}}
 
-/* reduced motion: no fade at all, the note just appears and is taken away */
-@media (prefers-reduced-motion:reduce){html:not([data-motion="full"]) .fhalo,html:not([data-motion="full"]) .fcall{transition:none}}
-html[data-motion="reduce"] .fhalo,html[data-motion="reduce"] .fcall{transition:none}
+/* reduced motion: no fade at all, the note just appears and is taken away */html.rm .fhalo,html.rm .fcall{transition:none}
+html.rm .fhalo,html.rm .fcall{transition:none}

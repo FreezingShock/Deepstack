@@ -39,7 +39,7 @@ test('the glint is opacity and transform only and is off under reduced motion', 
   const css = readFileSync(new URL('../src/ui/roomMastery.css', import.meta.url), 'utf8');
   const frames = css.match(/@keyframes rmGlint\{.*?\}\}/s)[0];
   assert.doesNotMatch(frames.replace(/opacity:[\d.]+|transform:[^;}]+/g, ''), /[a-z-]+:[^;}]+/);
-  assert.match(css, /prefers-reduced-motion:reduce\)\{[^}]*animation:none/);
+  assert.match(css, /html\.rm[^{]*\{[^}]*animation:none/);
 });
 
 import {setRoomLists, setRoomEntries, setRoomExtras} from '../src/core/roomPool.js';

@@ -12,6 +12,7 @@ export function findClipped(root = document.body) {
     return el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (cls ? '.' + cls : '');
   };
   const ownText = el => [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
+  const ancestors = el => { const c = []; for (let n = el.parentElement; n && n !== document.body && c.length < 4; n = n.parentElement) c.push(label(n)); return c.join(' < '); };
   for (const el of root.querySelectorAll('*')) {
     const text = ownText(el);
     if (!text || /^(SCRIPT|STYLE|CANVAS|TEXTAREA|INPUT)$/.test(el.tagName)) continue;
@@ -37,7 +38,8 @@ export function findClipped(root = document.body) {
     range.setStartBefore(tn[0]); range.setEndAfter(tn[tn.length - 1]);
     const tr = range.getBoundingClientRect();
     if (tr.width && (tr.right > vw + 1 || tr.left < -1)) what.push(`text spans ${Math.round(tr.left)}..${Math.round(tr.right)}px of a ${vw}px viewport`);
-    if (what.length) out.push({el: label(el), text: text.slice(0, 40), why: what.join('; ')});
+    // the markup and its ancestors travel with the failure, so a red CI run names the element that clipped
+    if (what.length) out.push({el: label(el), text: text.slice(0, 40), why: what.join('; '), html: el.outerHTML.slice(0, 160), chain: ancestors(el)});
   }
   return out;
 }

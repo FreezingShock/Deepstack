@@ -5,7 +5,7 @@ import {esc} from './bookpages.js';
 import {ROOMS, rgbOf} from '../core/rooms.js';
 
 const ROOM_GLYPH = {first: '✦', quarter: '¼', half: '½', mastered: '★', week: '7', perfect: '✓'};
-const LIBRARY_GLYPH = {doors: '⌂', shelves: '❀', week: '7', hundred: '100'};
+const LIBRARY_GLYPH = {doors: '⌂', shelves: '❀', week: '7', hundred: '100', seal: '✪'};
 
 /** The plaque's markup for a list of new stamps: [{id, room, name, hint}] as recordStamps returns them. A head names what
  *  happened, one section per stamp (its seal presses in, staggered), and a foot line says where it is kept. */

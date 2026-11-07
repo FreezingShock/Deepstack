@@ -66,7 +66,5 @@
 .book.open .cvl-seam .a{animation-name:cvseam}.book.open .cvl-seam .b{animation-name:cvseambloom}.book.open .cvl-seam .c{animation-name:cvgem}
 @keyframes cvseam{0%{opacity:0;transform:scaleY(0)}35%{opacity:1;transform:scaleY(.55)}85%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:scaleY(1) scaleX(8)}}
 @keyframes cvseambloom{60%{opacity:0}90%{opacity:.9}100%{opacity:0}}
-@keyframes cvgem{0%{transform:rotate(45deg) scale(1)}85%{transform:rotate(225deg) scale(1.6)}100%{transform:rotate(225deg) scale(.1);opacity:0}}
-
-@media (prefers-reduced-motion:reduce){.cvl{display:none}}
+@keyframes cvgem{0%{transform:rotate(45deg) scale(1)}85%{transform:rotate(225deg) scale(1.6)}100%{transform:rotate(225deg) scale(.1);opacity:0}}:where(html.rm) .cvl{display:none}
 @media (max-width:480px){.cvl-seal .a,.cvl-seal .b{width:46px;height:96px;margin-top:-48px}.cvl-seal .a::after{inset:20px 10px}.cvl-clasp .a{width:30px}}
