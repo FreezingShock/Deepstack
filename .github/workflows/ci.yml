@@ -132,12 +132,46 @@ jobs:
           path: snapshot-diffs/
           if-no-files-found: ignore
 
+  # Walks every topic room at phone and desktop width (home, a Daily word and result, Unlimited, the Rooms book, a door).
+  # Its own job: the walk takes about as long as the whole build job, so it cannot share that job's 16 minutes.
+  playtest:
+    needs: scope
+    if: needs.scope.outputs.heavy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: public/models
+          key: model-${{ hashFiles('src/scorer/model.js') }}
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Room playtest (self-test first, then all seven rooms)
+        env:
+          PLAYTEST_OUT: playtest-shots
+        run: |
+          node scripts/room-playtest.mjs --selftest
+          node scripts/room-playtest.mjs
+      - name: Upload playtest screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playtest-shots
+          path: playtest-shots/
+          if-no-files-found: ignore
+
   # The single required status check: name it "check" in branch protection / rulesets.
   # Runs even when upstream jobs fail or are skipped; passes only if none failed or were cancelled
   # (skipped is fine: that is the docs-only path).
   check:
     if: always()
-    needs: [scope, test, build]
+    needs: [scope, test, build, playtest]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
