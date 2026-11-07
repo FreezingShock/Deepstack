@@ -87,3 +87,13 @@ test('the side doors are looked for in the document, and the home note waits a f
   assert.equal(saves, 1);
   globalThis.requestAnimationFrame = undefined;
 });
+
+test('a phone window lights the ring of room lights for the door note; wide and unknown widths keep the doors', async () => {
+  const {noteSelector, DOOR_MIN_WIDTH, PHONE_DOOR_TEXT} = await import('../src/ui/firstNotes.js');
+  assert.equal(noteSelector('home.doors', 375), '.rm-ring', 'a phone has no doors: the ring');
+  assert.equal(noteSelector('home.doors', DOOR_MIN_WIDTH - 1), '.rm-ring');
+  assert.equal(noteSelector('home.doors', DOOR_MIN_WIDTH), '.rm-door', 'from the door width up, the doors');
+  assert.equal(noteSelector('home.doors', 0), '.rm-door', 'no window (a test or a headless stand-in) keeps the doors');
+  assert.equal(noteSelector('home.daily', 375), '#bPlay', 'other notes are unchanged');
+  assert.match(PHONE_DOOR_TEXT, /^Tap a light/);
+});

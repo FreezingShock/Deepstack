@@ -23,6 +23,11 @@ export const HOME_NOTES = [
 ];
 const HOME_TEXT = Object.fromEntries(HOME_NOTES);
 
+/* Below this window width the side doors are hidden (roomHome shows them from 1000px up). A phone has no doors, so the door
+   line lights the ring of room lights under the title instead, and says what to do there (ON4). */
+export const DOOR_MIN_WIDTH = 1000;
+export const PHONE_DOOR_TEXT = 'Tap a light to pick a room.';
+
 /* What each note lights. The first match on screen wins; a note with no target on screen is not shown. */
 export const NOTE_TARGET = {
  slip: '#fld',
@@ -33,6 +38,12 @@ export const NOTE_TARGET = {
  'home.doors': '.rm-door',
  'home.ledger': '#bRooms',
 };
+
+/** What a note lights at a window this wide (0 or unknown means a wide window). A door note on a phone lights the ring of room lights. */
+export function noteSelector(key, width = 0) {
+ if (key === 'home.doors' && width && width < DOOR_MIN_WIDTH) return '.rm-ring';
+ return NOTE_TARGET[key];
+}
 
 /* Which object holds each note. Varied on purpose: a plate, a pinned card, a ribbon tag, a wax seal. */
 export const NOTE_LOOK = {
@@ -52,6 +63,10 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', 
 
 /** The seen flags, tolerant of a save that predates them. */
 export const seenOf = S => (S && S.seen && typeof S.seen === 'object' && !Array.isArray(S.seen)) ? S.seen : {};
+
+/* Phones put a home note above its target so it never covers the Daily line. The door line lights the ring under the title,
+   so above would cover the wordmark: it goes below. (Wide windows place the door note beside its door, so this only matters on phones.) */
+const phoneAboveFor = key => key.startsWith('home.') && key !== 'home.doors';
 
 const textOf = key => (Object.prototype.hasOwnProperty.call(NOTE_TEXT, key) ? NOTE_TEXT[key] : Object.prototype.hasOwnProperty.call(HOME_TEXT, key) ? HOME_TEXT[key] : '');
 
@@ -79,7 +94,7 @@ export function calloutBox(tr, w, h, vw, vh, phoneAbove = false) {
 
 /** The element a note lights, or null when it is not on screen (no size, or entirely outside the window). */
 export function targetOf(key, root = globalThis.document) {
- const sel = NOTE_TARGET[key];
+ const sel = noteSelector(key, globalThis.innerWidth || 0);
  if (!sel || !root || typeof root.querySelector !== 'function') return null;
  const el = root.querySelector(sel);
  if (!el || typeof el.getBoundingClientRect !== 'function') return null;
@@ -119,7 +134,7 @@ export function followNote(key, target, halo, panel, find = null) {
   if (!show) return true;
   const vw = globalThis.innerWidth || 0, vh = globalThis.innerHeight || 0;
   const w = panel.offsetWidth || 200, h = panel.offsetHeight || 40;
-  const at = calloutBox(tr, w, h, vw || w + 16, vh || h + 16, key.startsWith('home.'));
+  const at = calloutBox(tr, w, h, vw || w + 16, vh || h + 16, phoneAboveFor(key));
   const geo = `${tr.left},${tr.top},${tr.width},${tr.height},${at.left},${at.top}`;
   if (geo !== last) {
    last = geo;
@@ -148,12 +163,13 @@ export function mountNote(key, target, doc = globalThis.document) {
  panel.className = `fcall fcall-${NOTE_LOOK[key] || 'plate'}`;
  panel.dataset.note = key;
  panel.setAttribute('role', 'note');
- panel.textContent = textOf(key);
+ const onRing = !!(target.classList && target.classList.contains('rm-ring')); // a phone's door line lights the ring, so it says the phone line
+ panel.textContent = key === 'home.doors' && onRing ? PHONE_DOOR_TEXT : textOf(key);
  doc.body.appendChild(halo);
  doc.body.appendChild(panel);
  const vw = globalThis.innerWidth || 0, vh = globalThis.innerHeight || 0;
  const w = panel.offsetWidth || 200, h = panel.offsetHeight || 40;
- const at = calloutBox(tr, w, h, vw || w + 16, vh || h + 16, key.startsWith('home.'));
+ const at = calloutBox(tr, w, h, vw || w + 16, vh || h + 16, phoneAboveFor(key));
  Object.assign(halo.style, {left: (tr.left - 5) + 'px', top: (tr.top - 5) + 'px', width: (tr.width + 10) + 'px', height: (tr.height + 10) + 'px'});
  panel.style.left = at.left + 'px';
  panel.style.top = at.top + 'px';
