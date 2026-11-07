@@ -4,7 +4,7 @@
 .bk-spread.menu .sb-n{position:absolute;right:9px;top:-6px;z-index:2;padding:1px 4px;border-radius:3px;font-size:calc(11px*var(--ts));line-height:1.1;background:var(--c-black-alpha-aa);border:1px solid color-mix(in srgb,var(--gild) 45%,transparent)}
 .bk-spread.menu .sb-fav{position:absolute;left:3px;top:-5px;z-index:2}
 /* other places a word sat on one clipped line: let it wrap instead */
-.rtile b,.rbook .rw,.bk-spread.menu .dly .dly-res .w,.home .lg-row dd{text-overflow:clip;overflow:visible;white-space:normal;overflow-wrap:anywhere}
+.rtile b,.rbook .rw,.bk-spread.menu .dly .dly-res .w,.home .lg-row .lg-v{text-overflow:clip;overflow:visible;white-space:normal;overflow-wrap:anywhere}
 /* clip sweep: plaques, tier list and home spines wrap instead of cutting words */
 .bk-spread.menu .splaque em{overflow:visible;white-space:normal;text-overflow:clip;overflow-wrap:anywhere}
 .bk-spread.menu .splaque span{overflow:visible;white-space:normal;text-overflow:clip;text-align:center;overflow-wrap:anywhere}

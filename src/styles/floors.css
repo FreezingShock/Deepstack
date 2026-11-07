@@ -15,5 +15,4 @@
 #floorBanner b{font:400 clamp(calc(28px*var(--ts)),6vw,calc(44px*var(--ts)))/1.1 var(--serif);color:var(--fc);letter-spacing:.02em;text-shadow:0 0 24px var(--fcd),0 2px 10px var(--c-black)}
 #floorBanner i{font:italic 400 calc(17px*var(--ts)) var(--serif);color:var(--c-parchment-eee4c8)}
 #floorBanner.on{animation:fbanner 4.2s var(--e-cruise) both}
-@keyframes fbanner{0%{opacity:0;transform:translate(-50%,-8px);letter-spacing:.2em}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,6px)}}
-@media(prefers-reduced-motion:reduce){#floorBanner.on{animation:fbanner-rm 2.5s var(--e-cruise) both}@keyframes fbanner-rm{0%{opacity:0}15%,80%{opacity:1}100%{opacity:0}}}
+@keyframes fbanner{0%{opacity:0;transform:translate(-50%,-8px);letter-spacing:.2em}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,6px)}}:where(html.rm) #floorBanner.on{animation:fbanner-rm 2.5s var(--e-cruise) both}@keyframes fbanner-rm{0%{opacity:0}15%,80%{opacity:1}100%{opacity:0}}

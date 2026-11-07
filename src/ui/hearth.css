@@ -24,8 +24,7 @@ html[data-quality=low] .hearth-light.hl-cool{display:none}
 #home.hearth-wide .hz-plaque .next::before{inset:-6px -30px}
 /* narrower stacks beside the fire: titles a size down so nothing clips */
 #home.hearth-narrow .hb-t{font-size:calc(14px*var(--ts,1));letter-spacing:.06em;padding:2px 3px}
-#home.hearth-narrow .hb-t small{font-size:calc(10px*var(--ts,1));margin-left:4px;letter-spacing:.06em}
-@media(prefers-reduced-motion:reduce){#home>.hearth,.hearth-light{transition:none}}
+#home.hearth-narrow .hb-t small{font-size:calc(10px*var(--ts,1));margin-left:4px;letter-spacing:.06em}:where(html.rm) #home>.hearth,:where(html.rm) .hearth-light{transition:none}
 /* compact room (short phones): the stacks stand a size down so the fire still fits above them */
 #home.hearth-compact .hb-t{font-size:calc(12px*var(--ts,1));letter-spacing:.06em}
 #home.hearth-compact .hb-t small{display:none}

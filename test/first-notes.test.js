@@ -175,7 +175,7 @@ test('notes are panels, not ruled paper, and they use tokens and no keyframes', 
  assert.doesNotMatch(css, /@keyframes|animation:/, 'reduced motion needs nothing extra: no keyframes here');
  assert.doesNotMatch(css, /repeating-linear-gradient|hslip/, 'no ruled lines and no hint-strip paper');
  assert.doesNotMatch(css, /#[0-9a-f]{3,8}\b/i, 'colours come from tokens');
- assert.match(css, /prefers-reduced-motion:reduce/, 'reduced motion turns the fade off');
+ assert.match(css, /html\.rm/, 'reduced motion turns the fade off');
 });
 
 test('the run screen and the home screen call the notes at their moments', () => {
@@ -186,7 +186,7 @@ test('the run screen and the home screen call the notes at their moments', () =>
  assert.match(run, /if\(free\)showFirstNote\(S,'hint',save\)/, 'the first hint says it is free');
  assert.match(run, /ta\.oninput=\(\)=>\{Sfx\.quill\(\);clearFirstNote\('slip'\);/);
  const home = read('../src/app/home.js');
- assert.match(home, /import \{showHomeNote\} from '\.\.\/ui\/firstNotes\.js'/);
- assert.match(home, /if\(!keep\)showHomeNote\(S,save,ui\.home\)/);
+ assert.match(home, /import \{showHomeNoteSoon\} from '\.\.\/ui\/firstNotes\.js'/);
+ assert.match(home, /if\(!keep\)showHomeNoteSoon\(S,save,ui\.home\)/);
  assert.match(read('../src/main.js'), /import '\.\/ui\/firstNotes\.css';/);
 });

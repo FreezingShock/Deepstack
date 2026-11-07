@@ -41,7 +41,7 @@ import './ui/reveal.js';
 import * as core from './core/index.js';
 import {Sfx} from './feel.js';
 import {installUiSounds} from './sound/uiHooks.js';
-import {onModelStatus,startModelLoad,judgeAnswer,prepareWords,lexReady} from './scorer/index.js';
+import {onModelStatus,modelStatus,startModelLoad,judgeAnswer,prepareWords,lexReady} from './scorer/index.js';
 import {BOOK_PAGES} from './ui/home.js';
 import {lazyBooks} from './ui/lazyScreens.js';
 import {registerLedgerBooks} from './ui/ledgerBooks.js';
@@ -114,6 +114,7 @@ import './ui/particleMask.js';
 import './ui/polish.css';
 import {initCursorLight} from './ui/cursorLight.js';
 import './ui/cursorLight.css';
+import './ui/a11yTargets.css'; // last: the accessibility pass (44px targets, focus rings) wins the cascade
 import './ui/riddle.css';
 import './ui/runScreen.css';
 import './ui/runLedge.css';
@@ -124,6 +125,7 @@ import './ui/hintSlips.css';
 import './ui/hintTags.css';
 import './ui/hintTags.js';
 import './ui/firstNotes.css';
+import {initNoteClear} from './ui/firstNotes.js';
 import './ui/feedback.js';
 import './core/feedback.js';
 import './ui/feedback.css';
@@ -156,6 +158,7 @@ initRoomRun();
 initKeys();
 initTopbar({Sfx});initTopbarRail({S,Sfx});installUiSounds(Sfx);
 watchHomeLayout(ui.home);
+initNoteClear();
 World.onLedge(initLedge({tiers:TIERS,canActivate:()=>ui.stage.hidden&&$('#cardlayer').hidden,onOpen:b=>openCard(b,{fresh:false}),showTip,hideTip}));
 const browse=initBrowse({world:World,floors:FLOORS,startOf:floorStartFt,ft:FT,rm:RM});
 World.onDepth(v=>{browse.update(v);const e=$('#dnum');if(e.textContent!==fmtNum(v))e.textContent=fmtNum(v);
@@ -197,4 +200,4 @@ wordsReady.catch(()=>{}).then(()=>deferAfterPaint(()=>{const m=startModelLoad();
  // once the model is up, warm the distractor embeddings in idle time so the first answer isn't slow
  .then(ok=>ok&&deferAfterPaint(()=>prepareWords([]),600)).catch(()=>{});
  // judge model downloads after first paint and the word list
-window.__deepstack={openCard,S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,lexReady,get run(){return run;}};
+window.__deepstack={openCard,S,World,startDaily,startUnlimited,showHome,judge:judgeAnswer,modelStatus,lexReady,get run(){return run;}};

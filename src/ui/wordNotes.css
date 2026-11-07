@@ -20,5 +20,4 @@
 .book .mn-rel li+li::before{content:"\25C6";font-style:normal;font-size:calc(7px*var(--ts));margin-right:12px;color:var(--th);opacity:.7;vertical-align:2px}
 .book .mn-page .mn-src{margin-top:8px;font-size:calc(10px*var(--ts));letter-spacing:.06em;opacity:.7}
 .book .mn-page .mn-none{font-style:italic;font-size:calc(13px*var(--ts));color:var(--tm)}
-html[data-motion="reduce"] .book .mn,html[data-motion="reduce"] .book .mn-body,html[data-motion="reduce"] .book .mn-tab::after{transition:none}
-@media (prefers-reduced-motion:reduce){.book .mn,.book .mn-body,.book .mn-tab::after{transition:none}}
+html.rm .book .mn,html.rm .book .mn-body,html.rm .book .mn-tab::after{transition:none}:where(html.rm) .book .mn,:where(html.rm) .book .mn-body,:where(html.rm) .book .mn-tab::after{transition:none}

@@ -1,9 +1,10 @@
 import {DUR,ease} from './motion.js';
+import {motionNow} from './settings.js';
 /* Pen underline for book-page tabs and filters. The underline under the chosen word slides (and stretches) from the
    previously chosen word to the new one, like a pen moved across the line. Pure DOM, no layout cost until a click.
    penMark(root,key) just before the page is repainted; penPlay(root) just after. */
 let mark=null;
-const reduced=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduced=()=>motionNow();
 
 /** Remember where the stroke is now (the pressed word in the same group as the one being chosen). */
 export function penMark(root,key){

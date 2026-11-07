@@ -98,8 +98,44 @@ export function clearFirstNote(key, root = globalThis.document) {
  return gone.length;
 }
 
-/** Puts the halo and the panel for one note on screen. The panel is positioned from the target's rect.
- *  Any note already up is taken down first (one aside at a time). Returns the panel, or null when there is no document. */
+/** Keeps a lit note on its target while it is up. The halo and the panel are re-read from the target's rect every frame, so a
+ *  home still fading up (it moves 14px), a book that shifts or lifts, or a window resize is followed rather than left where
+ *  the target was at mount. A target that was re-rendered (its element replaced, as the side doors are on a re-mount) is
+ *  followed to its replacement through `find`; a target with no size is hidden with its note; a target that is gone for good
+ *  takes the note with it. Stops once the note is taken down (its fade, a click, or a newer note). */
+export function followNote(key, target, halo, panel, find = null) {
+ const frame = fn => (typeof globalThis.requestAnimationFrame === 'function' ? globalThis.requestAnimationFrame(fn) : globalThis.setTimeout(fn, 16));
+ let last = '', el = target;
+ const place = () => {
+  if (!halo.isConnected) return false; // already taken down
+  if (el.isConnected === false) {
+   el = find ? find() : null;
+   if (!el) { halo.remove(); panel.remove(); return false; }
+   last = ''; // a new element: write its geometry on this frame
+  }
+  const tr = el.getBoundingClientRect();
+  const show = tr.width > 0 && tr.height > 0;
+  halo.hidden = panel.hidden = !show;
+  if (!show) return true;
+  const vw = globalThis.innerWidth || 0, vh = globalThis.innerHeight || 0;
+  const w = panel.offsetWidth || 200, h = panel.offsetHeight || 40;
+  const at = calloutBox(tr, w, h, vw || w + 16, vh || h + 16, key.startsWith('home.'));
+  const geo = `${tr.left},${tr.top},${tr.width},${tr.height},${at.left},${at.top}`;
+  if (geo !== last) {
+   last = geo;
+   Object.assign(halo.style, {left: (tr.left - 5) + 'px', top: (tr.top - 5) + 'px', width: (tr.width + 10) + 'px', height: (tr.height + 10) + 'px'});
+   panel.style.left = at.left + 'px';
+   panel.style.top = at.top + 'px';
+  }
+  return true;
+ };
+ const tick = () => { if (place()) frame(tick); };
+ tick();
+}
+
+/** Puts the halo and the panel for one note on screen. The panel is positioned from the target's rect, and followNote keeps both
+ *  on the target while the note is up. Any note already up is taken down first (one aside at a time).
+ *  Returns the panel, or null when there is no document. */
 export function mountNote(key, target, doc = globalThis.document) {
  if (!doc || !doc.body || !target || typeof target.getBoundingClientRect !== 'function') return null;
  doc.querySelectorAll('.fcall, .fhalo').forEach(n => n.remove());
@@ -108,7 +144,6 @@ export function mountNote(key, target, doc = globalThis.document) {
  halo.className = 'fhalo';
  halo.dataset.note = key;
  halo.setAttribute('aria-hidden', 'true');
- Object.assign(halo.style, {left: (tr.left - 5) + 'px', top: (tr.top - 5) + 'px', width: (tr.width + 10) + 'px', height: (tr.height + 10) + 'px'});
  const panel = doc.createElement('div');
  panel.className = `fcall fcall-${NOTE_LOOK[key] || 'plate'}`;
  panel.dataset.note = key;
@@ -119,8 +154,10 @@ export function mountNote(key, target, doc = globalThis.document) {
  const vw = globalThis.innerWidth || 0, vh = globalThis.innerHeight || 0;
  const w = panel.offsetWidth || 200, h = panel.offsetHeight || 40;
  const at = calloutBox(tr, w, h, vw || w + 16, vh || h + 16, key.startsWith('home.'));
+ Object.assign(halo.style, {left: (tr.left - 5) + 'px', top: (tr.top - 5) + 'px', width: (tr.width + 10) + 'px', height: (tr.height + 10) + 'px'});
  panel.style.left = at.left + 'px';
  panel.style.top = at.top + 'px';
+ followNote(key, target, halo, panel, () => targetOf(key, doc));
  const life = globalThis.setTimeout;
  if (typeof life === 'function') {
   const fade = life(() => {
@@ -154,20 +191,60 @@ export const nextHomeNote = S => {
  return hit ? hit[0] : null;
 };
 
+/* The side doors live outside #home (roomHome mounts them on the body, so the home would clip them): a door note is looked for in the document. */
+const OUTSIDE_HOME = new Set(['home.doors']);
+
 /** Lights the next home line whose target is on screen (the Daily book, Unlimited, a side door or the Ledger). A line with no
  *  target on screen waits for a visit where it is there. Flags it seen and saves first. Returns the key shown, or null. */
 export function showHomeNote(S, save, root = globalThis.document) {
  if (!root || typeof root.querySelector !== 'function') return null;
  const seen = seenOf(S);
+ const doc = root.ownerDocument || globalThis.document;
  for (const [key] of HOME_NOTES) {
   if (seen[key]) continue;
-  const target = targetOf(key, root);
+  const target = targetOf(key, OUTSIDE_HOME.has(key) ? doc : root);
   if (!target) continue;
-  const doc = root.ownerDocument || globalThis.document;
   if (!mountNote(key, target, doc)) return null;
   S.seen = {...seenOf(S), [key]: 1};
   if (typeof save === 'function') save();
   return key;
  }
  return null;
+}
+
+/** Lights the next due home line once its target is on screen. The side doors are placed a few frames after the home mounts (a
+ *  frame later with motion, more with reduced motion, and again when the home settles), so the first try can find nothing: this
+ *  tries each frame for a few seconds while the home is still showing, then leaves a line that never found its target for a later visit. */
+export function showHomeNoteSoon(S, save, root = globalThis.document, frames = 240) {
+ const raf = fn => (typeof globalThis.requestAnimationFrame === 'function' ? globalThis.requestAnimationFrame(fn) : globalThis.setTimeout(fn, 16));
+ const doc = (root && root.ownerDocument) || globalThis.document;
+ let left = frames;
+ // the player acting first wins: a press stops the wait, so no note lands over whatever they opened
+ const stop = () => { left = 0; };
+ const done = () => { if (doc && doc.removeEventListener) doc.removeEventListener('pointerdown', stop, true); };
+ if (doc && doc.addEventListener) doc.addEventListener('pointerdown', stop, true);
+ const attempt = () => {
+  if (left <= 0 || !root || !root.isConnected || (typeof root.closest === 'function' && root.closest('[hidden]'))) return done(); // acted on, or the home was left
+  if (showHomeNote(S, save, root)) return done();
+  if (nextHomeNote(S) && --left > 0) return raf(attempt);
+  done();
+ };
+ raf(attempt);
+}
+
+/** Takes down every note on screen, its halo and its panel. A note is about the thing it lights, so once the player acts
+ *  (opens a book, a card or a room) the note goes, rather than sitting over the new screen. Returns how many went. */
+export function clearAllNotes(root = globalThis.document) {
+ if (!root || typeof root.querySelectorAll !== 'function') return 0;
+ const gone = root.querySelectorAll('.fcall, .fhalo');
+ gone.forEach(n => n.remove());
+ return gone.length;
+}
+
+/** Installs the click listener once: any click (or Enter on a button, which also clicks) clears the notes before its handler runs. */
+export function initNoteClear(doc = globalThis.document) {
+ if (!doc || typeof doc.addEventListener !== 'function' || doc.__noteClear) return false;
+ doc.__noteClear = true;
+ doc.addEventListener('click', () => clearAllNotes(doc), true);
+ return true;
 }

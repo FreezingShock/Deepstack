@@ -24,7 +24,10 @@ export async function goRoom(id,dir){
   Sfx.room&&Sfx.room(id); // the new room's accents crossfade in as the old one's fade out (src/sound/roomTone.js)
   paintRoomVars(id,undefined,{settle:true}); // the fire, the light, the title and the labels glide to the new colours; the fireplace itself stays
   typeOnNextMount();
-  await new Promise(r=>{requestAnimationFrame(()=>r());setTimeout(r,60);}); // let the first frame of the glide paint before the room's save swap and word lists load
+  /* Let the first frame of the glide reach the screen before the room's save swap, word lists and home rebuild run.
+     A promise resolved by one rAF continues in the same frame's microtasks, so the heavy work used to delay the paint
+     that shows the colours moving. Two frames (the second one is after the first has painted) then a macrotask. */
+  await new Promise(r=>{requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(r,0)));setTimeout(r,60);});
   await enterRoom(id);
   const snap=snapPlaque(ui.home);
   showHome({keep:true});

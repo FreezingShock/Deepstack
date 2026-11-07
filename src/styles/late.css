@@ -2,8 +2,7 @@
 .ghost-out{pointer-events:none;animation:ghostout var(--m-base) var(--e-accelerate) both}
 @keyframes ghostout{to{opacity:0;transform:translateY(-10px) scale(.985)}}
 #all.fadein,#stats.fadein,#sets.fadein{animation:ovin var(--m-base) var(--e-settle) both}
-@keyframes ovin{from{opacity:0}}
-@media(prefers-reduced-motion:reduce){.ghost-out{display:none}}
+@keyframes ovin{from{opacity:0}}:where(html.rm) .ghost-out{display:none}
 
 /* phones: fit the word stage above the shelf without clipping the hint and skip buttons */
 @media(max-width:640px){

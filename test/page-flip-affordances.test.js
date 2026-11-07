@@ -19,7 +19,7 @@ test('cue shows only on the first page until a turn',()=>{
 });
 test('turn animation stays transform/opacity and reduced motion is honoured',()=>{
  assert.ok(home.includes("import {cornersHTML,paintEdges,noteTurned,hintCurl}"));
- assert.match(css,/@keyframes fl-next\{0%/);assert.ok(css.includes('prefers-reduced-motion:reduce'));
+ assert.match(css,/@keyframes fl-next\{0%/);assert.ok(css.includes('html.rm'));
 });
 test('curls, edges and cue only exist while the book is open on its pages',()=>{
  assert.match(css,/\.bk-spread:not\(\.intro\) \.bs-corner\{display:none\}/);

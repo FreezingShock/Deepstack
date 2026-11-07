@@ -60,6 +60,5 @@
 #stamptoast .stp-where{font-size:calc(11px*var(--ts,1));letter-spacing:.1em;text-transform:uppercase;color:var(--c-amber)}
 #stamptoast .stp-hint{font-style:italic;opacity:.78;font-size:calc(14px*var(--ts,1))}
 #stamptoast .stp-foot{display:flex;justify-content:space-between;gap:1em;padding:.35em .9em .45em;font-style:italic;font-size:calc(12px*var(--ts,1));opacity:.7;
-  border-top:1px solid color-mix(in srgb,var(--c-brass-cdbb92) 30%,transparent)}
-@media (prefers-reduced-motion:reduce){#stamptoast,#stamptoast .stp-seal,#stamptoast::after{transition:none;animation:none}#stamptoast::after{display:none}}
-[data-motion="reduce"] #stamptoast,[data-motion="reduce"] #stamptoast .stp-seal,[data-motion="reduce"] #stamptoast::after{animation:none}
+  border-top:1px solid color-mix(in srgb,var(--c-brass-cdbb92) 30%,transparent)}:where(html.rm) #stamptoast,:where(html.rm) #stamptoast .stp-seal,:where(html.rm) #stamptoast::after{transition:none;animation:none}:where(html.rm) #stamptoast::after{display:none}
+html.rm #stamptoast,html.rm #stamptoast .stp-seal,html.rm #stamptoast::after{animation:none}

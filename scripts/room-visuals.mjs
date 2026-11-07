@@ -47,7 +47,7 @@ async function open(view, room, bestFloor) {
   // The guard blocks Google Fonts, so the Card's floor name falls back to the runner's own cursive face, whose width
   // differs between machines (CI's clipped where a dev box fits). Pin one generic face for the measurement and wait
   // for fonts to settle, so the check measures the layout, not the runner's font list.
-  await page.addStyleTag({content: '.home .lg-row.lg-floor dd{font-family:sans-serif!important}'});
+  await page.addStyleTag({content: '.home .lg-row.lg-floor .lg-v{font-family:sans-serif!important}'});
   await page.evaluate(() => document.fonts && document.fonts.ready);
   await page.waitForTimeout(500);
   return {ctx, page};
@@ -60,7 +60,7 @@ for (const view of VIEWS) for (const room of ROOMS) {
     const {ctx, page} = await open(view, room, depth);
     try {
       const f = await page.evaluate(() => {
-        const dd = document.querySelector('.lg-row.lg-floor dd');
+        const dd = document.querySelector('.lg-row.lg-floor .lg-v');
         if (!dd || !dd.offsetParent) return null;
         const rg = document.createRange(); rg.selectNodeContents(dd); const t = rg.getBoundingClientRect(), pg = dd.closest('.lg-page').getBoundingClientRect();
         const ell = getComputedStyle(dd).textOverflow === 'ellipsis' && getComputedStyle(dd).overflow !== 'visible' && dd.scrollWidth > dd.clientWidth;

@@ -30,6 +30,6 @@ test('decorate inks each page once with a divider, underlines and a margin note'
 });
 test('ink css respects reduced motion and uses tokens only',()=>{
  const c=readFileSync('src/ui/ink.css','utf8');
- assert.match(c,/prefers-reduced-motion:no-preference[\s\S]*inkdraw/);
+ assert.match(c,/where\(html:not\(\.rm\)\)[\s\S]*inkdraw/);
  assert.ok(!/#[0-9a-f]{3,8}\b/i.test(c));assert.match(c,/pointer-events:none/);
 });

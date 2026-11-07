@@ -53,10 +53,8 @@
 .attic-lit .attic-beam{opacity:1}
 /* the panel rides with the world camera (atticHome.js sets its transform and opacity every frame), so no transition */
 #home.attic-away{pointer-events:none}
-@media(max-width:560px){.adl-word{font-size:calc(14px*var(--ts))}.attic-down,.attic-cue-home{--hw:72px}.attic-down{--lh:70px;--hw:60px}.ach-word{font-size:calc(10px*var(--ts));letter-spacing:.2em;text-indent:.2em}}
-@media(prefers-reduced-motion:reduce){.ach-cord{animation:none}}
-@media(prefers-reduced-motion:reduce){.adl-rail{animation:none}html:not([data-motion="full"]) .adl-ladder,html:not([data-motion="full"]) .adl-word{animation:none}}
-html[data-motion="reduce"] .ach-cord,html[data-motion="reduce"] .adl-rail,html[data-motion="reduce"] .adl-ladder,html[data-motion="reduce"] .adl-word{animation:none}
+@media(max-width:560px){.adl-word{font-size:calc(14px*var(--ts))}.attic-down,.attic-cue-home{--hw:72px}.attic-down{--lh:70px;--hw:60px}.ach-word{font-size:calc(10px*var(--ts));letter-spacing:.2em;text-indent:.2em}}:where(html.rm) .ach-cord{animation:none}:where(html.rm) .adl-rail{animation:none}html.rm .adl-ladder,html.rm .adl-word{animation:none}
+html.rm .ach-cord,html.rm .adl-rail,html.rm .adl-ladder,html.rm .adl-word{animation:none}
 /* which room of the attic you are in; a quiet line low in the shelf strip, hidden unless there is more than one room */
 .attic-depth{position:fixed;z-index:6;left:50%;bottom:8px;transform:translateX(-50%);margin:0;padding:2px 12px;border-radius:4px;background:var(--c-black-alpha-88);pointer-events:none;max-width:calc(100vw - 16px);box-sizing:border-box;text-align:center;
  color:var(--c-brass-d8c08c);font:calc(12px*var(--ts))/1.3 "Special Elite",var(--serif);letter-spacing:.04em}

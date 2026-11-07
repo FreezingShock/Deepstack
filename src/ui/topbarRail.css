@@ -48,7 +48,7 @@
 .bbtn[data-tip]:not([data-key])::after{content:attr(data-tip)}
 .bbtn:hover::after,.bbtn:focus-visible::after{opacity:1;transform:none;transition-delay:.25s}
 @media(hover:none){.bbtn[data-tip]::after{display:none}}
-html[data-motion="reduce"] .bbtn[data-tip]::after{transition:none}
+html.rm .bbtn[data-tip]::after{transition:none}
 
 /* volume pips under the speaker */
 .snd .pips{position:absolute;left:50%;bottom:3px;display:flex;gap:2px;transform:translateX(-50%);pointer-events:none}
