@@ -98,6 +98,7 @@ jobs:
           node scripts/room-visuals.mjs & rvis=$!
           node scripts/ra-fixes.mjs & rafix=$!
           node scripts/ember-log.mjs & ember=$!
+          node scripts/stamps-look.mjs & stamps=$!
           node scripts/pwa-check.mjs & pwa=$!
           node scripts/gestures.mjs & ges=$!
           rc=0
@@ -109,6 +110,7 @@ jobs:
           wait $rvis || rc=1
           wait $rafix || rc=1
           wait $ember || rc=1
+          wait $stamps || rc=1
           wait $pwa || rc=1
           wait $ges || rc=1
           exit $rc

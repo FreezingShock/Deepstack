@@ -7,3 +7,6 @@
 @media (max-width:640px),(pointer:coarse){.book .page .go kbd{display:none}}
 /* "You wrote" shows the whole answer (it was clamped to two lines with an ellipsis); the card page scrolls if a long answer needs the room */
 .book .page .wrote{display:block;overflow:visible;-webkit-line-clamp:unset;-webkit-box-orient:horizontal;overflow-wrap:anywhere}
+/* the reading note sits inside the slip, over the empty lines at the foot, so the slip keeps its height while judging */
+.slipwrap>.hslip.reading{position:absolute;left:70px;right:20px;bottom:8px;margin:0;padding:0;pointer-events:none;z-index:4}
+@media(max-width:640px){.slipwrap>.hslip.reading{left:62px;right:12px}}
