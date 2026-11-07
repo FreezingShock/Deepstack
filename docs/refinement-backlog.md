@@ -5,6 +5,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 ## What nate needs to do
 - Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
 
+- Patrons (PT1): open the Patrons book on the home shelf (bottle-green spine) in any topic room, answer the patron's request, and tell me if the phone flow feels right (on a phone the answer slip is on page two, so you turn the page to answer). Screenshots: screenshots/patrons/.
 - Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
@@ -2197,3 +2198,25 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
 **Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
 **Touches:** RUN. **Conflicts:** G12, G15.
+
+## PT. Patrons follow-ups (2026-11-07, from the Patrons thread)
+
+### PT1. [x] Patrons: library desk visitors with word requests (this PR)
+**Pitch:** A unique, on-theme feature: a patron comes to the desk with a word they need, and the player answers it in the library's own voice.
+**Brief:** Goal: six patrons, one per topic room, asking for one word each day, judged by the existing Riddle and Daily judges, served into the Shelf with a commendation in the desk ledger. Files: `src/core/patrons.js`, `src/ui/patronsBook.js`, `src/ui/patronArt.js`, `src/ui/patrons.css`. Done when: 375 and 1280 pass, every room, reduced motion, guard in CI.
+**Touches:** home shelf, Shelf book. **Conflicts:** none open.
+
+### PT2. A stamp for a patron's third commendation
+**Pitch:** Patrons give a reward that links to the Almanac. Three commendations from one patron should earn a small stamp on the Stamps page, so the desk shows progress as well as the Shelf.
+**Brief:** Goal: one stamp per patron ("Friend of the desk"), derived from `S.patrons.served`, shown on the Almanac Stamps page. Files: `src/core/stamps.js`, `test/stamps.test.js` (catalogue count), `src/ui/stampsPage.js`. Done when: stamps page shows six new slots at 375 and 1280 with no clipping, `stamps-look` guard passes, and the catalogue test is updated on purpose.
+**Touches:** Stamps, Almanac. **Conflicts:** stamps follow-ups.
+
+### PT3. Answer on the first page on phones
+**Pitch:** On a phone the answer slip sits on page two, so the request is read, then the page is turned to answer. The slip should sit under the request on page one.
+**Brief:** Goal: at phone width, put the answer slip on the desk page below the request (one page), keep the desktop layout. Files: `src/ui/patronsBook.js`, `src/ui/patrons.css`. Done when: the answer slip is reachable without a page turn at 375 and `scripts/patrons.mjs` asserts it.
+**Touches:** Patrons book. **Conflicts:** none.
+
+### PT4. A harder request for a patron who knows you
+**Pitch:** A patron who has commended you three times should bring a second, harder request (a rarer word from a higher tier), so the desk grows with the player.
+**Brief:** Goal: after three commendations from one patron, their request draws from words of tier 3 and up (`src/core/patrons.js`, the pool filter), labelled "A harder one". Done when: the rule is a pure function with a test and the desk shows the label at 375 and 1280.
+**Touches:** Patrons. **Conflicts:** none.
