@@ -4,7 +4,7 @@
    src/core/weekly.js. The buttons use data-act="weekly", which the Daily book hands to BOOK_ACTS.weekly (app/home.js). */
 import {esc} from './bookpages.js';
 import {shortDate} from '../core/dates.js';
-import {weekRows, WEEK_DAYS} from '../core/weekly.js';
+import {weekRows, weeklyDraft, WEEK_DAYS} from '../core/weekly.js';
 import {TIERS} from '../core/tiers.js';
 
 const tierName = t => (TIERS[t] || TIERS[0]).name;
@@ -50,10 +50,11 @@ export function weeklyLeaves(S, today, pool) {
   const {theme, rows} = wk;
   const todayRow = rows.find(r => r.today);
   const answered = !!(todayRow && todayRow.state === 'played');
+  const drafting = !answered && weeklyDraft(S, today) != null; // an answer was started and not sent: a reload resumes it
   const first = `<div class="dly wk"><div class="kicker">Themed week · ${esc(shortDate(rows[0].key))} to ${esc(shortDate(rows[6].key))}</div>
    <h1>${esc(theme.title)}</h1><p class="wk-motto">${esc(theme.motto)}</p>
    <p class="wk-prog"><span><b>${wk.played}</b> of ${WEEK_DAYS} days answered</span>${pips(rows)}</p>
-   <button class="dly-act pen-ink" data-act="weekly">${answered ? 'See today’s word' : 'Descend into today’s word'}</button>
+   <button class="dly-act pen-ink" data-act="weekly">${answered ? 'See today’s word' : drafting ? 'Continue today’s word' : 'Descend into today’s word'}</button>
    <ol class="wk-days">${rows.slice(0, 3).map((r, i) => dayRow(r, i)).join('')}</ol></div>`;
   const second = `<div class="dly wk"><div class="kicker">${esc(theme.title)} · continued</div>
    <ol class="wk-days">${rows.slice(3).map((r, i) => dayRow(r, i + 3)).join('')}</ol>

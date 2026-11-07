@@ -1,6 +1,7 @@
 // Weekly themed challenge check: serves dist/, then for every room in the ring (Reading Room and the six topic rooms) on a
 // phone and a desktop view: opens the Daily book, checks the cover entry and the two weekly leaves for overflow, and saves a
-// screenshot. In the Reading Room it also plays today's themed word and checks the save. Fails on page errors, a cut-off cover
+// screenshot. In the Reading Room it also plays today's themed word, checks that a half-written answer comes back after a reload,
+// and checks the save. Fails on page errors, a cut-off cover
 // or leaf, or a missing weekly section. Screenshots go to WEEKLY_SHOTS (default: screenshots/weekly/after).
 // Usage: npm run build && CHROMIUM_PATH=... node scripts/weekly-check.mjs   (skips with a message when no browser is found)
 import {createServer} from 'node:http';
@@ -98,6 +99,24 @@ async function run(view) {
   if (!/ · (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)/.test(label || '')) fail(tag(`weekly run label is "${label}"`));
   await page.waitForTimeout(700);
   await page.screenshot({path: `${SHOTS}/run-${view.name}.png`});
+  // WK3: a half-written answer survives a reload. Type part of it, reload, reopen the weekly word and check the text is back.
+  const PART = 'A small room of old';
+  await ans.fill(PART);
+  await page.waitForTimeout(700);
+  await page.reload({waitUntil: 'load'});
+  await page.locator('#bDaily').first().waitFor({state: 'visible', timeout: T}).catch(() => { fail(tag('home never rendered after reload')); throw new Error('stop'); });
+  await openWeeklyLeaves(page, tag, 'Reading Room after reload', null);
+  await page.mouse.move(2, 2);
+  await page.waitForTimeout(3500);
+  const resume = page.locator('.dly.wk [data-act=weekly]').first();
+  const resumeLabel = await resume.textContent({timeout: T}).catch(() => '');
+  if (!/Continue/.test(resumeLabel || '')) fail(tag(`weekly button after reload says "${resumeLabel}", expected "Continue"`));
+  await resume.click({timeout: T}).catch(() => fail(tag('weekly button not clickable after reload')));
+  await ans.waitFor({state: 'visible', timeout: T}).catch(() => { fail(tag('weekly word did not come back after reload')); throw new Error('stop'); });
+  await page.waitForTimeout(700);
+  const restored = await ans.inputValue().catch(() => '');
+  if (restored !== PART) fail(tag(`answer after reload is "${restored}", expected "${PART}"`));
+  await page.screenshot({path: `${SHOTS}/resume-${view.name}.png`});
   await ans.fill('A small room of old stories, each one shelved by the people who kept them.');
   await ans.press('Enter');
   const go = page.locator('#go');

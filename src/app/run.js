@@ -5,7 +5,7 @@ import {comboNeeds,comboLabel,comboMultiplier,applyCombo} from '../core/combo.js
 import {recordBook as recordSetBook} from '../sets/sets.js';
 import {recordMet,recordMastery} from '../core/roomDepth.js';
 import {recordStamps} from '../core/stamps.js';
-import {dayWord,recordWeekly,weekStartOf,weekdayIndex,weeklyWords,dayName,dayRecord} from '../core/weekly.js';
+import {dayWord,recordWeekly,weekStartOf,weekdayIndex,weeklyWords,dayName,dayRecord,weeklyDraft,setWeeklyDraft} from '../core/weekly.js';
 import {fullPool} from '../core/roomPool.js';
 import {toastStamps} from '../ui/stampToast.js';
 import '../ui/stamps.css';
@@ -73,9 +73,20 @@ export async function startWeekly(){
  prepareWords([w]).catch(()=>{});
  World.reset();World.setShelf([]);
  run={mode:'weekly',practice:false,day,wk:weekStartOf(day),theme,wlabel:`${theme.name} \u00b7 ${dayName(day)}`,i:0,words:[w],results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true};
+ const draft=weeklyDraft(S,day); // a reload mid-answer brings the unsent text back onto the slip
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
+ if(draft!=null){const ta=$('#ans');if(ta)ta.value=draft;}
 }
+/* The weekly answer being written is saved a moment after the last keystroke (and when the page is left), so it survives a reload. */
+let draftT=0,draftWrite=null;
+function keepWeeklyDraft(){
+ if(!run||run.mode!=='weekly'||run.practice)return;const rn=run;clearTimeout(draftT);
+ draftWrite=()=>{draftT=0;draftWrite=null;if(run!==rn||rn.busy)return;const ta=$('#ans');if(ta)setWeeklyDraft(S,rn.day,ta.value);save();};
+ draftT=setTimeout(draftWrite,300);
+}
+export function flushWeeklyDraft(){if(draftT&&draftWrite){clearTimeout(draftT);draftWrite();}}
+if(typeof addEventListener==='function')addEventListener('pagehide',flushWeeklyDraft);
 /* Today's weekly result, read back from S.weekly for the Daily book's button (null until today's word is answered). */
 export function weeklyFinal(){
  const day=utc(),rec=dayRecord(S,day);if(!rec)return null;
@@ -100,7 +111,7 @@ export function showWord(){
  const ta=$('#ans');setTimeout(()=>ta.focus({preventScroll:true}),120);
  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit(false);}};
  attachInk(ta);
- ta.oninput=()=>{Sfx.quill();clearFirstNote('slip');const wd=$('.word.smeared');if(wd)wd.classList.remove('smeared');const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
+ ta.oninput=()=>{Sfx.quill();clearFirstNote('slip');keepWeeklyDraft();const wd=$('.word.smeared');if(wd)wd.classList.remove('smeared');const f=$('#candle .flame');if(f){const r=f.getBoundingClientRect();if(r.width){FX.ember(r.left+r.width/2,r.top+4);FX.ember(r.left+r.width/2,r.top+2);}}};
  run.ladder=hintLadder(w);run.hintN=0;paintHintBtn();
  $('#hint').onclick=useHint;$('#skip').onclick=()=>submit(true);
  clearInterval(timerId);

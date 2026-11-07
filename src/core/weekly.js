@@ -30,6 +30,53 @@ export const THEMES = [
    re: /\b(food\w*|cook\w*|bak(?:e|ed|es|ing|ery)|meals?|dish(?:es)?|sauces?|bread\w*|cheeses?|wines?|spices?|desserts?|cuisines?|fruits?|vegetables?|soups?|pastr\w*)\b/i},
 ];
 
+/* The curated allowlist (WK2): the only words a theme can take. Each one was picked by hand from the words its definition
+   matches, so a week reads as its theme. A word must also still match the theme's pattern on its definition (see
+   themeCandidates), and test/weekly-curation.test.js checks every entry against the shipped library. To add a word, add it here
+   after reading its definition; do not widen THEMES. */
+export const THEME_WORDS = {
+  sea: ['harbor', 'marina', 'anchor', 'yacht', 'voyage', 'skipper', 'beacon', 'convoy', 'starboard', 'lighthouse', 'canoe',
+    'iceberg', 'seaside', 'navigate', 'seaweed', 'coastline', 'commodore', 'lagoon', 'navigator', 'shipyard', 'wharf', 'maritime',
+    'shipwreck', 'bulkhead', 'flagship', 'nautical', 'piracy', 'sailboat', 'ballast', 'dinghy', 'stowaway', 'anchorage', 'speedboat',
+    'rowboat', 'schooner', 'trawler', 'helmsman', 'boatswain', 'figurehead', 'skiff', 'galleon', 'mooring', 'atoll', 'gangplank',
+    'gunboat', 'mainsail', 'seaport', 'seaworthy', 'sloop', 'catamaran', 'breakwater', 'sandbar', 'islet', 'seafarer', 'estuary',
+    'archipelago', 'tugboat', 'quarterdeck', 'forecastle', 'oceanic', 'circumnavigate', 'seadog', 'lightship', 'shipwright'],
+  weather: ['rainbow', 'umbrella', 'frost', 'hurricane', 'rainy', 'tornado', 'drought', 'windy', 'misty', 'cloudy', 'stormy',
+    'thunderclap', 'blizzard', 'foggy', 'raincoat', 'rainforest', 'typhoon', 'monsoon', 'sleet', 'cyclone', 'snowflake', 'tempest',
+    'rainfall', 'snowstorm', 'sandstorm', 'drizzle', 'downpour', 'rainstorm', 'snowfall', 'snowdrift', 'cloudburst', 'sirocco',
+    'waterspout', 'hailstone', 'muggy', 'meteorology', 'cumulonimbus', 'cirrus', 'foehn', 'mistral', 'sultry', 'tempestuous',
+    'cloudless', 'windsock'],
+  music: ['blues', 'instrument', 'choir', 'melody', 'musician', 'violin', 'maestro', 'lyrics', 'symphony', 'chant', 'drummer',
+    'cello', 'chord', 'pianist', 'saxophone', 'concerto', 'songwriter', 'soprano', 'tenor', 'vocalist', 'fugue', 'crescendo',
+    'orchestrate', 'sitar', 'mandolin', 'troubadour', 'yodel', 'operetta', 'libretto', 'madrigal', 'cantata', 'oratorio',
+    'accompaniment', 'bassoon', 'harmonize', 'dissonance', 'nocturne', 'timpani', 'marimba', 'gamelan', 'tabla', 'toccata',
+    'sonatina', 'scherzo', 'ocarina', 'kettledrum', 'sonata', 'serenade', 'fantasia', 'etude', 'falsetto', 'improvisation',
+    'percussionist', 'choirmaster', 'chorister', 'chanson', 'concertina', 'banjo', 'jukebox', 'playlist', 'remix', 'minstrel',
+    'quintet', 'zither', 'balalaika', 'psaltery', 'maraca', 'bassist', 'croon', 'lullaby', 'drumstick', 'lyricist', 'songbook',
+    'songbird', 'songstress', 'symphonic', 'musicologist', 'chorale', 'euphonium', 'overtone', 'celesta'],
+  night: ['moonlight', 'twilight', 'comet', 'celestial', 'nightfall', 'lunar', 'aurora', 'nightingale', 'meteor', 'gloomy',
+    'heavenly', 'nebula', 'constellation', 'crescent', 'starlight', 'astronomer', 'silhouette', 'starry', 'firefly', 'planetarium',
+    'zenith', 'equinox', 'pulsar', 'moonrise', 'moonwalk', 'astrolabe', 'horoscope', 'astrology', 'nighttime', 'dreary', 'gloom',
+    'darken', 'shadowy', 'moonshine', 'sombre'],
+  animals: ['butterfly', 'donkey', 'buffalo', 'cricket', 'pigeon', 'salmon', 'raven', 'camel', 'dinosaur', 'lizard', 'parrot',
+    'rooster', 'kitten', 'falcon', 'cobra', 'leopard', 'reindeer', 'hound', 'panther', 'squid', 'trout', 'hedgehog', 'jaguar',
+    'vulture', 'herring', 'snail', 'python', 'catfish', 'jellyfish', 'partridge', 'mackerel', 'ostrich', 'reptile', 'wolverine',
+    'chameleon', 'dingo', 'ferret', 'jackal', 'mammal', 'mantis', 'rodent', 'starling', 'otter', 'pheasant', 'stork', 'rattlesnake',
+    'antelope', 'flamingo', 'koala', 'mockingbird', 'rhinoceros', 'llama', 'starfish', 'wildcat', 'magpie', 'hummingbird',
+    'lioness', 'anaconda', 'heron', 'tadpole', 'woodpecker', 'hippopotamus', 'swordfish', 'marten', 'beluga', 'cicada',
+    'dachshund', 'minnow', 'osprey', 'meerkat', 'plover', 'cockatoo', 'toucan', 'lamprey', 'mayfly', 'pangolin', 'serval',
+    'kinkajou', 'quoll', 'caracal', 'goshawk', 'ermine', 'mastiff', 'sheepdog'],
+  food: ['snack', 'barbecue', 'peanut', 'grain', 'olive', 'pudding', 'chili', 'popcorn', 'pumpkin', 'tomato', 'coconut', 'curry',
+    'garlic', 'peach', 'onion', 'strawberry', 'carrot', 'vanilla', 'bakery', 'banquet', 'gravy', 'syrup', 'yogurt', 'berry',
+    'buffet', 'hamburger', 'cupcake', 'mushroom', 'pastry', 'cracker', 'cuisine', 'salsa', 'mango', 'porridge', 'watermelon',
+    'bagel', 'risotto', 'broccoli', 'broth', 'burrito', 'cheeseburger', 'mayonnaise', 'oatmeal', 'meatball', 'ramen', 'casserole',
+    'cheesecake', 'custard', 'waffle', 'milkshake', 'kebab', 'kimchi', 'avocado', 'cheddar', 'dumpling', 'eggplant', 'fruitcake',
+    'popsicle', 'croissant', 'fondue', 'guacamole', 'sundae', 'papaya', 'parmesan', 'mozzarella', 'pistachio', 'quiche',
+    'sauerkraut', 'paella', 'paprika', 'tapioca', 'biryani', 'crepe', 'pesto', 'strudel', 'falafel', 'granola', 'scone', 'sashimi',
+    'tempura', 'polenta', 'sorbet', 'sourdough', 'teriyaki', 'baklava', 'brioche', 'jambalaya', 'persimmon', 'churro', 'macaroon',
+    'pilaf', 'shortbread', 'wonton', 'samosa', 'muesli', 'tzatziki', 'bibimbap', 'dolma', 'gingersnap'],
+};
+
 /* Words a theme's pattern catches by accident (a verb sense, a metaphor, a rude sense). They never enter a week, whatever the
    theme. test/weekly.test.js checks that none of them is a candidate, so a new loose match shows up in CI. */
 export const OFF_THEME = new Set(['butler', 'horny', 'bestiality', 'catwalk', 'storey', 'snout', 'rummage', 'sacristy', 'journal',
@@ -48,8 +95,12 @@ export const dayName = dayKey => DOW[new Date(at(dayKey)).getUTCDay()];
 /** The seven day keys of the week that starts on `weekKey` (a Monday). */
 export const weekDayKeys = weekKey => Array.from({length: WEEK_DAYS}, (_, i) => iso(at(weekKey) + i * DAY));
 
-/** Every pool word a theme takes: its pattern on the definition, minus the OFF_THEME words. */
-export const themeCandidates = (theme, pool) => pool.filter(w => w && typeof w.def === 'string' && theme.re.test(w.def) && !OFF_THEME.has(w.w));
+/** Every pool word a theme takes: the theme's curated allowlist (THEME_WORDS), kept only where its definition still matches the
+ *  theme's pattern and the word is not an OFF_THEME word. */
+export const themeCandidates = (theme, pool) => {
+  const want = new Set(THEME_WORDS[theme.key] || []);
+  return pool.filter(w => w && want.has(w.w) && typeof w.def === 'string' && theme.re.test(w.def) && !OFF_THEME.has(w.w));
+};
 
 const candCache = new Map();
 /** The theme of a week and every pool word that matches it. Falls through the theme list (deterministically) when a theme is too thin. */
@@ -98,7 +149,8 @@ export const weekPlayed = (S, weekKey) => weekDayKeys(weekKey).filter(k => dayRe
 /** How many weeks have every day played: the stamp counts these. */
 export const themedWeeksDone = S => (S && S.weekly && typeof S.weekly === 'object' ? Object.keys(S.weekly).filter(wk => weekPlayed(S, wk) === WEEK_DAYS).length : 0);
 
-/** Writes a finished weekly answer into S.weekly under its week. The book keeps everything a result screen needs. */
+/** Writes a finished weekly answer into S.weekly under its week. The book keeps everything a result screen needs.
+ *  The day's unfinished draft (S.weeklyRun) goes with it. */
 export function recordWeekly(S, dayKey, book) {
   if (!S) return;
   if (!S.weekly || typeof S.weekly !== 'object' || Array.isArray(S.weekly)) S.weekly = {};
@@ -106,6 +158,24 @@ export function recordWeekly(S, dayKey, book) {
   const r = weekRecord(S, wk) || {days: {}};
   r.days[dayKey] = {...book};
   S.weekly[wk] = r;
+  if (S.weeklyRun && S.weeklyRun.day === dayKey) delete S.weeklyRun;
+}
+
+/* The answer slip of today's weekly word, kept while it is being written (S.weeklyRun = {day, text}, additive) so a reload
+   brings it back. One day at a time: a draft for another day is ignored and replaced. Nothing is kept for a day already answered. */
+const DRAFT_MAX = 300;
+/** The unsent text of a day's weekly answer, or null when there is none to resume. */
+export function weeklyDraft(S, dayKey) {
+  const d = S && S.weeklyRun;
+  if (!d || typeof d !== 'object' || Array.isArray(d) || d.day !== dayKey || typeof d.text !== 'string' || !d.text.trim()) return null;
+  return dayRecord(S, dayKey) ? null : d.text.slice(0, DRAFT_MAX);
+}
+/** Keeps the unsent text of a day's weekly answer. Empty text clears the draft for that day. */
+export function setWeeklyDraft(S, dayKey, text) {
+  if (!S || typeof dayKey !== 'string') return;
+  const t = typeof text === 'string' ? text.slice(0, DRAFT_MAX) : '';
+  if (!t.trim()) { if (S.weeklyRun && S.weeklyRun.day === dayKey) delete S.weeklyRun; return; }
+  S.weeklyRun = {day: dayKey, text: t};
 }
 
 /** The label of the room a word is filed under: a topic room if its list has it, otherwise the Reading Room. */
@@ -118,7 +188,7 @@ export function roomNameOf(w) {
 export function weekRows(S, dayKey, pool = fullPool()) {
   const wk = weekStartOf(dayKey), {theme, words} = weeklyWords(wk, pool);
   const rows = weekDayKeys(wk).map((k, i) => {
-    const rec = dayRecord(S, k), w = words[i] || null;
+    const rec = dayRecord(S, k), w = rec ? {w: rec.w, pos: rec.pos || '', def: rec.def || ''} : (words[i] || null); // a played day shows the word it was answered with, even if the list has since changed
     const state = rec ? 'played' : k < dayKey ? 'missed' : k === dayKey ? 'today' : 'sealed';
     return {key: k, idx: i, state, w: w ? w.w : null, pos: w ? w.pos : '', def: w ? w.def : '', room: w ? roomNameOf(w) : '', rec, today: k === dayKey};
   });

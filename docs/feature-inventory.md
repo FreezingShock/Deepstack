@@ -23,7 +23,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Word pool (~5.8k Wiktionary words, quality filters) and 38 hand-tuned words with concept lists | `src/core/wordPool.js`, `blocklist.js`, `words.js`, `public/data/words.json`, `scripts/build-words.mjs` | B | Pool tops out near difficulty 7. Generated words have no concept lists, so scoring leans on embeddings. Slurs and hateful terms are blocked by word and gloss (`blocklist.js`, test-enforced; blocked words keep the seeded Daily stable). Hand-review of the Daily slice still open. |
 | Difficulty: Elo-style Lexicon (0-100) with 8-word placement, ramp across a run | `src/core/unlimited.js`, `level.js` | B | Titles Casual Reader to Grand Logophile. Unlimited book shows the Lexicon as one hand-lettered rank with a placement line a primary Descend button (Find my rank before placement) right under the rank, and a quiet "Place me again" under it (the Start button used to sit at the page foot and was clipped off by the rank block, so "Place me again" looked like the only way in); final page has a quiet rank-change line (`src/ui/lexiconRank.js`, tested). The rank also has a pen line of the last 12 runs' Lexicon with a one-line caption, shown from two runs (`src/ui/lexiconTrend.js`, tested). |
 | Daily: seeded by the player's local date (rolls over at local midnight), one attempt, streak, share text (room, Daily No., depth, floor, streak, tier grid; Share opens the system sheet or copies), Daily No. 1 = 2026-11-03 | `src/core/daily.js`, `stats.js`, `src/ui/dailyBook.js`, `dailyCalendar.js` | B | Calendar page (month grid, played days circled in tier ink that draw themselves on open, today underlined in pen, tap a day to open it, this-week strip, streak margin note; month header has hand-drawn 44 px prev/next arrows). Combo and set bonuses count in Daily (fairness question open). Same words for everyone, but embedding scores are local. |
-| WK. Weekly themed challenge: each UTC week (Mon to Sun) has a theme (Sea, Weather, Music, The Night, Animals, Food) and seven words drawn from every room, one word a day, easiest on Monday. Answer today's word from the Daily book; it is strict-judged and kept in `S.weekly`. The Daily book's cover has an entry, and two weekly leaves show the week's days (words, definitions, rooms, scores). A week of seven answers earns the library stamp "A themed week" | `src/core/weekly.js`, `src/app/run.js` (`startWeekly`, `weeklyFinal`), `src/ui/weeklyLeaf.js`, `src/ui/weekly.css`, `src/core/stamps.js`, `scripts/weekly-check.mjs`, `test/weekly.test.js` | B | Theme lists match definitions with word-boundary patterns, so a few matches are loose (curtain under weather, butler under food). Gaps (WK3): a weekly word is not resumed after a reload mid-answer; no weekly stamp glyph beyond a single symbol; the Almanac says the library has five stamps. |
+| WK. Weekly themed challenge: each UTC week (Mon to Sun) has a theme (Sea, Weather, Music, The Night, Animals, Food) and seven words drawn from every room, one word a day, easiest on Monday. Answer today's word from the Daily book; it is strict-judged and kept in `S.weekly`. The Daily book's cover has an entry, and two weekly leaves show the week's days (words, definitions, rooms, scores). A week of seven answers earns the library stamp "A themed week" | `src/core/weekly.js`, `src/app/run.js` (`startWeekly`, `weeklyFinal`), `src/ui/weeklyLeaf.js`, `src/ui/weekly.css`, `src/core/stamps.js`, `scripts/weekly-check.mjs`, `test/weekly.test.js`, `test/weekly-curation.test.js`, `test/weekly-resume.test.js` | B | Each theme takes its words from a curated allowlist (`THEME_WORDS`), guarded by `test/weekly-curation.test.js`. An answer being written is kept in `S.weeklyRun` and comes back after a reload (`test/weekly-resume.test.js`, `scripts/weekly-check.mjs`). A played day shows the word it was answered with. Gaps: no weekly stamp glyph beyond a single symbol (WK5); the word's clock restarts after a reload (WK6); the Almanac says the library has five stamps. |
 | Answer slip as quill and ink: real textarea kept, mirror draws wet-to-dry letters, quill at the caret, blotter on Enter | `src/ui/inkInput.js`, `inkInput.css` | B | Hooked with one line in `showWord`. Reduced motion: no animation, no blotter. Empty slip: quill rests in the margin so the placeholder is fully readable. |
 | Hints: sentence (1 row), related word (2), definition start (3); never reveal spelling | `src/core/hints.js`, `main.js` (`useHint`) | B+ | Only ~31% of words have a real example sentence; fallback ladder exists. Hints show as pinned slips; first hint per run is free (#86). Skip lives in the run UI and says what it costs. G4: hint and skip are one pair of handwritten tabs (word plus a pip per clue, the free one ringed, a small strike on Skip when it breaks a chain or wastes hints; full rules in aria-label), hints are pencilled notes on a strip of the answer card with full text and no ellipsis (`src/ui/hintSlips.js/.css`). |
 | Tiers: Pamphlet, Paperback, Hardbound, Folio, Codex, Grimoire, Apocrypha (min 0/14/30/46/62/78/92) | `src/core/tiers.js`, `src/theme/colors.js` | B | Thresholds are shared with the judge calibration. Reveal is one table per tier: particles (`revealRecipe`) plus rays, rune, flash, cover timing, sting, shake (`revealCeremony`); low quality drops rune and softens rays. |
@@ -116,13 +116,13 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 |---|---|---|---|
 | `src/app/card.js` | 79 |  | audit-fixes, panel-book, sigil-pages-crests, verdict-feel, word-notes |
 | `src/app/chrome.js` | 20 |  | - |
-| `src/app/final.js` | 43 |  | - |
+| `src/app/final.js` | 44 |  | - |
 | `src/app/fx.js` | 21 |  | - |
 | `src/app/home.js` | 70 |  | book-open-fx, book-page-flip, book-style, book-switch, door-daily-state, first-notes, home-book-stacks, home-books, home-close-fade, home-layout, home-niche, home-plaque, home, lazy-screens, mantel, page-flip-affordances, patrons, pen-ink, phone-book-pages, unlimited-book |
 | `src/app/riddle.js` | 107 | Riddle Shelf: the reverse of the Daily. A slip shows a definition and you write the word. | lexicon-worker |
 | `src/app/roomGo.js` | 35 | Walking to another room from home (side doors, [ and ], the ring of lights, the Rooms book | - |
 | `src/app/rooms.js` | 18 | Entering a topic room: swap the per-room save data, narrow the word pool, save. The home s | almanac-progress, door-daily-state, patrons, ra-fixes, room-depth, room-mastery, room-props, room-run, room-tone, room-words, scope-labels, topic-rooms-ui, topic-rooms, unlimited-room-repeats |
-| `src/app/run.js` | 136 |  | daily-judge-policy, first-notes, ink-input |
+| `src/app/run.js` | 168 |  | daily-judge-policy, first-notes, ink-input |
 | `src/app/state.js` | 25 |  | lit-props-eyes |
 | `src/app/util.js` | 10 |  | motion-live |
 | `src/core/almanacProgress.js` | 79 | Progress figures for the Almanac: words met per room, accuracy over time, hardest words an | almanac-progress |
@@ -157,15 +157,16 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/core/rooms.js` | 45 | Topic rooms: the same fireplace home, each with its own fire and its own words. | almanac-progress, door-daily-state, patrons, ra-fixes, room-depth, room-mastery, room-props, room-run, room-tone, room-words, scope-labels, topic-rooms-ui, topic-rooms, unlimited-room-repeats |
 | `src/core/shelf.js` | 35 |  | shelf-bays, shelf, topic-rooms-ui |
 | `src/core/shelfRooms.js` | 14 | Shelf room tabs (TR7): every book earned in a topic room carries `room` (src/app/run.js);  | topic-rooms-ui |
-| `src/core/stamps.js` | 104 | Achievement stamps: a small set per topic room, and a few library-wide. Pure: no DOM, no s | stamps-look, stamps |
+| `src/core/stamps.js` | 107 | Achievement stamps: a small set per topic room, and a few library-wide. Pure: no DOM, no s | stamps-look, stamps, weekly |
 | `src/core/stats.js` | 46 | Pure stats derived from saved state, so nothing extra has to be stored and old saves keep  | daily-local-day, stats, streak, topic-rooms-ui |
 | `src/core/streak.js` | 27 | Streaks derived from the saved Daily results (S.daily keys, UTC days), so they cannot drif | streak |
 | `src/core/swRegister.js` | 11 | Registers the service worker (src/sw/sw.js, built to /sw.js) after the page has loaded and | - |
 | `src/core/tiers.js` | 19 |  | almanac-progress, book-art, cabinet, ledge-story, prewarm, riddle, theme-tokens, verdict-partial |
 | `src/core/unlimited.js` | 66 | Unlimited mode: an ~8 word placement test, then an Elo-style rating (the Lexicon, 0-100) t | door-daily-state, lexicon-rank, topic-rooms-ui, unlimited-room-repeats, unlimited |
 | `src/core/verdict.js` | 21 | One-line verdict under a scored answer. The line must agree with the score: tier 0 covers  | verdict-partial |
+| `src/core/weekly.js` | 197 | Weekly themed challenge: "Week of the Sea" and friends. Each UTC week (Monday to Sunday) h | weekly-curation, weekly-resume, weekly |
 | `src/core/wordPool.js` | 114 | Builds the playable word pool from public/data/words.json (see scripts/build-words.mjs). | difficulty-ramp, embedding, hints-no-spelling, hints, riddle-hints, riddle, room-depth, room-words, sets, topic-rooms, unlimited-room-repeats, word-blocklist |
-| `src/core/words.js` | 50 | [word,pos,difficulty,definition,hintSentence,[[label,weight,"term, term, multi word"]...], | data-cache, difficulty-ramp, embedding, feedback, hints-no-spelling, hints, riddle-hints, riddle, room-depth, room-words, scorer, sets, topic-rooms, unlimited-room-repeats, unlimited, word-blocklist |
+| `src/core/words.js` | 50 | [word,pos,difficulty,definition,hintSentence,[[label,weight,"term, term, multi word"]...], | data-cache, difficulty-ramp, embedding, feedback, hints-no-spelling, hints, riddle-hints, riddle, room-depth, room-words, scorer, sets, topic-rooms, unlimited-room-repeats, unlimited, weekly-curation, weekly-resume, weekly, word-blocklist |
 | `src/feel.js` | 215 | Sound, ambience and "juice". Everything is synthesized with WebAudio (no assets). | - |
 | `src/main.js` | 201 |  | attic-overhaul, audit-fixes, book-style, buttons, daily-share, data-cache, first-notes, hint-tags, lazy-screens, lexicon-worker, mantel, menu-wear, patrons |
 | `src/scorer/antonyms.js` | 74 | Embeddings place antonyms close together ("lasting forever" ~ "lasting briefly"), so the e | embedding |
@@ -233,7 +234,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/bookArt.js` | 173 | The one way to draw a book spine. Used by the canvas world (shelves, ledge, held book) and | book-art, no-clipped-words, sigil |
 | `src/ui/bookCard.css` | 46 | Result card as a small open book (loaded after card.css, same selectors, so it wins). | css-sanity |
 | `src/ui/bookMenus.js` | 103 | Shelf and Stats as pages of an open book. Pure leaf builders are exported for tests; the o | book-pages, pen-ink, shelf-bays, shelf-filters |
-| `src/ui/bookMenusLoad.js` | 29 | The code and styles behind the Shelf, Daily and Stats books. Only reached through lazyScre | lazy-screens, shelf-filters |
+| `src/ui/bookMenusLoad.js` | 30 | The code and styles behind the Shelf, Daily and Stats books. Only reached through lazyScre | lazy-screens, shelf-filters |
 | `src/ui/bookOpenFx.css` | 101 | Book opening and closing v3: timings come from --o- | book-hides-home-hero, book-open-fx, book-switch, hearth, home-close-fade |
 | `src/ui/bookOpenFx.js` | 34 | Book opening and closing choreography (v3). Pure timing plus small DOM helpers used by ope | book-hides-home-hero, book-open-fx, book-switch, hearth, home-close-fade |
 | `src/ui/bookRibbon.css` | 7 |  | book-ribbon |
@@ -269,7 +270,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/dailyBind.css` | 9 | Daily binding: flying spines and the dated tab (see dailyBind.js). | daily-bind |
 | `src/ui/dailyBind.js` | 57 | Binding the Daily: when a fresh Daily ends and you climb back home, the seven spines from  | daily-bind |
 | `src/ui/dailyBook.css` | 61 | The Daily book: handwritten ledger pages. Scoped to .dly inside the menu book spreads. | book-style, daily-book, daily-calendar, home-plaque, no-clipped-words, pen-ink |
-| `src/ui/dailyBook.js` | 117 |  | book-style, daily-book, daily-calendar, home-plaque, no-clipped-words, pen-ink |
+| `src/ui/dailyBook.js` | 120 |  | book-style, daily-book, daily-calendar, home-plaque, no-clipped-words, pen-ink |
 | `src/ui/dailyCalendar.css` | 49 | Daily book calendar page: handwritten month grid, played days circled in pen. | daily-calendar |
 | `src/ui/dailyCalendar.js` | 92 | The Daily book's calendar page: a hand-drawn month grid. Days you played are circled in th | daily-calendar |
 | `src/ui/dailyShare.css` | 7 | Daily share (results sheet): on phones the buttons wrap onto a second line instead of runn | daily-share |
@@ -408,7 +409,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/spineLabel.js` | 36 | Spine lettering for the books standing on the home shelf. The old spines had a fixed label | book-art, spine-label |
 | `src/ui/splash.js` | 17 | Takes the launch screen (the #splash block in index.html, painted before any script ran) o | - |
 | `src/ui/stampToast.js` | 45 | The toast for a newly earned stamp (TA5): a brass plaque in the Almanac's wax-seal look, s | stamps-look |
-| `src/ui/stamps.css` | 66 | Achievement stamps (TA5). Look X: a wax seal in the room's colour (--c is the room's r,g,b | stamps-look, stamps |
+| `src/ui/stamps.css` | 66 | Achievement stamps (TA5). Look X: a wax seal in the room's colour (--c is the room's r,g,b | stamps-look, stamps, weekly |
 | `src/ui/stampsPage.js` | 40 | The Almanac's Stamps page (TA5, placement A): the Rooms book gets two leaves after the Roo | stamps-look |
 | `src/ui/statsPages.css` | 56 | The Almanac: hand-kept stats pages inside the menu book. Scoped to .alm. Colours via token | almanac-progress, places, scope-labels, stats-almanac |
 | `src/ui/statsPages.js` | 111 |  | almanac-progress, places, scope-labels, stats-almanac |
@@ -428,6 +429,8 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/transitions.js` | 48 | Smooth screen transitions. Screens are toggled with the `hidden` attribute elsewhere; | screen-fx, transitions |
 | `src/ui/typewrite.js` | 45 | Typewriter for text that is already in the DOM, revealed from the middle of the line outwa | typewrite |
 | `src/ui/verdictFeel.js` | 18 | Plays the verdict feel (src/sound/verdictFeel.js) when a result card's verdict line lands: | verdict-feel |
+| `src/ui/weekly.css` | 39 | The weekly themed challenge in the Daily book: the cover section and the two weekly leaves | weekly-curation, weekly-resume, weekly |
+| `src/ui/weeklyLeaf.js` | 64 | The weekly themed challenge inside the Daily book: a cover section ("This week's theme") a | - |
 | `src/ui/welcome.css` | 83 | The home room's wall furniture frame: the card-catalogue cabinet on the left (cabinet.js / | cabinet, card-lamp, desk-props, ledgerBooks, scope-labels |
 | `src/ui/welcome.js` | 20 |  | cabinet, card-lamp, desk-props, ledgerBooks, scope-labels |
 | `src/ui/wordNotes.css` | 25 | Margin note on the result card: a ribbon tab that hangs from the page, and a tucked sheet  | word-notes |
