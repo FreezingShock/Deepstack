@@ -3,6 +3,8 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Unlimited roguelike descent (descent thread, #366): play one Unlimited run on your phone and a desktop. Landings come before words 3, 5 and 7 with three doors: Hard room, Rest alcove, Curio shop. Tell me if a failed word (skip or Pamphlet) ends the run too harshly, and whether the three relics read clearly. Options A/B/C are in screenshots/descent/.
+
 - Nemesis rematch (NM1): open the Almanac on your phone and turn to the Wanted page. This week's hardest word sits there as a wanted poster, and the Rematch button is also on its row in the hardest-words list. Tap "Face it this week" and answer. Say whether the poster and the rematch feel right, and which option you want (A, B or C in NM1).
 - Phone rooms line (ON4, this PR): on a phone, the first-visit door line lights the ring of room lights and says "Tap a light to pick a room." The other two options (the Ledger line, or no phone line) are in screenshots/onboarding-halo/ON4-*. Say B or C if you'd rather have one of those.
 - Onboarding halo (ON1, this PR): on a fresh profile, the first home visit lights the Room Ledger spine. The halo should sit on the spine, not beside it, and the side-door line on desktop should light the left door. Tell me if either still looks off (screenshots in screenshots/onboarding-halo/).
@@ -2297,6 +2299,22 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 **Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
 **Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
 **Touches:** RUN. **Conflicts:** G12, G15.
+
+### DS1. [x] Unlimited as a roguelike descent: landings, relics and a run-ending cost (#366, `src/core/descent.js`, `src/ui/descentLanding.js`)
+**Pitch:** Unlimited runs now have landings before words 3, 5 and 7 with three doors: Hard room (feet x1.5 on the next word, a harder word), Rest alcove (Spare breath, so one failed word does not end the run) and Curio shop (take one relic of two). Relics last the run: Index card (one more free hint), Slow wick (+10 seconds a word), Folio double (Folio or better earns twice the feet). A skipped or Pamphlet word ends the run unless Spare breath is carried. Scoring and depth are unchanged; the final page says how the descent ended.
+**Brief:** Options A/B/C in `screenshots/descent/`, A built. Guard: `scripts/descent-guard.mjs` (every topic room at 375 and 1280: fit, no clipping).
+
+### DS2. Roguelike descent: a fourth door and the Lexicon's say
+**Pitch:** A landing with only three doors feels fixed after a few runs. Add a door that depends on the Lexicon (a rank-gated Scholar's stair) and let the Lexicon change which relics the shop lays out.
+**Brief:** Goal: one more door when the Lexicon is at least 60, and shop relics weighted by rank. Files: `src/core/descent.js`, `src/ui/descentLanding.js`. Done when: a test pins the door appears only at 60 and above, and the 375 landing still fits. **Touches:** RUN. **Conflicts:** DS1.
+
+### DS3. Relics on the Almanac after a run
+**Pitch:** A relic kept on a finished run is lost, so a good run leaves nothing behind. Show the relics a run kept as a small row on the Almanac, so the run leaves a mark.
+**Brief:** Goal: keep a count of relics kept per run in `S.descent` (additive) and show them on the Almanac page. Files: `src/app/final.js`, `src/ui/almanac*.js`. Done when: the save round-trips and the Almanac fits at 375. **Touches:** HOME, STATS. **Conflicts:** DS1.
+
+### DS4. Say why a run ends, on the card
+**Pitch:** When a run ends on a failed word, the card says "The run ends here" and nothing more. Name the door that would have kept it going (Rest alcove) in the same line.
+**Brief:** Goal: one line on the card for a run-ending word naming the Rest alcove. Files: `src/app/run.js`, `src/ui/results.js`. Done when: a test pins the line for a skip and for a Pamphlet. **Conflicts:** DS1.
 
 ### WK1. [x] Weekly themed challenge (one themed word a day, Monday to Sunday)
 **Serves:** a reason to come back each week, and the whole library in one theme.

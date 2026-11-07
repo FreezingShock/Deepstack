@@ -41,8 +41,8 @@ export function targetFor(L, i, n, span = 1.6) {
 }
 
 /** Picks the next word. Placement is adaptive: it just asks at the current estimate, which moves after each answer. */
-export function nextWord(rating, i, n, used, rng = Math.random, pool = WORDS) {
-  const usedSet = new Set(used), target = rating.placed ? targetFor(rating.L, i, n) : rating.L;
+export function nextWord(rating, i, n, used, rng = Math.random, pool = WORDS, bump = 0) {
+  const usedSet = new Set(used), target = (rating.placed ? targetFor(rating.L, i, n) : rating.L) + bump; // bump: a Hard room asks a little harder
   const seen = new Set([...rating.seen, ...usedSet]);
   if (pool.some(w => !seen.has(w.id))) return pickWord(target, seen, rng);
   // The room is spent: replay the words met longest ago first (rating.seen is oldest-first), keeping a margin of fresh-ish picks.
