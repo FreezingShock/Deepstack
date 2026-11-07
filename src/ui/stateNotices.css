@@ -23,7 +23,7 @@
 #statenotice .sn-go:focus-visible{outline:2px solid var(--c-brass-f6d98a);outline-offset:2px}
 #statenotice .sn-go:disabled{opacity:.6;cursor:progress}
 @media (max-width:560px){#statenotice{font-size:calc(14px*var(--ts,1))}#statenotice .sn-head span{font-size:calc(11px*var(--ts,1))}}
-:where(html.rm) #statenotice,:where(html.rm) #statenotice.on{transition:none}
+@media (prefers-reduced-motion:reduce){#statenotice,#statenotice.on{transition:none}}
 
 /* Try again beside the judge's failure line in the top bar (home.js paintJudge). */
 .judgestat .judge-retry{margin-left:.35em;padding:.15em .55em;min-height:28px;border-radius:3px;cursor:pointer;vertical-align:middle;white-space:nowrap;
