@@ -1,3 +1,4 @@
+import {fmtNum} from './core/numFmt.js';
 import './ui/bookArt.js';
 import './ui/perf.js';
 import './ui/prewarm.js'; // idle prewarm of glow sprites, lighting and serif fonts (PF2)
@@ -120,6 +121,8 @@ import './ui/candle.css';
 import './ui/runScreen.js';
 import './ui/hintSlips.js';
 import './ui/hintSlips.css';
+import './ui/hintTags.css';
+import './ui/hintTags.js';
 import './ui/firstNotes.css';
 import './ui/feedback.js';
 import './core/feedback.js';
@@ -153,7 +156,7 @@ initTopbar({Sfx});initTopbarRail({S,Sfx});installUiSounds(Sfx);
 watchHomeLayout(ui.home);
 World.onLedge(initLedge({tiers:TIERS,canActivate:()=>ui.stage.hidden&&$('#cardlayer').hidden,onOpen:b=>openCard(b,{fresh:false}),showTip,hideTip}));
 const browse=initBrowse({world:World,floors:FLOORS,startOf:floorStartFt,ft:FT,rm:RM});
-World.onDepth(v=>{browse.update(v);const e=$('#dnum');if(e.textContent!==String(v))e.textContent=v;
+World.onDepth(v=>{browse.update(v);const e=$('#dnum');if(e.textContent!==fmtNum(v))e.textContent=fmtNum(v);
  const f=floorAtFt(v);$('#dfloor').textContent=f.id?f.name:'';tintRail(f);
  if(run&&f.id>run.floor){run.floor=f.id;S.bestFloor=Math.max(S.bestFloor,f.id);announceFloor(f);}});
 ui.gauge.innerHTML=TIERS.map(t=>`<div data-t="${t.id}" style="color:${t.spine}"><span>${t.name}</span><i></i></div>`).join('');

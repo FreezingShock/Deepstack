@@ -119,7 +119,7 @@ body:has(#home.book-opening.book-closing) #rm-doors{opacity:1;transition:opacity
 @media(prefers-reduced-motion:reduce){.rm-leaf{transition:none}}
 /* "47 of 118 met": how much of a room the player has seen (TA2) */
 .rm-plate .rm-met{font-style:normal;opacity:.8;letter-spacing:.04em;margin-top:2px}
-.hz-title .tagline .rm-met{font-size:.7em;font-style:normal;opacity:.75;letter-spacing:.04em;white-space:nowrap}
+.hz-title .tagline .rm-met{font-size:max(calc(10px*var(--ts,1)),.7em);font-style:normal;opacity:.75;letter-spacing:.04em;white-space:nowrap}
 /* RS2: on phones the ring of lights is the way into the Rooms book, so each light gets a 44 px square to hit. The row's own height stays as it was (the negative margin), and on very narrow screens the squares shrink together rather than wrap. */
 @media(pointer:coarse),(max-width:560px){
  #home .rm-ring{gap:0;width:100%;max-width:308px}

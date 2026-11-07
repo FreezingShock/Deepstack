@@ -1,3 +1,4 @@
+import {fmtNum} from '../core/numFmt.js';
 // The curio cabinet: finds are kept additively in S.curios = {found:{"row:seed":{r,s,k,t}}}.
 // Nothing about a curio's text is stored (it is a pure function of row and seed); the unlocked
 // lines of the margin letter are derived from how many have been found. Pure, so it tests without a DOM.
@@ -46,7 +47,7 @@ export function curioLeaves(S, floorAtRow = () => ({name: ''}), ft = r => Math.r
   for (let i = 0; i < n; i += PER_LEAF) {
     leaves.push(`<div class="alm cur"><h1>${i ? 'More finds' : 'Finds'}</h1><ul class="cl-list">${found.slice(i, i + PER_LEAF).map(f => {
       const c = curioText(f.r, {seed: f.s});
-      return `<li><b>${esc(KIND_LABEL[c.kind] || c.label)}</b><em>${esc(floorAtRow(f.r).name)} · ${ft(f.r)} ft</em><p>${esc(c.text)}</p></li>`;
+      return `<li><b>${esc(KIND_LABEL[c.kind] || c.label)}</b><em>${esc(floorAtRow(f.r).name)} · ${fmtNum(ft(f.r))} ft</em><p>${esc(c.text)}</p></li>`;
     }).join('')}</ul></div>`);
   }
   return leaves;

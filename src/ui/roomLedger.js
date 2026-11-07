@@ -30,7 +30,7 @@ export function roomLeaves(S, {today = '', lexicon = () => '', words = () => 0, 
     const sf = n ? (d / n).toFixed(3) : 0, tip = `${right}${r.id === HALL ? '' : `, ${d} of ${n} sets complete`}`;
     return `<li class="${r.id === cur ? 'here' : ''}" data-room="${r.id}" style="--c:${rgbOf(r)}" title="${esc(tip)}"><span><i class="rl-dot${r.id === HALL ? ' nosets' : ''}${r.id !== HALL && allMet(m) ? ' all' : ''}" style="--f:${r.id === HALL ? (shelfWords ? 1 : 0) : f};--s:${sf}" aria-hidden="true"></i>${esc(r.name)}${r.id === cur ? ' (here)' : ''}</span><b>${esc(right)}</b></li>`;
   }).join('');
-  leaves.push(`<h1>Room ledger</h1><div class="kicker">${ROOMS.length} rooms · ${ROOMS.length} fires</div>
+  leaves.push(`<h1>Room Ledger</h1><div class="kicker">${ROOMS.length} rooms · ${ROOMS.length} fires</div>
    <p class="note">Every room keeps its own words, its own Daily, its own Lexicon and its own sets. Your shelf and stats come with you.</p>
    <h2>Rooms</h2><ul class="toc rl-toc">${toc}</ul>
    <p class="note">${done} of ${SETS.length} sets complete${bonus ? ` · +${bonus} ft bonus depth` : ''}. A set word answered at ${MIN_SCORE}/100 or better counts in any room.</p>`);
@@ -63,7 +63,7 @@ export function roomsBook(S, {go = () => {}, today = () => '', lexicon = () => '
   const words = id => (roomWordNames(id) || []).length;
   if (typeof setTimeout === 'function') setTimeout(() => loadRoomLists(), 3000); // word counts for the room pages
   const book = {
-    label: 'Room ledger',
+    label: 'Room Ledger',
     spreads() { const r = roomLeaves(S, {today: today(), lexicon, words, met: id => roomMetLabel(S, id), unmet: id => unmetWords(S, id)}); at = r.at; spreads = toSpreads(r.leaves); return spreads; },
     onPaint(sp, api) {
       if (!roomList('science') && !refreshing) { refreshing = true; loadRoomLists().then(() => { if (roomList('science')) api.setSpreads(book.spreads(), api.index); }).catch(() => {}); }
