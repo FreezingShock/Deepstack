@@ -38,10 +38,10 @@ export const dailyWord = done => (done === undefined ? '' : done ? 'done' : 'ope
 export function doorHTML(r, side, met = '', done) {
   const all = allMet(met) ? ' all' : ''; // TA2c: every word met -> a gilt swatch ring and a glint
   const m = /(\d+) of (\d+)/.exec(met), f = m && +m[2] ? Math.min(1, +m[1] / +m[2]).toFixed(3) : 0; // TA7a: the swatch fills with how much of the room you have met
-  const dw = dailyWord(done), dl = dw ? `, Daily ${dw}` : '';
-  return `<button type="button" class="rm-door rm-${side}" data-room="${r.id}" style="--c:${rgbOf(r)};--ci:${ink(r)}" aria-label="${side === 'prev' ? 'Previous' : 'Next'} room: ${esc(r.name)}, ${esc(r.topic)}${dl}" title="${esc(r.name)} (${side === 'prev' ? '[' : ']'})">
+  const dw = dailyWord(done);
+  return `<button type="button" class="rm-door rm-${side}" data-room="${r.id}" style="--c:${rgbOf(r)};--ci:${ink(r)}" title="${esc(r.name)} (${side === 'prev' ? '[' : ']'})"><span class="sr-only">${side === 'prev' ? 'Previous' : 'Next'} room: </span>
  <span class="rm-plate"><b><span class="rm-sw${all}" style="--f:${f}" aria-hidden="true"></span>${esc(r.name)}</b><small>${esc(r.topic)}</small>${met ? `<small class="rm-met${all}">${esc(met)}</small>` : ''}${dw ? `<small class="rm-daily ${dw}">Daily: ${dw}</small>` : ''}</span>
- <span class="rm-arch" aria-hidden="true"><i class="rm-fire"></i><i class="rm-lamp"></i><i class="rm-boards"></i><i class="rm-leaf"></i><i class="rm-arrow">${side === 'prev' ? '‹' : '›'}</i></span>
+ <span class="rm-arch" aria-hidden="true"><i class="rm-fire"></i><i class="rm-lamp"></i><i class="rm-boards"></i><i class="rm-leaf"></i><i class="rm-arrow" data-arrow="${side === 'prev' ? '‹' : '›'}"></i></span>
  <span class="rm-spill" aria-hidden="true"></span></button>`;
 }
 
@@ -51,7 +51,7 @@ function patchDoor(el, r, side) {
   const t = document.createElement('div'); t.innerHTML = doorHTML(r, side);
   const n = t.firstElementChild;
   el.classList.remove('go'); el.dataset.room = r.id;
-  el.setAttribute('aria-label', n.getAttribute('aria-label')); el.title = n.title;
+  el.title = n.title; /* the name is the visible text plus a screen-reader prefix, both in the markup */
   el.style.setProperty('--c', rgbOf(r)); el.style.setProperty('--ci', ink(r));
   const a = el.querySelector('.rm-plate'), b = n.querySelector('.rm-plate');
   if (a && b && a.innerHTML !== b.innerHTML) a.innerHTML = b.innerHTML;
