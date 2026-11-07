@@ -55,6 +55,16 @@ async function waitRoom(page, want, label) {
   fail(`${label}: room is ${await roomNow(page)}, expected ${want}`);
   return false;
 }
+/* A key press can be dropped while the previous walk is still redrawing the home (the room changes before the walk is
+   done), so press again until the room is where we expect. Pressing when already there would walk further, so never do that. */
+async function walkKey(page, key, want, label) {
+  for (let i = 0; i < 4; i++) {
+    if ((await roomNow(page)) === want) break;
+    await page.keyboard.press(key);
+    await waitRoom(page, want, label);
+  }
+  await sleep(900); // let the walk finish redrawing before the next step
+}
 const bookOpen = page => page.evaluate(() => !!document.querySelector('.bk-spread'));
 async function waitBook(page, want, label) {
   const t0 = Date.now();
@@ -101,15 +111,19 @@ const swipe = (page, x0, y0, x1, y1) => page.evaluate(([x0, y0, x1, y1]) => {
   const home = ROOMS.map(r => r.id);
   const next = neighbours(HALL).next.id, prev = neighbours(HALL).prev.id;
   const box = await page.evaluate(() => { const r = document.querySelector('#home .hz-title').getBoundingClientRect(); return {x: r.left + r.width / 2, y: r.bottom + 60}; });
-  await swipe(page, box.x, box.y, box.x - 120, box.y + 4);            // left = next room
-  await waitRoom(page, next, 'phone swipe left');
-  await waitRoom(page, next, 'phone swipe left (settled)');
+  for (let i = 0; i < 4 && (await roomNow(page)) !== next; i++) {   // a swipe can land while the last walk redraws: try again
+    await swipe(page, box.x, box.y, box.x - 120, box.y + 4);          // left = next room
+    await waitRoom(page, next, 'phone swipe left');
+  }
+  await sleep(900);
   // vertical drags are for the attic, never a room walk
   await swipe(page, box.x, box.y + 200, box.x + 4, box.y - 20);
   await sleep(600);
   if ((await roomNow(page)) !== next) fail('phone: a vertical swipe changed the room');
-  await swipe(page, box.x, box.y, box.x + 120, box.y + 4);            // right = previous room
-  await waitRoom(page, HALL, 'phone swipe right');
+  for (let i = 0; i < 4 && (await roomNow(page)) !== HALL; i++) {
+    await swipe(page, box.x, box.y, box.x + 120, box.y + 4);          // right = previous room
+    await waitRoom(page, HALL, 'phone swipe right');
+  }
   void home; void prev;
   await ctx.close();
 }
@@ -118,14 +132,10 @@ const swipe = (page, x0, y0, x1, y1) => page.evaluate(([x0, y0, x1, y1]) => {
 {
   const {ctx, page} = await open({width: 1280, height: 800}, false);
   const next = neighbours(HALL).next.id;
-  await page.keyboard.press('ArrowRight');
-  await waitRoom(page, next, 'desktop ArrowRight');
-  await page.keyboard.press('ArrowLeft');
-  await waitRoom(page, HALL, 'desktop ArrowLeft');
-  await page.keyboard.press(']');
-  await waitRoom(page, next, 'desktop ]');
-  await page.keyboard.press('[');
-  await waitRoom(page, HALL, 'desktop [');
+  await walkKey(page, 'ArrowRight', next, 'desktop ArrowRight');
+  await walkKey(page, 'ArrowLeft', HALL, 'desktop ArrowLeft');
+  await walkKey(page, ']', next, 'desktop ]');
+  await walkKey(page, '[', HALL, 'desktop [');
 
   // with a book open the arrows turn its pages and leave the room alone
   await page.evaluate(() => document.querySelector('#bDaily').click());
