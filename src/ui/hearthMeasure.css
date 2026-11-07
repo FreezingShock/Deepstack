@@ -1,0 +1,2 @@
+/* While the fireplace fit measures the room (hearth.js layout), no transition may run: a read taken mid-transition gets the old box. */
+#home.hearth-measure *,#home.hearth-measure *::before,#home.hearth-measure *::after{transition:none!important}
