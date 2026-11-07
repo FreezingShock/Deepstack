@@ -77,6 +77,7 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 home cabinet: the Library Rules drawer was a weak, off-style menu and Tiers A-M / Sets N-Z were fake -> every drawer must do something real; wants small box drawers (Credits, Instructions and so on) so the cabinet is part of the game, and the cabinet and the whole fireplace room allowed to be much bigger on big windows.
 
 ## Changelog
+- 2026-11-07 asked for unique, on-theme features (a rival word that comes back each week) rather than more of the same; built the Nemesis rematch as a wanted poster, with lettered options in NM1.
 
 - 2026-11-07 Patrons (PT1): six visitors at the library desk, each asking for one word, served into the Shelf with a commendation in the desk ledger (PR)
 - 2026-11-04 initial version from project chat history.

@@ -1,0 +1,34 @@
+/* The Nemesis wanted poster on the Almanac's Closeness leaf (src/ui/nemesis.js). A tan bill pinned to the page, ink from the
+   book tokens, a red pin and a red WANTED band. Words wrap, nothing is cut off, nothing scrolls sideways. A captured word gets a
+   stamped seal; reduced motion (html.rm) shows it still, with no landing animation. Colours are tokens only (no raw hex). */
+.bk-spread.menu .nm{position:relative;margin:10px 0 2px;padding:8px 12px 10px;background:var(--c-parchment-e9d8b0);color:var(--ink);
+  border:1.5px solid var(--c-book-red-dk,var(--bk));border-radius:3px;box-shadow:0 1px 0 var(--c-ink-alpha-22),0 6px 14px -10px var(--c-ink-alpha-80);
+  min-width:0;overflow-wrap:anywhere;transform:rotate(-.4deg);z-index:2;isolation:isolate}
+.bk-spread.menu .nm::before{content:"";position:absolute;top:-6px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,var(--c-book-red) 0 40%,var(--c-book-red-dk,var(--bk)) 41%);box-shadow:0 1px 2px var(--c-ink-alpha-80)}
+.bk-spread.menu .nm h2{margin:0}
+.bk-spread.menu .nm-top{display:flex;justify-content:space-between;align-items:baseline;gap:2px 10px;flex-wrap:wrap;
+  font:600 calc(11px*var(--ts))/1.2 var(--label);letter-spacing:.16em;text-transform:uppercase;color:var(--mute);
+  border-bottom:1px solid var(--rule);padding-bottom:3px}
+.bk-spread.menu .nm-top span:first-child{font:700 calc(20px*var(--ts))/1 var(--serif);letter-spacing:.3em;color:var(--c-book-red-dk,var(--bk))}
+.bk-spread.menu .nm-w{margin:4px 0 0;font:600 calc(26px*var(--ts))/1.05 var(--serif);color:var(--ink);overflow-wrap:anywhere}
+.bk-spread.menu .nm-pos{margin:2px 0 0;font:italic 400 calc(14px*var(--ts))/1.2 var(--serif);color:var(--mute)}
+.bk-spread.menu .nm-def{margin:2px 0 0;font:500 calc(15px*var(--ts))/1.25 var(--hand);color:var(--ink)}
+.bk-spread.menu .nm-meta{margin:2px 0 0;font:500 calc(14px*var(--ts))/1.25 var(--hand);color:var(--mute)}
+.bk-spread.menu .nm-meta b{color:var(--ink);font-weight:700}
+.bk-spread.menu .nm-go{display:block;margin:6px 0 0;padding:4px 12px;font:600 calc(16px*var(--ts))/1.1 var(--hand);color:var(--ink);
+  background:transparent;border:1.5px solid var(--c-book-red-dk,var(--bk));border-radius:3px;cursor:pointer}
+.bk-spread.menu .nm-go:hover,.bk-spread.menu .nm-go:focus-visible{background:var(--c-book-red);color:var(--c-parchment);outline:none}
+.bk-spread.menu .nm-note{margin:4px 0 0;font:italic 400 calc(13px*var(--ts))/1.3 var(--serif);color:var(--mute)}
+.bk-spread.menu .nm-seal{display:inline-block;margin:10px 0 0;padding:3px 10px;border:2px solid var(--c-book-red-dk,var(--bk));border-radius:3px;
+  font:700 calc(15px*var(--ts))/1.1 var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--c-book-red-dk,var(--bk));transform:rotate(-3deg)}
+.bk-spread.menu .nm-none{transform:none;background:transparent;border:1px dashed var(--rule);box-shadow:none}
+.bk-spread.menu .nm-none::before{display:none}
+.bk-spread.menu .nm-none .empty{margin:6px 0 0}
+.bk-spread.menu .nm-captured .nm-seal{animation:nm-stamp var(--m-smooth) var(--e-spring) both}
+:where(html.rm) .bk-spread.menu .nm-captured .nm-seal{animation:none}
+@keyframes nm-stamp{from{transform:rotate(-3deg) scale(1.5);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
+/* the row of the hardest words that is this week's duel */
+.bk-spread.menu .pg-nm{grid-column:1/-1;justify-self:start;margin-top:4px;padding:3px 10px;font:600 calc(15px*var(--ts))/1.1 var(--hand);
+  color:var(--ink);background:transparent;border:1.5px solid var(--c-book-red-dk,var(--bk));border-radius:3px;cursor:pointer}
+.bk-spread.menu .pg-nm:hover,.bk-spread.menu .pg-nm:focus-visible{background:var(--c-book-red);color:var(--c-parchment);outline:none}

@@ -7,6 +7,7 @@ import {roomData} from './roomStore.js';
 import {metWords, roomWordNames, DAILY_LEN} from './roomDepth.js';
 import {longestStreak} from './stats.js';
 import {themedWeeksDone, WEEK_DAYS} from './weekly.js';
+import {nemesisCaptured} from './nemesis.js';
 
 export const PERFECT_SCORE = 78;   // Grimoire and up (src/core/tiers.js): every word of a Daily at this score or better, none skipped
 export const STREAK_DAYS = 7;      // Dailies in a row, in one room or across all of them
@@ -27,6 +28,7 @@ const LIBRARY_STAMPS = [
   {key: 'week', name: 'Any-room week', hint: `${STREAK_DAYS} Dailies in a row, in any room.`, test: l => l.anyStreak >= STREAK_DAYS},
   {key: 'hundred', name: 'A hundred words', hint: `Meet ${LIBRARY_WORDS} different words across the library.`, test: l => l.libMet >= LIBRARY_WORDS},
   {key: 'theme', name: 'A themed week', hint: `Answer all ${WEEK_DAYS} days of one themed week.`, test: l => l.themedWeeks >= 1},
+  {key: 'nemesis', name: 'Rematch won', hint: 'Beat a Nemesis word at Folio or better in its weekly rematch.', test: l => l.nemesisWon >= 1},
 ];
 
 /** Every stamp in a fixed order: each topic room's six, then the four library-wide ones. */
@@ -66,6 +68,7 @@ function libCtx(S, rooms) {
     anyStreak: longestStreak([...days]),
     libMet: met.size,
     themedWeeks: themedWeeksDone(S),
+    nemesisWon: nemesisCaptured(S),
   };
 }
 

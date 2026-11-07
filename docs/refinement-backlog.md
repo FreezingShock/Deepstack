@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Nemesis rematch (NM1): open the Almanac on your phone and turn to the Closeness page. A wanted poster for this week's hardest word sits above the hardest-words list. Tap "Face it this week" and answer. Say whether the poster and the rematch feel right, and which option you want (A, B or C in NM1).
 - Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
 
 - Patrons (PT1): open the Patrons book on the home shelf (bottle-green spine) in any topic room, answer the patron's request, and tell me if the phone flow feels right (on a phone the answer slip is on page two, so you turn the page to answer). Screenshots: screenshots/patrons/.
@@ -2218,6 +2219,27 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Brief:** Goal: a reload during today's weekly word resumes it. Files: `src/core/dailyRun.js` (pattern), `src/app/run.js`. Done when: a reload test in `scripts/weekly-check.mjs` resumes the word.
 **Touches:** RUN, WEEKLY. **Conflicts:** WK1.
 
+
+## NM. Nemesis rematch (2026-11-07, from the Nemesis thread)
+
+### NM1. [x] Nemesis: the word you keep missing comes back as a weekly rematch (this PR)
+**Serves:** a recurring reason to return, a personal rival, a reward for turning a weak word into a strong one.
+**Pitch:** Each week the hardest word in your answers (lowest average closeness) that you have not beaten becomes your Nemesis. It shows as a wanted poster on the Almanac's Closeness page, with a Rematch button on its row in the hardest-words list. One swing a week. Folio or better (46+) captures it and earns the "Rematch won" stamp, and it never comes back. Anything lower and the word is wanted again next Monday.
+**Options (changeable, lettered):** A, built: one swing a week, poster on the Closeness page. B: unlimited retries within the week, with the best score counting (see NM2). C: a wanted poster on the Daily book's cover instead of the Almanac. Change `src/core/nemesis.js` (`recordNemesis`, one swing) and `src/ui/nemesis.js` (placement is in `almanacProgress.js`).
+**Brief:** Goal: a weekly, pinned, personal duel word with a poster, a result and a reward. Files: `src/core/nemesis.js`, `src/ui/nemesis.js`, `src/ui/nemesis.css`, `src/ui/almanacProgress.js`, `src/app/run.js`, `src/app/final.js`, `src/core/stamps.js`. Done when: `test/nemesis.test.js` passes, `scripts/nemesis-check.mjs` passes at 375 and 1280 with reduced motion in every room and plays the duel to the result card.
+**Touches:** ALMANAC, RUN, STAMPS. **Conflicts:** AS1 (progress page), stamps.
+
+### NM2. A rematch that stays open for the whole week
+**Serves:** a fair second try after a bad first one.
+**Pitch:** The duel is one swing a week (option A in NM1). Option B lets the player retry until Sunday, keeping the best score. Pick B if A feels too strict after a real play.
+**Brief:** Goal: an open duel stays open until the week ends, scored by the best swing. Files: `src/core/nemesis.js` (`recordNemesis`, `duelState`). Done when: the test covers two swings in one week with the best one counted.
+**Touches:** RUN, ALMANAC. **Conflicts:** NM1.
+
+### NM3. Nemesis words from the topic rooms
+**Serves:** a Nemesis for players who only answer in one room.
+**Pitch:** Today the Nemesis is drawn from the whole library, so a word that only lives in a topic room's own list is skipped. Draw from the room's list too, and judge it with its own definition.
+**Brief:** Goal: every answered word in any room can become a Nemesis. Files: `src/core/nemesis.js` (`pickNemesis`), `src/core/roomPool.js` (`roomEntries`). Done when: a test with a room-only word picks it and `scripts/nemesis-check.mjs` duels it in that room.
+**Touches:** RUN, ROOMS. **Conflicts:** topic-room word lists.
 
 ## PT. Patrons follow-ups (2026-11-07, from the Patrons thread)
 
