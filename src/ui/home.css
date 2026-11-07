@@ -171,9 +171,6 @@
 .bs-flip.prev .front,.bs-flip.next .back{border-radius:3px 0 0 3px;box-shadow:inset -22px 0 26px -12px var(--c-black-alpha-88),inset 0 0 34px var(--c-oak-24-alpha-55)}
 .bs-flip.next .back,.bs-flip.prev .back{transform:rotateY(180deg)}
 .bs-flip.prev .front::after,.bs-flip.next .back::after{background:linear-gradient(270deg,var(--c-black-alpha-66),transparent 70%)}
-@keyframes fl-next{to{transform:rotateY(-180deg)}}
-@keyframes fl-prev{to{transform:rotateY(180deg)}}
-@keyframes fl-shade{50%{opacity:.7}to{opacity:.15}}
 /* phones: one page at a time, so the page peels away (or settles back in) instead of crossing a spread */
 .bs-flip.one{left:0;right:auto;width:100%;transform-origin:0 50%}
 .bs-flip.one.next{animation:fl-peel var(--m-smooth) var(--e-cruise) forwards}
