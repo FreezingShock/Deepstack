@@ -2122,6 +2122,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Enter now answers at once: the slip holds, locks and says "Reading your answer", Enter or Space during the card reveal hurries it to the verdict, phone cards drop the Enter hint, and a long answer shows whole.
 **Done:** `src/app/run.js` (judging state), `src/app/card.js` (hurry), `src/main.js` (a hurried Enter does not also close the card), `src/ui/coreLoop.css`, guard `scripts/core-loop.mjs` (CL1 to CL4), `scripts/smoke.mjs` mid-reveal step updated to the hurry rule. Screenshots in `screenshots/core-loop/`.
 **Conflicts:** G12 (phone answer slip, owned by the onboarding thread), any card.css thread.
+**Checked, intended:** the tan pad that rocks across the slip on Enter is the blotter from `src/ui/inkInput.js` (sending cue), not a defect. The first version put the reading note under the slip and squeezed it from 180px to 94px; it now sits inside the slip, and CL1 pins the height.
 
 ### CF2. Skip with typed text asks first
 **Pitch:** Skip throws away a half-typed answer with no warning; a quiet "Keep typing" or a second tap would save it.
