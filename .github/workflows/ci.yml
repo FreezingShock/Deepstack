@@ -98,9 +98,7 @@ jobs:
           node scripts/room-visuals.mjs & rvis=$!
           node scripts/ra-fixes.mjs & rafix=$!
           node scripts/ember-log.mjs & ember=$!
-          node scripts/stamps-look.mjs & stamps=$!
           node scripts/pwa-check.mjs & pwa=$!
-          node scripts/patrons.mjs & patrons=$!
           node scripts/a11y.mjs & a11y=$!
           node scripts/restore-check.mjs & rest=$!
           node scripts/review-shelf.mjs & review=$!
@@ -113,10 +111,7 @@ jobs:
           wait $rvis || rc=1
           wait $rafix || rc=1
           wait $ember || rc=1
-          wait $stamps || rc=1
           wait $pwa || rc=1
-          wait $frames || rc=1
-          wait $patrons || rc=1
           wait $a11y || rc=1
           wait $review || rc=1
           wait $rest || rc=1
@@ -127,6 +122,7 @@ jobs:
         run: |
           node scripts/home-frames.mjs
           node scripts/almanac-progress.mjs
+          node scripts/stamps-look.mjs
           node scripts/patrons.mjs
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
       - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)
