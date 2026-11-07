@@ -166,3 +166,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-07 books: wants all the books more readable and usable ("make all the books more readable and usable, etc"). The review view is built as book pages with the book's own type, not as a list in a panel.
 - 2026-11-07 onboarding: "shouldn't really use the same lined paper mechanism", wants "a highlight with a panel that appears, less intrusive, more on theme, and more variety" -> first-run notes light their target with a halo and a small themed panel (plate, pinned card, ribbon tag, wax seal), never ruled paper (thread: onboarding overhaul)
 - 2026-11-07 manuscript restoration: "something more unique" -> a new word-repair mode built on the judge and room words (MR1).
+- 2026-11-07 Input latency: wants room switches and book opens to feel instant on a throttled phone; a switch should show its colour change at once, nothing resetting.

@@ -1,4 +1,4 @@
-import {tierBase,mixc,LEATHER,RIBBONS,bookArt,rgbs} from '../ui/bookArt.js';
+import {tierBase,mixc,LEATHER,RIBBONS,bookArt,rgbs,drawRibbon} from '../ui/bookArt.js';
 import {plaqueShadow,plaqueMount} from '../ui/mounts.js';
 import {lecternGeom,drawLecternBack,drawLecternLip} from '../ui/lectern.js';
 import {glowSprite,stampGlow,fillOutside} from '../ui/glowSprite.js';
@@ -113,6 +113,34 @@ export const World=(()=>{
   ctx.strokeStyle='rgba(150,235,235,.35)';ctx.lineWidth=1.5;ctx.beginPath();for(let x=bx0;x<=bx1;x+=8){const yy=top+Math.sin(x*.035+vt*.9+r)*2.2;if(x===bx0)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);}ctx.stroke();
   ctx.globalCompositeOperation='lighter';ctx.strokeStyle='rgba(120,220,220,.07)';for(let k=0;k<4;k++){ctx.beginPath();for(let x=bx0;x<=bx1;x+=10){const yy=top+14+k*18+Math.sin(x*.05+vt*.7+k*2+r*3)*5;if(x===bx0)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);}ctx.stroke();}
   ctx.restore();}
+ /* Row 0's shelf books are static, so they are drawn once per size into a bitmap whose base sits at RH and blitted each
+    frame. Drawn live they cost ~2000 canvas fills a frame at 4x CPU (the room switch and every frame of the idle world).
+    Ribbons sway with time and tier-6 spines bloom, so both stay live: the ribbon's random draws happen in the cached pass. */
+ function drawShelfBooks(d,base){
+  const Y0=RH,BH=RH+30;let cache=d.shelfBmp;
+  if(!cache||cache.W!==W||cache.DPR!==DPR||cache.RH!==RH||cache.q!==Quality.tier()){
+   const oc=document.createElement('canvas');oc.width=Math.ceil(W*DPR);oc.height=Math.ceil(BH*DPR);
+   const o=oc.getContext('2d');o.setTransform(DPR,0,0,DPR,0,0);
+   const sv=ctx,ribs=[],live=[];ctx=o;
+   try{for(const b of d.bs){
+    if(b.tier===6){live.push(b);continue;} // the aura is a live shadow pulse: drawn in the frame, behind nothing else
+    const tmp=[];ctx.save();ctx.translate(b.x+b.w/2,Y0);
+    if(b.lying)bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib,defer:tmp},vt);
+    else{if(b.tilt)tiltAboutFoot(ctx,b.tilt,b.w);bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib,defer:tmp},vt);}
+    ctx.restore();
+    for(const p of tmp)ribs.push({...p,bx:b.x+b.w/2,tilt:b.lying?0:(b.tilt||0),tw:b.w});
+   }}finally{ctx=sv;}
+   cache=d.shelfBmp={oc,W,DPR,RH,q:Quality.tier(),ribs,live};
+  }
+  ctx.drawImage(cache.oc,0,0,cache.oc.width,cache.oc.height,0,base-Y0,W,BH);
+  for(const p of cache.ribs){ctx.save();ctx.translate(p.bx,base);if(p.tilt)tiltAboutFoot(ctx,p.tilt,p.tw);drawRibbon(ctx,p,vt);ctx.restore();}
+  for(const b of cache.live){ctx.save();ctx.translate(b.x+b.w/2,base);
+   if(b.lying)bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib},vt);
+   else{if(b.tilt)tiltAboutFoot(ctx,b.tilt,b.w);bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib},vt);}
+   ctx.restore();}
+ }
+ // Web fonts finishing load change the spine lettering: rebuild the cached shelves (rows are only dropped on resize).
+ if(typeof document!=='undefined'&&document.fonts&&document.fonts.addEventListener)document.fonts.addEventListener('loadingdone',()=>{for(const v of rows.values())v.shelfBmp=null;});
  function drawRowLive(r,layer,cam_,sc,dim){
   const rh=RH*sc,y=r*rh-cam_,base=y+rh-12*sc,a=abn(r),d=genRow(r,layer),fl=d.fl,backWall=building&&r!==0&&Quality.params().backStacks;
   const body=(bx0,bx1)=>{
@@ -131,11 +159,7 @@ export const World=(()=>{
      hits.push({x:x,y:base-dm.h,w:dm.w,h:dm.h+16,b});x+=dm.w+3;}
     shelfVisible=vis.length;
     // fill the rest of this shelf with the same procedural books as every other row, so the top never reads as a bare band
-    {const x0=Math.max(34,(W-Math.min(W-60,1040))/2),gx0=x0-4,gx1=x+4;
-     for(const b of d.bs){if(b.x+b.w<bx0-50||b.x>bx1+50||(vis.length&&b.x+b.w>gx0&&b.x<gx1))continue;ctx.save();ctx.translate(b.x+b.w/2,base);
-      if(b.lying){bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib},vt);}
-      else{if(b.tilt)tiltAboutFoot(ctx,b.tilt,b.w);bookArt(ctx,{w:b.w,h:b.h,tier:b.tier,col:b.col,seed:b.seed,ribbon:b.rib},vt);}
-      ctx.restore();}}}
+    drawShelfBooks(d,base);}
    else{
     for(const b of d.bs){if(b.x+b.w<bx0-50||b.x>bx1+50)continue;ctx.save();const bx=b.x+b.w/2;
      if(b.lying){ctx.translate(bx,base);bookArt(ctx,{w:b.h*.7,h:b.w*1.2,tier:b.tier,col:b.col,seed:b.seed,dust:a*.9,ribbon:b.rib},vt);}

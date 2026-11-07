@@ -2308,3 +2308,17 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 ### NO1. [x] First-time notes clear when the player acts (this PR)
 **Done:** a first-visit home note (the gold halo and its panel) no longer sits over the card that opens next. Opening a card clears every note, and any click clears them before its handler runs. Files: `src/ui/firstNotes.js`, `src/app/card.js`, `src/main.js`. Guard: `scripts/first-note-clear.mjs` in CI, `test/first-note-clear.test.js`. The walk's "doubled stop" on the "You wrote" line was a false positive (the closing quote), so it is not in this change.
 **Touches:** every card and the home first-visit lines. **Conflicts:** none open.
+
+## PL. Input latency (2026-11-07, room switch, book open, submit)
+
+### PL1. [x] Room switch paints its first frame before the room's work (this PR)
+**Done:** the room's save, word lists and home rebuild run after the first glide frame has painted. Desktop keydown-to-paint at 4x CPU went from 570-750 ms to 410-520 ms. `scripts/latency-budget.mjs` (CI) budgets input-to-paint for room switch, settings book and submit on desktop and phone, and checks the save-after-paint order (the pre-fix build fails it). **Files:** `src/app/roomGo.js`, `scripts/latency-budget.mjs`, CI step.
+
+### PL2. [x] Full-screen canvases cost a copy every frame at 4x CPU (this PR)
+**Done:** the row-0 shelf books were redrawn live each frame (about 2300 canvas fills a frame). They now render once into a cached offscreen bitmap, with only the ribbons and the tier-6 books drawn live. Idle canvas fills fell from about 18000 a second to a few hundred, and the idle frame rate went from 7 to 8.4 fps at 4x. Desktop room switch keydown-to-paint is about 230-320 ms at 4x, down from about 470. The latency guard now also budgets idle canvas fills a second. Remaining cost is the full-canvas background fill and the per-frame blits, which need a layer restructure (follow-up). **Files:** `src/world/world.js`, `src/ui/bookArt.js`, `scripts/latency-budget.mjs`.
+
+### PL3. [ ] Book open is raster-bound during the open
+**Pitch:** Each frame of the settings book costs about 100 ms of commit while the main thread is about 15-30 ms, so the book opens in a few steps at 4x. **Brief:** Goal: find the layer that repaints each frame during `.bs-spread` open (box-shadow, filter, or a large background) and keep it on the compositor. Files: `src/ui/bookStyle.css`, `src/ui/bookOpenFx.css`. Done when: book-open budget cut and transitions guard still passes. **Conflicts:** book threads.
+
+### PL4. [ ] One world plate draw takes 250-400 ms on the first frame of a room switch
+**Pitch:** During a room switch one `floorProp` plate draw (`src/world/world.js`) costs 250-400 ms at 4x. The same draw is about 1 ms when idle, and font and canvas state look clean, so the cost is likely a raster flush. **Brief:** Goal: find what the first frame after the key flushes (a deferred draw from the previous room, or a bitmap). Files: `src/world/world.js`. Done when: first-frame long task under 150 ms at 4x. **Conflicts:** world.js.
