@@ -43,5 +43,5 @@ test('Practice is no longer a menu book; it is a section of the Daily book',()=>
  assert.equal(HOME_LINKS.some(l=>l.id==='bPrac'),false);
  assert.equal(BOOK_INTROS.bPrac,undefined);
  const {leaves}=dailyLeaves(S0,TODAY,{wordsFor:()=>[]});
- assert.match(leaves[0],/aria-label="Practice"[\s\S]*data-act="practice"/);
+ assert.match(leaves.find(l=>/aria-label="Practice"/.test(l)),/aria-label="Practice"[\s\S]*data-act="practice"/);
 });

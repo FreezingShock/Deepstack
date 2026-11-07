@@ -39,22 +39,31 @@ export function dailyEntries(S,today,wordsFor){return dailyKeys(today).map(k=>da
 
 const status=e=>e.played?'Played':e.isToday?'Open today':'Missed';
 
+/* The Daily cover: the Daily entry and the weekly theme. The Riddle and Practice sit on the desk, the spread after the calendar,
+   so the cover fits its page at phone and desktop sizes. The weekly leaves are the spread after the desk (spread WEEK_SPREAD). */
+const WEEK_SPREAD=2;
 const coverLeaf=(S,today,entries,streak)=>{
  const e=entries[0],played=entries.filter(x=>x.played).length;
- const rid=riddleDay(S,today),rs=riddleDayStreak(S&&S.riddle,today);
  return `<div class="dly dly-cover"><div class="kicker">Ledger of descents · ${esc(longDate(today))}</div><h1>The Daily</h1>
   <section class="dly-sec" aria-label="Daily"><h2>Daily No. ${e.no}</h2>
    <p class="dly-line">${e.played?`Played today: ${fmtNum(e.rec.depth)} ft down, average ${e.rec.avg}.`:'Explain seven words, sealed until you descend.'}</p>
    <p class="dly-tally"><span><b>${played}</b> of ${entries.length} played</span><span><b>${streak}</b> day streak</span></p>
    <button class="dly-act pen-ink" data-act="daily">${e.played?'See today’s result':'Descend'}</button></section>
+  ${weeklyCoverSection(S,today,fullPool(),WEEK_SPREAD)}</div>`;
+};
+
+/* The desk: the spread after the calendar. Left: the Daily Riddle. Right: Practice. */
+const deskLeaves=(S,today)=>{
+ const rid=riddleDay(S,today),rs=riddleDayStreak(S&&S.riddle,today);
+ return [`<div class="dly dly-cover dly-desk"><div class="kicker">The desk · Ledger of descents</div>
   <section class="dly-sec" aria-label="Daily Riddle"><h2>Daily Riddle</h2>
    <p class="dly-line">${rid?`Solved ${rid.solved} of ${rid.of} today.`:'Seven definitions: write the word. One try a day.'}</p>
    <p class="dly-tally"><span><b>${rs}</b> day streak</span></p>
-   <button class="dly-act pen-ink" data-act="dailyRiddle">${rid?'See today’s riddle result':'Open today’s riddle'}</button></section>
-  ${weeklyCoverSection(S,today,fullPool())}
+   <button class="dly-act pen-ink" data-act="dailyRiddle">${rid?'See today’s riddle result':'Open today’s riddle'}</button></section></div>`,
+ `<div class="dly dly-cover dly-desk"><div class="kicker">Practice</div>
   <section class="dly-sec" aria-label="Practice"><h2>Practice</h2>
    <p class="dly-line">No pressure: nothing here touches your streak, shelf or rating.</p>
-   <button class="dly-act pen-ink" data-act="practice">Start Practice</button></section></div>`;
+   <button class="dly-act pen-ink" data-act="practice">Start Practice</button></section></div>`];
 };
 
 /* Contents leaves: days newest first, under a heading for each month. startSpread is the spread of the first day. */
@@ -95,12 +104,12 @@ function baseDayLeaves(e){
 
 export function dailyLeaves(S,today,{wordsFor,streak=0,month=monthOf(today)}={}){
  const entries=dailyEntries(S,today,wordsFor);
- /* cover + calendar + the weekly theme + contents come first; pad to a whole spread so every day starts on a left page */
+ /* cover + calendar + desk + the weekly theme + contents come first; pad to a whole spread so every day starts on a left page */
  const nContents=contentsLeaves(entries,0).length;
- let prefix=4+nContents;const pad=prefix%2;
+ let prefix=6+nContents;const pad=prefix%2;
  const start=(prefix+pad)/2;
  const spreadOf=new Map(entries.map((e,i)=>[e.key,start+i]));
- const lead=[coverLeaf(S,today,entries,streak),calendarLeaf(S,today,month,{spreadOf:k=>spreadOf.get(k),streak}),...weeklyLeaves(S,today,fullPool()),...contentsLeaves(entries,start)];
+ const lead=[coverLeaf(S,today,entries,streak),calendarLeaf(S,today,month,{spreadOf:k=>spreadOf.get(k),streak}),...deskLeaves(S,today),...weeklyLeaves(S,today,fullPool()),...contentsLeaves(entries,start)];
  if(pad)lead.push(`<div class="dly"><h2>Memoranda</h2><p class="dly-empty">Every day since No. 1 is written in this book, one spread to a day. Words you have not played are still readable once the day is over.</p></div>`);
  return {entries,start,leaves:[...lead,...entries.flatMap(dayLeaves)]};
 }
