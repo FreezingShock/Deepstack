@@ -23,6 +23,6 @@ test('the niche clips sideways overflow, so a sub-pixel book spine never shows a
 });
 
 test("the Librarian's Card rows are left-aligned and centred on their line, so the streak's room tag never sits on the rule", () => {
- assert.match(welcome, /\.home \.lg-row dt\{margin:0;text-align:left\}/);
+ assert.match(welcome, /\.home \.lg-row \.lg-k\{margin:0;text-align:left\}/);
  assert.match(welcome, /\.home \.lg-row\{[^}]*align-items:center;/);
 });

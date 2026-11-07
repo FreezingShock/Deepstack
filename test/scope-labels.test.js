@@ -44,7 +44,7 @@ for (const r of ROOMS) {
     const room = scopeRoom(S);
     assert.equal(room.id, r.id);
     const card = ledgerHTML({streak: 1, deepest: 10, books: 2, floor: 'The Archive', room});
-    const rows = card.match(/<div class="lg-row[\s\S]*?<\/dt>/g);
+    const rows = card.match(/<div class="lg-row[\s\S]*?<\/span>/g);
     assert.equal(rows.length, 4);
     for (const row of rows) assert.match(row, /class="scope /, 'every Card row is tagged');
     assert.match(rows[0], new RegExp(r.short), 'streak names the room');

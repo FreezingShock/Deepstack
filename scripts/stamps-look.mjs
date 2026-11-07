@@ -1,5 +1,5 @@
 // Stamps guard (TA5): the Almanac's Stamps page at 375 and 1280, reduced motion on, after `npm run build`.
-//  1. the page opens from the Stats book (its Rooms pages are followed by two Stamps leaves) and shows all 42 seals,
+//  1. the page opens from the Stats book (its Rooms pages are followed by two Stamps leaves) and shows every seal,
 //  2. the earned seals are lit and the rest are dashed, with the count in the page's kicker,
 //  3. no seal, row or name is cut off by its page, and the page never scrolls sideways,
 //  4. the toast markup fits a phone-width screen with its text whole (checked on a copy of the same markup).
@@ -8,6 +8,7 @@
 import {createServer} from 'node:http';
 import {readFile, mkdir} from 'node:fs/promises';
 import {extname, join, normalize} from 'node:path';
+import {CATALOG} from '../src/core/stamps.js';
 
 const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.svg': 'image/svg+xml'};
 const root = join(process.cwd(), 'dist');
@@ -33,6 +34,7 @@ const BLOCKED = /^https?:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|hugging
 const problems = [];
 const fail = m => { if (problems.length < 30) problems.push(m); };
 const EARNED = {'history.first': '2026-11-02', 'history.quarter': '2026-11-03', 'history.week': '2026-11-06', 'math.first': '2026-10-30', 'science.first': '2026-11-04', 'library.doors': '2026-11-06'};
+const TOTAL = CATALOG.length; // every stamp in the catalogue (src/core/stamps.js)
 const SHOTS = process.env.STAMPS_SHOTS || '';
 if (SHOTS) await mkdir(SHOTS, {recursive: true});
 
@@ -78,10 +80,10 @@ async function run(label, {width, height}) {
         bad: bad.slice(0, 5),
       };
     });
-    if (r.seals !== 42) fail(`${label}: expected 42 seals on the Stamps leaves, got ${r.seals}`);
+    if (r.seals !== TOTAL) fail(`${label}: expected ${TOTAL} seals on the Stamps leaves, got ${r.seals}`);
     if (r.lit !== Object.keys(EARNED).length) fail(`${label}: expected ${Object.keys(EARNED).length} lit seals, got ${r.lit}`);
-    if (r.dashed !== 42 - Object.keys(EARNED).length) fail(`${label}: dashed seals ${r.dashed} do not match the rest`);
-    if (!/6 of 42 earned/.test(r.kicker)) fail(`${label}: kicker should read "6 of 42 earned", got "${r.kicker}"`);
+    if (r.dashed !== TOTAL - Object.keys(EARNED).length) fail(`${label}: dashed seals ${r.dashed} do not match the rest`);
+    if (!new RegExp(`6 of ${TOTAL} earned`).test(r.kicker)) fail(`${label}: kicker should read "6 of ${TOTAL} earned", got "${r.kicker}"`);
     if (r.sideways > 0) fail(`${label}: the page scrolls sideways by ${r.sideways}px`);
     if (r.bad.length) fail(`${label}: cut off or outside its page: ${r.bad.join(', ')}`);
     if (SHOTS) await page.screenshot({path: join(SHOTS, `stamps-${width}.png`)});

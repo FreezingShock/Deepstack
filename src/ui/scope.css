@@ -6,8 +6,8 @@
 .bk-spread.menu .alm .scopes{display:flex;flex-wrap:wrap;gap:4px 12px;margin:2px 0 4px;font-size:calc(15px*var(--ts));color:var(--mute)}
 .bk-spread.menu .alm .ledger li em .scope{margin-left:6px;font-size:calc(11px*var(--ts))}
 /* Librarian's Card: the tag is a second small line under the row label */
-.home .lg-row dt{display:flex;flex-direction:column;line-height:1.05}
-.home .lg-row dt .scope{font-size:calc(10px*var(--ts));letter-spacing:.08em;margin-top:1px}
+.home .lg-row .lg-k{display:flex;flex-direction:column;line-height:1.05}
+.home .lg-row .lg-k .scope{font-size:calc(10px*var(--ts));letter-spacing:.08em;margin-top:1px}
 /* Top bar plates */
 .bg i.scope{font:600 calc(10px*var(--ts))/1 var(--label,var(--sans));font-style:normal;letter-spacing:.09em;text-transform:uppercase;margin-left:2px}
 .bg .rl-dot{margin-right:.3em}

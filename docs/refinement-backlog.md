@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Nemesis rematch (NM1): open the Almanac on your phone and turn to the Wanted page. This week's hardest word sits there as a wanted poster, and the Rematch button is also on its row in the hardest-words list. Tap "Face it this week" and answer. Say whether the poster and the rematch feel right, and which option you want (A, B or C in NM1).
+- Restoration follow-ups (MR2 to MR4, this PR): open the bench from the bottom-left door on your phone. The first page of each room today is its Daily, and its frame on the wall says Daily. Restore all three entries on a page and a Wax seal plaque drops over the open bench, in the Almanac's library row. Tell me if the plaque should wait until you close the bench instead.
 - Restoration bench (MR1, this PR): a new door at the bottom-left of home, "Restoration bench". Open it, write what each faded word means, type the smudged word, and check the wall. A, B or C mixes are in screenshots/restoration/option-*; B (two faded, one smudged) is built. Reply with a letter if you want another mix.
 - To review (RV1): open the Shelf, tap To review, then Try again on a word and write it from memory. Tell me if 46 is the right bar to win a word back, and whether To review should stay inside the Shelf (now) or get its own spine on the home. Screenshots: screenshots/review-shelf/.
 - Phone home in topic rooms (375x667, with a full shelf): the home used to scroll by 25px in the Chronicle, Counting House, Observatory, Scriptorium and Gallery, because their longer taglines froze the fit at a size that overflowed. They now use the compact type and spacing the Reading Room already gets at this height. Changeable: say if you would rather the topic rooms keep the full-size title on phones and drop a book or two instead.
@@ -93,7 +94,7 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - [~] Tactile hover/press/focus everywhere (#82)
 - [x] Rare tier reveals: particle overhaul (pooled sprite engine, prewarmed, per-tier recipes; this PR)
 - [~] Screen-to-screen transitions
-- [~] Keyboard controls and accessibility
+- [~] Keyboard controls and accessibility (axe and focus guards and Card/door label fixes in PR #358; aria-live and contrast sampling still open)
 - [~] Judge accuracy on tricky answers
 - [~] Difficulty ramp and word pool
 - [x] Hints and skip (#86)
@@ -2134,12 +2135,19 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ## MR. Manuscript restoration (2026-11-07, nate: "something more unique")
 ### MR1. [x] Restoration bench: a damaged page per room, ink returns, finished pages hang on a wall (this PR)
 Brief: a water-damaged page from the room you are in. Two faded entries: the headword shows, the definition has run, and you write what it means in your own words; the judge scores it, and the real entry comes back in ink at 14 or better. One smudged entry: its definition is clear, the headword has gaps, and you type the word (a letter can be given). Leave an entry and it stays damaged. A finished page pins to the wall. Code: `src/restore/` (pages, store, markup, ui, entry). Screenshots: `screenshots/restoration/`. Guards: `test/restore-*.test.js`, `scripts/restore-check.mjs` (CI).
-### MR2. Print one damaged page per room each day
+### MR2. [x] Print one damaged page per room each day (this PR)
 Brief: a day's restoration page per room, the same for everyone, like the Daily, with a "Daily" mark on the wall frame. Conflicts: `src/restore/store.js`, the home door in `src/app/home.js`.
-### MR3. Restored entries count toward "N of M met"
+### MR3. [x] Restored entries count toward "N of M met" (this PR)
 Brief: an entry that comes back in ink counts as met for its room, so the Room Ledger shows the restoration work. Conflicts: `src/core/roomDepth.js`, `src/restore/ui.js`.
-### MR4. A finished page with every entry restored earns a wax seal
+### MR4. [x] A finished page with every entry restored earns a wax seal (this PR)
 Brief: a complete page (all three in ink) adds a seal to the Almanac stamps, with the toast. Conflicts: `src/core/stamps.js`, `src/restore/ui.js`.
+
+### MR5. Wax seal in wax red
+Brief: the Wax seal stamp and its toast use the library's brass like the other library seals. Give this one a deep wax red (the seal is the only stamp that is sealed with wax), in the Almanac's library row and on the plaque. Conflicts: `src/ui/stamps.css`, `src/restore/restore.css`.
+### MR6. Bench door says what today's page is
+Brief: the bottom-left door reads "Today's page" until the room's Daily is pinned, then "Done for today", so the player knows whether a Daily is waiting. Conflicts: `src/restore/entry.js`, `src/app/home.js`.
+### MR7. Restored words show in the Room Ledger
+Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored" note when some of its met words came back from the bench, so the work is visible. Conflicts: `src/core/roomDepth.js`, `src/ui/roomLedger.js`.
 
 ## P. Installable app (2026-11-06, the install PR)
 

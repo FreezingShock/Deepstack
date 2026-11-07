@@ -1,6 +1,7 @@
-// Restoration bench guard (CI): the home entry never covers a home button, the bench opens with a page from the room, a
+// Restoration bench guard (CI): the home entry never covers a home button, the bench opens with the room's Daily page, a
 // faded entry comes back in ink from its own definition, a smudged word comes back from a typed word, a left entry stays
-// damaged, the page pins to the wall, and nothing clips or scrolls sideways at 375 or 1280 with reduced motion on.
+// damaged, the Daily pins to the wall with its Daily mark, a page with every entry in ink earns the wax seal (toast), and
+// nothing clips or scrolls sideways at 375 or 1280 with reduced motion on.
 // Serves dist/ on its own port (run `npm run build` first). Skips (exit 0) when no Chromium is available.
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
@@ -68,6 +69,8 @@ for (const view of VIEWS) {
   await page.waitForSelector('.rs-p', {timeout: T}).catch(() => fail(`${tag}: no page printed`));
   const ps = await truth(page);
   const f = ps.findIndex(p => p.kind === 'faded'), s = ps.findIndex(p => p.kind === 'smudged');
+  // 1b. the first page of the day is the room's Daily
+  if (!(await page.textContent('.rs-no')).includes('Daily')) fail(`${tag}: the first page is not named Daily`);
   // 2. a faded entry comes back from its own definition
   await page.fill(`.rs-p[data-i="${f}"] textarea`, ps[f].def);
   await page.click(`.rs-p[data-i="${f}"] button[type=submit]`);
@@ -86,9 +89,10 @@ for (const view of VIEWS) {
   await page.waitForSelector('.rs-sheet.done', {timeout: T}).catch(() => fail(`${tag}: page did not complete`));
   if (!(await page.textContent('.rs-foot')).includes('pinned to the wall')) fail(`${tag}: no pinned note`);
   await page.waitForTimeout(400);
-  // 5. the wall shows the frame; nothing clips or scrolls sideways
+  // 5. the wall shows the frame, marked Daily; nothing clips or scrolls sideways
   await page.click('[data-act=wall]');
   await page.waitForSelector('.rs-frame', {timeout: 5000}).catch(() => fail(`${tag}: the wall has no frame`));
+  if (!(await page.$('.rs-frame.daily .rs-tag'))) fail(`${tag}: the Daily frame has no Daily mark`);
   const geo = await page.evaluate(() => {
     const bad = [];
     document.querySelectorAll('.rs-bench .rs-head,.rs-bench .rs-def,.rs-bench .rs-word,.rs-bench .rs-msg,.rs-bench .rs-label,.rs-bench .rs-btn,.rs-bench .rs-title h2,.rs-bench .rs-lost,.rs-bench .rs-line,.rs-bench figcaption').forEach(el => {
@@ -98,9 +102,25 @@ for (const view of VIEWS) {
   });
   if (geo.bad.length) fail(`${tag}: clipped text in ${geo.bad.join(', ')}`);
   if (geo.sideways) fail(`${tag}: sideways scroll`);
-  // 6. closing puts the count back on the entry
+  // 6. the next page is a normal one; restoring every entry seals it: the wax seal toast shows and the page joins the wall
+  await page.click('[data-act=bench]');
+  await page.click('[data-act=next]');
+  await page.waitForSelector('.rs-p', {timeout: T});
+  if ((await page.textContent('.rs-no')).includes('Daily')) fail(`${tag}: a second page the same day is named Daily`);
+  const ps2 = await truth(page);
+  for (let i = 0; i < ps2.length; i++) {
+    if (ps2[i].kind === 'faded') await page.fill(`.rs-p[data-i="${i}"] textarea`, ps2[i].def);
+    else await page.fill(`.rs-p[data-i="${i}"] input`, ps2[i].w);
+    await page.click(`.rs-p[data-i="${i}"] button[type=submit]`);
+    await page.waitForFunction(i => document.querySelector(`.rs-p[data-i="${i}"]`)?.classList.contains('restored'), i, {timeout: T}).catch(() => fail(`${tag}: entry ${i} of the second page did not come back`));
+  }
+  await page.waitForFunction(() => /Wax seal/.test(document.getElementById('stamptoast')?.textContent || '') && document.getElementById('stamptoast').classList.contains('on'), null, {timeout: 5000}).catch(() => fail(`${tag}: no wax seal toast for a full page`));
+  // the toast drops over the open bench (a toast ignores pointer events, so compare stacking order instead)
+  const stacked = await page.evaluate(() => +getComputedStyle(document.getElementById('stamptoast')).zIndex > +getComputedStyle(document.querySelector('.rs-bench')).zIndex);
+  if (!stacked) fail(`${tag}: the wax seal toast is under the open bench`);
+  // 7. closing puts the count back on the entry: two pages on the wall
   await page.click('[data-act=close]');
-  await page.waitForFunction(() => document.querySelector('.rs-entry')?.textContent.includes('1 on the wall'), null, {timeout: 5000}).catch(() => fail(`${tag}: the entry does not show the wall count`));
+  await page.waitForFunction(() => document.querySelector('.rs-entry')?.textContent.includes('2 on the wall'), null, {timeout: 5000}).catch(() => fail(`${tag}: the entry does not show the wall count`));
   if (errs.length) fail(`${tag}: page errors: ${errs.slice(0, 3).join('; ')}`);
   await ctx.close();
 }
