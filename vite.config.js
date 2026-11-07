@@ -10,7 +10,7 @@ const dropUnusedOrt = () => ({name: 'drop-unused-ort', apply: 'build', generateB
 }});
 const SHELL_FONTS = ['anthropic-serif/Text-Regular.woff2', 'anthropic-serif/Text-RegularItalic.woff2', 'anthropic-serif/Text-Medium.woff2', 'anthropic-serif/Text-Semibold.woff2',
   'anthropic-serif/Display-Regular.woff2', 'anthropic-serif/Display-RegularItalic.woff2', 'anthropic-serif/Display-Medium.woff2',
-  'google/Cinzel-normal-500.woff2', 'google/FuzzyBubbles-normal-400.woff2', 'google/IMFellEnglish-normal-400.woff2', 'google/Newsreader-normal-400.woff2', 'google/SourceSans3-normal-400.woff2', 'google/SpecialElite-normal-400.woff2'];
+  'google/Cinzel-normal-500.woff2', 'google/FuzzyBubbles-normal-400.woff2', 'google/FuzzyBubbles-normal-700.woff2', 'google/IMFellEnglish-normal-400.woff2', 'google/Newsreader-normal-400.woff2', 'google/SourceSans3-normal-400.woff2', 'google/SpecialElite-normal-400.woff2'];
 // Builds src/sw/sw.js to /sw.js, naming its ONNX runtime cache after the installed onnxruntime-web version.
 const emitServiceWorker = () => ({name: 'emit-sw', apply: 'build', generateBundle(_, bundle) {
   const ort = JSON.parse(readFileSync('node_modules/onnxruntime-web/package.json', 'utf8')).version;
