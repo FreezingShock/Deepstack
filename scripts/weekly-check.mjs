@@ -1,0 +1,121 @@
+// Weekly themed challenge check: serves dist/, opens the Daily book, reads the weekly cover and leaf, plays today's themed
+// word and checks what was saved. Fails on page errors, horizontal overflow in the weekly leaf, or a save that lacks the
+// answer. Writes screenshots to the folder given by WEEKLY_SHOTS (default: screenshots/weekly/after).
+// Usage: npm run build && node scripts/weekly-check.mjs   (CHROMIUM_PATH optional; skips when no browser is found)
+import {createServer} from 'node:http';
+import {readFile, mkdir} from 'node:fs/promises';
+import {extname, join, normalize} from 'node:path';
+
+const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg'};
+const root = join(process.cwd(), 'dist');
+const server = createServer(async (req, res) => {
+  try {
+    let p = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname));
+    if (p.endsWith('/')) p += 'index.html';
+    res.writeHead(200, {'content-type': TYPES[extname(p)] || 'application/octet-stream'}).end(await readFile(join(root, p)));
+  } catch { res.writeHead(404).end('not found'); }
+});
+await new Promise(r => server.listen(0, r));
+const url = `http://localhost:${server.address().port}/`;
+
+let chromium;
+try { ({chromium} = await import('playwright')); }
+catch { try { ({chromium} = (await import('node:module')).createRequire(import.meta.url)('playwright')); } catch {} }
+if (!chromium) { console.log('weekly-check: playwright not available, skipping'); server.close(); process.exit(0); }
+let browser;
+try { browser = await chromium.launch(process.env.CHROMIUM_PATH ? {executablePath: process.env.CHROMIUM_PATH} : {}); }
+catch (e) { console.log('weekly-check: no browser, skipping:', e.message.split('\n')[0]); server.close(); process.exit(0); }
+
+const SHOTS = process.env.WEEKLY_SHOTS || 'screenshots/weekly/after';
+await mkdir(SHOTS, {recursive: true});
+const BLOCKED = /^https?:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|huggingface\.co|[^/]*\.hf\.co|cdn\.jsdelivr\.net)\//;
+const OPTIONAL = /\/(models|ort)\//;
+const problems = [];
+const fail = m => problems.push(m);
+const T = 15000;
+
+const VIEWS = [
+  {name: '375', viewport: {width: 375, height: 667}, scale: 2, mobile: true},
+  {name: '1280', viewport: {width: 1280, height: 800}, scale: 2, mobile: false},
+];
+
+async function run(view) {
+  const ctx = await browser.newContext({viewport: view.viewport, deviceScaleFactor: view.scale, isMobile: view.mobile, reducedMotion: 'reduce', hasTouch: view.mobile});
+  const page = await ctx.newPage();
+  const tag = m => `[${view.name}] ${m}`;
+  await page.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
+  page.on('pageerror', e => fail(tag(`pageerror: ${e.message}`)));
+  page.on('console', m => {
+    if (m.type() !== 'error') return;
+    if (BLOCKED.test(m.location()?.url || '')) return;
+    if (/Failed to load resource/.test(m.text()) && (!m.location()?.url?.startsWith(url) || OPTIONAL.test(m.location().url))) return;
+    fail(tag(`console.error: ${m.text()}`));
+  });
+  await page.goto(url, {waitUntil: 'load'});
+  await page.locator('#bDaily').first().waitFor({state: 'visible', timeout: T}).catch(() => { fail(tag('home never rendered')); throw new Error('stop'); });
+
+  // 1. The Daily book: the cover has a short entry to the weekly theme, which turns to its two leaves.
+  await page.locator('#bDaily').first().click();
+  await page.locator('.wk-cover').first().waitFor({state: 'attached', timeout: T}).catch(() => { fail(tag('Daily book cover has no weekly section')); throw new Error('stop'); });
+  await page.waitForTimeout(900);
+  const coverFit = await page.locator('.dly').first().evaluate(el => ({tall: el.scrollHeight > el.clientHeight + 1, h: [el.scrollHeight, el.clientHeight]})).catch(() => null);
+  if (coverFit && coverFit.tall) fail(tag(`Daily cover is cut off: ${JSON.stringify(coverFit)}`));
+  await page.screenshot({path: `${SHOTS}/cover-${view.name}.png`});
+  await page.locator('.wk-cover .dly-go').first().click({timeout: T}).catch(() => fail(tag('cover entry not clickable')));
+  await page.waitForTimeout(1000);
+  // The weekly leaves are the spread after the calendar: each page must hold its text without cutting it or scrolling sideways.
+  const leaves = page.locator('.dly.wk');
+  if (await leaves.count() < 2) fail(tag(`expected two weekly leaves in the Daily book, found ${await leaves.count()}`));
+  for (let i = 0; i < await leaves.count(); i++) {
+    const over = await leaves.nth(i).evaluate(el => {
+      const pg = el.closest('.pg-in') || el.parentElement;
+      return {tall: pg.scrollHeight > pg.clientHeight + 1, wide: pg.scrollWidth > pg.clientWidth + 1 || document.documentElement.scrollWidth > innerWidth + 1,
+        h: [pg.scrollHeight, pg.clientHeight]};
+    });
+    if (over.tall || over.wide) fail(tag(`weekly leaf ${i + 1} overflows: ${JSON.stringify(over)}`));
+  }
+  await page.screenshot({path: `${SHOTS}/leaf-${view.name}.png`});
+
+  // 2. Play today's themed word from the cover button, answer it, and check the save.
+  await page.mouse.move(2, 2);
+  await page.waitForTimeout(3500);
+  const btn = page.locator('.dly.wk [data-act=weekly]').first();
+  if (await btn.count() === 0) { fail(tag('no weekly button')); return ctx.close(); }
+  await btn.click({timeout: T}).catch(() => fail(tag('weekly button not clickable')));
+  const ans = page.locator('#ans');
+  await ans.waitFor({state: 'visible', timeout: T}).catch(() => { fail(tag('weekly run never showed an answer slip')); throw new Error('stop'); });
+  const label = await page.locator('.wlabel').first().textContent();
+  if (!/ · (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)/.test(label || '')) fail(tag(`weekly run label is "${label}"`));
+  await page.waitForTimeout(700);
+  await page.screenshot({path: `${SHOTS}/run-${view.name}.png`});
+  await ans.fill('A small room of old stories, each one shelved by the people who kept them.');
+  await ans.press('Enter');
+  const go = page.locator('#go');
+  await go.waitFor({state: 'visible', timeout: 30000}).catch(() => fail(tag('weekly answer never reached the card')));
+  await page.waitForTimeout(600);
+  await page.screenshot({path: `${SHOTS}/card-${view.name}.png`});
+  await go.click().catch(() => fail(tag('card button not clickable')));
+  // The run is one word, so the card's button is the last step: it finishes the run and shows the result.
+  await page.waitForTimeout(3000);
+  const saved = await page.evaluate(() => {
+    try { const S = JSON.parse(localStorage.getItem('deepstack.v1') || '{}'); return {weekly: S.weekly || null, daily: Object.keys(S.daily || {}).length, dailyRun: !!S.dailyRun}; }
+    catch (e) { return {error: String(e)}; }
+  });
+  const days = saved.weekly ? Object.values(saved.weekly).flatMap(w => Object.values(w.days || {})) : [];
+  if (days.length !== 1 || !days[0].answer) fail(tag(`save has ${days.length} weekly days, expected 1: ${JSON.stringify(saved).slice(0, 200)}`));
+  if (saved.dailyRun) fail(tag('weekly run wrote the Daily resume field'));
+  if (saved.daily !== 0) fail(tag('weekly run counted as a Daily'));
+  await page.screenshot({path: `${SHOTS}/result-${view.name}.png`});
+  await ctx.close();
+}
+
+try {
+  for (const v of VIEWS) {
+    try { await run(v); } catch (e) { if (e.message !== 'stop') fail(`[${v.name}] ${e.message}`); }
+  }
+} finally {
+  await browser.close();
+  server.close();
+}
+if (problems.length) { console.error('weekly-check FAILED:\n  ' + problems.join('\n  ')); process.exit(1); }
+console.log(`weekly-check ok (screenshots in ${SHOTS})`);
