@@ -3,7 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
-- Stamp toast look (TA12, this PR): reply A, B or C. A = an inked stamp on an aged slip that lands open and folds to a stamp tab (built, recommended). B = today's brass plaque (before shots). C = the tab lands folded and the slip opens only on tap. Screenshots: screenshots/stamp-toast/options/ (desktop 1280 and phone 375); before and after for all six rooms in screenshots/stamp-toast/before/ and after/.
+- Stamp toast (TA16, PR #399): nate picked "mix B and A", and it is built: B's brass look at A's slip size on desktop. nate to check it on a phone and a desktop and say if anything needs changing. Shots: screenshots/stamp-toast/before-mix/ and after-mix/.
 - Daily cover on a desktop (new-modes playtest, PR #390 built as option A): Riddle and Practice moved to a desk spread after the calendar, so the cover fits at 1280 with reduced motion. Reply A, B or C: A = desk spread (built, recommended); B = keep the cover scrolling; C = shrink the calendar. Mockups: screenshots/new-modes-playtest/mockups/.
 - Book ribbon on a phone (Nemesis playtest, PR pending): the bookmark ribbon used to hang over the Almanac's header seal at 375 px with motion on. It now hangs in the page's gutter (14 px, top edge). Reply A, B or C: A = gutter (built, recommended); B = hide the ribbon on phones; C = centre seam (covers the subtitle). Mockups: screenshots/new-modes-playtest/mockups/ribbon-option-{A,B,C}-{375,1280}.png. Also: the stamp plaque is now a small tab at the top corner that opens on tap, so it no longer covers a duel result (screenshots/new-modes-playtest/stamp-tab/).
 - Unlimited roguelike descent (descent thread, #366): play one Unlimited run on your phone and a desktop. Landings come before words 3, 5 and 7 with three doors: Hard room, Rest alcove, Curio shop. Tell me if a failed word (skip or Pamphlet) ends the run too harshly, and whether the three relics read clearly. Options A/B/C are in screenshots/descent/.
@@ -2410,3 +2410,7 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 ### TA15. Name the next stamp on the slip
 **Pitch:** Under the new stamps, one line naming the closest unearned stamp in that room, so the slip also says what comes next.
 **Brief:** Goal: pick the first unearned row of `stampRows(S, room)` and show it in the slip's foot. Files: `src/ui/stampToast.js`, `src/core/stamps.js`. **Conflicts:** TA7 (hints on unearned seals).
+
+### [x] TA16. Stamp toast: B's brass look at A's slip size (PR #399)
+**Pitch:** nate picked "mix B and A": keep the brass plaque look, but at the narrow slip size and layout on desktop, because B ran the full width of the screen.
+**Brief:** Done. Files: `src/ui/stamps.css` (toast section), `test/stamp-toast-slip.test.js`, `scripts/stamps-look.mjs` (desktop toast must be 360px or less). Before and after in screenshots/stamp-toast/before-mix/ and after-mix/.

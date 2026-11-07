@@ -172,3 +172,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-07 Onboarding highlight: nate's screenshot showed the first-visit halo on the Room Ledger spine offset up and left and running into the Stats spine ("fix this highlight error"). Every first-visit halo must sit exactly on its target at every size, follow it while the home settles, and never be covered (ON1).
 
 - 2026-11-07 stamp toast: "more on-theme, animated, sectioned" -> the toast is an inked stamp pressed onto an aged slip (no ruled lines), one section per stamp with progress pips; it lands open, folds to a stamp tab so it never covers a result, and a new stamp joins the open slip (thread: stamp toast)
+- 2026-11-07 stamp toast pick: "mix B and A ... i like Bs theme but it's too wide on desktop" -> keep the brass plaque theme, but cap it at a slip's width on desktop (thread: stamp toast, PR #399)
