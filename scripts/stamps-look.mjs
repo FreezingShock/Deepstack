@@ -86,25 +86,30 @@ async function run(label, {width, height}) {
     if (r.bad.length) fail(`${label}: cut off or outside its page: ${r.bad.join(', ')}`);
     if (SHOTS) await page.screenshot({path: join(SHOTS, `stamps-${width}.png`)});
 
-    // the toast: the same markup the app builds, shown on home (the toast is for the room, not the book) with the same stylesheet
+    // the toast: the plaque the app builds (src/ui/stampToast.js), shown on home where it appears in a run, with the same stylesheet
     await page.goto(url);
     await page.waitForSelector('#bStats', {state: 'attached', timeout: 15000});
     await page.waitForTimeout(600);
     await page.evaluate(() => {
       const d = document.createElement('div');
-      d.id = 'stamptoast'; d.className = 'on'; d.setAttribute('role', 'status');
-      d.innerHTML = '<div class="stp-tr"><span class="stp-seal on" style="--c:90,215,110" aria-hidden="true"><i>✓</i></span><span><b>Stamp earned: Perfect Daily</b><small>The Observatory · Every word at 78 or better, none skipped.</small></span></div>'
-        + '<div class="stp-tr"><span class="stp-seal on lib" style="--c:205,172,103" aria-hidden="true"><i>⌂</i></span><span><b>Stamp earned: Every door opened</b><small>The library · Open all 6 topic rooms.</small></span></div>';
+      d.id = 'stamptoast'; d.setAttribute('role', 'status');
+      d.innerHTML = '<div class="stp-head"><span>2 stamps earned</span></div>'
+        + '<div class="stp-entry"><span class="stp-seal on" style="--c:90,215,110;--d:180ms" aria-hidden="true"><i>\u2713</i></span><div class="stp-text"><b class="stp-name">Perfect Daily</b><small class="stp-where">The Observatory</small><em class="stp-hint">Every word at 78 or better, none skipped.</em></div></div>'
+        + '<div class="stp-entry"><span class="stp-seal on lib" style="--c:205,172,103;--d:340ms" aria-hidden="true"><i>\u2302</i></span><div class="stp-text"><b class="stp-name">Every door opened</b><small class="stp-where">The library</small><em class="stp-hint">Open all 6 topic rooms.</em></div></div>'
+        + '<div class="stp-foot"><span>Kept in the Almanac</span><span>Rooms \u203a Stamps</span></div>';
       document.body.appendChild(d);
+      d.classList.add('on');
     });
     await page.waitForTimeout(500);
     const t = await page.evaluate(() => {
       const el = document.getElementById('stamptoast'), b = el.getBoundingClientRect();
-      const txt = [...el.querySelectorAll('b, small')].every(x => x.scrollWidth <= x.clientWidth + 1);
-      return {inside: b.left >= 0 && b.right <= innerWidth + 0.5, whole: txt, sideways: document.documentElement.scrollWidth - document.documentElement.clientWidth};
+      const txt = [...el.querySelectorAll('.stp-name, .stp-where, .stp-hint, .stp-head span, .stp-foot span')].every(x => x.scrollWidth <= x.clientWidth + 1);
+      const op = parseFloat(getComputedStyle(el).opacity);
+      return {inside: b.left >= 0 && b.right <= innerWidth + 0.5, whole: txt, shown: op > 0.9, sideways: document.documentElement.scrollWidth - document.documentElement.clientWidth};
     });
     if (!t.inside) fail(`${label}: the toast runs off the screen`);
     if (!t.whole) fail(`${label}: the toast text is clipped`);
+    if (!t.shown) fail(`${label}: the toast did not show (opacity is not 1)`);
     if (t.sideways > 0) fail(`${label}: the toast makes the page scroll sideways`);
     if (SHOTS) await page.screenshot({path: join(SHOTS, `toast-${width}.png`)});
   } catch (e) { fail(`${label}: ${e.message.split('\n')[0]}`); }

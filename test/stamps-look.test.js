@@ -35,10 +35,14 @@ test('the toast names each new stamp with its room, or the library, and escapes 
     {id: 'library.doors', room: null, name: 'Every door opened', hint: 'Open all 6 topic rooms.'},
     {id: 'math.perfect', room: 'math', name: 'Perfect <Daily>', hint: 'Every word & none skipped.'}
   ]);
-  assert.equal((html.match(/class="stp-tr"/g) || []).length, 3);
-  assert.match(html, /Stamp earned: First word<\/b><small>Chronicle/);
-  assert.match(html, /Stamp earned: Every door opened<\/b><small>The library/);
-  assert.match(html, /Perfect &lt;Daily&gt;/);
+  assert.equal((html.match(/class="stp-entry"/g) || []).length, 3, 'one section per stamp');
+  assert.match(html, /<span>3 stamps earned<\/span>/, 'the head counts them');
+  assert.match(html, /<b class="stp-name">First word<\/b><small class="stp-where">Chronicle<\/small>/);
+  assert.match(html, /<b class="stp-name">Every door opened<\/b><small class="stp-where">The library<\/small>/);
+  assert.match(html, /Kept in the Almanac/);
+  assert.match(html, /--d:180ms/, 'the first seal presses first');
+  assert.match(html, /--d:500ms/, 'and the next one after it');
+  assert.match(html, /class="stp-name">Perfect &lt;Daily&gt;/);
   assert.match(html, /Every word &amp; none skipped/);
   assert.doesNotMatch(html, /<Daily>/);
 });
@@ -46,5 +50,6 @@ test('the toast names each new stamp with its room, or the library, and escapes 
 test('the stamp look uses the tokens and the room colour only through --c, with no raw hex', () => {
   const css = readFileSync(new URL('../src/ui/stamps.css', import.meta.url), 'utf8');
   assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/, 'colours come from tokens');
-  assert.match(css, /prefers-reduced-motion:reduce\)\{#stamptoast\{transition:none\}\}/);
+  assert.match(css, /prefers-reduced-motion:reduce\)\{#stamptoast,#stamptoast \.stp-seal,#stamptoast::after\{transition:none;animation:none\}/);
+  assert.match(css, /@keyframes stpPress/);
 });
