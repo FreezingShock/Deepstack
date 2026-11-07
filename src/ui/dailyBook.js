@@ -42,7 +42,7 @@ const status=e=>e.played?'Played':e.isToday?'Open today':'Missed';
 const coverLeaf=(S,today,entries,streak)=>{
  const e=entries[0],played=entries.filter(x=>x.played).length;
  const rid=riddleDay(S,today),rs=riddleDayStreak(S&&S.riddle,today);
- return `<div class="dly"><div class="kicker">Ledger of descents · ${esc(longDate(today))}</div><h1>The Daily</h1>
+ return `<div class="dly dly-cover"><div class="kicker">Ledger of descents · ${esc(longDate(today))}</div><h1>The Daily</h1>
   <section class="dly-sec" aria-label="Daily"><h2>Daily No. ${e.no}</h2>
    <p class="dly-line">${e.played?`Played today: ${fmtNum(e.rec.depth)} ft down, average ${e.rec.avg}.`:'Explain seven words, sealed until you descend.'}</p>
    <p class="dly-tally"><span><b>${played}</b> of ${entries.length} played</span><span><b>${streak}</b> day streak</span></p>
