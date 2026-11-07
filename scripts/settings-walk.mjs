@@ -116,11 +116,17 @@ async function nextPage(page) {
   const next = page.locator('.bk-spread.panel .bs-corner.next:not([hidden]):not([disabled])');
   if (!(await next.count())) return false;
   await next.first().click({timeout: T});
-  await page.waitForTimeout(800);
+  await settle(page);
   return true;
 }
 
-async function settle(page) { await page.waitForTimeout(700); } // let the book's open or turn choreography finish
+/* Let the book's open, turn and confirm choreography finish: wait for every finite CSS animation or transition to end
+   (looping ones, such as the candle, never end and are skipped). Without this a cover still swinging shut reads as a fault. */
+async function settle(page) {
+  await page.waitForTimeout(150);
+  await page.waitForFunction(() => document.getAnimations().every(a => a.playState !== 'running' || a.effect.getComputedTiming().iterations === Infinity), null, {timeout: 6000, polling: 50}).catch(() => {});
+  await page.waitForTimeout(100);
+}
 
 /* One group per viewport and OS motion flag, run side by side; each group walks text x motion x contrast in one context. */
 async function walkGroup(view, osReduce) {
@@ -161,7 +167,7 @@ async function walkGroup(view, osReduce) {
       if (await reset.count()) {
         await reset.scrollIntoViewIfNeeded().catch(() => {});
         await reset.click({timeout: T});
-        await page.waitForTimeout(300);
+        await settle(page);
         await scan('confirm');
         if (shoot) { await page.screenshot({path: name('confirm')}); shotsTaken.push(name('confirm')); }
         await page.locator('.bk-spread.panel #scKeep').click({timeout: T}).catch(() => {});
