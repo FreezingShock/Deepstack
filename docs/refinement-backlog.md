@@ -4,6 +4,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
+- Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
 - Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
 - Phone check for the keys and gestures pass (KS1): on your phone, swipe the home screen sideways to change room, and press Android Back with a book or result card open. It should close that, not leave the game. On a computer or phone, the Keys button in the top bar should open the key sheet. Screenshots in screenshots/shortcuts/.
@@ -2135,3 +2136,15 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### KS4. Key sheet leads with the gestures on touch screens
 **Pitch:** On a phone the sheet is about 2,000 px of mostly keyboard rows, and the swipe rules sit at the bottom.
 **Brief:** Goal: on touch screens list "On a phone" first and put the desktop keys after it. Files: `src/ui/keys.js`, `src/ui/keysCore.js`. Done when: the 375 screenshot shows the gestures above the fold, and a test pins the order per input type. **Conflicts:** V10 (keyboard pass).
+### CF1. [x] Core loop: answer feedback, hurry the reveal, full "You wrote" (this PR)
+**Pitch:** Enter now answers at once: the slip holds, locks and says "Reading your answer", Enter or Space during the card reveal hurries it to the verdict, phone cards drop the Enter hint, and a long answer shows whole.
+**Done:** `src/app/run.js` (judging state), `src/app/card.js` (hurry), `src/main.js` (a hurried Enter does not also close the card), `src/ui/coreLoop.css`, guard `scripts/core-loop.mjs` (CL1 to CL4), `scripts/smoke.mjs` mid-reveal step updated to the hurry rule. Screenshots in `screenshots/core-loop/`.
+**Conflicts:** G12 (phone answer slip, owned by the onboarding thread), any card.css thread.
+
+### CF2. Skip with typed text asks first
+**Pitch:** Skip throws away a half-typed answer with no warning; a quiet "Keep typing" or a second tap would save it.
+**Brief:** Goal: first Skip with text in the slip shows "Skip and lose this answer?" for 3 s; second tap skips. Files: `src/app/run.js`, `src/ui/runWriteIn.js`. Done when: keyboard and touch both confirm, 375 and 1280 screenshots.
+
+### CF3. Judge wait shows a real progress note
+**Pitch:** When the librarian is still arriving the wait is silent for up to 6 s before a note appears.
+**Brief:** Goal: start the "Reading your answer" note with a small candle-flicker on the slip, not after the 6 s fallback. Files: `src/scorer/index.js` (onWait timing), `src/ui/coreLoop.css`. Done when: a test pins the note at 300 ms.

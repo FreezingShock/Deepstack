@@ -33,12 +33,16 @@ export function paintRoomVars(room, root = document.documentElement, {settle = f
 export function ringHTML(cur) {
   return ROOMS.map(r => `<button type="button" class="rm-dot${r.id === cur ? ' on' : ''}" data-room="${r.id}" style="--c:${rgbOf(r)}" title="${esc(r.name)}${r.id === cur ? ' (you are here)' : ''}" aria-label="${esc(r.name)}${r.id === cur ? ', you are here' : ''}"${r.id === cur ? ' aria-current="true"' : ''}></button>`).join('');
 }
-/** One side door: the neighbour's fire through the arch, its name on the plate, and which way it lies. */
-export function doorHTML(r, side, met = '') {
+/** Today's Daily in a room: 'done' once it is played, 'open' before. undefined (no line) when the caller did not say. */
+export const dailyWord = done => (done === undefined ? '' : done ? 'done' : 'open');
+/** One side door: the neighbour's fire through the arch, its name on the plate, which way it lies, and (DS-door) whether
+    that room's Daily for today is done or still open. */
+export function doorHTML(r, side, met = '', done) {
   const all = allMet(met) ? ' all' : ''; // TA2c: every word met -> a gilt swatch ring and a glint
   const m = /(\d+) of (\d+)/.exec(met), f = m && +m[2] ? Math.min(1, +m[1] / +m[2]).toFixed(3) : 0; // TA7a: the swatch fills with how much of the room you have met
-  return `<button type="button" class="rm-door rm-${side}" data-room="${r.id}" style="--c:${rgbOf(r)};--ci:${ink(r)}" aria-label="${side === 'prev' ? 'Previous' : 'Next'} room: ${esc(r.name)}, ${esc(r.topic)}" title="${esc(r.name)} (${side === 'prev' ? '[' : ']'})">
- <span class="rm-plate"><b><span class="rm-sw${all}" style="--f:${f}" aria-hidden="true"></span>${esc(r.name)}</b><small>${esc(r.topic)}</small>${met ? `<small class="rm-met${all}">${esc(met)}</small>` : ''}</span>
+  const dw = dailyWord(done), dl = dw ? `, Daily ${dw}` : '';
+  return `<button type="button" class="rm-door rm-${side}" data-room="${r.id}" style="--c:${rgbOf(r)};--ci:${ink(r)}" aria-label="${side === 'prev' ? 'Previous' : 'Next'} room: ${esc(r.name)}, ${esc(r.topic)}${dl}" title="${esc(r.name)} (${side === 'prev' ? '[' : ']'})">
+ <span class="rm-plate"><b><span class="rm-sw${all}" style="--f:${f}" aria-hidden="true"></span>${esc(r.name)}</b><small>${esc(r.topic)}</small>${met ? `<small class="rm-met${all}">${esc(met)}</small>` : ''}${dw ? `<small class="rm-daily ${dw}">Daily: ${dw}</small>` : ''}</span>
  <span class="rm-arch" aria-hidden="true"><i class="rm-fire"></i><i class="rm-lamp"></i><i class="rm-boards"></i><i class="rm-leaf"></i><i class="rm-arrow">${side === 'prev' ? '‹' : '›'}</i></span>
  <span class="rm-spill" aria-hidden="true"></span></button>`;
 }
@@ -56,7 +60,7 @@ function patchDoor(el, r, side) {
 }
 export const typeOnNextMount = () => { typeNext = true; };
 
-let metFn = () => '', doors = null, keysOn = false, resizeOn = false, swipeOn = false, goFn = null, curRoom = HALL;
+let metFn = () => '', dailyFn = () => undefined, doors = null, keysOn = false, resizeOn = false, swipeOn = false, goFn = null, curRoom = HALL;
 const homeEl = () => document.getElementById('home');
 const homeIdle = () => {
   const h = homeEl();
@@ -76,9 +80,9 @@ function placeDoors() {
 }
 
 /** Paint the room into a freshly rendered home: colours, title, ring, doors. go(id, dir) walks to another room. */
-export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = () => {}, met = () => ''} = {}) {
+export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = () => {}, met = () => '', daily = () => undefined} = {}) {
   if (!home || typeof document === 'undefined') return;
-  const r = roomById(room); curRoom = r.id; goFn = go; metFn = met;
+  const r = roomById(room); curRoom = r.id; goFn = go; metFn = met; dailyFn = daily;
   paintRoomVars(r.id);
   const tl = home.querySelector('.hz-title .tagline');
   if (tl && r.id !== HALL) tl.innerHTML = `<span class="rm-name">${esc(r.name)}</span> <em>· ${esc(r.motto)}</em>${met(r.id) ? ` <small class="rm-met${allMet(met(r.id)) ? ' all' : ''}">${esc(met(r.id))}</small>` : ''}`;
@@ -104,7 +108,7 @@ export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = ()
     document.body.appendChild(doors);
   }
   const {prev, next} = neighbours(r.id);
-  doors.innerHTML = doorHTML(prev, 'prev', met(prev.id)) + doorHTML(next, 'next', met(next.id));
+  doors.innerHTML = doorHTML(prev, 'prev', met(prev.id), daily(prev.id)) + doorHTML(next, 'next', met(next.id), daily(next.id));
   placeDoors();
   /* The room word lists load after the first paint (and only on demand in the Reading Room), so the "X of N met" lines
      arrive a moment later: once they are in, fill them into the plates and the tagline without re-rendering the home. */
@@ -140,7 +144,7 @@ export function mountRoomHome(home, {room = HALL, go = () => {}, openLedger = ()
 export function repaintMet(home) {
   if (!doors || !doors.isConnected) return;
   const {prev, next} = neighbours(curRoom), hidden = doors.hidden;
-  doors.innerHTML = doorHTML(prev, 'prev', metFn(prev.id)) + doorHTML(next, 'next', metFn(next.id));
+  doors.innerHTML = doorHTML(prev, 'prev', metFn(prev.id), dailyFn(prev.id)) + doorHTML(next, 'next', metFn(next.id), dailyFn(next.id));
   doors.hidden = hidden; placeDoors();
   const tl = home && home.querySelector('.hz-title .tagline'), m = metFn(curRoom);
   if (tl && curRoom !== HALL && m && !tl.querySelector('.rm-met')) tl.insertAdjacentHTML('beforeend', ` <small class="rm-met${allMet(m) ? ' all' : ''}">${esc(m)}</small>`);
