@@ -4,7 +4,7 @@
 //   - its text runs past the edge of the viewport.
 // Intentional ellipsis (text-overflow: ellipsis) still counts: nate wants text that fits, not text that is cut.
 // Visually hidden helpers (sr-only, display none, zero size) are ignored.
-export function findClipped() {
+export function findClipped(root = document.body) {
   const out = [];
   const vw = document.documentElement.clientWidth;
   const label = el => {
@@ -13,7 +13,7 @@ export function findClipped() {
   };
   const ownText = el => [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
   const ancestors = el => { const c = []; for (let n = el.parentElement; n && n !== document.body && c.length < 4; n = n.parentElement) c.push(label(n)); return c.join(' < '); };
-  for (const el of document.body.querySelectorAll('*')) {
+  for (const el of root.querySelectorAll('*')) {
     const text = ownText(el);
     if (!text || /^(SCRIPT|STYLE|CANVAS|TEXTAREA|INPUT)$/.test(el.tagName)) continue;
     const cs = getComputedStyle(el);
@@ -23,7 +23,7 @@ export function findClipped() {
     if (cs.position === 'absolute' && /rect\(0/.test(cs.clip)) continue;
     // an ancestor that hides it (closed panel, off-screen scene) means the user cannot see it either
     let hidden = false;
-    for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+    for (let n = el.parentElement; n && n !== root && n !== document.body; n = n.parentElement) {
       const c = getComputedStyle(n);
       if (c.display === 'none' || c.visibility === 'hidden' || +c.opacity === 0) { hidden = true; break; }
     }

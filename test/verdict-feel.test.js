@@ -82,5 +82,5 @@ test('the Haptics switch is on the settings page and wired in topbar', () => {
   const book = readFileSync(new URL('../src/ui/settingsBook.js', import.meta.url), 'utf8');
   const top = readFileSync(new URL('../src/ui/topbar.js', import.meta.url), 'utf8');
   assert.match(book, /sw\('sHaptics'/);
-  assert.match(top, /sw\(\$\('#sHaptics'\),v=>set\(\{haptics:v\}\)\)/);
+  assert.match(top, /on\('#sHaptics',el=>sw\(el,v=>set\(\{haptics:v\}\)\)\)/);
 });

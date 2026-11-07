@@ -7,7 +7,7 @@ import './settingsBook.css';
 import {Quality,PREFS} from './quality.js';
 import {openPanelBook} from './panelBook.js';
 import {loadSettings,saveSettings,applySettings,reducedMotion,systemReduces,refreshMotion} from './settings.js';
-import {settingsPages} from './settingsBook.js';
+import {settingsSpreads} from './settingsBook.js';
 import {eraseProgress} from './progressReset.js';
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -50,23 +50,29 @@ export function initTopbar({Sfx,doc=document}={}){
  /* ---- panels ---- */
  const layer=doc.createElement('div');layer.id='topPanel';layer.hidden=true;doc.body.appendChild(layer);
  let current=null,opener=null;
+ /* the Settings book's pages for the current settings: one spread at normal text, three at larger text */
+ const sndOn=()=>!!snd&&snd.getAttribute('aria-pressed')==='true';
+ const settingsSpreadsNow=()=>settingsSpreads({st,sound:sndOn(),prefs:PREFS,pref:Quality.pref(),floorRules:loadEnabled(),osCalm:systemReduces()});
  const body={
   credits:()=>`<h2 id="tpT">Credits</h2><dl class="tpcred">${CREDITS.map(([h,p])=>`<dt>${h}</dt><dd>${p}</dd>`).join('')}</dl>`,
-  settings:()=>{
-   const p=settingsPages({st,sound:!!snd&&snd.getAttribute('aria-pressed')==='true',prefs:PREFS,pref:Quality.pref(),floorRules:loadEnabled(),osCalm:systemReduces()});
-   return `<h2 id="tpT">Settings</h2>${p.left}<!--pg-->${p.right}`;
-  },
+  settings:()=>`<h2 id="tpT">Settings</h2>${settingsSpreadsNow().map(s=>s.l+s.r).join('')}`,
  };
  const useBook=doc===globalThis.document&&typeof matchMedia==='function';
  let book=null;
  /* Settings and Credits grow out of the pressed button as a book (panelBook.js); the plain panel below is the fallback. */
  function openAsBook(k,from){
   if(book)return;
-  const raw=body[k]().replace(/<h2 id="tpT">\w+<\/h2>/,''),[l,r]=k==='settings'?raw.split('<!--pg-->'):[raw,''];
   current=k;opener=from||opener;
-  book=openPanelBook({from,title:k==='settings'?'Settings':'Credits',kicker:k==='settings'?'Your library, your way':'Who made this possible',left:l,right:r,
-   wire:sp=>{if(k==='settings')wireSettings(sp);},
-   onClose:()=>{book=null;current=null;const o=opener;opener=null;if(o&&o.isConnected)o.focus({preventScroll:true});}});
+  const common={from,wire:sp=>{if(k==='settings')wireSettings(sp);},
+   onClose:()=>{book=null;current=null;const o=opener;opener=null;if(o&&o.isConnected)o.focus({preventScroll:true});}};
+  book=k==='settings'
+   ? openPanelBook({...common,title:'Settings',kicker:'Your library, your way',spreads:settingsSpreadsNow()})
+   : openPanelBook({...common,title:'Credits',kicker:'Who made this possible',left:body.credits().replace(/<h2 id="tpT">\w+<\/h2>/,'')});
+ }
+ /* a text size change re-flows the Settings pages; the book stays on the page it was on (or the last one left) */
+ function repaginate(){
+  if(!book)return;
+  const s=settingsSpreadsNow();book.setSpreads(s,Math.min(book.index,s.length-1));
  }
  function openPanel(k,from){
   if(useBook){openAsBook(k,from);return;}
@@ -84,35 +90,37 @@ export function initTopbar({Sfx,doc=document}={}){
   setTimeout(()=>{if(current)return;layer.classList.remove('leaving');layer.hidden=true;layer.innerHTML='';},reducedMotion()?0:160);
  }
  function wireSettings(root=layer){
-  const $=s=>root.querySelector(s);
-  const sndOn=()=>!!snd&&snd.getAttribute('aria-pressed')==='true';
+  const $=sel=>root.querySelector(sel);
+  /* each control lives on one page of the book, and a page turn repaints only the current one, so a lookup may find nothing */
+  const on=(sel,fn)=>{const el=$(sel);if(el)fn(el);};
   /* pages repaint on a turn: show the live values, not the ones the book was opened with */
-  $('#sSound').setAttribute('aria-checked',sndOn());$('#sContrast').setAttribute('aria-checked',st.contrast);
-  $('#sFloorRules').setAttribute('aria-checked',loadEnabled());$('#sHaptics').setAttribute('aria-checked',st.haptics!==false);
+  on('#sSound',el=>el.setAttribute('aria-checked',sndOn()));on('#sContrast',el=>el.setAttribute('aria-checked',st.contrast));
+  on('#sFloorRules',el=>el.setAttribute('aria-checked',loadEnabled()));on('#sHaptics',el=>el.setAttribute('aria-checked',st.haptics!==false));
   const pct=v=>Math.round(v*100);
   const showSlider=(id,v)=>{const el=$(id);if(!el)return;el.value=pct(v);el.setAttribute('aria-valuetext',pct(v)+' percent');$('#o'+id.slice(2)).textContent=pct(v)+'%';};
   showSlider('#sVol',st.volume);showSlider('#sMus',st.music);showSlider('#sFx',st.effects);
   const mark=(sel,attr,val)=>root.querySelectorAll(sel).forEach(x=>x.setAttribute('aria-pressed',x.dataset[attr]===val));
   mark('[data-text]','text',st.text);mark('[data-q]','q',Quality.pref());mark('[data-motion-choice]','motionChoice',st.motion);
   const sw=(el,fn)=>el.onclick=()=>{const v=el.getAttribute('aria-checked')!=='true';el.setAttribute('aria-checked',v);fn(v);};
-  sw($('#sSound'),()=>{snd&&snd.click();$('#sSound').setAttribute('aria-checked',sndOn());});
-  sw($('#sContrast'),v=>set({contrast:v}));
-  sw($('#sFloorRules'),v=>saveEnabled(v));
-  sw($('#sHaptics'),v=>set({haptics:v}));
+  on('#sSound',el=>sw(el,()=>{snd&&snd.click();el.setAttribute('aria-checked',sndOn());}));
+  on('#sContrast',el=>sw(el,v=>set({contrast:v})));
+  on('#sFloorRules',el=>sw(el,v=>saveEnabled(v)));
+  on('#sHaptics',el=>sw(el,v=>set({haptics:v})));
   root.querySelectorAll('[data-motion-choice]').forEach(b=>b.onclick=()=>{set({motion:b.dataset.motionChoice});mark('[data-motion-choice]','motionChoice',st.motion);});
   root.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{Quality.setPref(b.dataset.q);mark('[data-q]','q',Quality.pref());});
-  root.querySelectorAll('[data-text]').forEach(b=>b.onclick=()=>{set({text:b.dataset.text});mark('[data-text]','text',st.text);});
+  root.querySelectorAll('[data-text]').forEach(b=>b.onclick=()=>{set({text:b.dataset.text});mark('[data-text]','text',st.text);repaginate();});
   /* kind: the bus to sample when the slider is let go (ST4), so the level can be heard before the next sound */
   const slide=(id,apply,kind)=>{const el=$(id);if(!el)return;el.oninput=()=>{const n=+el.value;$('#o'+id.slice(2)).textContent=n+'%';el.setAttribute('aria-valuetext',n+' percent');apply(n/100);};if(kind)el.onchange=()=>{Sfx&&Sfx.preview&&Sfx.preview(kind);};};
   slide('#sVol',v=>{dispatchEvent(new CustomEvent('deepstack:volume',{detail:v}));set({volume:v});});
   slide('#sMus',v=>set({music:v}),'music');
   slide('#sFx',v=>set({effects:v}),'effects');
   /* Progress: the reset asks first. Keep is the default focus; Erase clears the save and reloads into an empty library. */
-  const confirm=$('#sConfirm'),reset=$('#sReset');
-  const row=$('#sDangerRow');
-  if(reset)reset.onclick=()=>{row.hidden=true;confirm.hidden=false;$('#scKeep').focus({preventScroll:true});};
-  $('#scKeep').onclick=()=>{confirm.hidden=true;row.hidden=false;reset.focus({preventScroll:true});};
-  $('#scGo').onclick=()=>{eraseProgress();location.reload();};
+  const confirm=$('#sConfirm'),reset=$('#sReset'),row=$('#sDangerRow');
+  if(reset&&confirm&&row){
+   reset.onclick=()=>{row.hidden=true;confirm.hidden=false;$('#scKeep').focus({preventScroll:true});};
+   $('#scKeep').onclick=()=>{confirm.hidden=true;row.hidden=false;reset.focus({preventScroll:true});};
+   on('#scGo',el=>el.onclick=()=>{eraseProgress();location.reload();});
+  }
  }
  layer.addEventListener('click',e=>{if(e.target===layer)closePanel();});
  /* capture phase so Esc closes this panel before main.js sees it; Tab stays inside */

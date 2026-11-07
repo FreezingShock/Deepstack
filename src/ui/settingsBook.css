@@ -2,7 +2,7 @@
    page like the rest of the book. Text sizes follow --ts; nothing here moves, so reduced motion needs no rule. */
 .bk-spread.panel .sb-group{margin:0 0 6px}
 .bk-spread.panel .sb-h{font:600 calc(11px*var(--ts)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--bs-mute);margin:14px 0 2px}
-.bk-spread.panel .sb-slider output{flex:none;width:3.6ch;text-align:right;font-variant-numeric:tabular-nums;color:var(--bs-mute)}
+.bk-spread.panel .sb-slider output{flex:none;min-width:4.4ch;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--bs-mute)}
 .bk-spread.panel .sb-slider input[type="range"]{flex:1 1 90px;min-width:0;width:auto;accent-color:var(--bk)}
 .bk-spread.panel .sb-slider label{flex:none;min-width:4.6em}
 .bk-spread.panel .sb-motion{margin-bottom:0}
@@ -21,3 +21,21 @@
 .bk-spread.panel .sb-go:hover,.bk-spread.panel .sb-go:focus-visible{background:var(--c-blood-34);color:var(--c-parchment)}
 /* phones: the two confirm buttons share one row so the card stays on the page */
 @media (max-width:480px){.bk-spread.panel .sb-acts{flex-wrap:nowrap}.bk-spread.panel .sb-acts .btn{flex:1 1 0;min-width:0;padding:0 8px;font-size:calc(13px*var(--ts))}}
+/* the page-turn corners reach up the page edges on a phone (home.css), so a control on the second page could sit under a
+   turn zone and a tap would flip the page instead. Settings controls lift above the zones. */
+.bk-spread.panel .sb-group button,.bk-spread.panel .sb-group input,.bk-spread.panel .sb-group [role="switch"],.bk-spread.panel .sb-confirm .btn{position:relative;z-index:5}
+/* ink.js writes a handwritten margin note (and a blot) at the foot of every menu book page. Settings is a full page of
+   controls, so the note spilled past the page number at every size once main added it. The panel book drops the note;
+   the ink on the title, rules and doodle stays. */
+.bk-spread.panel.menu .ink-note{display:none}
+/* the Settings page is a full page of rows: tighter row rhythm keeps both pages inside the book's box on a 1280x800 window */
+.bk-spread.panel .tprow{padding:8px 0}
+.bk-spread.panel .tpseg{padding:8px 0}
+/* main gave the slider's range input a 44px touch floor, so each slider row was 65px tall and the left page overflowed.
+   The 44px input is the target now, so the row drops its own padding. */
+.bk-spread.panel .sb-slider.tprow{padding-top:0;padding-bottom:0}
+/* with 44px touch targets the Settings page is 26px too tall at desktop; a little less air around the hints and groups closes it */
+.bk-spread.panel .tphint{margin:2px 0 2px;padding-bottom:2px}
+.bk-spread.panel .sb-group{margin:0 0 4px}
+.bk-spread.panel .sb-h{margin:10px 0 2px}
+.bk-spread.panel .tprow,.bk-spread.panel .tpseg{padding:6px 0}
