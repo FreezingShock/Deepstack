@@ -38,6 +38,34 @@ const seedFor = (room, bestFloor = 1) => {
   return {shelf: [], sound: false, bestFloor, streak: {last: today, n: STREAK.hall}, rooms, room};
 };
 
+/* A click on a target that is still moving (the home redraws, counts and fades for a moment after load) fails
+   Playwright's stability check when the machine is busy. Wait until the target's box holds still for a few checks,
+   then click. Under load the renderer can also take longer than the click timeout to acknowledge a click that has
+   already landed, so after each click we check that the book it opens is on screen, and only click again if it isn't. */
+async function settledClick(page, sel, ready, {tries = 4} = {}) {
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    try {
+      await page.waitForFunction(s => {
+        const el = document.querySelector(s);
+        if (!el) return false;
+        const r = el.getBoundingClientRect(), k = [r.x, r.y, r.width, r.height].map(Math.round).join(',');
+        const st = window.__emberSettle && window.__emberSettle.sel === s ? window.__emberSettle : (window.__emberSettle = {sel: s, k: '', n: 0});
+        st.n = st.k === k ? st.n + 1 : 0;
+        st.k = k;
+        return st.n >= 3;
+      }, sel, {polling: 100, timeout: 6000});
+      await page.click(sel, {timeout: 8000});
+    } catch (e) { lastErr = e; }
+    try {
+      await page.waitForSelector(ready, {state: 'attached', timeout: 4000});
+      return;
+    } catch (e) { lastErr = e; }
+    await page.waitForTimeout(400);
+  }
+  throw new Error(`${sel} never opened ${ready}: ${String(lastErr && lastErr.message).split('\n').filter(l => l.trim() && !/waiting|retrying|call log/i.test(l)).slice(0, 3).join(' / ')}`);
+}
+
 async function run(label, {width, height, reduce, room, via, bestFloor = 1}) {
   const ctx = await browser.newContext({viewport: {width, height}, reducedMotion: reduce ? 'reduce' : 'no-preference'});
   const page = await ctx.newPage();
@@ -60,19 +88,19 @@ async function run(label, {width, height, reduce, room, via, bestFloor = 1}) {
           && document.documentElement.scrollWidth <= innerWidth;
       });
       if (!ok) fail(`${label}: the flame tag overlaps the top bar or the page scrolls sideways`);
-      await page.click('.ach-flame', {timeout: 5000});
+      await settledClick(page, '.ach-flame', '.bk-spread .emb');
     } else if (via === 'stats') { // phones: Stats book, then the link on its Almanac page
       await page.waitForSelector('#bStats', {state: 'visible', timeout: 15000});
       await page.waitForTimeout(1500);
-      await page.click('#bStats', {timeout: 5000});
+      await settledClick(page, '#bStats', '.bk-spread .alm-ember');
       await page.waitForSelector('.bk-spread .alm-ember', {state: 'visible', timeout: 8000});
       await page.waitForTimeout(reduce ? 200 : 1200);
-      await page.click('.alm-ember', {timeout: 5000});
+      await settledClick(page, '.alm-ember', '.bk-spread .emb');
     } else {
       const sel = via === 'row' ? '.lg-row#bStreak' : '.bg-streak';
       await page.waitForSelector(sel, {state: 'visible', timeout: 15000});
       await page.waitForTimeout(1500);
-      await page.click(sel, {timeout: 5000});
+      await settledClick(page, sel, '.bk-spread .emb');
     }
     await page.waitForSelector('.bk-spread .emb', {timeout: 8000});
     await page.waitForTimeout(reduce ? 200 : 1500);

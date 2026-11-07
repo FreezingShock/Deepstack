@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- To review (RV1): open the Shelf, tap To review, then Try again on a word and write it from memory. Tell me if 46 is the right bar to win a word back, and whether To review should stay inside the Shelf (now) or get its own spine on the home. Screenshots: screenshots/review-shelf/.
 - Phone home in topic rooms (375x667, with a full shelf): the home used to scroll by 25px in the Chronicle, Counting House, Observatory, Scriptorium and Gallery, because their longer taglines froze the fit at a size that overflowed. They now use the compact type and spacing the Reading Room already gets at this height. Changeable: say if you would rather the topic rooms keep the full-size title on phones and drop a book or two instead.
 - Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
 
@@ -2170,6 +2171,27 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** The share card's header takes the room's fire colour, so a Chronicle share looks red and a Gallery share purple (text only, no emoji).
 **Brief:** Goal: a colour line via `ROOMS[].rgb` in the share card's header (HTML sheet only). Files: `src/ui/results.js`, `src/ui/dailyShare.css`. **Conflicts:** SH1.
 
+### [x] RV1. To review: words to win back, with a quick re-try (PR #342)
+**Done:** the Shelf book has a Shelf / To review switch. To review lists every word whose best answer is under 46 (skips count as 0) with its real meaning, what you wrote and the ideas you missed. Each word has a re-try judged by the full judge: 46 or better wins it back, and a re-try adds no book and no depth. Guard: `scripts/review-shelf.mjs` in CI and `test/review-shelf.test.js`. Screenshots: screenshots/review-shelf/.
+
+### RV2. Review from the end of a run
+**Serves:** honest answers, and the "look at the books I missed" choice on the ledger.
+**Pitch:** After a descent the result page offers "Words to win back (N)" that opens the To review view, so missed words are one tap away.
+**Brief:** Goal: a link on the result ledger that opens the Shelf book on its To review view when there are words to win back, and stays hidden on a clean run. Files: `src/app/final.js`, `src/ui/results.js`, `src/ui/bookMenus.js` (its `view` state). Done when: a run with a miss shows the link and a clean run does not.
+**Touches:** result card. **Conflicts:** result-card threads.
+
+### RV3. Filter To review by room and rarity
+**Serves:** books that are readable and usable.
+**Pitch:** Once there are many misses, the review list narrows to one room or one rarity, the same way the shelf already does.
+**Brief:** Goal: reuse the shelf's room and rarity chips inside the To review view. Files: `src/ui/reviewPages.js`, `src/ui/bookMenus.js`. Done when: a save with two rooms shows the room chips and the contents follow them.
+**Touches:** shelf. **Conflicts:** shelf-filters threads.
+
+### RV4. Count the words to review on the Shelf spine
+**Serves:** discovery. The feature sits behind the Shelf book today.
+**Pitch:** The Shelf spine on the home says how many words are waiting to review, so nobody has to open the book to find out.
+**Brief:** Goal: badge the Shelf spine with the count from `reviewCount` (`src/core/reviewShelf.js`) in `src/ui/home.js`. Done when: the home snapshot and text-fit checks pass at 375 and 1280 with the badge on.
+**Touches:** home. **Conflicts:** home-layout threads.
+
 ### CF1. [x] Core loop: answer feedback, hurry the reveal, full "You wrote" (this PR)
 **Pitch:** Enter now answers at once: the slip holds, locks and says "Reading your answer", Enter or Space during the card reveal hurries it to the verdict, phone cards drop the Enter hint, and a long answer shows whole.
 **Done:** `src/app/run.js` (judging state), `src/app/card.js` (hurry), `src/main.js` (a hurried Enter does not also close the card), `src/ui/coreLoop.css`, guard `scripts/core-loop.mjs` (CL1 to CL4), `scripts/smoke.mjs` mid-reveal step updated to the hurry rule. Screenshots in `screenshots/core-loop/`.
@@ -2261,3 +2283,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** A patron who has commended you three times should bring a second, harder request (a rarer word from a higher tier), so the desk grows with the player.
 **Brief:** Goal: after three commendations from one patron, their request draws from words of tier 3 and up (`src/core/patrons.js`, the pool filter), labelled "A harder one". Done when: the rule is a pure function with a test and the desk shows the label at 375 and 1280.
 **Touches:** Patrons. **Conflicts:** none.
+
+## NO. Notes and cards (2026-11-07, from the Unlimited walk)
+
+### NO1. [x] First-time notes clear when the player acts (this PR)
+**Done:** a first-visit home note (the gold halo and its panel) no longer sits over the card that opens next. Opening a card clears every note, and any click clears them before its handler runs. Files: `src/ui/firstNotes.js`, `src/app/card.js`, `src/main.js`. Guard: `scripts/first-note-clear.mjs` in CI, `test/first-note-clear.test.js`. The walk's "doubled stop" on the "You wrote" line was a false positive (the closing quote), so it is not in this change.
+**Touches:** every card and the home first-visit lines. **Conflicts:** none open.
