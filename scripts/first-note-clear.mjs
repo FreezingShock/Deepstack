@@ -51,7 +51,9 @@ for (const [w, h] of SIZES) {
   await page.route(u => !u.href.startsWith(url), r => r.abort());
   await page.goto(url);
   await page.waitForSelector('#home', {timeout: 15000});
-  await page.waitForTimeout(900);
+  // the first-visit note is lit once the home has settled; wait for it rather than sample a moment too early (slow runners)
+  await page.waitForSelector('.fcall', {state: 'attached', timeout: 6000}).catch(() => {});
+  await page.waitForTimeout(300);
   const onHome = await page.evaluate(() => document.querySelectorAll('.fcall').length);
   if (onHome < 1) failures.push(`${tag}: no first-visit home note was up, so the check would prove nothing`);
 
