@@ -28,6 +28,10 @@ test('the Settings page drops the margin note that main writes on every menu pag
   assert.match(css, /\.bk-spread\.panel\.menu \.ink-note\{display:none\}/);
 });
 
-test('Settings rows are tighter so both pages fit a 1280x800 window', () => {
-  assert.match(css, /\.bk-spread\.panel \.tprow\{padding:8px 0\}/);
+test('Settings rows are tight enough that both normal-text pages fit a 1280x800 window', () => {
+  assert.match(css, /\.bk-spread\.panel \.tprow,\.bk-spread\.panel \.tpseg\{padding:6px 0\}/);
+});
+
+test('a slider row takes no padding of its own: its 44px range input is the touch target', () => {
+  assert.match(css, /\.bk-spread\.panel \.sb-slider\.tprow\{padding-top:0;padding-bottom:0\}/);
 });

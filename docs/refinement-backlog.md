@@ -2185,6 +2185,7 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 **Pitch:** Settings had no check that every section fits, so a slider value or a button could clip on one size and nobody would notice until a phone showed it.
 **Brief:** Files: `scripts/settings-walk.mjs`, `src/ui/settingsBook.css`, `scripts/lib/textFit.mjs` (optional root). Done when: the walk passes in CI at both sizes. **Touches:** settings. **Conflicts:** settings threads.
 **Follow-ups:**
+- [ ] ST9. Settings inner scroll (alternative to the page flow). At Large and Extra large, each Settings page could scroll inside its page box instead of flowing onto more pages. Not built: the page flow is what ships, per nate's no-stray-scrollbars rule. Pitch: fewer page turns at big text. Brief: a scrollbar only at the larger sizes, with screenshots of both options.
 - ST6. Narrow the phone page-turn hot zone (the 40px strip above each corner in `home.css`) while a panel book is open, so the left margin of page 2 stops catching taps meant for row labels. Check at 375: tap a label on page 2 and nothing flips.
 - ST8. Add a Settings walk pass to the Credits book so its text fit is covered by the same kind of check.
 

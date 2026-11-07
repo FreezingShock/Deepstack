@@ -111,7 +111,7 @@ function auditBook() {
   return out;
 }
 
-/* Turn to the next page when the book is one-page (phone); returns false on the last page. */
+/* Turn to the next page (a spread on desktop, a page on phone); returns false on the last page. */
 async function nextPage(page) {
   const next = page.locator('.bk-spread.panel .bs-corner.next:not([hidden]):not([disabled])');
   if (!(await next.count())) return false;
@@ -133,7 +133,6 @@ async function walkGroup(view, osReduce) {
   const ctx = await browser.newContext({viewport: {width: view.width, height: view.height}, reducedMotion: osReduce ? 'reduce' : 'no-preference'});
   const page = await ctx.newPage();
   await page.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
-  const phone = view.name === 'phone';
   for (const text of TEXTS) for (const motion of MOTIONS) for (const contrast of [false, true]) {
     const tag = `${view.name} os-${osReduce ? 'reduce' : 'full'} text-${text} motion-${motion} contrast-${contrast ? 'on' : 'off'}`;
     const shoot = SHOTS && (text === 'normal' || text === 'xlarge') && motion === 'system' && !contrast;
@@ -156,14 +155,13 @@ async function walkGroup(view, osReduce) {
       await settle(page);
       await scan('open');
       if (shoot) { await mkdir(SHOTS, {recursive: true}); await page.screenshot({path: name('p1')}); shotsTaken.push(name('p1')); }
-      if (phone) {
-        for (let i = 2; i <= 4; i++) {
-          if (!(await nextPage(page))) break;
-          await scan(`page${i}`);
-          if (shoot) { await page.screenshot({path: name('p' + i)}); shotsTaken.push(name('p' + i)); }
-        }
+      // every page of the book, phone or desktop: larger text flows Settings onto more spreads, and each turn is audited
+      for (let i = 2; i <= 8; i++) {
+        if (!(await nextPage(page))) break;
+        await scan(`page${i}`);
+        if (shoot) { await page.screenshot({path: name('p' + i)}); shotsTaken.push(name('p' + i)); }
       }
-      // the reset confirm card, open (on the phone the loop above has turned to the last page, which holds Progress)
+      // the reset confirm card, open (the loop above has turned to the last page, which holds Progress)
       const reset = page.locator('.bk-spread.panel #sReset');
       if (await reset.count()) {
         await reset.scrollIntoViewIfNeeded().catch(() => {});
