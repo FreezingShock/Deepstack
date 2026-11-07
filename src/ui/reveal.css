@@ -23,5 +23,4 @@
 @keyframes rvink{0%{opacity:0;letter-spacing:.3em;filter:blur(6px)}100%{opacity:1;letter-spacing:.02em;filter:blur(0)}}
 @keyframes rvfade{from{opacity:0}to{opacity:1}}
 .book.rv-pulse .page .tierbar b{animation:rvink var(--m-linger) var(--e-settle) var(--m-smooth) both,rvpulse 3.2s ease-in-out 1.6s infinite}
-@keyframes rvpulse{50%{text-shadow:0 0 44px color-mix(in srgb,var(--tc) 90%,transparent),0 2px 0 var(--c-black-alpha-aa)}}
-@media (prefers-reduced-motion:reduce){.rvl,.rvl-flash{display:none}.book.rv-ink .page .tierbar b,.book.rv-ink .page .tierbar span,.book.rv-pulse .page .tierbar b{animation:none}}
+@keyframes rvpulse{50%{text-shadow:0 0 44px color-mix(in srgb,var(--tc) 90%,transparent),0 2px 0 var(--c-black-alpha-aa)}}:where(html.rm) .rvl,:where(html.rm) .rvl-flash{display:none}:where(html.rm) .book.rv-ink .page .tierbar b,:where(html.rm) .book.rv-ink .page .tierbar span,:where(html.rm) .book.rv-pulse .page .tierbar b{animation:none}

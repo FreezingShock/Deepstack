@@ -9,20 +9,25 @@ import './shelfFilters.css';
 import './shelfBays.css';
 import './shelfSpineFit.css';
 import './shelfSpineFit.js';
+import './reviewShelf.css';
 import {toSpreads} from './bookpages.js';
 import {shelfBook,statsBook} from './bookMenus.js';
 import {dailyBook} from './dailyBook.js';
 import {curioLeaves} from './curioLog.js';
 import {roomStatsLeaves} from './roomStats.js';
+import {judgeAnswer} from '../scorer/index.js';
+import {fullPool} from '../core/roomPool.js';
+import {verdictFor} from '../core/verdict.js';
 import {stampsLeaves} from './stampsPage.js';
 import './stamps.css';
 import './nemesis.css';
 import {BOOK_ACTS} from './home.js';
 
-export function buildBookPages({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc,utc,computeStats,floorAtFt,wordsReady,wordsLoaded}){
+export function buildBookPages({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc,utc,computeStats,floorAtFt,wordsReady,wordsLoaded,save}){
+ const review={save,judge:judgeAnswer,verdictFor,fullWord:key=>fullPool().find(w=>w.w.toLowerCase()===key)}; // the To review view's re-try (reviewWire.js)
  const sb=statsBook({S,st:()=>computeStats(S,utc()),TIERS,FLOORS,floorStartFt:core.floorStartFt});
  return {
-  bAll:shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOORS,reduceMotion:()=>RM}),
+  bAll:shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOORS,reduceMotion:()=>RM,review}),
   bDaily:{...dailyBook({S,today:utc,streak:()=>computeStats(S,utc()).streak,wordsReady,wordsLoaded}),keepOnEsc},
   bStats:{...sb,spreads:()=>[...sb.spreads(),...toSpreads(roomStatsLeaves(S,{today:utc(),computeStats,lexicon:core.lexicon})),...toSpreads(stampsLeaves(S)),...toSpreads(curioLeaves(S,r=>floorAtFt(r*FT),r=>Math.round(r*FT)))],keepOnEsc,
    /* the Almanac's streak link: the way into the Ember Log on phones, where the Librarian's Card and its Streak row are hidden */

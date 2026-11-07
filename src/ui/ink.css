@@ -9,11 +9,9 @@
 .bk-spread.menu .ink-doodle path{stroke-width:1.5}
 .bk-spread.menu .ink-note{display:flex;align-items:center;gap:8px;margin:22px 0 4px;font:500 calc(19px*var(--ts))/1.2 'Fuzzy Bubbles','Segoe Script','Bradley Hand',cursive;color:var(--mute);transform:rotate(-1.5deg);transform-origin:left}
 .bk-spread.menu .ink-blot{flex:none;width:20px;height:20px;color:var(--ink);opacity:.5}
-@media(prefers-reduced-motion:no-preference){
- .bk-spread.menu .ink-rule,.bk-spread.menu .ink-under,.bk-spread.menu .ink-doodle{animation:inkdraw var(--m-page) var(--e-ink) .15s both}
- .bk-spread.menu .ink-under{animation-delay:.3s}
- .bk-spread.menu .ink-doodle{animation-duration:1s;animation-delay:.4s}
- .bk-spread.menu .ink-blot{animation:inkblot var(--m-page) var(--e-settle) .6s both}
-}
+ :where(html:not(.rm)) .bk-spread.menu .ink-rule,:where(html:not(.rm)) .bk-spread.menu .ink-under,:where(html:not(.rm)) .bk-spread.menu .ink-doodle{animation:inkdraw var(--m-page) var(--e-ink) .15s both}
+ :where(html:not(.rm)) .bk-spread.menu .ink-under{animation-delay:.3s}
+ :where(html:not(.rm)) .bk-spread.menu .ink-doodle{animation-duration:1s;animation-delay:.4s}
+ :where(html:not(.rm)) .bk-spread.menu .ink-blot{animation:inkblot var(--m-page) var(--e-settle) .6s both}
 @keyframes inkdraw{from{clip-path:inset(-4px 100% -4px 0)}to{clip-path:inset(-4px -4px -4px 0)}}
 @keyframes inkblot{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:.5}}

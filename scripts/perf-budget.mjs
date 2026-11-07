@@ -2,7 +2,9 @@
 //   1. static weight: JS/CSS the home screen needs (gzip) and how many data files the first paint waits for;
 //   2. a REPEAT visit while the network is slow for /data/ (every data file takes DATA_DELAY ms): how long entering a topic
 //      room and starting a run takes. The service worker must answer unchanged data from its cache, so the delay must not show;
-//   3. judge latency (submit -> score) for fresh words in every room, once the model is ready.
+//   3. judge latency (submit -> score) for fresh words in every room, once the model is ready;
+//   4. model downloads: a cold visit fetches each model file once (it used to fetch the 23 MB model three times), and a
+//      repeat visit fetches none of it (transformers.js keeps it in the browser's Cache API).
 // Fails (exit 1) if a budget is blown; prints the numbers either way. Usage: npm run build && node scripts/perf-budget.mjs
 //   [--dist dist] [--cpu 4] [--delay 3000] [--rooms hall,history,...] [--json out.json] [--trace dir] [--no-fail]
 // Set CHROMIUM_PATH if Playwright's browser is missing. Skips (exit 0) without a browser.
@@ -22,13 +24,18 @@ const BUDGET = {
   roomEnterMs: 10500,        // the same visit: reload in a room, tap Descend -> first word on screen (includes ~6.5 s of boot, intro and animation at 4x CPU)
   judgeWarmMs: 3500,         // a fresh word's score once the model is ready (4x CPU)
   judgeColdMs: 3000,         // the first score after the model is ready
+  modelGetsPerFile: 1,       // a cold visit downloads each model file once
+  modelGetsRepeat: 0,        // a repeat visit downloads no model file at all
 };
 
-const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.svg': 'image/svg+xml', '.woff2': 'font/woff2'};
+const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.onnx': 'application/octet-stream'};
+const gets = new Map(); // GET count per path since the last reset: the model downloads are counted here
+const modelGets = () => [...gets].filter(([p]) => p.startsWith('/models/')).map(([, n]) => n);
 const server = createServer(async (req, res) => {
   try {
     const u = new URL(req.url, 'http://x');
     let p = normalize(decodeURIComponent(u.pathname)); if (p.endsWith('/')) p += 'index.html';
+    if (req.method === 'GET') gets.set(p, (gets.get(p) || 0) + 1);
     if (p.startsWith('/data/') && delay) await new Promise(r => setTimeout(r, delay));
     res.writeHead(200, {'content-type': TYPES[extname(p)] || 'application/octet-stream'}).end(await readFile(join(dist, p)));
   } catch { res.writeHead(404).end('nf'); }
@@ -63,6 +70,7 @@ async function visit(room, traceFile = '') {
   const out = traceFile ? {} : (R.rooms[room] = {});
   try {
     // visit 1: load, let the service worker install and the data cache fill (the delay only slows this visit)
+    gets.clear();
     await page.goto(url);
     await page.locator('#bPlay').waitFor({state: 'visible', timeout: 60000});
     await page.waitForFunction(() => navigator.serviceWorker?.controller || navigator.serviceWorker?.ready.then(() => false), null, {timeout: 20000}).catch(() => {});
@@ -70,13 +78,19 @@ async function visit(room, traceFile = '') {
       const c = await caches.open('ds-data-v1'); const names = (await c.keys()).map(r => new URL(r.url).pathname);
       return ['/data/words.json', '/data/rooms.json', '/data/room-words.json'].every(n => names.includes(n));
     }, null, {timeout: 90000, polling: 500}).catch(() => {});
+    // the judge model of this cold visit: its downloads, once it is up (the reload after this must not fetch it again)
+    await page.waitForFunction(() => window.__deepstack?.modelStatus?.().state === 'ready', null, {timeout: 120000, polling: 500}).catch(() => {});
+    const cold = modelGets(); if (cold.length) out.modelGets = Math.max(...cold); else out.modelGets = 0;
+    over(`${room} model files fetched on a cold visit (each should come once)`, out.modelGets, BUDGET.modelGetsPerFile);
     await page.reload(); await page.waitForTimeout(500); // the worker now controls the page
     // visit 2 (repeat): slow data network, throttled CPU
     const cdp = await ctx.newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: cpu});
     if (traceFile) await browser.startTracing(page, {path: traceFile, screenshots: true});
     const t0 = Date.now();
+    gets.clear();
     await page.reload();
     await page.locator('#bPlay').waitFor({state: 'visible', timeout: 60000});
+    if (!traceFile) { out.modelGetsRepeat = Math.max(0, ...modelGets()); over(`${room} model files fetched on a repeat visit`, out.modelGetsRepeat, BUDGET.modelGetsRepeat); }
     await page.locator('#bPlay').tap();
     await page.locator('#stage .word').waitFor({state: 'visible', timeout: 60000});
     if (traceFile) { await browser.stopTracing(); await ctx.close(); return; }

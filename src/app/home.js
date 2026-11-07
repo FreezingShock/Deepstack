@@ -27,6 +27,7 @@ import {currentRoom, roomData} from '../core/roomStore.js';
 import {goRoom} from './roomGo.js';
 import {fillTodayMet} from '../ui/todayMet.js';
 import {showHomeNote} from '../ui/firstNotes.js';
+import {mountRestoreEntry} from '../restore/entry.js';
 
 /* ---------- home ---------- */
 export let cdTimer=0;
@@ -60,6 +61,7 @@ export function showHome(opts){
  Sfx.room(currentRoom(S)); // this room's accents (no-op when the room is already the one playing)
  mountRoomHome(ui.home,{room:currentRoom(S),go:goRoom,openLedger:()=>$('#bRooms')&&$('#bRooms').click(),met:id=>roomMetLabel(S,id),daily:id=>!!(roomData(S,id).daily||{})[utc()]});
  if(!keep)showHomeNote(S,save,ui.home); // one first-visit line per home visit, under the plaque
+ mountRestoreEntry(ui.home); // the Restoration bench's door (src/restore/)
  setBookSfx(n=>n==="whoosh"?Sfx.cue("lift"):n==="thud"?Sfx.cue("shut"):n==="flip"?Sfx.cue("turn"):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;
