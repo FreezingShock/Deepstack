@@ -3,6 +3,9 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Verdict sound and haptics (this PR): answer a word on your phone and listen. Each verdict tier writes with a quill (one stroke at Pamphlet, up to five at Apocrypha), with a page turn from Folio up. Android Chrome buzzes softly; iPhone Safari has no vibration, so there you only hear it. Settings, Sound, Haptics switch turns the buzz off. Tell me if a tier is too loud, too frequent or too long, and whether the buzz is too strong. Screenshots are in screenshots/verdict-sound/.
+
+- Patrons (PT1): open the Patrons book on the home shelf (bottle-green spine) in any topic room, answer the patron's request, and tell me if the phone flow feels right (on a phone the answer slip is on page two, so you turn the page to answer). Screenshots: screenshots/patrons/.
 - Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
@@ -323,7 +326,7 @@ Coming back from looking up the descent no longer snaps: the candle, pips, word,
 **Brief:** Goal: layered ambience (paper hush, stone drips, water, hollow wind, abyss drone). Files: new `src/sound/ambience.js`. Done when: silent when sound off, no clicks on start/stop, node cap tested.
 **Touches:** FEEL hook. **Conflicts:** 23.
 
-### 25. Haptics
+### 25. [x] Haptics: verdict buzz and sound (PR #353)
 **Serves:** tactile on phones.
 **Pitch:** Light vibration on tier reveals, combo links and page flips.
 **Brief:** Files: new `src/ui/haptics.js`, Settings toggle (additive). Done when: guarded by `navigator.vibrate`, pattern table per tier, stubbed test.
@@ -2170,15 +2173,55 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### [x] WN1. Margin note on the result card: etymology, usage and related words
 **Pitch:** After a judgement, a player can turn to a short margin note on the word: where it comes from, one sentence that uses it, and a few related words. It sits under the meanings as a ribbon tab and opens a tucked sheet, so the card stays quiet until asked.
 **Brief:** Goal: fetch one letter's note shard on first open, never at boot. Files: `src/ui/wordNotes.js`, `wordNotes.css`, `scripts/build-word-notes.mjs`, `scripts/lib/notesData.mjs`, `public/data/word-notes-*.json`. **Conflicts:** none (the card gets one line).
-### WN2. Keep the margin note open from one card to the next
-**Pitch:** Once a player has turned to the note, the next card in a run opens with the sheet already unfolded, so reading through a run's words does not need a tap each time.
-**Brief:** Goal: a session-only flag (no save field) read by `wireMarginNote`. Files: `src/ui/wordNotes.js`. **Conflicts:** WN1.
-### WN3. Only show related words the game knows
+### [x] WN2. Keep the margin note open from one card to the next
+**Done:** the note stays open for the next card, but only after the player has seen the meaning: a shelf card opens with it at once, and a judged card opens with it once its verdict shows. Turning back clears the choice. Guard: `scripts/word-notes-check.mjs` checks the next judged card in every topic room.
+
+### [x] WN3. Only show related words the game knows (fragments dropped, real words only)
+**Done:** builder keeps a related word only when it is a Wiktionary headword with a usable sense or a word the game knows; a fragment of the headword is dropped. Guard: `test/word-notes.test.js` (shipped shards have no fragments).
 **Pitch:** Some related words in the note are odd fragments ("hemeral" under ephemeral). Keep only related words that are in the game's own word lists or the synonym data, so the list reads as a set of real neighbours.
 **Brief:** Goal: filter `r` against `words.json`, `room-words.json` and `senses.json` in the builder, then rebuild the shards. Files: `scripts/lib/notesData.mjs`, `scripts/build-word-notes.mjs`. **Conflicts:** WN1.
+
+## VF. Verdict feel follow-ups (2026-11-07, from the verdict sound and haptics thread)
+
+### VF1. Replay the verdict line
+**Pitch:** Once the card is read, the verdict's quill strokes are gone for good. A tap on the verdict line should write it again so the sound can be heard without answering.
+**Brief:** Goal: tapping the verdict line replays its quills and page turn through `landVerdict`, rate limited by the existing quill gap. Files: `src/app/card.js`, `src/ui/verdictFeel.js`. Done when: silent with Sound off, one replay per second at most, keyboard reachable, and a CI guard covers the tap wiring.
+**Touches:** card. **Conflicts:** card catalogue follow-ups.
+
+### VF2. A single buzz when a stamp is earned
+**Pitch:** Earning a stamp shows a toast on the Almanac, but a phone gives no sign. One short buzz would match it.
+**Brief:** Goal: call the buzz helper once from the stamp toast, using the Haptics switch and the same reduced motion and Low Power rules as the verdict. Files: `src/ui/stampToast.js` (or where the toast lives), `src/ui/verdictFeel.js`. Done when: one pulse per new stamp, none when Haptics is off, tested with a stubbed `navigator.vibrate`.
+**Touches:** stamps, settings. **Conflicts:** stamps thread.
+
+### VF3. Pick the verdict strokes by room
+**Pitch:** Every room writes its verdict with the same pen. The topic rooms each have their own accent, so their verdict could sound like it.
+**Brief:** Goal: each topic room gives its verdict strokes a pitch from its room tone (the Science bell, the Art brush). Files: `src/sound/verdictFeel.js`, `src/sound/roomTone.js`. Done when: the room id is passed through `landVerdict`, the Hall keeps the plain pen, and a test pins each room's pitch inside the room's tone range.
+**Touches:** room tone, verdict feel. **Conflicts:** room tone threads.
 
 ### G17. [x] Phone hints: newest in the strip, the rest one tap away (changeable)
 **Serves:** easy to understand, hints you can re-read, nothing squeezes the answer slip.
 **Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
 **Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
 **Touches:** RUN. **Conflicts:** G12, G15.
+
+## PT. Patrons follow-ups (2026-11-07, from the Patrons thread)
+
+### PT1. [x] Patrons: library desk visitors with word requests (this PR)
+**Pitch:** A unique, on-theme feature: a patron comes to the desk with a word they need, and the player answers it in the library's own voice.
+**Brief:** Goal: six patrons, one per topic room, asking for one word each day, judged by the existing Riddle and Daily judges, served into the Shelf with a commendation in the desk ledger. Files: `src/core/patrons.js`, `src/ui/patronsBook.js`, `src/ui/patronArt.js`, `src/ui/patrons.css`. Done when: 375 and 1280 pass, every room, reduced motion, guard in CI.
+**Touches:** home shelf, Shelf book. **Conflicts:** none open.
+
+### PT2. A stamp for a patron's third commendation
+**Pitch:** Patrons give a reward that links to the Almanac. Three commendations from one patron should earn a small stamp on the Stamps page, so the desk shows progress as well as the Shelf.
+**Brief:** Goal: one stamp per patron ("Friend of the desk"), derived from `S.patrons.served`, shown on the Almanac Stamps page. Files: `src/core/stamps.js`, `test/stamps.test.js` (catalogue count), `src/ui/stampsPage.js`. Done when: stamps page shows six new slots at 375 and 1280 with no clipping, `stamps-look` guard passes, and the catalogue test is updated on purpose.
+**Touches:** Stamps, Almanac. **Conflicts:** stamps follow-ups.
+
+### PT3. Answer on the first page on phones
+**Pitch:** On a phone the answer slip sits on page two, so the request is read, then the page is turned to answer. The slip should sit under the request on page one.
+**Brief:** Goal: at phone width, put the answer slip on the desk page below the request (one page), keep the desktop layout. Files: `src/ui/patronsBook.js`, `src/ui/patrons.css`. Done when: the answer slip is reachable without a page turn at 375 and `scripts/patrons.mjs` asserts it.
+**Touches:** Patrons book. **Conflicts:** none.
+
+### PT4. A harder request for a patron who knows you
+**Pitch:** A patron who has commended you three times should bring a second, harder request (a rarer word from a higher tier), so the desk grows with the player.
+**Brief:** Goal: after three commendations from one patron, their request draws from words of tier 3 and up (`src/core/patrons.js`, the pool filter), labelled "A harder one". Done when: the rule is a pure function with a test and the desk shows the label at 375 and 1280.
+**Touches:** Patrons. **Conflicts:** none.
