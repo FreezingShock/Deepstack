@@ -2178,10 +2178,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Done:** every open book page keeps its writing at 12px or more (labels) and every button, switch, slider and day cell is at least 44px across, at phone and laptop sizes. Long pages fade their last line and say "more ↓" in the footer instead of cutting text off. Settings and Credits fit the window (they were not fitting, because the fit covered only the old panels). Pages with controls no longer shrink with zoom. Guard: `scripts/book-readability.mjs` in CI, `test/book-readable.test.js`. Files: `src/ui/bookReadable.css`, `src/ui/bookReadable.js`, `src/ui/pageFit.js`. Screenshots: screenshots/book-readability/. The Results book is not in the guard yet (see BR2).
 **Touches:** every book. **Conflicts:** Settings ST threads, Ember Log, Almanac stamps (CSS only, loaded last).
 
-### BR2. Put the Results book in the readability guard
-**Serves:** "words must be fully readable", "make all the books more readable".
-**Pitch:** The result ledger after a Daily or a run is the one book the readability guard cannot open yet, because it needs a finished save. Cover it at phone and laptop sizes.
-**Brief:** Goal: seed a finished Daily record the results page accepts (its fields are `books`, `depth`, `room`, `streak`, see `src/ui/results.js`), then add `#bRes` to the BOOKS list in `scripts/book-readability.mjs`. Done when: the guard opens the results book at 375 and 1280 and passes. **Touches:** guard script only. **Conflicts:** none.
+### [x] BR2. Put the Results card in the readability guard (follow-up PR, branch claude/book-results-guard)
+**Done:** the guard seeds a finished Daily for today, opens "Today's result" and checks the Results card at 375, 1280 and 1280x500. The card's kicker, tallies, floor tags, share preview and book rows now have 12px or more type and 44px buttons, and the card scrolls with the same "more ↓" cue as a book page. Open point for nate: at 375 the Share and Back buttons sit below the fold, so the rows and their 44px height push the actions down. Say if the actions should move above the list.
+**Touches:** guard script, bookReadable.css and .js (the cue now also watches #final).
 
 ### BR3. Contrast pass on small book labels
 **Serves:** "make all the books more readable", dark-on-parchment labels.

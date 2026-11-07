@@ -47,3 +47,14 @@ body .bk-spread.menu .dly,body .bk-spread.menu .pg-in>*:not(.dly){zoom:1}
 /* the switches keep their pill shape; the 44px hit area grows around them */
 .bk-spread button.tpsw,#topPanel button.tpsw{min-width:0!important;min-height:0!important}
 .bk-spread button.tpsw::before,#topPanel button.tpsw::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+
+/* the Results card (#final) after a finished Daily or run: its kicker, tallies, floor tags and tier names were
+   10 to 11px, and each book row and action is a button under 44px tall */
+#final .fkick,#final .fsub,#final .fsub span,#final .rf,#final .rt,#final .rbook .rt,#final .rbook .rf{font-size:calc(12.5px*var(--ts))!important}
+#final .fsub b{font-size:calc(13px*var(--ts))!important}
+#final button,#final [role=button],#final a[href]{min-height:44px!important;box-sizing:border-box}
+#final button,#final a[href]{min-width:44px}
+/* the Results card scrolls on a short or narrow window: the same fade and "more ↓" as a book page */
+#final.has-more{-webkit-mask-image:linear-gradient(#000 calc(100% - 44px),transparent);mask-image:linear-gradient(#000 calc(100% - 44px),transparent)}
+#final.has-more::after{content:"more ↓";position:fixed;left:50%;bottom:10px;transform:translateX(-50%);font:italic 400 calc(13.5px*var(--ts))/1 var(--serif);color:var(--c-bronze-33);pointer-events:none}
+#final .share,#final .share .nb,#final pre.share{font-size:calc(12.5px*var(--ts))!important}

@@ -1,10 +1,12 @@
 // Book readability guard: every book a reader opens from the home room (Daily, Shelf, Rooms, Almanac, Ember Log,
-// Settings, Credits) at a phone, a laptop and a short laptop window. For each open book it asserts:
+// Settings, Credits) and the Results card after a finished Daily, at a phone, a laptop and a short laptop window.
+// The Results card needs a finished Daily in the save, so it runs in its own seeded pass (see RESULTS_SEED). For each open book it asserts:
 //   type   every line of writing is at least 12px (the smallest label a reader must read),
 //   touch  every button, link, switch, slider and day cell is at least 44px across (a ::before hit area counts),
 //   reach  no writing is cut off: text past a page's foot needs the page's "more" cue (.has-more), and a
 //          hidden-overflow edge never clips text,
-//   frame  the book never scrolls itself (no stray scrollbar on the spread) or runs off the window sideways.
+//   frame  a book never scrolls itself (no stray scrollbar on the spread) and nothing runs off the window sideways.
+//          The Results card is not a book: it may scroll, but then it shows the same "more" cue.
 // Run after `npm run build`; set CHROMIUM_PATH if Playwright's own Chromium is missing. Skips (exit 0) without a
 // browser, like the other guards. Set SHOTS=dir to keep a screenshot of each book.
 import {createServer} from 'node:http';
@@ -40,10 +42,10 @@ const MIN_FONT = 12, MIN_TAP = 44;
 const failures = [];
 
 // The page-side measurement: runs in the browser with the book open. Returns the problems it found.
-const measure = ({MIN_FONT, MIN_TAP}) => {
+const measure = ({MIN_FONT, MIN_TAP, resultsScope}) => {
   const live = [...document.querySelectorAll('.bk-spread')].filter(e => !e.classList.contains('out') && !e.classList.contains('closing'));
-  const scope = live[live.length - 1] || document.querySelector('#topPanel .tpbox');
-  if (!scope) return {missing: true};
+  const scope = resultsScope ? document.querySelector('#final') : (live[live.length - 1] || document.querySelector('#topPanel .tpbox'));
+  if (!scope) return {missing: true, hint: `final=${document.querySelectorAll('#final').length} spreads=${document.querySelectorAll('.bk-spread').length} tpbox=${document.querySelectorAll('#topPanel .tpbox').length}`};
   const out = {fonts: [], taps: [], clipped: [], scrolls: [], sideways: []};
   const shown = e => { const cs = getComputedStyle(e); return e.getClientRects().length && cs.visibility !== 'hidden' && cs.display !== 'none' && cs.opacity !== '0'; };
   const label = e => (e.textContent || e.getAttribute('aria-label') || e.id || e.className || e.tagName).replace(/\s+/g, ' ').trim().slice(0, 36);
@@ -51,7 +53,7 @@ const measure = ({MIN_FONT, MIN_TAP}) => {
   const within = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.right > -2 && r.left < innerWidth + 2 && r.bottom > -2 && r.top < innerHeight + 2; };
 
   // 1. the book itself must not scroll: a stray bar on the whole spread
-  if (/auto|scroll/.test(getComputedStyle(scope).overflowY) && scope.scrollHeight > scope.clientHeight + 2) out.scrolls.push(`spread ${scope.scrollHeight}>${scope.clientHeight}`);
+  if (scope.classList.contains('bk-spread') && /auto|scroll/.test(getComputedStyle(scope).overflowY) && scope.scrollHeight > scope.clientHeight + 2) out.scrolls.push(`spread ${scope.scrollHeight}>${scope.clientHeight}`);
   if (sr.left < -1 || sr.right > innerWidth + 1 || sr.bottom > innerHeight + 1 || sr.top < -1) out.sideways.push(`spread at ${Math.round(sr.left)},${Math.round(sr.top)} ${Math.round(sr.width)}x${Math.round(sr.height)}`);
   if (document.documentElement.scrollWidth > innerWidth + 1) out.sideways.push('page');
 
@@ -93,48 +95,63 @@ const measure = ({MIN_FONT, MIN_TAP}) => {
   return out;
 };
 
+/* the save for each pass: a shelf of 36 words, and for the results pass a finished Daily for today, so the home room
+   shows "Today's result" and the Results card opens from it. Seven books, with the longest word and both an answer
+   and a skip, so the card's wrapping and tallies are tested at their widest. */
+const RESULTS_SEED = seeded => {
+  const shelf = [];
+  for (let i = 0; i < 36; i++) shelf.push({w: 'word' + i, tier: i % 7, score: 50 + i, t: 1700000000000 + i * 864e5, ft: i * 30, fl: i % 5});
+  const day = new Date().toISOString().slice(0, 10);
+  const words = ['alpha', 'bravo', 'incomprehensibilities', 'delta', 'echo', 'foxtrot', 'golf'];
+  const books = words.map((w, i) => ({w, pos: 'noun', def: 'a sample definition for ' + w + ' that runs a little longer than one line on a phone', score: 40 + i * 7, tier: i % 6, answer: i % 3 ? 'some answer for ' + w : '', skipped: i % 3 === 0, ft: 100 + i * 10, verdict: 'A fair try, close in spirit.'}));
+  const daily = seeded ? {[day]: {day, books, avg: 61, best: 3, depth: 120, practice: false}} : {};
+  return {shelf, streak: {last: seeded ? day : '', n: seeded ? 1 : 3}, bestDepth: 300, daily};
+};
+
 for (const [w, h] of SIZES) {
-  const ctx = await browser.newContext({viewport: {width: w, height: h}, reducedMotion: 'reduce'});
-  const page = await ctx.newPage();
-  const errs = [];
-  page.on('pageerror', e => errs.push(e.message));
-  await page.addInitScript(() => {
-    if (!localStorage.getItem('deepstack.v1')) {
-      const shelf = [];
-      for (let i = 0; i < 36; i++) shelf.push({w: 'word' + i, tier: i % 7, score: 50 + i, t: 1700000000000 + i * 864e5, ft: i * 30, fl: i % 5});
-      localStorage.setItem('deepstack.v1', JSON.stringify({shelf, streak: {last: '', n: 3}, bestDepth: 300}));
-    }
-  });
-  await page.route(u => !u.href.startsWith(url), r => r.abort());
-  await page.goto(url);
-  await page.waitForSelector('#home', {timeout: 15000});
-  await page.waitForTimeout(900);
-  for (const [name, sel] of BOOKS) {
-    const tag = `${w}x${h} ${name}`;
-    const opened = await page.evaluate(s => { const e = document.querySelector(s); if (!e) return false; e.click(); return true; }, sel);
-    if (!opened) { failures.push(`${tag}: button missing`); continue; }
-    /* wait until the book has finished opening (its swing and fly-in), not just until it exists */
-    await page.waitForFunction(() => {
-      const live = [...document.querySelectorAll('.bk-spread')].filter(e => !e.classList.contains('out') && !e.classList.contains('closing'));
-      const b = live[live.length - 1];
-      return (b && b.classList.contains('open')) || !!document.querySelector('#topPanel .tpbox:not([hidden])');
-    }, null, {timeout: 4000}).catch(() => {});
+  for (const seeded of [false, true]) {
+    const ctx = await browser.newContext({viewport: {width: w, height: h}, reducedMotion: 'reduce'});
+    const page = await ctx.newPage();
+    const errs = [];
+    page.on('pageerror', e => errs.push(e.message));
+    await page.addInitScript(seed => { if (!localStorage.getItem('deepstack.v1')) localStorage.setItem('deepstack.v1', JSON.stringify(seed)); }, RESULTS_SEED(seeded));
+    await page.route(u => !u.href.startsWith(url), r => r.abort());
+    await page.goto(url);
+    await page.waitForSelector('#home', {timeout: 15000});
     await page.waitForTimeout(900);
-    const m = await page.evaluate(measure, {MIN_FONT, MIN_TAP});
-    if (m.missing) failures.push(`${tag}: the book did not open`);
-    else {
-      for (const k of ['fonts', 'taps', 'clipped', 'scrolls', 'sideways']) {
-        if (m[k].length) failures.push(`${tag}: ${k}: ${m[k].slice(0, 4).join(' | ')}${m[k].length > 4 ? ` (+${m[k].length - 4} more)` : ''}`);
+    const passBooks = seeded ? [['bRes', '#bRes']] : BOOKS;
+    for (const [name, sel] of passBooks) {
+      const tag = `${w}x${h} ${name}`;
+      const opened = await page.evaluate(s => { const e = document.querySelector(s); if (!e) return false; e.click(); return true; }, sel);
+      if (!opened) { failures.push(`${tag}: button missing`); continue; }
+      if (seeded) {
+        await page.waitForSelector('#final', {state: 'attached', timeout: 8000}).catch(() => {});
+      } else {
+        /* wait until the book has finished opening (its swing and fly-in), not just until it exists */
+        await page.waitForFunction(() => {
+          const live = [...document.querySelectorAll('.bk-spread')].filter(e => !e.classList.contains('out') && !e.classList.contains('closing'));
+          const b = live[live.length - 1];
+          return (b && b.classList.contains('open')) || !!document.querySelector('#topPanel .tpbox:not([hidden])');
+        }, null, {timeout: 4000}).catch(() => {});
       }
+      await page.waitForTimeout(900);
+      const m = await page.evaluate(measure, {MIN_FONT, MIN_TAP, resultsScope: seeded});
+      if (m.missing) failures.push(`${tag}: the book did not open (${m.hint})`);
+      else {
+        for (const k of ['fonts', 'taps', 'clipped', 'scrolls', 'sideways']) {
+          if (m[k].length) failures.push(`${tag}: ${k}: ${m[k].slice(0, 12).join(' | ')}${m[k].length > 12 ? ` (+${m[k].length - 12} more)` : ''}`);
+        }
+      }
+      if (SHOTS) await page.screenshot({path: join(SHOTS, `${name}-${w}x${h}.png`)});
+      if (seeded) break;
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(1100);
+      await page.evaluate(() => document.querySelectorAll('#topPanel:not([hidden])').forEach(x => { x.hidden = true; }));
     }
-    if (SHOTS) await page.screenshot({path: join(SHOTS, `${name}-${w}x${h}.png`)});
-    await page.keyboard.press('Escape');
-    await page.waitForTimeout(1100);
-    await page.evaluate(() => document.querySelectorAll('#topPanel:not([hidden])').forEach(x => { x.hidden = true; }));
+    if (errs.length) failures.push(`${w}x${h}${seeded ? ' results' : ''}: page errors: ${errs.join(' | ')}`);
+    console.log(`${w}x${h}${seeded ? ' results' : ''} checked`);
+    await ctx.close();
   }
-  if (errs.length) failures.push(`${w}x${h}: page errors: ${errs.join(' | ')}`);
-  console.log(`${w}x${h} checked`);
-  await ctx.close();
 }
 await browser.close();
 server.close();
