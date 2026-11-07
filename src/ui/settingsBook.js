@@ -54,10 +54,10 @@ export function settingsPages(o){
  return {left:`<section class="sb-group" aria-label="Sound">${soundRows(o)}${hapticRows(o)}</section>`+motionSec(o), right:displaySec(textBody(o)+contrastRow(o))+playSec(o)+progressSec()};
 }
 
-/* The book's spreads for the current text size: {l, r} pairs. Normal text is one spread; larger text splits the same
-   sections over three, with the controls kept in the same order, so a page never has to scroll. */
+/* The book's spreads: {l, r} pairs. Desktop at normal text is one spread; larger text, and every phone (one page at a time,
+   so more pages cost nothing), splits the same sections over three spreads in the same order, so a page never has to scroll. */
 export function settingsSpreads(o){
- if(o.st.text==='normal'){const p=settingsPages(o);return [{l:p.left,r:p.right}];}
+ if(o.st.text==='normal'&&!o.phone){const p=settingsPages(o);return [{l:p.left,r:p.right}];}
  return [
   {l:soundSec(o), r:hapticSec(o)+motionSec(o)},
   {l:displaySec(textBody(o)), r:`<section class="sb-group" aria-label="Contrast">${contrastRow(o)}</section>`},

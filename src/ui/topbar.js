@@ -52,7 +52,7 @@ export function initTopbar({Sfx,doc=document}={}){
  let current=null,opener=null;
  /* the Settings book's pages for the current settings: one spread at normal text, three at larger text */
  const sndOn=()=>!!snd&&snd.getAttribute('aria-pressed')==='true';
- const settingsSpreadsNow=()=>settingsSpreads({st,sound:sndOn(),prefs:PREFS,pref:Quality.pref(),floorRules:loadEnabled(),osCalm:systemReduces()});
+ const settingsSpreadsNow=()=>settingsSpreads({st,sound:sndOn(),prefs:PREFS,pref:Quality.pref(),floorRules:loadEnabled(),osCalm:systemReduces(),phone:typeof matchMedia==='function'&&matchMedia('(max-width:560px)').matches});
  const body={
   credits:()=>`<h2 id="tpT">Credits</h2><dl class="tpcred">${CREDITS.map(([h,p])=>`<dt>${h}</dt><dd>${p}</dd>`).join('')}</dl>`,
   settings:()=>`<h2 id="tpT">Settings</h2>${settingsSpreadsNow().map(s=>s.l+s.r).join('')}`,

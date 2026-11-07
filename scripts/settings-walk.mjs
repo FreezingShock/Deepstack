@@ -116,6 +116,8 @@ async function nextPage(page) {
   const next = page.locator('.bk-spread.panel .bs-corner.next:not([hidden]):not([disabled])');
   if (!(await next.count())) return false;
   await next.first().click({timeout: T});
+  // a turn starts on the next frame, after the first settle could already have looked; give it time to begin before waiting
+  await page.waitForTimeout(500);
   await settle(page);
   return true;
 }

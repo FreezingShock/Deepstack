@@ -33,3 +33,10 @@ test('Large and Extra large flow onto three spreads with the Progress card on th
 test('no spread is empty on its left page', () => {
   for (const text of ['large', 'xlarge']) for (const s of spreadsAt(text)) assert.ok(s.l.length > 0, text);
 });
+
+test('a phone splits Settings across three spreads even at normal text, since it turns one page at a time', () => {
+  const phone = settingsSpreads({st: {...DEFAULTS, text: 'normal'}, sound: true, prefs: ['auto'], pref: 'auto', floorRules: false, osCalm: false, phone: true});
+  assert.equal(phone.length, 3);
+  const ids = phone.flatMap(s => idsOf(s.l + s.r));
+  for (const id of CONTROLS) assert.equal(ids.filter(x => x === id).length, 1, `${id} on a phone`);
+});
