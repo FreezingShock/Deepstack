@@ -36,6 +36,8 @@ await mkdir(SHOTS, {recursive: true});
 const BLOCKED = /^https?:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|huggingface\.co|[^/]*\.hf\.co|cdn\.jsdelivr\.net)\//;
 const problems = [];
 const fail = msg => problems.push(msg);
+// Every request Chromium reports as failed, with its URL and error, so a flaky failure names the request that caused it.
+const failedRequests = [];
 const T = 15000;
 const log = msg => console.log(`pwa: ${msg}`);
 
@@ -44,13 +46,16 @@ async function open(ctxOpts = {}) {
   await ctx.route(BLOCKED, r => r.request().url().includes('fonts.googleapis') ? r.fulfill({status: 200, contentType: 'text/css', body: ''}) : r.abort());
   const page = await ctx.newPage();
   page.on('pageerror', e => fail(`pageerror: ${e.message}`));
-  page.on('requestfailed', r => { if (process.env.PWA_DEBUG) console.log('requestfailed', r.url().slice(0, 140), r.failure()?.errorText); });
+  page.on('requestfailed', r => {
+    failedRequests.push(`${r.url().slice(0, 160)} ${r.failure()?.errorText}`);
+    if (process.env.PWA_DEBUG) console.log('requestfailed', r.url().slice(0, 140), r.failure()?.errorText);
+  });
   page.on('console', m => {
     if (m.type() !== 'error') return;
     if (process.env.PWA_DEBUG) console.log('console.error at', m.location()?.url, m.text());
     if (BLOCKED.test(m.location()?.url || '')) return;
     if (/Failed to load resource/.test(m.text()) && (!m.location()?.url?.startsWith(url) || /\/(models|ort)\//.test(m.location().url))) return;
-    fail(`console.error: ${m.text()}`);
+    fail(`console.error at ${m.location()?.url || '(no URL reported)'}: ${m.text()}`);
   });
   return {ctx, page};
 }
@@ -173,6 +178,10 @@ try {
 if (problems.length) {
   console.error('pwa: FAILED');
   for (const p of problems) console.error('  ' + p);
+  if (failedRequests.length) {
+    console.error('  requests Chromium reported as failed:');
+    for (const r of [...new Set(failedRequests)].slice(0, 20)) console.error('    ' + r);
+  }
   process.exit(1);
 }
 console.log('pwa: ok');
