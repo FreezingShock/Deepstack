@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Unlimited roguelike descent (descent thread, PR pending): play one Unlimited run on your phone and a desktop. Landings come before words 3, 5 and 7 with three doors: Hard room, Rest alcove, Curio shop. Tell me if a failed word (skip or Pamphlet) ends the run too harshly, and whether the three relics read clearly. Options A/B/C are in screenshots/descent/.
 - Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
@@ -2163,3 +2164,19 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
 **Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
 **Touches:** RUN. **Conflicts:** G12, G15.
+
+### DS1. [x] Unlimited as a roguelike descent: landings, relics and a run-ending cost (PR pending, `src/core/descent.js`, `src/ui/descentLanding.js`)
+**Pitch:** Unlimited runs now have landings before words 3, 5 and 7 with three doors: Hard room (feet x1.5 on the next word, a harder word), Rest alcove (Spare breath, so one failed word does not end the run) and Curio shop (take one relic of two). Relics last the run: Index card (one more free hint), Slow wick (+10 seconds a word), Folio double (Folio or better earns twice the feet). A skipped or Pamphlet word ends the run unless Spare breath is carried. Scoring and depth are unchanged; the final page says how the descent ended.
+**Brief:** Options A/B/C in `screenshots/descent/`, A built. Guard: `scripts/descent-guard.mjs` (every topic room at 375 and 1280: fit, no clipping).
+
+### DS2. Roguelike descent: a fourth door and the Lexicon's say
+**Pitch:** A landing with only three doors feels fixed after a few runs. Add a door that depends on the Lexicon (a rank-gated Scholar's stair) and let the Lexicon change which relics the shop lays out.
+**Brief:** Goal: one more door when the Lexicon is at least 60, and shop relics weighted by rank. Files: `src/core/descent.js`, `src/ui/descentLanding.js`. Done when: a test pins the door appears only at 60 and above, and the 375 landing still fits. **Touches:** RUN. **Conflicts:** DS1.
+
+### DS3. Relics on the Almanac after a run
+**Pitch:** A relic kept on a finished run is lost, so a good run leaves nothing behind. Show the relics a run kept as a small row on the Almanac, so the run leaves a mark.
+**Brief:** Goal: keep a count of relics kept per run in `S.descent` (additive) and show them on the Almanac page. Files: `src/app/final.js`, `src/ui/almanac*.js`. Done when: the save round-trips and the Almanac fits at 375. **Touches:** HOME, STATS. **Conflicts:** DS1.
+
+### DS4. Say why a run ends, on the card
+**Pitch:** When a run ends on a failed word, the card says "The run ends here" and nothing more. Name the door that would have kept it going (Rest alcove) in the same line.
+**Brief:** Goal: one line on the card for a run-ending word naming the Rest alcove. Files: `src/app/run.js`, `src/ui/results.js`. Done when: a test pins the line for a skip and for a Pamphlet. **Conflicts:** DS1.

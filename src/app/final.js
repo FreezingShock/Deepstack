@@ -20,6 +20,7 @@ import {runDay} from '../core/streak.js';
 
 import {dailyNumber} from '../core/daily.js';
 import {riddleDayShare} from '../core/riddleDaily.js';
+import {descentNoteHTML} from '../ui/descentLanding.js';
 export const BLK='▁▂▃▄▅▆▇';
 export function shareText(d){if(d.mode==='riddle'&&d.day)return riddleDayShare(d.day,d,BLK);
  if(isDailyRun(d))return dailyShareText(d,{room:roomById(currentRoom(S)).name,no:dailyNumber(runDay(d,utc())),floorName:d.floor?FLOORS[d.floor].name:'',tierNames:TIERS.map(t=>t.name),keys:Object.keys(S.daily||{}),today:utc()});
@@ -33,6 +34,7 @@ export async function showFinal(d,fromHome){
  World.openNiche(World.restRow,{label:'FINIS',books:[]});
  const txt=shareText(d);const el=ui.final;el.hidden=false;el.className='center fadein';
  el.innerHTML=finalHTML(d,S,{txt,share:isDailyRun(d),rarest:TIERS[d.best].name,no:dailyNo(),dayNo:d.day?dailyNumber(d.day):0,floorName:d.floor?FLOORS[d.floor].name:'',levelTitle,spines:d.books.map((b,i)=>spineImg(b,i,'final',132)).join('')});
+ if(d.descent)el.querySelector('.sheet')?.insertAdjacentHTML('afterbegin',descentNoteHTML(d.descent));
  countUp($('#cnt'),d.depth,1200,0,fmtNum);
  bindRecap(el,d.books,openCard);
  $$('#sp img').forEach(im=>{im.onclick=()=>openCard(d.books[+im.dataset.i],{fresh:false});});
