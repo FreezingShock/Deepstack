@@ -41,7 +41,7 @@ test('the toast names each new stamp with its room, or the library, and escapes 
   assert.match(html, /<b class="stp-name">Every door opened<\/b><small class="stp-where">The library<\/small>/);
   assert.match(html, /Kept in the Almanac/);
   assert.match(html, /--d:180ms/, 'the first seal presses first');
-  assert.match(html, /--d:500ms/, 'and the next one after it');
+  assert.match(html, /--d:420ms/, 'and the next one after it');
   assert.match(html, /class="stp-name">Perfect &lt;Daily&gt;/);
   assert.match(html, /Every word &amp; none skipped/);
   assert.doesNotMatch(html, /<Daily>/);
@@ -50,6 +50,6 @@ test('the toast names each new stamp with its room, or the library, and escapes 
 test('the stamp look uses the tokens and the room colour only through --c, with no raw hex', () => {
   const css = readFileSync(new URL('../src/ui/stamps.css', import.meta.url), 'utf8');
   assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/, 'colours come from tokens');
-  assert.match(css, /:where\(html\.rm\) #stamptoast,:where\(html\.rm\) #stamptoast \.stp-seal,:where\(html\.rm\) #stamptoast::after\{transition:none;animation:none\}/);
+  assert.match(css, /:where\(html\.rm\) #stamptoast,:where\(html\.rm\) #stamptoast \.stp-tab,:where\(html\.rm\) #stamptoast\.open \.stp-plaque,:where\(html\.rm\) #stamptoast \.stp-mark,:where\(html\.rm\) #stamptoast \.stp-mark::after\{transition:none;animation:none\}/);
   assert.match(css, /@keyframes stpPress/);
 });

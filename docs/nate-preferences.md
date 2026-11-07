@@ -170,3 +170,5 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-07 manuscript restoration: "something more unique" -> a new word-repair mode built on the judge and room words (MR1).
 - 2026-11-07 Input latency: wants room switches and book opens to feel instant on a throttled phone; a switch should show its colour change at once, nothing resetting.
 - 2026-11-07 Onboarding highlight: nate's screenshot showed the first-visit halo on the Room Ledger spine offset up and left and running into the Stats spine ("fix this highlight error"). Every first-visit halo must sit exactly on its target at every size, follow it while the home settles, and never be covered (ON1).
+
+- 2026-11-07 stamp toast: "more on-theme, animated, sectioned" -> the toast is an inked stamp pressed onto an aged slip (no ruled lines), one section per stamp with progress pips; it lands open, folds to a stamp tab so it never covers a result, and a new stamp joins the open slip (thread: stamp toast)

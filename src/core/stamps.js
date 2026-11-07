@@ -88,13 +88,17 @@ export function earnedStamps(S) {
 /** S.stamps, tolerating a missing or damaged field. */
 export const stampsOf = S => (S && S.stamps && typeof S.stamps === 'object' && !Array.isArray(S.stamps) ? S.stamps : {});
 
-/** Writes every newly earned stamp into S.stamps with `day`. Returns the new ones, for a toast: [{id, room, name, hint}]. */
+/** Writes every newly earned stamp into S.stamps with `day`. Returns the new ones, for a toast:
+ *  [{id, room, name, hint, of: {n, total}}], where `of` is how many of its room's (or the library's) stamps are now earned. */
 export function recordStamps(S, day) {
   if (!S) return [];
   if (!S.stamps || typeof S.stamps !== 'object' || Array.isArray(S.stamps)) S.stamps = {};
   const fresh = earnedStamps(S).filter(s => !S.stamps[s.id]);
   for (const s of fresh) S.stamps[s.id] = day;
-  return fresh.map(s => ({id: s.id, room: s.room, name: s.name, hint: s.hint}));
+  return fresh.map(s => {
+    const group = stampRows(S, s.room);
+    return {id: s.id, room: s.room, name: s.name, hint: s.hint, of: {n: group.filter(r => r.earned).length, total: group.length}};
+  });
 }
 
 /** The stamps of one topic room (or of the library when `room` is null), in catalogue order, for a page to draw.
