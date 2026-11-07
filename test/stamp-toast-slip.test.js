@@ -88,3 +88,8 @@ test('the plaque is the Almanac brass on oak, and stays slip-sized on desktop', 
   assert.match(toastCss, /var\(--c-brass-cdbb92\)/, 'brass rules and pips');
   assert.doesNotMatch(toastCss, /--c-parchment\)\s*,\s*color-mix/, 'the slip is not the old paper gradient');
 });
+
+test('an open slip lets taps through, so a door under it on the descent landing stays clickable', () => {
+  assert.match(toastCss, /#stamptoast\.open\{[^}]*pointer-events:none/, 'the open slip is click-through');
+  assert.match(toastCss, /#stamptoast\.on\{[^}]*pointer-events:auto/, 'the folded tab still takes taps');
+});

@@ -41,7 +41,8 @@
   opacity:0;transform:translateY(-10px) rotate(-6deg);transform-origin:50% 0;
   transition:opacity var(--m-smooth) var(--e-settle),transform var(--m-smooth) var(--e-settle),width var(--m-smooth) var(--e-settle)}
 #stamptoast.on{opacity:1;transform:none;pointer-events:auto}
-#stamptoast.open{width:min(344px,calc(100vw - 20px));height:auto;transform:none}
+/* while the slip is open it lets taps through to the page: it lands over the landing and the rooms, and a door under it must stay clickable */
+#stamptoast.open{width:min(344px,calc(100vw - 20px));height:auto;transform:none;pointer-events:none}
 
 /* the tab: a small brass-rimmed oak disc, the count in its middle. It fades away while the plaque is open. */
 #stamptoast .stp-tab{all:unset;box-sizing:border-box;position:absolute;inset:0;display:grid;place-items:center;width:48px;height:48px;border-radius:50%;cursor:pointer;
