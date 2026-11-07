@@ -121,17 +121,16 @@
 }
 
 /* reduced motion: the card is simply shown or hidden, the face simply swapped; nothing flies, flips or nudges */
-@media(prefers-reduced-motion:reduce){
- html:not([data-motion="full"]) .home .cc-flip,html:not([data-motion="full"]) .home .cc-face,html:not([data-motion="full"]) .home .cc-drawer,html:not([data-motion="full"]) .home .cc-slot,html:not([data-motion="full"]) .home .cc-scrim{transition:none}
- html:not([data-motion="full"]) .home .cc-flip,html:not([data-motion="full"]) .home .cc-face{transform:none!important}
- html:not([data-motion="full"]) .home .cc-slot{transform:translate(-50%,-50%) scale(var(--cs,1))!important}
- html:not([data-motion="full"]) .home .cc-slot:not([data-s="on"]){display:none}
- html:not([data-motion="full"]) .home .cc-new{animation:none}}
-html[data-motion="reduce"] .home .cc-flip,html[data-motion="reduce"] .home .cc-face,html[data-motion="reduce"] .home .cc-drawer,html[data-motion="reduce"] .home .cc-slot,html[data-motion="reduce"] .home .cc-scrim{transition:none}
-html[data-motion="reduce"] .home .cc-flip,html[data-motion="reduce"] .home .cc-face{transform:none!important}
-html[data-motion="reduce"] .home .cc-slot{transform:translate(-50%,-50%) scale(var(--cs,1))!important}
-html[data-motion="reduce"] .home .cc-slot:not([data-s="on"]){display:none}
-html[data-motion="reduce"] .home .cc-new{animation:none}
+ html.rm .home .cc-flip,html.rm .home .cc-face,html.rm .home .cc-drawer,html.rm .home .cc-slot,html.rm .home .cc-scrim{transition:none}
+ html.rm .home .cc-flip,html.rm .home .cc-face{transform:none!important}
+ html.rm .home .cc-slot{transform:translate(-50%,-50%) scale(var(--cs,1))!important}
+ html.rm .home .cc-slot:not([data-s="on"]){display:none}
+ html.rm .home .cc-new{animation:none}
+html.rm .home .cc-flip,html.rm .home .cc-face,html.rm .home .cc-drawer,html.rm .home .cc-slot,html.rm .home .cc-scrim{transition:none}
+html.rm .home .cc-flip,html.rm .home .cc-face{transform:none!important}
+html.rm .home .cc-slot{transform:translate(-50%,-50%) scale(var(--cs,1))!important}
+html.rm .home .cc-slot:not([data-s="on"]){display:none}
+html.rm .home .cc-new{animation:none}
 /* the ledger's big streak numeral keeps a little more line so it never clips in its row on a scaled-up wall */
 .home .ledger .lg-streak dd{line-height:1.3}
 

@@ -9,6 +9,6 @@ test('slips stagger by order and the gap breathes with shared tokens',()=>{
  assert.match(css,/var\(--m-linger\)/);
 });
 test('reduced motion stills the slips and the gap',()=>{
- assert.match(css,/prefers-reduced-motion:reduce[^}]*mark\.gap\{animation:none/);
- assert.match(css,/data-motion="reduce"\] \.hslip mark\.gap\{animation:none/);
+ assert.match(css,/html\.rm[^}]*mark\.gap\{animation:none/);
+ assert.match(css,/html\.rm \.hslip mark\.gap\{animation:none/);
 });

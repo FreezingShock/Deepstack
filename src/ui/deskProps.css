@@ -25,6 +25,5 @@
  font:700 calc(14px*var(--ts))/1.1 var(--mono);letter-spacing:.1em;color:var(--c-book-red);opacity:.82;transform:rotate(-7deg);mix-blend-mode:multiply;pointer-events:none}
 .home .ledger .dp-mark.on{display:block}
 .home .ledger .dp-mark.thump{animation:dp-thump var(--m-quick) var(--e-settle) 1}
-@keyframes dp-thump{0%{transform:rotate(-7deg) scale(1.7);opacity:0}60%{transform:rotate(-7deg) scale(.94);opacity:.95}100%{transform:rotate(-7deg) scale(1);opacity:.82}}
-@media(prefers-reduced-motion:reduce){.dp.ring,.dp.press .dp-head,.home .ledger .dp-mark.thump{animation:none}}
-html[data-motion="reduce"] .dp.ring,html[data-motion="reduce"] .dp.press .dp-head,html[data-motion="reduce"] .home .ledger .dp-mark.thump{animation:none}
+@keyframes dp-thump{0%{transform:rotate(-7deg) scale(1.7);opacity:0}60%{transform:rotate(-7deg) scale(.94);opacity:.95}100%{transform:rotate(-7deg) scale(1);opacity:.82}}:where(html.rm) .dp.ring,:where(html.rm) .dp.press .dp-head,:where(html.rm) .home .ledger .dp-mark.thump{animation:none}
+html.rm .dp.ring,html.rm .dp.press .dp-head,html.rm .home .ledger .dp-mark.thump{animation:none}

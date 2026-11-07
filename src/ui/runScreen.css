@@ -36,8 +36,7 @@
 .center .row .btn{font-family:var(--label);font-size:calc(12px*var(--ts));letter-spacing:.14em;text-transform:uppercase;padding:8px 16px}
 .keys{font-family:var(--mono);letter-spacing:.06em;opacity:.8}
 /* phones: no candle, so the bar becomes a thin melting wick line */
-@media(max-width:640px){.timer{height:4px;border-radius:2px;margin-bottom:6px}.timer i{background:linear-gradient(90deg,var(--c-amber-ffd98a),var(--c-parchment));box-shadow:0 0 10px var(--c-amber-ffb84d-alpha-88)}.clock{margin-top:0}}
-@media(prefers-reduced-motion:reduce){.center .word span,.candle::before,.candle.dying,.clock.low{animation:none}.slipwrap{transition:none}}
+@media(max-width:640px){.timer{height:4px;border-radius:2px;margin-bottom:6px}.timer i{background:linear-gradient(90deg,var(--c-amber-ffd98a),var(--c-parchment));box-shadow:0 0 10px var(--c-amber-ffb84d-alpha-88)}.clock{margin-top:0}}:where(html.rm) .center .word span,:where(html.rm) .candle::before,:where(html.rm) .candle.dying,:where(html.rm) .clock.low{animation:none}:where(html.rm) .slipwrap{transition:none}
 /* short windows: keep the hint and skip buttons in view */
 @media(max-height:780px){.center .word{font-size:calc(clamp(46px,9vw,76px)*var(--ts))}.slip textarea{height:118px}.clock{margin-bottom:6px}.hintline{min-height:0;margin-top:6px}}
 /* reading nook: on phones the answer controls end above a strip where the earned books stand on the desk */

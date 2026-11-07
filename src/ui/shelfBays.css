@@ -20,8 +20,7 @@
 .bk-spread.menu .scase[data-lad=r]::after{right:4px}
 .bk-spread.menu .scase[data-lad=l]::after{left:4px}
 .bk-spread.menu .scase[data-lad=r] .sshelf{padding-right:34px}
-.bk-spread.menu .scase[data-lad=l] .sshelf{padding-left:34px}
-@media(prefers-reduced-motion:reduce){.bk-spread.menu .sbook.pulled{transition:none}}
+.bk-spread.menu .scase[data-lad=l] .sshelf{padding-left:34px}:where(html.rm) .bk-spread.menu .sbook.pulled{transition:none}
 /* phone: two stacks share ~300px, so the spine type tightens until a 14-letter word fits */
 @media(max-width:480px){
  .bk-spread.menu .sshelf{gap:6px;padding-left:6px;padding-right:6px}

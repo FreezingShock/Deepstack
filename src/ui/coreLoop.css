@@ -1,8 +1,7 @@
 /* Core loop polish (answer and result). The answer slip holds still while the judge reads it;
    the card's Enter hint is hidden on phones and touch screens, as the run screen already hides its own. */
 .slipwrap.judging textarea{caret-color:transparent;cursor:progress}
-.hslip.reading{font-style:italic;opacity:.8}
-@media (prefers-reduced-motion:no-preference){.hslip.reading{animation:reading-breathe 1.6s ease-in-out infinite}}
+.hslip.reading{font-style:italic;opacity:.8}:where(html:not(.rm)) .hslip.reading{animation:reading-breathe 1.6s ease-in-out infinite}
 @keyframes reading-breathe{0%,100%{opacity:.45}50%{opacity:.95}}
 @media (max-width:640px),(pointer:coarse){.book .page .go kbd{display:none}}
 /* "You wrote" shows the whole answer (it was clamped to two lines with an ellipsis); the card page scrolls if a long answer needs the room */

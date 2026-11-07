@@ -34,5 +34,4 @@
 @media (max-width:420px){
   .bk-spread .dly.wk .wk-day{grid-template-columns:40px minmax(0,1fr);gap:0 8px}
   .bk-spread .dly.wk .wk-main .d{font-size:calc(15px*var(--ts))}
-}
-@media (prefers-reduced-motion:reduce){.bk-spread .dly.wk *{transition:none!important;animation:none!important}}
+}:where(html.rm) .bk-spread .dly.wk *{transition:none!important;animation:none!important}
