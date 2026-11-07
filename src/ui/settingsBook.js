@@ -19,6 +19,8 @@ export function settingsPages({st,sound=true,prefs=[],pref='auto',floorRules=fal
    ${slider('sMus','Music',st.music)}
    ${slider('sFx','Effects',st.effects)}
    <p class="tphint">Music is the room's tone, the depth hum and the score. Effects are page turns, quills, seals and drips. Sound off silences both.</p>
+   <div class="tprow"><span id="lHap">Haptics</span>${sw('sHaptics','lHap',st.haptics!==false)}</div>
+   <p class="tphint">On a phone that supports it, the device buzzes softly as a verdict lands. Reduce motion turns the buzz off.</p>
   </section>
   <section class="sb-group" aria-label="Motion">
    <fieldset class="tprow tpseg sb-motion" id="sMotion"><legend>Motion</legend>${MOTION_LABELS.map(([v,l])=>`<button type="button" data-motion-choice="${v}" aria-pressed="${st.motion===v}">${l}</button>`).join('')}</fieldset>

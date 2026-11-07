@@ -37,6 +37,7 @@ export const HOME_BOOK_COLORS={
 export const HOME_LINKS=[
  {id:'bDaily',stack:0,tex:'grain',color:'navy',label:'Daily',note:'Every Daily, plus Practice',badge:(s,x)=>x.dailyNo?dailyBadge({S:s,played:x.played,no:x.dailyNo,today:x.today}):''},
  {id:'bUnl',stack:0,color:'oxblood',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>unlimitedBadge(s,x.lexicon)},
+ {id:'bPat',stack:0,tex:'vellum',color:'bottle',label:'Patrons',note:'Who is at the desk, and what they need',badge:s=>Object.values((s.patrons&&s.patrons.served)||{}).reduce((n,x)=>n+(x|0),0)||''},
  {id:'bAll',stack:1,tex:'worn',color:'calf',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
  /* the Rooms book (src/ui/roomLedger.js) took over from Sets: every set now lives in its topic room */
  {id:'bRooms',stack:1,tex:'vellum',color:'ochre',label:'Rooms',note:'Every room, its fire and its sets',badge:s=>{const r=roomById(currentRoom(s));return r.id==='hall'?ROOMS.length+' rooms':r.short;}},
