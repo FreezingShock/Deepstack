@@ -2162,10 +2162,11 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### [x] WN1. Margin note on the result card: etymology, usage and related words
 **Pitch:** After a judgement, a player can turn to a short margin note on the word: where it comes from, one sentence that uses it, and a few related words. It sits under the meanings as a ribbon tab and opens a tucked sheet, so the card stays quiet until asked.
 **Brief:** Goal: fetch one letter's note shard on first open, never at boot. Files: `src/ui/wordNotes.js`, `wordNotes.css`, `scripts/build-word-notes.mjs`, `scripts/lib/notesData.mjs`, `public/data/word-notes-*.json`. **Conflicts:** none (the card gets one line).
-### WN2. Keep the margin note open from one card to the next
-**Pitch:** Once a player has turned to the note, the next card in a run opens with the sheet already unfolded, so reading through a run's words does not need a tap each time.
-**Brief:** Goal: a session-only flag (no save field) read by `wireMarginNote`. Files: `src/ui/wordNotes.js`. **Conflicts:** WN1.
-### WN3. Only show related words the game knows
+### [x] WN2. Keep the margin note open from one card to the next
+**Done:** the note stays open for the next card, but only after the player has seen the meaning: a shelf card opens with it at once, and a judged card opens with it once its verdict shows. Turning back clears the choice. Guard: `scripts/word-notes-check.mjs` checks the next judged card in every topic room.
+
+### [x] WN3. Only show related words the game knows (fragments dropped, real words only)
+**Done:** builder keeps a related word only when it is a Wiktionary headword with a usable sense or a word the game knows; a fragment of the headword is dropped. Guard: `test/word-notes.test.js` (shipped shards have no fragments).
 **Pitch:** Some related words in the note are odd fragments ("hemeral" under ephemeral). Keep only related words that are in the game's own word lists or the synonym data, so the list reads as a set of real neighbours.
 **Brief:** Goal: filter `r` against `words.json`, `room-words.json` and `senses.json` in the builder, then rebuild the shards. Files: `scripts/lib/notesData.mjs`, `scripts/build-word-notes.mjs`. **Conflicts:** WN1.
 
