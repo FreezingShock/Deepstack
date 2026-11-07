@@ -96,8 +96,8 @@ async function openBook(page, which) {
   await page.waitForTimeout(400);
 }
 
-async function newPage(vp, dpr) {
-  const ctx = await browser.newContext({viewport: vp, reducedMotion: 'no-preference', timezoneId: 'UTC', deviceScaleFactor: dpr});
+async function newPage(vp, dpr, motion = 'no-preference') {
+  const ctx = await browser.newContext({viewport: vp, reducedMotion: motion, timezoneId: 'UTC', deviceScaleFactor: dpr});
   const page = await ctx.newPage();
   page.on('pageerror', e => fail(`page error ${e.message.split('\n')[0]}`));
   await page.route('**/*', r => (BLOCKED.test(r.request().url()) ? r.abort() : r.continue()));
@@ -111,12 +111,25 @@ async function newPage(vp, dpr) {
 const VIEWS = [{name: '375', vp: {width: 375, height: 740}, dpr: 2}, {name: 'desktop', vp: {width: 1280, height: 800}, dpr: 1}];
 const BOOKS = [['almanac', '#bStats'], ['daily', '#bDaily'], ['patrons', '#bPat'], ['unlimited', '#bUnl']];
 
-for (const view of VIEWS) {
+/* Reduced motion keeps the bookmark (static, no tug): back-to-contents must stay reachable. Motion on shows it too. */
+const MUST_HAVE_RIBBON = ['almanac', 'daily'];
+for (const motion of ['no-preference', 'reduce']) for (const view of VIEWS) {
   for (const [label, sel] of BOOKS) {
-    const page = await newPage(view.vp, view.dpr);
+    const page = await newPage(view.vp, view.dpr, motion);
     try {
       await openBook(page, sel);
-      if (await page.evaluate(coverRect, '.bk-spread .bs-ribbon')) {
+      const shown = await page.evaluate(coverRect, '.bk-spread .bs-ribbon');
+      if (!shown && MUST_HAVE_RIBBON.includes(label)) fail(`${view.name} ${label} (motion ${motion}): no bookmark ribbon, so no back-to-contents control`);
+      if (shown && motion === 'reduce') {
+        const tween = await page.evaluate(() => getComputedStyle(document.querySelector('.bk-spread .bs-ribbon')).transitionDuration);
+        if (tween.split(',').some(d => parseFloat(d) * (d.includes('ms') ? 1 : 1000) > 1)) fail(`${view.name} ${label}: the bookmark animates under reduced motion (${tween})`);
+        const before = await page.evaluate(() => getComputedStyle(document.querySelector('.bk-spread .bs-ribbon')).transform);
+        await page.hover('.bk-spread .bs-ribbon', {timeout: 3000}).catch(() => {});
+        await page.waitForTimeout(300);
+        const after = await page.evaluate(() => getComputedStyle(document.querySelector('.bk-spread .bs-ribbon')).transform);
+        if (after !== before) fail(`${view.name} ${label}: the bookmark tugs on hover under reduced motion (${before} to ${after})`);
+      }
+      if (shown) {
         const hits = await page.evaluate(coveredBy, '.bk-spread .bs-ribbon');
         for (const h of hits.slice(0, 4)) fail(`${view.name} ${label}: the bookmark ribbon covers ${h}`);
         /* A one-page spread's header seal is painted into the page background (no DOM element to sample), and it sits

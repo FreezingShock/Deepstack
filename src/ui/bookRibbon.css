@@ -8,3 +8,5 @@
 .bk-spread.one .bs-ribbon i{width:14px}
 .bk-spread.one[data-side=r] .bs-ribbon{left:2px;right:auto}
 :where(html.rm) .bk-spread .bs-ribbon{transition:none}
+/* reduced motion: the bookmark stays put (no tug on hover, focus or press), so back-to-contents is always there */
+:where(html.rm) .bk-spread .bs-ribbon:hover,:where(html.rm) .bk-spread .bs-ribbon:focus-visible,:where(html.rm) .bk-spread .bs-ribbon:active{transform:none}
