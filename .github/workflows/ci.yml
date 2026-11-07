@@ -99,7 +99,6 @@ jobs:
           node scripts/ra-fixes.mjs & rafix=$!
           node scripts/ember-log.mjs & ember=$!
           node scripts/home-frames.mjs & frames=$!
-          node scripts/share-card.mjs & sharecard=$!
           node scripts/stamps-look.mjs & stamps=$!
           node scripts/almanac-progress.mjs & almanac=$!
           node scripts/pwa-check.mjs & pwa=$!
@@ -117,8 +116,9 @@ jobs:
           wait $almanac || rc=1
           wait $pwa || rc=1
           wait $frames || rc=1
-          wait $sharecard || rc=1
           wait $patrons || rc=1
+          # Runs after the parallel block, alone on the runner, so it adds no load to the other guards.
+          node scripts/share-card.mjs || rc=1
           exit $rc
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
       - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)
