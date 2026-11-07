@@ -41,8 +41,8 @@ export function hardestList(list, nm = null) {
   if (!list.length) return '<p class="empty hand">Nothing answered yet.</p>';
   return `<ul class="pg-hard">${list.map(h => {
     const t = TIERS[h.tier] || TIERS[0];
-    const rematch = nm && nm.open && nm.w === h.w ? `<button class="pg-nm nm-go pen-ink" type="button">Rematch this word \u2192</button>` : '';
-    return `<li><span class="pg-w">${esc(h.w)}</span><span class="pg-tier" style="color:${t.ink}">${esc(t.name)}</span><b>${h.avg}</b><small>${h.n} ${h.n === 1 ? 'try' : 'tries'}</small>${rematch}</li>`;
+    const rematch = nm && nm.open && nm.w === h.w ? `<button class="pg-nm nm-go pen-ink" type="button">Rematch \u2192</button>` : '';
+    return `<li><span class="pg-w">${esc(h.w)}</span><span class="pg-tier" style="color:${t.ink}">${esc(t.name)}</span><b>${h.avg}</b><small>${h.n} ${h.n === 1 ? 'try' : 'tries'}${rematch}</small></li>`;
   }).join('')}</ul>`;
 }
 

@@ -28,7 +28,8 @@
 .bk-spread.menu .nm-captured .nm-seal{animation:nm-stamp var(--m-smooth) var(--e-spring) both}
 :where(html.rm) .bk-spread.menu .nm-captured .nm-seal{animation:none}
 @keyframes nm-stamp{from{transform:rotate(-3deg) scale(1.5);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
-/* the row of the hardest words that is this week's duel */
-.bk-spread.menu .pg-nm{grid-column:1/-1;justify-self:start;margin-top:4px;padding:3px 10px;font:600 calc(15px*var(--ts))/1.1 var(--hand);
-  color:var(--ink);background:transparent;border:1.5px solid var(--c-book-red-dk,var(--bk));border-radius:3px;cursor:pointer}
+/* the row of the hardest words that is this week's duel: the Rematch button sits inline on the tries line, so the list
+   gets no taller (the Closeness page is full to its frame at desktop size) */
+.bk-spread.menu .pg-nm{display:inline-block;margin:0 0 0 10px;padding:0 6px;font:600 calc(14px*var(--ts))/1.3 var(--hand);
+  color:var(--ink);background:transparent;border:1.5px solid var(--c-book-red-dk,var(--bk));border-radius:3px;cursor:pointer;vertical-align:baseline}
 .bk-spread.menu .pg-nm:hover,.bk-spread.menu .pg-nm:focus-visible{background:var(--c-book-red);color:var(--c-parchment);outline:none}
