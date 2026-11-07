@@ -2,12 +2,15 @@ import './ui/bookArt.js';
 import './ui/perf.js';
 import './ui/prewarm.js'; // idle prewarm of glow sprites, lighting and serif fonts (PF2)
 import './core/swRegister.js';
+import {initInstallHint} from './ui/installHint.js'; // "Keep the library" install tag (PWA)
+import {dismissSplash} from './ui/splash.js';
 import './theme/colors.js';
 import './core/hints.js';
 import './core/combo.js';
 import './theme/tokens.css';
 import './ui/motion.css';
 import './styles/index.css';
+import './ui/installHint.css';
 import './ui/fitHeadword.js';
 import './ui/canvasCover.js';
 import './ui/dprCap.js';
@@ -181,6 +184,7 @@ const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();
 initTransitions();
 showHome();
+initInstallHint({S,save});dismissSplash(); // launch screen off once home is drawn; install tag on home
 wordsReady.catch(()=>{}).then(()=>deferAfterPaint(()=>{const m=startModelLoad();lexReady();return m;},1500)) // relations/senses download beside the model, not after it
  // once the model is up, warm the distractor embeddings in idle time so the first answer isn't slow
  .then(ok=>ok&&deferAfterPaint(()=>prepareWords([]),600)).catch(()=>{});

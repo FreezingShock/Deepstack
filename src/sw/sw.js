@@ -6,12 +6,30 @@
    - /data/*?v=<hash>            cache-first: the hash is the file's content (vite.config.js, src/core/dataUrl.js), so a cached copy is never stale and a slow
                                  network can't stall a room switch or a first answer; other cached versions of the same file are dropped
    - /data/* without ?v          network-first with a 4 s timeout, cache as fallback (tools and old pages)
+   - /icons/*, /splash/*, manifest  cache-first (install artwork; static names, so a cached copy is never stale in practice)
    - page navigations            network-first with a 3 s timeout, cache as fallback (index.html is tiny; a fresh deploy shows at once)
    The embedding model is NOT cached here: transformers.js keeps it in its own Cache API store. */
-const ASSETS = 'ds-assets-v1', ORT = 'ds-ort-__ORT_VERSION__', DATA = 'ds-data-v1', FONTS = 'ds-fonts-v1', PAGES = 'ds-pages-v1';
-const KEEP = [ASSETS, ORT, DATA, FONTS, PAGES];
+const ASSETS = 'ds-assets-v1', ORT = 'ds-ort-__ORT_VERSION__', DATA = 'ds-data-v1', FONTS = 'ds-fonts-v1', PAGES = 'ds-pages-v1', STATIC = 'ds-static-v1';
+const KEEP = [ASSETS, ORT, DATA, FONTS, PAGES, STATIC];
 
-self.addEventListener('install', () => self.skipWaiting());
+// The app shell is cached at install, so the first visit is enough to open the game offline (the page itself is not otherwise cached
+// until a visit runs under this worker). Each file is added on its own: one missing file never blocks the install.
+const SHELL = JSON.parse('__APP_SHELL__');
+async function precacheShell() {
+  const add = async (name, path) => {
+    try {
+      const cache = await caches.open(name), req = new Request(new URL(path, self.registration.scope).href);
+      if (!(await cache.match(req))) await cache.add(req);
+    } catch { /* offline or blocked: the file is fetched on demand */ }
+  };
+  await Promise.all([add(PAGES, self.registration.scope), ...SHELL.map(p => add(p.startsWith('/fonts/') ? FONTS : p.startsWith('/icons/') || p.endsWith('.webmanifest') ? STATIC : ASSETS, p))]);
+  // hashed files from earlier deploys would pile up on the phone: keep only this build's shell in the asset cache
+  try {
+    const assets = await caches.open(ASSETS), now = new Set(SHELL.map(p => new URL(p, self.registration.scope).href));
+    for (const req of await assets.keys()) if (!now.has(req.url) && !req.url.includes('/transformers')) await assets.delete(req);
+  } catch { /* nothing to tidy */ }
+}
+self.addEventListener('install', e => e.waitUntil(precacheShell().then(() => self.skipWaiting())));
 // The files the page waits for before a run or a room switch (vite.config.js fills in their hashed names). The page fetched them
 // before this worker existed, so they are not in the cache yet: fetch them now, so the next visit never waits on the network for them.
 const PRECACHE = JSON.parse('__DATA_PRECACHE__');
@@ -57,5 +75,7 @@ self.addEventListener('fetch', e => {
   if (path.startsWith('/assets/')) return e.respondWith(cacheFirst(ASSETS, req));
   if (path.startsWith('/ort/')) return e.respondWith(cacheFirst(ORT, req));
   if (path.startsWith('/fonts/')) return e.respondWith(cacheFirst(FONTS, req));
+  // install artwork and the manifest: the home-screen icon and launch image are read by the OS, but the page's own links must also work offline
+  if (path.startsWith('/icons/') || path.startsWith('/splash/') || path === '/manifest.webmanifest') return e.respondWith(cacheFirst(STATIC, req));
   if (path.startsWith('/data/')) return e.respondWith(url.searchParams.has('v') ? hashedData(req, url) : networkFirst(DATA, req, 4000));
 });
