@@ -2,7 +2,7 @@
 // (e.g. jumping from the home shelf to the replayed descent). cover() resolves once the world is hidden.
 import {reducedMotion} from './transitions.js';
 
-export const DIP_MS = 220;
+export const DIP_MS = 240; // = DUR.base (motion.css --m-base)
 let veil = null;
 
 export function coverWorld() {

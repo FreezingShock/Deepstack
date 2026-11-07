@@ -1,9 +1,10 @@
 import {motionNow} from './settings.js';
+import {DUR} from './motion.js';
 // Smooth screen transitions. Screens are toggled with the `hidden` attribute elsewhere;
 // this module watches them so every change fades instead of snapping, without touching
 // the code that toggles them. Hiding leaves a short-lived ghost copy that fades out.
 const SCREENS = ['#home', '#stage', '#final', '#all', '#stats', '#sets'];
-export const OUT_MS = 260;
+export const OUT_MS = DUR.base;
 // Chrome that is positioned by its id (or by a transform) fades out only, keeping its id on the ghost
 const CHROME = ['#depthHud', '#shelfcap'];
 
@@ -36,7 +37,7 @@ export function initTransitions(root = document) {
       if (now) ghostOf(el, chrome);
       else if (chrome) return;
       else if (!reducedMotion() && !el.classList.contains('fadein')) {
-        el.classList.add('fadein'); setTimeout(() => el.classList.remove('fadein'), 600);
+        el.classList.add('fadein'); setTimeout(() => el.classList.remove('fadein'), DUR.page);
       }
     }).observe(el, { attributes: true, attributeFilter: ['hidden'] });
   };

@@ -20,11 +20,13 @@ export function findClipped() {
     const r = el.getBoundingClientRect();
     if (r.width < 2 || r.height < 2) continue;
     if (cs.position === 'absolute' && /rect\(0/.test(cs.clip)) continue;
-    // an ancestor that hides it (closed panel, off-screen scene) means the user cannot see it either
-    let hidden = false;
+    // an ancestor that hides it (closed panel, off-screen scene) means the user cannot see it either.
+    // A face swung away on a 3D turn (the book cover at rotateY(-172deg)) is hidden by backface-visibility, not layout.
+    let hidden = false, turnedAway = false;
     for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
       const c = getComputedStyle(n);
       if (c.display === 'none' || c.visibility === 'hidden' || +c.opacity === 0) { hidden = true; break; }
+      if (c.backfaceVisibility === 'hidden' && c.transform !== 'none') turnedAway = true;
     }
     if (hidden) continue;
     const clips = /(hidden|clip|auto|scroll)/.test(cs.overflowX + cs.overflowY);
@@ -36,7 +38,7 @@ export function findClipped() {
     const tn = [...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim());
     range.setStartBefore(tn[0]); range.setEndAfter(tn[tn.length - 1]);
     const tr = range.getBoundingClientRect();
-    if (tr.width && (tr.right > vw + 1 || tr.left < -1)) what.push(`text spans ${Math.round(tr.left)}..${Math.round(tr.right)}px of a ${vw}px viewport`);
+    if (!turnedAway && tr.width && (tr.right > vw + 1 || tr.left < -1)) what.push(`text spans ${Math.round(tr.left)}..${Math.round(tr.right)}px of a ${vw}px viewport`);
     if (what.length) out.push({el: label(el), text: text.slice(0, 40), why: what.join('; ')});
   }
   return out;
