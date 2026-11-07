@@ -2,4 +2,11 @@
 .bk-spread .bs-ribbon i{display:block;width:22px;height:64px;background:linear-gradient(90deg,var(--c-wine,#6e1d24),#8d2a33 55%,#5a1219);clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%);box-shadow:0 2px 3px rgba(0,0,0,.4)}
 .bk-spread .bs-ribbon:hover,.bk-spread .bs-ribbon:focus-visible{transform:translateY(5px)}
 .bk-spread .bs-ribbon:active{transform:translateY(12px)}
-.bk-spread.one .bs-ribbon{left:auto;right:10%;margin-left:0}:where(html.rm) .bk-spread .bs-ribbon{transition:none}
+/* one-page spreads (phone): the ribbon hangs from the gutter of the page showing, where a spine would meet it, so it clears the
+   header seal and the subtitle. A left page is gutter-right, a right page gutter-left. */
+.bk-spread.one .bs-ribbon{top:0;left:auto;right:2px;width:14px;margin-left:0}
+.bk-spread.one .bs-ribbon i{width:14px}
+.bk-spread.one[data-side=r] .bs-ribbon{left:2px;right:auto}
+:where(html.rm) .bk-spread .bs-ribbon{transition:none}
+/* reduced motion: the bookmark stays put (no tug on hover, focus or press), so back-to-contents is always there */
+:where(html.rm) .bk-spread .bs-ribbon:hover,:where(html.rm) .bk-spread .bs-ribbon:focus-visible,:where(html.rm) .bk-spread .bs-ribbon:active{transform:none}
