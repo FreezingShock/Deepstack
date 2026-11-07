@@ -15,6 +15,7 @@ import {countUp} from './chrome.js';
 import {alsoAcceptedHTML} from '../ui/alsoAccepted.js';
 import {fillMeans} from '../ui/alsoMeans.js';
 import {landVerdict} from '../ui/verdictFeel.js';
+import {marginNoteHTML,wireMarginNote} from '../ui/wordNotes.js';
 
 /* ---------- result card ---------- */
 export let cardOpts=null;
@@ -30,6 +31,7 @@ export function openCard(b,opts={}){
    <p class="def">${esc(b.def)}</p>
    <span class="means-slot"></span>
    ${alsoAcceptedHTML(b)||'<span class="also-slot"></span>'}
+   ${marginNoteHTML(b)}
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
    ${feedbackHTML(b)}
    <div class="chips">
@@ -48,6 +50,7 @@ export function openCard(b,opts={}){
  </div>`;
  L.hidden=false;requestAnimationFrame(()=>L.classList.add('on'));
  fillMeans(L,b);
+ wireMarginNote(L,b);
  const bk=$('#bk');stampCover(bk.querySelector('.cover'),b.w,b.tier);stampPage(bk.querySelector('.page'),b.w,b.tier);
  if(opts.fresh){const pl0=revealPlan(b.tier);bk.classList.add('rvc');const cvv=coverLockVars(pl0.cover,RM),dl=RM?0:pl0.cover.delay;for(const k in cvv)bk.style.setProperty(k,cvv[k]);
  /* hurry: a press (Enter, Space or a tap) during the reveal jumps to the finished card, like "click or press space to hurry" on the descent, so nothing is lost while the cover swings */

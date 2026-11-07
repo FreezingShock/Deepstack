@@ -11,6 +11,8 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 - Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
 - Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
+- Check the margin note: on a result card, tap the ribbon tab under the meanings ("Margin note"). It should unfold with an etymology, an example and related words. Screenshots in screenshots/word-notes/ (375 and 1280, each topic room).
+- Pick the stamp look and place (TA5): placement A is an Almanac Stamps page, B the room's title line, C the Librarian's Card row (desktop only); look X is a wax seal, Y a bookplate, Z a gilt medallion. Answer like "TA5: A, Z". Desktop and phone screenshots are in screenshots/room-stamps/.
 - Settings placement (ST1): A gear in the top bar, B card catalogue drawer (desktop only, the phone has no cabinet), C both (recommended). Mockups in screenshots/settings-overhaul/ (where-A, where-B, where-C at 1280 and 375). Reply with a letter and I will act on it.
 - Pick the Daily share look (screenshots in screenshots/daily-share/): A is built and is the default (streak line added, Share button first). B is a boxed brass card and button, C uses coloured tier dots. Phones: the note is hidden today to fit one view; showing it (B or C) pushes the buttons below the fold, so say whether the phone should show it or keep it hidden (item 70).
 - Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
@@ -2159,6 +2161,15 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### CF3. Judge wait shows a real progress note
 **Pitch:** When the librarian is still arriving the wait is silent for up to 6 s before a note appears.
 **Brief:** Goal: start the "Reading your answer" note with a small candle-flicker on the slip, not after the 6 s fallback. Files: `src/scorer/index.js` (onWait timing), `src/ui/coreLoop.css`. Done when: a test pins the note at 300 ms.
+### [x] WN1. Margin note on the result card: etymology, usage and related words
+**Pitch:** After a judgement, a player can turn to a short margin note on the word: where it comes from, one sentence that uses it, and a few related words. It sits under the meanings as a ribbon tab and opens a tucked sheet, so the card stays quiet until asked.
+**Brief:** Goal: fetch one letter's note shard on first open, never at boot. Files: `src/ui/wordNotes.js`, `wordNotes.css`, `scripts/build-word-notes.mjs`, `scripts/lib/notesData.mjs`, `public/data/word-notes-*.json`. **Conflicts:** none (the card gets one line).
+### WN2. Keep the margin note open from one card to the next
+**Pitch:** Once a player has turned to the note, the next card in a run opens with the sheet already unfolded, so reading through a run's words does not need a tap each time.
+**Brief:** Goal: a session-only flag (no save field) read by `wireMarginNote`. Files: `src/ui/wordNotes.js`. **Conflicts:** WN1.
+### WN3. Only show related words the game knows
+**Pitch:** Some related words in the note are odd fragments ("hemeral" under ephemeral). Keep only related words that are in the game's own word lists or the synonym data, so the list reads as a set of real neighbours.
+**Brief:** Goal: filter `r` against `words.json`, `room-words.json` and `senses.json` in the builder, then rebuild the shards. Files: `scripts/lib/notesData.mjs`, `scripts/build-word-notes.mjs`. **Conflicts:** WN1.
 
 ## VF. Verdict feel follow-ups (2026-11-07, from the verdict sound and haptics thread)
 
