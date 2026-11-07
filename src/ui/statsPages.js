@@ -1,3 +1,4 @@
+import {fmtNum} from '../core/numFmt.js';
 /* Stats as an almanac: four hand-kept pages built from saves that already exist (dailies, S.rating.hist, the shelf).
    Pure string builders so they test without a DOM; styles live in statsPages.css under .alm inside the menu book. */
 import {esc} from './bookpages.js';
@@ -72,14 +73,14 @@ export function crossSection(FLOORS,floorStartFt,deepest,reached){
   if(deepest>=a)pos=i+Math.min(1,(deepest-a)/(b-a||1));
  });
  const strata=FLOORS.map(f=>{const lock=f.id>reached;
-  return `<li class="${lock?'locked':''}" style="--k:${f.id}"><span class="ft">${floorStartFt(f)} ft</span><b>${lock?'Undiscovered':esc(f.name)}</b>${lock?'':`<small>${esc(f.sub)}</small>`}</li>`;}).join('');
- const mark=deepest>0?`<div class="xs-mark" style="top:${r1(pos/n*100)}%"><span>${deepest} ft</span></div>`:'';
+  return `<li class="${lock?'locked':''}" style="--k:${f.id}"><span class="ft">${fmtNum(floorStartFt(f))} ft</span><b>${lock?'Undiscovered':esc(f.name)}</b>${lock?'':`<small>${esc(f.sub)}</small>`}</li>`;}).join('');
+ const mark=deepest>0?`<div class="xs-mark" style="top:${r1(pos/n*100)}%"><span>${fmtNum(deepest)} ft</span></div>`:'';
  return `<div class="xs"><ol class="floors" aria-label="Floors of the library">${strata}</ol>${mark}</div>`;
 }
 
 export function statsLeaves(st,S,{TIERS,FLOORS,floorStartFt}){
  const hist=(S&&S.rating&&S.rating.hist)||[],shelf=(S&&S.shelf)||[];
- if(!st.runs&&!hist.length&&!shelf.length)return [`<div class="alm"><h1>The Almanac</h1><div class="kicker">Not yet opened</div>${emptyBlock('ledger','Finish your first Daily and the almanac fills in.')}<button class="alm-ember" type="button">The Ember Log →</button></div>`,
+ if(!st.runs&&!hist.length&&!shelf.length)return [`<div class="alm"><h1>The Almanac</h1><div class="kicker">Not yet opened</div>${emptyBlock('ledger','Finish your first Daily and the Almanac fills in.')}<button class="alm-ember" type="button">The Ember Log →</button></div>`,
   `<div class="alm"><h1>The Depths</h1><div class="kicker">A cross-section, down to 0 ft</div><div class="scopes">${allTag()}</div>${crossSection(FLOORS,floorStartFt,0,(S&&S.bestFloor)||0)}</div>`];
  const tally=tallyMarks(st.streak||0),rm=scopeRoom(S),mine=roomTag(rm),all=allTag(),any=anyRoomStreak(S);
  const line=(l,v,sub)=>`<li><span>${l}</span><b>${v}</b>${sub?`<em>${sub}</em>`:''}</li>`;
@@ -95,16 +96,15 @@ export function statsLeaves(st,S,{TIERS,FLOORS,floorStartFt}){
    <div class="tally" role="img" aria-label="${st.streak} day streak">${tally.html||'<span class="hand dim">No days inked yet.</span>'}${tally.over?`<span class="hand dim">+${tally.over} more</span>`:''}</div>
    <button class="alm-ember" type="button">The Ember Log →</button>
    <div class="dual"><div><span class="k">${esc(rm.short)}</span><p class="hand">${st.streak} ${st.streak===1?'day':'days'} running</p><small>best ${st.bestStreak}</small></div><div><span class="k">Any room</span><p class="hand">${any.n} ${any.n===1?'day':'days'}</p><small>best ${any.best}</small></div></div>
-   <ul class="ledger">${line('Deepest dive',st.deepest+' ft',(st.deepestDay?fmtDay(st.deepestDay)+' ':'')+all)}${line(st.runs===1?'Daily played':'Dailies played',st.runs,(st.totalFt||0).toLocaleString()+' ft in total')}${line('Average closeness',st.avg,st.answered+' answered')}</ul>
+   <ul class="ledger">${line('Deepest dive',fmtNum(st.deepest)+' ft',(st.deepestDay?fmtDay(st.deepestDay)+' ':'')+all)}${line(st.runs===1?'Daily played':'Dailies played',st.runs,(st.totalFt||0).toLocaleString()+' ft in total')}${line('Average closeness',st.avg,st.answered+' answered')}</ul>
    ${st.best?`<p class="bestbook">Closest answer: <b>${esc(st.best.w)}</b>, ${st.best.score}/100 · <span style="color:${TIERS[st.best.tier].spine}">${TIERS[st.best.tier].name}</span></p>`:''}</div>`,
   `<div class="alm"><h1>The Lexicon</h1><div class="kicker">${lex===null?'Unrated':'Now '+lex+' · '+hist.length+(hist.length===1?' run':' runs')}</div><div class="scopes">${mine}</div>
    ${hist.length?lexiconChart(hist):'<p class="empty hand">Not rated yet.</p><p class="note">Finish an Unlimited placement and your Lexicon is charted here, run by run.</p>'}
    <h2>Recent descents</h2>
-   ${(st.recent||[]).length?`<div class="recent" role="img" aria-label="Depth of your last ${st.recent.length} dailies">${st.recent.map(r=>`<div class="rc" title="${fmtDay(r.day)}: ${r.depth} ft"><i style="height:${Math.max(6,r.depth/maxD*100)}%;background:${TIERS[r.best].spine}"></i><span>${r.day.slice(8)}</span></div>`).join('')}</div><p class="note">Depth in feet, coloured by your rarest book that day.</p>`:'<p class="empty hand">No descents yet.</p>'}</div>`,
+   ${(st.recent||[]).length?`<div class="recent" role="img" aria-label="Depth of your last ${st.recent.length} dailies">${st.recent.map(r=>`<div class="rc" title="${fmtDay(r.day)}: ${fmtNum(r.depth)} ft"><i style="height:${Math.max(6,r.depth/maxD*100)}%;background:${TIERS[r.best].spine}"></i><span>${r.day.slice(8)}</span></div>`).join('')}</div><p class="note">Depth in feet, coloured by your rarest book that day.</p>`:'<p class="empty hand">No descents yet.</p>'}</div>`,
   `<div class="alm"><h1>The Collection</h1><div class="kicker">${total} ${total===1?'book':'books'} shelved</div><div class="scopes">${all}</div>
    ${total?spineColumns(counts,TIERS)+`<ul class="legend">${TIERS.map(t=>`<li><i class="dot" style="background:${t.spine}"></i><span>${esc(t.name)}</span><b>${counts[t.id]||0}</b></li>`).join('')}</ul>
    <p class="note">${rarest>=0?`Rarest book so far: ${esc(TIERS[rarest].name)}.`:''} ${st.books-st.answered>0?`${st.books-st.answered} skipped.`:''}</p>`:'<p class="empty hand">Nothing shelved yet.</p><p class="note">Your first answer becomes your first book.</p>'}</div>`,
-  `<div class="alm"><h1>The Depths</h1><div class="kicker">A cross-section, down to ${st.deepest||0} ft</div><div class="scopes">${all}</div>${crossSection(FLOORS,floorStartFt,st.deepest||0,reached)}</div>`
-,...progressLeaves(S)
+  `<div class="alm"><h1>The Depths</h1><div class="kicker">A cross-section, down to ${fmtNum(st.deepest||0)} ft</div><div class="scopes">${all}</div>${crossSection(FLOORS,floorStartFt,st.deepest||0,reached)}</div>`,...progressLeaves(S)
  ];
 }

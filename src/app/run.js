@@ -1,3 +1,4 @@
+import {fmtNum} from '../core/numFmt.js';
 import {hintLadder,rowsAfterHints} from '../core/hints.js';
 import {verdictFor} from '../core/verdict.js';
 import {comboNeeds,comboLabel,comboMultiplier,applyCombo} from '../core/combo.js';
@@ -42,7 +43,7 @@ export async function startDaily(practice){
  const saved=practice?null:resumable(S,day,words.length);
  if(saved){run.results=saved.results.map(r=>({...r}));run.combo=saved.combo;run.freeHint=!run.results.some(r=>r.hints>0);run.setBonus=saved.setBonus;run.i=run.results.length;run.depthRows=run.results.reduce((n,r)=>n+(r.rows||0),0);
   const L=replayLayout(run.results,{gapRows:World.nextRows(),ftPerRow:FT});L.niches[L.niches.length-1].label=ROMAN[run.i]||'FINIS';World.restore(L);
-  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent=String(Math.round(L.finalRow*FT));
+  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent=fmtNum(L.finalRow*FT);
   if(L.finalRow>0)await World.glide(L.finalRow,400);
   if(run.i>=words.length)finishRun();else showWord();
   return;}

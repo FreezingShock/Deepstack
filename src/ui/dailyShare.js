@@ -2,6 +2,7 @@
    the streak that run belongs to, one symbol per book (its tier) and the tier names. No word or answer is in it.
    Pure text builder plus one share helper: navigator.share where the browser has it, the clipboard otherwise. */
 import {currentStreak, runDay} from '../core/streak.js';
+import {fmtNum} from '../core/numFmt.js';
 
 export const BARS = '▁▂▃▄▅▆▇';
 
@@ -10,7 +11,7 @@ export function dailyShareText(d, o) {
   const day = runDay(d, o.today);
   const n = currentStreak(o.keys || [], day);
   const head = `Deepstack · ${o.room} · No. ${o.no}`;
-  const facts = [`Depth ${d.depth} ft`, o.floorName, `average closeness ${d.avg}`].filter(Boolean).join(' · ');
+  const facts = [`Depth ${fmtNum(d.depth)} ft`, o.floorName, `average closeness ${d.avg}`].filter(Boolean).join(' · ');
   const streak = n ? `Streak ${n} ${n === 1 ? 'day' : 'days'} in a row` : '';
   const grid = d.books.map(b => BARS[b.tier]).join('');
   const names = d.books.map(b => o.tierNames[b.tier]).join(' · ');
