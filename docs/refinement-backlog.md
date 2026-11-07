@@ -5,6 +5,7 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 ## What nate needs to do
 - Unlimited roguelike descent (descent thread, PR pending): play one Unlimited run on your phone and a desktop. Landings come before words 3, 5 and 7 with three doors: Hard room, Rest alcove, Curio shop. Tell me if a failed word (skip or Pamphlet) ends the run too harshly, and whether the three relics read clearly. Options A/B/C are in screenshots/descent/.
 
+- Phone rooms line (ON4, this PR): on a phone, the first-visit door line lights the ring of room lights and says "Tap a light to pick a room." The other two options (the Ledger line, or no phone line) are in screenshots/onboarding-halo/ON4-*. Say B or C if you'd rather have one of those.
 - Onboarding halo (ON1, this PR): on a fresh profile, the first home visit lights the Room Ledger spine. The halo should sit on the spine, not beside it, and the side-door line on desktop should light the left door. Tell me if either still looks off (screenshots in screenshots/onboarding-halo/).
 - Restoration follow-ups (MR2 to MR4, this PR): open the bench from the bottom-left door on your phone. The first page of each room today is its Daily, and its frame on the wall says Daily. Restore all three entries on a page and a Wax seal plaque drops over the open bench, in the Almanac's library row. Tell me if the plaque should wait until you close the bench instead.
 - Restoration bench (MR1, this PR): a new door at the bottom-left of home, "Restoration bench". Open it, write what each faded word means, type the smudged word, and check the wall. A, B or C mixes are in screenshots/restoration/option-*; B (two faded, one smudged) is built. Reply with a letter if you want another mix.
@@ -2151,11 +2152,11 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Brief:** Goal: the halo and panel fade in over the motion token, with the fade-out kept. Files: `src/ui/firstNotes.css`. Done when: the reduced-motion case in `scripts/onboarding-halo.mjs` shows no transition, and motion-on frames show the opacity rising.
 **Conflicts:** firstNotes.css.
 
-### [ ] ON4. Phones get a line for the side doors
-**Pitch:** On a phone the side doors are hidden, so a first-visit note for them never shows. Decide whether phones get a different line for rooms, such as one under the Ledger, or nothing.
-**Brief:** Goal: a phone first visit explains how to reach the topic rooms. Options: A, the Ledger note says "Rooms: words met, per room"; B, a line on the Rooms book; C, nothing, since the Ledger already covers it. Show nate all three on a phone in screenshots/onboarding-halo/ before building.
-**Conflicts:** home.js notes list (HOME_NOTES).
-
+### [x] ON4. Phones get a line for the side doors (this PR)
+**Pitch:** On a phone the side doors are hidden, so the door note never showed. Phones now get a line that lights the ring of room lights under the title.
+**Brief:** Done: `src/ui/firstNotes.js` (`noteSelector`, `PHONE_DOOR_TEXT`, `phoneAboveFor`). The line reads "Tap a light to pick a room." and sits below the ring, so it does not cover the wordmark. Guard: `scripts/onboarding-halo.mjs` now checks phones (64 notes, none skipped) and the panel text. Unit test: `test/onboarding-halo.test.js`.
+**Alternatives logged (not shipped):** B, the Room Ledger line on phones (what phones showed before, since the Ledger is their way into the rooms); C, no phone line at all. Screenshots: `screenshots/onboarding-halo/ON4-A-ring-375.png`, `ON4-B-ledger-375.png`, `ON4-C-none-375.png`.
+**Conflicts:** none open. Owns the phone branch of `home.doors` in `firstNotes.js`.
 ## MR. Manuscript restoration (2026-11-07, nate: "something more unique")
 ### MR1. [x] Restoration bench: a damaged page per room, ink returns, finished pages hang on a wall (this PR)
 Brief: a water-damaged page from the room you are in. Two faded entries: the headword shows, the definition has run, and you write what it means in your own words; the judge scores it, and the real entry comes back in ink at 14 or better. One smudged entry: its definition is clear, the headword has gaps, and you type the word (a letter can be given). Leave an entry and it stays damaged. A finished page pins to the wall. Code: `src/restore/` (pages, store, markup, ui, entry). Screenshots: `screenshots/restoration/`. Guards: `test/restore-*.test.js`, `scripts/restore-check.mjs` (CI).
