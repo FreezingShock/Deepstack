@@ -128,7 +128,7 @@ async function settle(page) {
   await page.waitForTimeout(100);
 }
 
-/* One group per viewport and OS motion flag, run side by side; each group walks text x motion x contrast in one context. */
+/* One group per viewport and OS motion flag; each group walks text x motion x contrast in one context. */
 async function walkGroup(view, osReduce) {
   const ctx = await browser.newContext({viewport: {width: view.width, height: view.height}, reducedMotion: osReduce ? 'reduce' : 'no-preference'});
   const page = await ctx.newPage();
@@ -181,7 +181,9 @@ async function walkGroup(view, osReduce) {
   await ctx.close();
 }
 
-await Promise.all(VIEWS.flatMap(view => [true, false].map(osReduce => walkGroup(view, osReduce))));
+// One chain per viewport: phone and desktop run side by side, and each walks OS motion on, then off. Two browsers at a time
+// keeps the CI runner from starving the other browser checks that run beside this one.
+await Promise.all(VIEWS.map(async view => { for (const osReduce of [true, false]) await walkGroup(view, osReduce); }));
 await browser.close(); server.close();
 if (problems.length) {
   const uniq = [...new Set(problems)];
