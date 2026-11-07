@@ -1,4 +1,6 @@
 import {PALETTE} from '../theme/colors.js';
+import {reportState} from '../core/stateEvents.js';
+
 import {BOOK_TIMING,bookTimings,dressBook,thud,bookSound} from './bookOpenFx.js';
 import {decorate as inkPage} from './ink.js';
 import {RIBBON_HTML,ribbonKey,remember,recall,ribbonTarget,paintRibbon} from './bookRibbon.js';
@@ -243,7 +245,11 @@ export function bookify(root,{wait=BOOK_OPEN_MS}={}){
   el.onclick=e=>{
    if(busy){if(!el.classList.contains('opening'))pending=()=>el.onclick(e);return;}
    const pages=BOOK_PAGES[el.id];
-   if(pages&&pages.load){pages.load().then(()=>el.onclick(e),()=>{});return;} // lazy book (lazyScreens.js): fetch its code, then open as usual
+   if(pages&&pages.load){ // lazy book (lazyScreens.js): fetch its code, then open as usual; the spine waits visibly meanwhile
+    const idle=()=>{el.classList.remove('fetching');el.removeAttribute('aria-busy');};
+    el.classList.add('fetching');el.setAttribute('aria-busy','true');
+    pages.load().then(()=>{idle();el.onclick(e);},()=>{idle();reportState('books-unavailable',{retry:()=>location.reload()});}); // a failed chunk import stays failed until the page reloads; the save is kept
+    return;}
    if(reduce&&!pages&&!BOOK_INTROS[el.id]?.riddle){go.call(el,e);return;}
    const cs=getComputedStyle(el),intro=BOOK_INTROS[el.id];
    const title=el.querySelector('.hb-t')?.firstChild?.textContent?.trim()||'';
