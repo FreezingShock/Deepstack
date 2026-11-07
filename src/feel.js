@@ -1,14 +1,13 @@
 /* Sound, ambience and "juice". Everything is synthesized with WebAudio (no assets).
    Kept calm on purpose: soft attacks, low levels, a shared reverb, nothing sharp. */
 
-import { reducedMotion } from './ui/settings.js';
+import { motionNow } from './ui/settings.js';
 import { createScribe } from './sound/scribe.js';
 import { createAmbience } from './sound/ambience.js';
 import { createSting } from './sound/thresholdSting.js';
 import { createScore } from './sound/score.js';
 import { createMaterials } from './sound/materials.js';
 import { Quality } from './ui/quality.js';
-const RM = reducedMotion();
 const rnd = (a, b) => a + Math.random() * (b - a);
 
 /* ---------- visual feel: slow-motion + shake (read by the render loops) ---------- */
@@ -19,8 +18,8 @@ export const Feel = (() => {
     /** time scale applied to world/particle dt (1 = normal). */
     ts: 1,
     get ox() { return ox; }, get oy() { return oy; },
-    slowmo(scale, ms) { if (RM) return; slow = { scale, from: performance.now(), until: performance.now() + ms, ease: 1 }; },
-    shake(amp, ms = 500) { if (RM) return; shakeAmp = Math.max(shakeAmp, amp); shakeDecay = amp / (ms / 1000); },
+    slowmo(scale, ms) { if (motionNow()) return; slow = { scale, from: performance.now(), until: performance.now() + ms, ease: 1 }; },
+    shake(amp, ms = 500) { if (motionNow()) return; shakeAmp = Math.max(shakeAmp, amp); shakeDecay = amp / (ms / 1000); },
     /** call once per frame with real (unscaled) dt in seconds. */
     tick(dt) {
       const now = performance.now();
@@ -40,7 +39,7 @@ export const Feel = (() => {
 
 /* ---------- audio ---------- */
 export const Sfx = (() => {
-  let vol = 1, ctx, master, wet, humG, humLP, humO1, humO2, amb, ambLP, on = false, lastKey = 0, depth = 0, timers = [];
+  let vol = 1, musicLv = 1, fxLv = 1, ctx, master, wet, musicBus, musicSend, fxBus, fxSend, humG, humLP, humO1, humO2, amb, ambLP, on = false, lastKey = 0, depth = 0, timers = [];
   const noiseBuf = (secs, shape) => {
     const n = ctx.sampleRate * secs | 0, b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
     for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (shape ? shape(i / n) : 1);
@@ -59,17 +58,23 @@ export const Sfx = (() => {
       return b;
     })();
     wet = ctx.createGain(); wet.gain.value = .5; wet.connect(conv); conv.connect(master);
+    // two buses under master (settings: Music and Effects). Music = room tone, depth hum and the score; Effects = one-shot sounds.
+    // Each bus has a send into the reverb that follows its level, so a muted bus is silent, tails included.
+    musicBus = ctx.createGain(); musicBus.gain.value = musicLv; musicBus.connect(master);
+    musicSend = ctx.createGain(); musicSend.gain.value = musicLv; musicSend.connect(wet);
+    fxBus = ctx.createGain(); fxBus.gain.value = fxLv; fxBus.connect(master);
+    fxSend = ctx.createGain(); fxSend.gain.value = fxLv; fxSend.connect(wet);
     // room tone (existing soft brown-ish noise, slowly breathing)
     const len = ctx.sampleRate * 4, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0); let last = 0;
     for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = (last + .02 * w) / 1.02; d[i] = last * 3.5; }
     const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
     ambLP = ctx.createBiquadFilter(); ambLP.type = 'lowpass'; ambLP.frequency.value = 380;
-    amb = ctx.createGain(); amb.gain.value = 0; src.connect(ambLP); ambLP.connect(amb); amb.connect(master); src.start();
+    amb = ctx.createGain(); amb.gain.value = 0; src.connect(ambLP); ambLP.connect(amb); amb.connect(musicBus); src.start();
     const lfo = ctx.createOscillator(); lfo.frequency.value = .07; const lg = ctx.createGain(); lg.gain.value = 120; lfo.connect(lg); lg.connect(ambLP.frequency); lfo.start();
     // depth hum: two slightly detuned low sines through a lowpass; deeper = lower, darker, a touch louder
     humG = ctx.createGain(); humG.gain.value = 0; humLP = ctx.createBiquadFilter(); humLP.type = 'lowpass'; humLP.frequency.value = 300;
     humO1 = ctx.createOscillator(); humO2 = ctx.createOscillator(); humO1.type = 'sine'; humO2.type = 'triangle';
-    humO1.connect(humLP); humO2.connect(humLP); humLP.connect(humG); humG.connect(master); humO1.start(); humO2.start();
+    humO1.connect(humLP); humO2.connect(humLP); humLP.connect(humG); humG.connect(musicBus); humO1.start(); humO2.start();
     setHum();
   }
   function setHum() {
@@ -80,7 +85,7 @@ export const Sfx = (() => {
     humLP.frequency.linearRampToValueAtTime(320 - 170 * k, t + 1.2);
     humG.gain.linearRampToValueAtTime(on ? .028 + .03 * k : 0, t + 1.2);
   }
-  const out = (node, send = .3) => { node.connect(master); if (send) { const s = ctx.createGain(); s.gain.value = send; node.connect(s); s.connect(wet); } };
+  const out = (node, send = .3) => { node.connect(fxBus); if (send) { const s = ctx.createGain(); s.gain.value = send; node.connect(s); s.connect(fxSend); } };
   function noise(dur, type, f0, f1, g, { q = 1, at = 0, attack = .005, send = .15 } = {}) {
     if (!on || !ctx) return;
     const t = ctx.currentTime + at, s = ctx.createBufferSource(); s.buffer = noiseBuf(dur);
@@ -127,8 +132,8 @@ export const Sfx = (() => {
   function startAmbient() { stopAmbient(); schedule('drip', 3, 9); schedule('steps', 28, 70); }
   function stopAmbient() { timers.forEach(clearTimeout); timers = []; }
 
-  const floorTone = createAmbience({ ctx: () => ctx, on: () => on, dest: () => master, send: () => wet, noiseBuf });
-  const score = createScore({ ctx: () => ctx, on: () => on, dest: () => master, send: () => wet }, { allowed: () => Quality.tier() !== 'low' });
+  const floorTone = createAmbience({ ctx: () => ctx, on: () => on, dest: () => musicBus, send: () => musicSend, noiseBuf });
+  const score = createScore({ ctx: () => ctx, on: () => on, dest: () => musicBus, send: () => musicSend }, { allowed: () => Quality.tier() !== 'low' });
   Quality.subscribe(() => score.refresh());
   const mats = createMaterials({ ctx: () => ctx, on: () => on, out, noiseBuf }, { fine: () => Quality.tier() !== 'low' });
   const scribe = createScribe({ ctx: () => ctx, on: () => on, out, noiseBuf });
@@ -141,8 +146,26 @@ export const Sfx = (() => {
     /** one cue from the sound palette (src/sound/materials.js): turn, lift, shut, hatch, rung, knock, tick, crackle ... */
     cue: (kind, arg) => mats.play(kind, arg),
     quill: () => scribe.quill(), paper: () => scribe.paper(), seal: () => scribe.seal(), land: () => scribe.land(),
+    /** a short sample of one bus, played while its slider is let go (ST4). Silent when Sound is off. */
+    preview(kind) {
+      if (!on || !ctx) return;
+      if (kind === 'music') {
+        const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(196, t);
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05, t + .3); g.gain.exponentialRampToValueAtTime(.0001, t + 1.8);
+        o.connect(g); g.connect(musicBus); g.connect(musicSend); o.start(t); o.stop(t + 1.9);
+      } else scribe.paper();
+    },
     /** master volume 0..1 (settings panel) */
     volume(v) { vol = Math.max(0, Math.min(1, v)); if (master) master.gain.setTargetAtTime(.9 * vol, ctx.currentTime, .05); },
+    /** Music and Effects levels 0..1 under the master volume (settings panel); applied live once audio exists */
+    levels(music, effects) {
+      musicLv = Math.max(0, Math.min(1, music)); fxLv = Math.max(0, Math.min(1, effects));
+      if (!ctx) return;
+      const t = ctx.currentTime;
+      for (const g of [musicBus, musicSend]) g.gain.setTargetAtTime(musicLv, t, .05);
+      for (const g of [fxBus, fxSend]) g.gain.setTargetAtTime(fxLv, t, .05);
+    },
     set(v) {
       on = v;
       if (v) { init(); if (!ctx) return; ctx.resume(); amb.gain.linearRampToValueAtTime(.07, ctx.currentTime + 1.5); setHum(); startAmbient(); floorTone.enable(true); floorTone.setDepth(depth); score.enable(true); score.setDepth(depth); }

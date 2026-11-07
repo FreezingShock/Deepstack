@@ -4,6 +4,9 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 
 ## What nate needs to do
 - Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
+- Pick the stamp look and place (TA5): placement A is an Almanac Stamps page, B the room's title line, C the Librarian's Card row (desktop only); look X is a wax seal, Y a bookplate, Z a gilt medallion. Answer like "TA5: A, Z". Desktop and phone screenshots are in screenshots/room-stamps/.
+- Settings placement (ST1): A gear in the top bar, B card catalogue drawer (desktop only, the phone has no cabinet), C both (recommended). Mockups in screenshots/settings-overhaul/ (where-A, where-B, where-C at 1280 and 375). Reply with a letter and I will act on it.
+- Pick the Daily share look (screenshots in screenshots/daily-share/): A is built and is the default (streak line added, Share button first). B is a boxed brass card and button, C uses coloured tier dots. Phones: the note is hidden today to fit one view; showing it (B or C) pushes the buttons below the fold, so say whether the phone should show it or keep it hidden (item 70).
 - Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
 - Pick a one-tap way into the Ember Log on phones (LC7): A flame tag, B fire, C labelled flame tag (recommended), D streak line under Descend. Screenshots in screenshots/ember-log-onetap/.
 - Slow-network check (perf pass): on your phone, load the site once, then toggle airplane-mode-slow or a weak connection and reload; entering another room and the first answer should no longer stall. Tell me if any room still feels slow and which (numbers in screenshots/performance/results.md).
@@ -1355,11 +1358,19 @@ _Shipped as word relations (synonyms, near synonyms, related, antonyms, definiti
 - [x] Attic floorboards and first-row room (nate 2026-11-05): fixed floorboard pattern, row 0 pulled back, one-row-per-step settle. Conflicts: atticRoom.js, world.js.
 Broader than pixel fixes: each item is a goal to make the base game clearer, more fun and more finished. Nothing here builds zones or topic rooms; G10 only leaves a door for them. Play-through note: the sandbox could not download the full judge, so scores seen were the quick judge's (a decent answer for "tempt" scored 0).
 
-### G1. A first run that explains itself
+### G1. [x] A first run that explains itself (PR pending: three pencil notes on the hint strip)
 **Serves:** easy to understand, concise and mysterious copy, integrated not bolted on.
 **Pitch:** A new player meets the timer, Enter, hints, skip and tiers with no word of explanation; Descend, Daily, Unlimited and Practice all look like "play". Teach inside the world, once: a single handwritten margin line appears the first time each thing matters (the candle the first time it burns low, "Enter" under the slip, the hint slip the first time you tap it), then never again.
 **Brief:** Goal: contextual first-time notes, not a tutorial screen or pop-up. Flag each in additive `S.seen.*`. Files: new `src/ui/firstNotes.js` plus css, one hook in `showWord`. Done when: each note shows once, reduced motion shows it static, Daily timing is not changed by it, 14-letter word and 375 checked.
 **Touches:** RUN, HOME. **Conflicts:** run screen thread, 29 (welcome).
+
+### G12. [ ] Phone run sheet has no room for a hint or a note
+**Pitch:** At 375x667 and 360x640 the hint strip (and now the first-run notes) takes about 60px from the run sheet, so the answer slip shrinks from 132px to about 70px and the typed text scrolls. Screenshots: /mnt/project-files/screenshots/onboarding/before-375-b-hint.png.
+**Brief:** Goal: give the run sheet a fixed budget on phones (tighter word size or top padding, or notes that float in the empty alcove wall under the row). Files: `src/styles/phone-run.css`. Done when: the slip keeps its height with a hint and with a note at 320x568, 360x640 and 375x667.
+
+### G13. [ ] First result card explains its score
+**Pitch:** The first result card shows "0/100" and a tier name with no words for either. One pencil line on the first card only, using the same once-only flag in `S.seen`.
+**Brief:** Goal: one note near the score, under 34 characters. Files: `src/app/card.js` (fit-checked, so check the card at 375 and 1280). Done when: the card fit tests still pass.
 
 ### G2. A score that explains itself
 **Serves:** scoring clarity, rarity is the hero, words fully readable, lenient judging.
@@ -1869,6 +1880,22 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** A room at 100% should be remembered somewhere: a small "Rooms mastered" line on the Rooms stats page with the date it was completed.
 **Brief:** Goal: store `S.metAt = {room: isoDate}` the first time a room reaches 100% and show it on the Rooms Almanac page. Files: `src/core/roomDepth.js`, `src/ui/roomStats.js`. **Conflicts:** none.
 
+### [~] TA5. Achievement stamps per room and library-wide (data layer in, visuals wait for nate's pick)
+**Pitch:** Small stamps that say what you have done. Each topic room has six: a first word, a quarter shelved, half the room, room mastered, a week of Dailies, and a perfect Daily (every word at 78 or better, none skipped). The library has four: every door opened, full shelves, an any-room week, and a hundred words met. A stamp is kept once earned, and a toast says when one lands.
+**Brief:** Goal: pure rules in `src/core/stamps.js` (done), additive `S.stamps = {id: day}`, recorded after each answer and each Daily (`src/app/run.js`). Left: the look and placement nate picks from screenshots/room-stamps/ (`design/stamps/mock.mjs` makes them), then the toast in that look, then a CI guard that a stamp never disappears when a room list changes. Files: `src/core/stamps.js`, `src/app/run.js`, `test/stamps.test.js`. **Conflicts:** TA2, TA2e (reads S.metAt), and #33 (achievements as brass plaques, the same idea: pick one).
+
+### TA6. A stamp for a Lexicon rank
+**Pitch:** Unlimited ranks each room's Lexicon. A stamp for reaching L 5 in a room would reward a long rated run, not only Dailies.
+**Brief:** Goal: a `rated` context in `stamps.js` from `S.rooms[id].rating.L`, one stamp per room. Files: `src/core/stamps.js`. **Conflicts:** TA5.
+
+### TA7. Show what an unearned stamp needs
+**Pitch:** Every stamp already has a hint line. Players should see it by tapping or hovering an unearned seal, so the goal is clear without a guide.
+**Brief:** Goal: a hint on each unearned seal, from the stamp's `hint` text, once TA5's visuals land. Files: the stamp page UI from TA5. **Conflicts:** TA5.
+
+### TA8. Old saves keep their stamps (CI guard)
+**Pitch:** A save from before stamps existed should load, show what it has already earned, and add new stamps without losing any.
+**Brief:** Goal: a fixture save in `test/fixtures/` and a test that loads it through `earnedStamps` and `recordStamps`. Files: `test/stamps.test.js`, a new fixture. **Conflicts:** TA5.
+
 ### [x] TA3. Which numbers are per room, and do they agree (scope labels PR: top bar, Librarian's Card, Almanac tagged "this room" vs "all rooms")
 **Pitch:** In the Chronicle the top bar and Almanac show "0 day streak" next to "300 ft deepest", and the Card shows Books 13 and Floor from your whole shelf, while streak and Dailies are the room's own. Nothing says which is which, and an unsynced number would be a bug that a player reads as lost progress.
 **Brief:** Goal: a script that seeds a save with two rooms (different Dailies, streaks, ratings, shelf books) and checks every readout in every room: top bar chips, Card, Almanac, Lexicon, Shelf counts and room tabs, Daily book calendar, share text, spine badges, Room Ledger. Fix mismatches and label shared versus room numbers in a few pen words ("all rooms", "this room"). Files: `roomStore.js`, `statsPages.js`, `welcome.js`, `topbar.js`. Done when: the table of readouts per room is in the PR and tested. **Conflicts:** TR8, TR12.
@@ -2036,3 +2063,31 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### TY3. One range style for floor ranges
 **Pitch:** The depth tracker writes "0–101 ft" with an en dash, while the Floors book and the Card's floor row write "0 to 101 ft". Pick one and use it on every screen.
 **Brief:** Goal: one range helper in `src/core/numFmt.js` used by `src/ui/tracker.js`, `src/ui/floorLeaves.js` and the floor banner. Files: those three files, plus a test in `test/number-format.test.js`. **Conflicts:** Card floor row (TA7), Floors book.
+### [x] ST1. Settings overhaul: one settings book (Music and Effects, Motion that follows the OS, reset progress with a confirm)
+**Pitch:** Reduced motion showed "off" while the OS asked for calm motion, Sound and Volume had no music/effects split, and there was no way to start over.
+**Brief:** Done: `src/ui/settings.js` (new `music`, `effects` fields; `motion` is now system / reduce / full), `src/ui/settingsBook.js` + `settingsBook.css` (page markup), `src/ui/progressReset.js` (erases `deepstack.v1`, `deepstack.cabinet.v1`, `deepstack.flipHint`; never settings), `src/feel.js` (Music and Effects buses, each with its own reverb send), `src/ui/topbar.js` (wiring). Tests: `test/settings.test.js`, `test/settings-book.test.js`; smoke step "settings: sliders save and reset asks first". Before/after: screenshots/settings-overhaul/.
+**Done:** PR pending (draft). Placement is open: see "What nate needs to do".
+
+### ST2. Reach Settings from a phone's card catalogue
+**Status:** waiting on the placement pick. Option A or C already opens Settings from the phone's gear, so this is only needed if B is chosen.
+**Pitch:** The card catalogue and its Settings drawer exist only on desktop, so on a phone the Settings book is reachable only from the gear.
+**Brief:** Goal: a phone player can open Settings in one tap from home, in the way nate picks (see ST1 placement). Files: `src/ui/cabinet.js`, `src/ui/topbarRail.js`. Done when: a phone test taps the chosen entry and the book opens. **Touches:** settings, home. **Conflicts:** card catalogue and rail threads.
+
+### [x] ST3. Motion changes take effect without a reload
+**Done:** `src/ui/settings.js` keeps a live flag (`motionNow()`, `onMotionChange`), refreshed on the Motion setting and on the OS preference. `src/app/util.js` exports `RM` as a live binding, and `feel.js` and `lanterns.js` read the flag per call. Tests in `test/motion-live.test.js`; smoke checks Calm applies at once. Not checked by eye on the candle, dust and book-opening effects.
+**Pitch:** Changing Motion only settles the candle, dust and book-opening effects on the next page load, so the setting feels broken until then.
+**Brief:** Files: `src/ui/motion.js`, `src/ui/candle.js`, `src/ui/atticDust.js`, `src/ui/bookOpenFx.js` (read `reducedMotion()` per use, or re-read on change). Done when: switching Calm in the settings book stops those effects at once, with a test that flips the setting. **Touches:** settings, book opening. **Conflicts:** book-opening and attic threads.
+
+### [x] ST4. Hear a level while dragging Music or Effects
+**Done:** letting go of Effects plays a page turn at its level, and Music plays a short soft tone through the Music bus. Silent when Sound is off (`Sfx.preview` in `src/feel.js`, wired in `src/ui/topbar.js`).
+**Pitch:** The Music and Effects sliders give no sound while you drag, so players guess the level.
+**Brief:** Files: `src/ui/settingsBook.js`, `src/feel.js`. Done when: letting go of the Effects slider plays one short page turn at that level, and the Music slider plays a short room tone at its level, with nothing when Sound is off. **Touches:** settings, sound. **Conflicts:** sound palette threads.
+### SH1. [x] Shareable Daily result card (per room, Share button)
+**Pitch:** After a Daily the Share button copies a spoiler-free text card (room, Daily number, depth, floor, streak, one tier symbol per book) and opens the system share sheet where the browser has one.
+**Brief:** Done: `src/ui/dailyShare.js` (text and share helper), `src/app/final.js`, `src/ui/results.js` (button), `src/ui/dailyShare.css` (phone wrap). Tests in `test/daily-share.test.js`. Screenshots in screenshots/daily-share/.
+### SH2. A picture for the share
+**Pitch:** Share the result as a small PNG of the descent: the room's colour, the shelf of books and the tier grid, for chat apps that take images.
+**Brief:** Goal: draw the share card to a canvas from the run data, pass it to navigator.share with files, copy text as the fallback. Files: new `src/ui/dailyShareImage.js`. **Conflicts:** SH1.
+### SH3. Room colour on the share text
+**Pitch:** The share card's header takes the room's fire colour, so a Chronicle share looks red and a Gallery share purple (text only, no emoji).
+**Brief:** Goal: a colour line via `ROOMS[].rgb` in the share card's header (HTML sheet only). Files: `src/ui/results.js`, `src/ui/dailyShare.css`. **Conflicts:** SH1.

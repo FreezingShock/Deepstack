@@ -184,6 +184,40 @@ await step('unlimited descends to a finite depth', async () => {
   if (!filled) fail('Unlimited: saved book has a non-finite row count');
 });
 
+// Settings book (Settings > Progress): sliders save, Keep leaves the save alone, Erase clears progress and keeps settings.
+await step('settings: sliders save and reset asks first', async () => {
+  const sp = await newPage();
+  await sp.goto(url, {waitUntil: 'load'});
+  await sp.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T}).catch(() => { fail('settings: home never rendered'); throw new Error('stop'); });
+  await sp.evaluate(() => {
+    localStorage.setItem('deepstack.v1', JSON.stringify({shelf: [], streak: {last: '', n: 2}, bestDepth: 50, bestFloor: 0, sound: false}));
+    localStorage.setItem('deepstack.settings.v1', JSON.stringify({volume: 0.5, music: 1, effects: 1, motion: 'system', text: 'normal', contrast: false}));
+  });
+  await sp.reload({waitUntil: 'load'});
+  await sp.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T});
+  await realClick(sp, '#bSettings', 'Settings button');
+  await sp.locator('#sMus').waitFor({state: 'attached', timeout: T}).catch(() => { fail('settings: book has no Music slider'); throw new Error('stop'); });
+  await sp.locator('#sMus').evaluate(el => { el.value = 40; el.dispatchEvent(new Event('input')); });
+  const music = await sp.evaluate(() => JSON.parse(localStorage.getItem('deepstack.settings.v1')).music);
+  if (music !== 0.4) fail(`settings: Music slider saved ${music}, expected 0.4`);
+  // Motion applies at once, with no reload (ST3); letting go of a slider samples its bus without an error (ST4)
+  await sp.evaluate(() => document.querySelector('[data-motion-choice="reduce"]').click());
+  const motion = await sp.evaluate(() => document.documentElement.dataset.motion + '/' + JSON.parse(localStorage.getItem('deepstack.settings.v1')).motion);
+  if (motion !== 'reduce/reduce') fail(`settings: Calm did not apply at once (${motion})`);
+  await sp.evaluate(() => document.getElementById('sMus').dispatchEvent(new Event('change')));
+  await sp.evaluate(() => document.getElementById('sReset').click());
+  await sp.evaluate(() => document.getElementById('scKeep').click());
+  if (!(await sp.evaluate(() => localStorage.getItem('deepstack.v1')))) fail('settings: Keep Library erased the save');
+  await sp.evaluate(() => document.getElementById('sReset').click());
+  await sp.evaluate(() => document.getElementById('scGo').click()).catch(() => {});
+  await sp.waitForLoadState('load');
+  await sp.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T}).catch(() => {});
+  const after = await sp.evaluate(() => ({save: localStorage.getItem('deepstack.v1'), music: JSON.parse(localStorage.getItem('deepstack.settings.v1') || '{}').music}));
+  if (after.save && JSON.parse(after.save).streak?.n === 2) fail('settings: Erase progress left the old streak in place');
+  if (after.music !== 0.4) fail(`settings: Erase progress changed the Music setting to ${after.music}`);
+  await sp.context().close();
+});
+
 await browser.close(); server.close();
 if (problems.length) { console.error('smoke: FAILED\n - ' + [...new Set(problems)].join('\n - ')); process.exit(1); }
 console.log('smoke: ok');
