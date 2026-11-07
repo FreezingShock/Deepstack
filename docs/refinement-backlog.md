@@ -1988,7 +1988,8 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### SP1. [x] Readable home spine captions (PR #292)
 **Pitch:** The tiny NO. 4 / 113 / LEXICON 44 / 7 ROOMS captions on the home stacks are now 10-11px and centred on the spine. Done: `src/ui/homeSpineSub.{js,css}`.
 
-### SP2. Short Unlimited caption that always fits
+### [x] SP2. Short Unlimited caption that always fits
+**Done:** PR #374. Switches, motion chips and sliders have 44px targets at 320; the guard drops them from its open list.
 **Pitch:** "Find your rank" drops off narrow spines; a shorter caption (e.g. "Unplaced") would stay visible at 320-375px.
 **Brief:** Goal: caption text for Unlimited shortened per width so it never needs to step aside. Files: `src/ui/home.js` (badge), `src/ui/homeSpineSub.js`. **Conflicts:** fireplace layout threads.
 
@@ -2180,7 +2181,8 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### SP3. Home spines are 24px tall on phones
 **Pitch:** The Daily, Unlimited, Shelf, Rooms and Stats spines are the main menu on a phone and each is 24px tall, so they are the hardest targets on the home room.
 **Brief:** Decision for nate: taller spines (layout shifts the room), or two wider spines per row. Files: `src/ui/home.js`, `src/styles/fit.css`. Done when: nate picks A or B from the 320 screenshots in screenshots/small-phone/ and the guard drops `#home .hbook` from ALLOW. **Conflicts:** home layout threads, responsive fit.
-### SP4. Card catalogue tab covers the tagline and the first room dot
+### [x] SP4. Card catalogue tab covers the tagline and the first room dot
+**Done:** PR #374. The card catalogue tab sits on the left wall between the fireplace and Descend at phone width, clear of the tagline and room dots. Guard: `scripts/small-phone.mjs` checks the overlap at 320 and 375. Alternatives logged: the tab on the top bar (crowded by the four buttons), or inside the card catalogue with no floating tab.
 **Pitch:** At 320 the round card catalogue tab sits on top of "Every word is a step into the dark." and over the Reading Room dot, so the first letters of the tagline are hidden.
 **Brief:** Goal: move the tab onto the top bar or below the tagline on phones and make its target 44px. Files: `src/ui/cabinet.css`, `src/styles/small-phone.css`. **Conflicts:** home room threads (tagline, attic tag), G12.
 ### AS1. [~] Almanac progress stats (words met per room, closeness over time, hardest words, best chain)

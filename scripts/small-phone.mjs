@@ -79,6 +79,31 @@ for (const [w, h] of [[320, 568]]) {
     await ctx.close();
   }
 }
+
+// The card catalogue tab must not sit on the tagline or a room dot (SP4). Checked on the home room at 320 and 375.
+for (const [w, h] of [[320, 568], [375, 667]]) {
+  const ctx = await browser.newContext({viewport: {width: w, height: h}, reducedMotion: 'reduce', deviceScaleFactor: 1, isMobile: true, hasTouch: true});
+  await ctx.addInitScript(SEED);
+  const page = await ctx.newPage();
+  await page.route(u => !u.href.startsWith(url), r => r.abort());
+  await page.goto(url);
+  await page.waitForSelector('#home .descend', {timeout: 15000});
+  await page.waitForTimeout(600);
+  const hits = await page.evaluate(() => {
+    const tab = document.querySelector('#home .cc-tab');
+    if (!tab) return ['no tab'];
+    const t = tab.getBoundingClientRect();
+    const out = [];
+    for (const e of document.querySelectorAll('#home .tagline, #home .rm-dot')) {
+      const b = e.getBoundingClientRect();
+      if (!b.width || !b.height) continue;
+      if (t.left < b.right && b.left < t.right && t.top < b.bottom && b.top < t.bottom) out.push(`${e.className} at ${Math.round(b.left)},${Math.round(b.top)}`);
+    }
+    return out;
+  });
+  for (const hit of hits) failures.push(`home ${w}x${h}: card catalogue tab overlaps ${hit}`);
+  await ctx.close();
+}
 await browser.close(); server.close();
 if (failures.length) { console.log('small-phone FAILED:\n  ' + failures.join('\n  ')); process.exit(1); }
 console.log(`small-phone: every control on ${VIEWS.length} screens at 320x568 has a 44px target (${ALLOW.length} open items listed)`);

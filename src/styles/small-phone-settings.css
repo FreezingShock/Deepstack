@@ -1,8 +1,10 @@
-/* Settings controls and the card catalogue tab at phone width (up to 600 px wide): 44px targets without moving anything.
+/* Settings controls and the card catalogue tab at phone width (up to 600 px wide): 44px targets, and the tab off the tagline.
    Switches and motion chips take a transparent centred pseudo-element; sliders take vertical padding balanced by a
    negative margin, so the row keeps its height. Guarded by scripts/small-phone.mjs. */
 @media(max-width:600px){
  .tpsw,#sMotion button{position:relative}
  .tpsw::before,#sMotion button::before,.home .cc-tab::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
  .sb-slider input[type=range]{padding:20px 0;margin:-20px 0}
+ /* The card catalogue tab moves onto the left wall between the fireplace and Descend (SP4): clear of the tagline and the room dots. */
+ #home .cc-tab{top:196px}
 }
