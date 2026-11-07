@@ -2117,3 +2117,16 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### SH3. Room colour on the share text
 **Pitch:** The share card's header takes the room's fire colour, so a Chronicle share looks red and a Gallery share purple (text only, no emoji).
 **Brief:** Goal: a colour line via `ROOMS[].rgb` in the share card's header (HTML sheet only). Files: `src/ui/results.js`, `src/ui/dailyShare.css`. **Conflicts:** SH1.
+
+### CF1. [x] Core loop: answer feedback, hurry the reveal, full "You wrote" (this PR)
+**Pitch:** Enter now answers at once: the slip holds, locks and says "Reading your answer", Enter or Space during the card reveal hurries it to the verdict, phone cards drop the Enter hint, and a long answer shows whole.
+**Done:** `src/app/run.js` (judging state), `src/app/card.js` (hurry), `src/main.js` (a hurried Enter does not also close the card), `src/ui/coreLoop.css`, guard `scripts/core-loop.mjs` (CL1 to CL4), `scripts/smoke.mjs` mid-reveal step updated to the hurry rule. Screenshots in `screenshots/core-loop/`.
+**Conflicts:** G12 (phone answer slip, owned by the onboarding thread), any card.css thread.
+
+### CF2. Skip with typed text asks first
+**Pitch:** Skip throws away a half-typed answer with no warning; a quiet "Keep typing" or a second tap would save it.
+**Brief:** Goal: first Skip with text in the slip shows "Skip and lose this answer?" for 3 s; second tap skips. Files: `src/app/run.js`, `src/ui/runWriteIn.js`. Done when: keyboard and touch both confirm, 375 and 1280 screenshots.
+
+### CF3. Judge wait shows a real progress note
+**Pitch:** When the librarian is still arriving the wait is silent for up to 6 s before a note appears.
+**Brief:** Goal: start the "Reading your answer" note with a small candle-flicker on the slip, not after the 6 s fallback. Files: `src/scorer/index.js` (onWait timing), `src/ui/coreLoop.css`. Done when: a test pins the note at 300 ms.
