@@ -195,7 +195,7 @@ function createHearth(home, sfx, mood) {
       // not enough room for a fireplace worth seeing: give up the candles (the streak stays on the plaque) for height
       if (h < 100 && getComputedStyle(candles).display !== 'none') { setStyle(candles, 'display', 'none'); h = solve(); }
       // short phones (375x667) and portrait tablets with no spare height: a compact room (stacks and gaps a size down)
-      if (h < 76) { home.classList.add('hearth-compact'); setStyle(home, '--hz-book', '24px'); setStyle(home, '--hz-g', '3px'); h = solve(); }
+      if (h < 76 || forceCompact) { home.classList.add('hearth-compact'); setStyle(home, '--hz-book', '24px'); setStyle(home, '--hz-g', '3px'); h = solve(); }
       // very short: the "Daily No. N" caption under Descend repeats the book titles, so it gives way too
       if (h < 76 && tag) { setStyle(tag, 'display', 'none'); h = solve(); }
       // still too small for a fire worth drawing: shrink the title, caption and spines (see fit.css) so a small fireplace stays instead of going
@@ -578,10 +578,14 @@ function createHearth(home, sfx, mood) {
   // title cycle through the same few heights), a layout that lands on a size it already produced freezes the observers until
   // a real resize, a quality change or a font load: the Descend button then holds still instead of jittering every frame.
   let pend = 0, lastSig = null, hist = [], frozen = false;
+  // A long topic-room tagline ("The Chronicle · … 0 of 413 met") can leave the home a few pixels taller than its box after the
+  // solver has settled and frozen. Then the compact type and spacing the Reading Room gets at this height are used too,
+  // until a real resize, quality change or font load clears the flag.
+  let forceCompact = false;
   const boxSig = () => [home, home.querySelector('.hz-title'), home.querySelector('.hz-plaque')].map(el => { if (!el) return ''; const r = el.getBoundingClientRect(); return Math.round(r.width) + 'x' + Math.round(r.height); }).join('|');
   const doLayout = () => { layout(); lastSig = boxSig(); };
-  const thaw = () => { frozen = false; hist = []; };
-  const relayout = () => { if (!pend) pend = requestAnimationFrame(() => { pend = 0; if (frozen || (lastSig !== null && boxSig() === lastSig)) return; doLayout(); if (hist.includes(lastSig)) frozen = true; hist.push(lastSig); if (hist.length > 6) hist.shift(); }); };
+  const thaw = () => { frozen = false; hist = []; forceCompact = false; };
+  const relayout = () => { if (!pend) pend = requestAnimationFrame(() => { pend = 0; if (frozen) { if (!forceCompact && home.scrollHeight - home.clientHeight > 1) { forceCompact = true; doLayout(); } return; } if (lastSig !== null && boxSig() === lastSig) return; doLayout(); if (hist.includes(lastSig)) frozen = true; hist.push(lastSig); if (hist.length > 6) hist.shift(); }); };
   const relayoutNow = () => { thaw(); if (!pend) pend = requestAnimationFrame(() => { pend = 0; doLayout(); }); }; // quality, fonts and resizes change the paint or the text, so they never skip
   const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(relayout) : null; if (ro) { ro.observe(home); for (const part of home.querySelectorAll('.hz-title, .hz-plaque')) ro.observe(part); } // a room's caption lines change these without resizing #home, and the fit must be solved again (phone rooms lost their bottom spines)
   addEventListener('resize', relayoutNow);
