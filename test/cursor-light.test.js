@@ -34,8 +34,8 @@ test('isDarkSpot lights the canvas, not lit surfaces',()=>{
 
 test('css keeps the system cursor, hides for reduced motion, uses tokens',()=>{
  const css=fs.readFileSync(new URL('../src/ui/cursorLight.css',import.meta.url),'utf8');
- assert.match(css,/prefers-reduced-motion:reduce\)\{#pointerLight\{display:none/);
- assert.match(css,/data-motion=reduce\] #pointerLight\{display:none/);
+ assert.match(css,/html\.rm #pointerLight\{display:none/);
+ assert.match(css,/html\.rm #pointerLight\{display:none/);
  assert.doesNotMatch(css,/cursor:\s*none/);
  assert.doesNotMatch(css,/#[0-9a-fA-F]{3,8}\b/);
 });

@@ -13,6 +13,6 @@
   --e-press:cubic-bezier(.3,.7,.4,1);
   --e-ink:cubic-bezier(.4,.1,.3,1);
 }
-/* Reduced motion, in one place: every named duration collapses. */
-html[data-motion="reduce"]{--m-press:.01ms;--m-quick:.01ms;--m-base:.01ms;--m-smooth:.01ms;--m-page:.01ms;--m-linger:.01ms;}
-@media (prefers-reduced-motion:reduce){html:not([data-motion="full"]){--m-press:.01ms;--m-quick:.01ms;--m-base:.01ms;--m-smooth:.01ms;--m-page:.01ms;--m-linger:.01ms;}}
+/* Reduced motion, in one place: every named duration collapses. html.rm is set from motionNow() (settings.js),
+   so the in-game Motion setting decides, and the OS preference only counts when the setting is System. */
+html.rm{--m-press:.01ms;--m-quick:.01ms;--m-base:.01ms;--m-smooth:.01ms;--m-page:.01ms;--m-linger:.01ms;}

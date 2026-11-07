@@ -4,6 +4,5 @@
 #pointerLight .pl-glow{position:absolute;left:0;top:0;width:0;height:0;will-change:transform}
 #pointerLight .pl-glow::before{content:"";position:absolute;left:-190px;top:-190px;width:380px;height:380px;border-radius:50%;
  background:radial-gradient(circle,color-mix(in srgb,var(--c-amber-68) 34%,transparent) 0%,color-mix(in srgb,var(--c-amber-55) 14%,transparent) 38%,transparent 68%);
- mix-blend-mode:screen}
-@media(prefers-reduced-motion:reduce){#pointerLight{display:none}}
-html[data-motion=reduce] #pointerLight{display:none}
+ mix-blend-mode:screen}:where(html.rm) #pointerLight{display:none}
+html.rm #pointerLight{display:none}

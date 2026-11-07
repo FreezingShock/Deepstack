@@ -55,6 +55,8 @@ import {ROOMS,roomById} from '../core/rooms.js';
 import {currentRoom} from '../core/roomStore.js';
 import {scopeRoom} from './scope.js';
 import {roomMetLabel} from '../core/roomDepth.js';
+import {motionNow} from './settings.js';
+import {DUR} from './motion.js';
 export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>'',today=''}){
  const ctx={lexicon,dailyNo:no,played:!!d,today},pq=plaqueState({S,played:!!d,no,today,lexicon});
  /* library furniture built into the niche walls: a card-catalogue cabinet (rules) and the borrower's ledger (welcome.css) */
@@ -123,7 +125,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
   cornersHTML()+RIBBON_HTML+
   '<div class="bs-cover"><div class="cv-front"><i class="cv-hinge"></i><div class="cv-frame"><span class="cv-orn" aria-hidden="true"></span><span class="cv-t"></span><span class="cv-orn" aria-hidden="true"></span></div></div><div class="cv-in"></div></div>';
  sp.querySelector('.cv-t').textContent=title;
- const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches,T=bookTimings(reduce);
+ const reduce=motionNow(),T=bookTimings(reduce);
  dressBook(sp,T);
  document.body.appendChild(sp);bookSound('whoosh');
  /* The closed book's size is the spine's, so it leaves the spine standing up and lands back on it lying down (AT8/AT9). */
@@ -171,7 +173,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
  };
  /* Page turn: a leaf lifts from the corner and swings about the spine (two pages) or peels away (phones).
     Only transform and opacity animate. A second turn pressed mid-flight is queued, not dropped. */
- const FLIP_MS=560;let flying=null,queued=0;
+ const FLIP_MS=DUR.page;let flying=null,queued=0;
  const settle=()=>{if(!flying)return;const f=flying;flying=null;clearTimeout(f.t);f.leaf.remove();f.done();sp.classList.remove('flipping','flip-next','flip-prev');
   if(queued){const d=queued;queued=0;turn(d);}};
  const turn=d=>{let j=idx+d,s2=side;
@@ -239,7 +241,7 @@ export function openBook({from,colors={},title='',spreads=null,label='',cls='',k
    BOOK_PAGES[id]={spreads:()=>[{l,r}],onPaint(sp,api),keepOnEsc} and the book stays open on those pages. */
 export const BOOK_PAGES={};
 export function bookify(root,{wait=BOOK_OPEN_MS}={}){
- const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const reduce=motionNow();
  let busy=false,flying=false,pending=null;
  root.querySelectorAll('.hbook,.lg-row#bFloors,.lg-row#bStreak').forEach(el=>{
   const go=el.onclick;if(!go&&!BOOK_PAGES[el.id])return;

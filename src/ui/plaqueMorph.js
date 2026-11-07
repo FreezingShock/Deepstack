@@ -2,10 +2,11 @@
    changed type themselves in from the middle (src/ui/typewrite.js). Used by src/app/roomGo.js around the home redraw:
    snap before it, morph after it. Web Animations only, nothing is left behind on the elements. */
 import {typewrite} from './typewrite.js';
+import {DUR, EASE as TOKEN} from './motion.js';
 
 const GLIDE = [['.descend', 'btn'], ['.hz-plaque .plaque-second', 'second'], ['.hz-plaque .next', 'next']];
 const WORDS = ['.descend .d-t', '.descend .d-sub', '.hz-plaque .next', '#bRes'];
-const MS = 360, EASE = 'cubic-bezier(.4,0,.2,1)';
+const MS = DUR.smooth, EASE = TOKEN.cruise; // the shared table: same values as before (360 ms, cruise)
 const box = el => { const r = el.getBoundingClientRect(); return {x: r.left, y: r.top, w: r.width, h: r.height}; };
 
 /** What the plaque looks like now: where its pieces are and what they say. */

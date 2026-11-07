@@ -8,5 +8,4 @@
 .bk-spread.menu .chipgroup .fold .fk{flex:none;width:4.2em;font:600 calc(10px*var(--ts)) var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
 .bk-spread.menu .chipgroup .fold .fv{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(17px*var(--ts))}
 .bk-spread.menu .chipgroup .fold i{flex:none;width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.6;transition:transform .15s}
-.bk-spread.menu .chipgroup.open .fold i{transform:rotate(-135deg) translateY(-2px)}
-@media (prefers-reduced-motion:reduce){.bk-spread.menu .chipgroup .fold i{transition:none}}
+.bk-spread.menu .chipgroup.open .fold i{transform:rotate(-135deg) translateY(-2px)}:where(html.rm) .bk-spread.menu .chipgroup .fold i{transition:none}

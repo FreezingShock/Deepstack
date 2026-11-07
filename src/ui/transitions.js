@@ -1,3 +1,4 @@
+import {motionNow} from './settings.js';
 // Smooth screen transitions. Screens are toggled with the `hidden` attribute elsewhere;
 // this module watches them so every change fades instead of snapping, without touching
 // the code that toggles them. Hiding leaves a short-lived ghost copy that fades out.
@@ -7,7 +8,7 @@ export const OUT_MS = 260;
 const CHROME = ['#depthHud', '#shelfcap'];
 
 export function reducedMotion() {
-  return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return motionNow();
 }
 
 function ghostOf(el, chrome = false) {
