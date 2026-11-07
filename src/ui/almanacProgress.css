@@ -1,18 +1,18 @@
 /* Progress page layouts for the Almanac (design source for the three options; the chosen one moves to src/ui/almanacProgress.css).
    Scoped under .bk-spread.menu .alm so it only ever styles the Almanac pages. Colours come from the tokens or the room's own rgb. */
 .bk-spread.menu .alm.pg{min-width:0}
-.bk-spread.menu .alm.pg h2{margin-top:10px}
-.bk-spread.menu .alm.pg .note{margin-top:4px}
+.bk-spread.menu .alm.pg h2{margin-top:5px}
+.bk-spread.menu .alm.pg .note{margin-top:2px}
 
 /* headline figures */
-.bk-spread.menu .pg-figs{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 10px;border-bottom:1.5px dashed var(--rule);padding-bottom:10px}
+.bk-spread.menu .pg-figs{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 10px;border-bottom:1.5px dashed var(--rule);padding-bottom:6px}
 .bk-spread.menu .pg-figs li{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
-.bk-spread.menu .pg-figs b{font:600 calc(30px*var(--ts))/1 var(--hand);color:var(--bk);font-variant-numeric:tabular-nums}
-.bk-spread.menu .pg-figs span{font:600 calc(10px*var(--ts))/1.2 var(--label);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-top:3px}
+.bk-spread.menu .pg-figs b{font:600 calc(26px*var(--ts))/1 var(--hand);color:var(--bk);font-variant-numeric:tabular-nums}
+.bk-spread.menu .pg-figs span{font:600 calc(10px*var(--ts))/1.2 var(--label);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-top:1px}
 
 /* words per room: a ruled bar per room, tinted by the room's colour */
-.bk-spread.menu .pg-bars{list-style:none;margin:6px 0 0;padding:0}
-.bk-spread.menu .pg-bars li{display:grid;grid-template-columns:minmax(0,10.5em) minmax(0,1fr) 2.2em;align-items:center;gap:8px;padding:2px 0}
+.bk-spread.menu .pg-bars{list-style:none;margin:4px 0 0;padding:0}
+.bk-spread.menu .pg-bars li{display:grid;grid-template-columns:minmax(0,10.5em) minmax(0,1fr) 2.2em;align-items:center;gap:6px;padding:0}
 .bk-spread.menu .pg-n{display:flex;align-items:center;gap:6px;min-width:0;font:500 calc(16px*var(--ts))/1.15 var(--hand);color:var(--c-oak-4a3a22);overflow-wrap:anywhere}
 .bk-spread.menu .pg-n i{flex:none;width:9px;height:9px;border-radius:50%;background:rgb(var(--c));box-shadow:0 0 0 1px var(--c-black-alpha-33)}
 .bk-spread.menu .pg-track{position:relative;height:10px;border-radius:2px;background:var(--c-ink-alpha-22);overflow:hidden}
@@ -20,7 +20,7 @@
 .bk-spread.menu .pg-bars b{font:600 calc(18px*var(--ts)) var(--hand);color:var(--bk);text-align:right;font-variant-numeric:tabular-nums}
 
 /* closeness line */
-.bk-spread.menu .pg-chart{display:block;width:100%;height:auto;margin-top:4px;overflow:visible}
+.bk-spread.menu .pg-chart{display:block;width:100%;height:auto;max-height:96px;margin-top:4px;overflow:visible}
 .bk-spread.menu .pg-chart .gr{stroke:var(--rule);stroke-width:1;stroke-dasharray:3 4}
 .bk-spread.menu .pg-chart .ax{font:400 calc(9px*var(--ts)) var(--mono);fill:var(--mute)}
 .bk-spread.menu .pg-chart .ln{fill:none;stroke:var(--bk);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}

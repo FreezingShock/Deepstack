@@ -13,6 +13,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Scope labels: streak, Dailies and Lexicon are tagged with the room they belong to; Deepest, Books, Floor and the Depths page are tagged "all rooms" (top bar plates, Librarian's Card rows, Almanac pages) | `src/ui/scope.js`, `scope.css`, `welcome.js`, `topbarRail.js`, `statsPages.js` | B | Bars under 1180 px keep only the room dot; plates hide under 400 px and the Card on phones (Almanac tags show everywhere). Almanac streak page shows this room and any room side by side (`anyRoomStreak`). CI guard `test/scope-labels.test.js` checks every room's Card rows and Almanac pages; checked with reduced motion on. |
 | Copy and numbers (TY1): depths take a thousands comma (`1,008 ft`) through one helper, no visible text under 10 px at Normal, and the text-fit sweep fails on either | `src/core/numFmt.js`, `scripts/lib/textFit.mjs`, `scripts/text-fit.mjs`, `test/number-format.test.js` | B | Audited the visible copy of home, settings, shelf, almanac, rooms and a daily run: no straight quotes or ASCII ellipses in it. Small caps: home captions and room kickers track at 0.06em or more (checked by text-fit). Gap: floor ranges use an en dash on the tracker but "to" in the Floors book (TY3) |
 | Achievement stamps (TA5): six per topic room and four library-wide, earned once and kept in `S.stamps`. The Almanac's Stamps leaves (wax seals, room colour, gilt for the library) and a brass-plaque toast on each new stamp, stacked under the set toast | `src/core/stamps.js`, `src/ui/stampsPage.js`, `src/ui/stampToast.js`, `src/ui/stamps.css`, hooks in `src/app/run.js` and `bookMenusLoad.js`, guard `scripts/stamps-look.mjs` | B | Earned stamps are tracked from saved state; the phone check is still to do. Mockups in `design/stamps/mock.mjs` (screenshots/room-stamps) |
+| Nemesis (NM1): the hardest word not yet beaten becomes the week's rematch, pinned for the week, shown as a wanted poster on the Almanac's Closeness page with a Rematch button on its hardest-words row; one swing a week, Folio (46+) captures it and earns the "Rematch won" stamp | `src/core/nemesis.js`, `src/ui/nemesis.js`, `src/ui/nemesis.css`, `src/ui/almanacProgress.js`, `scripts/nemesis-check.mjs`
 | Patrons (PT1): six visitors at the library desk, one per topic room (the Reading Room's desk takes the day's pick). Each asks for one word: by its meaning (judged like the Riddle Shelf) or by name for a definition (judged like the Daily). A served request enters the Shelf and the desk ledger; the book lists commendations with links to Stamps and Almanac and Shelf. | `src/core/patrons.js`, `src/ui/patronsBook.js`, `patronArt.js`, `patrons.css`, hook `BOOK_PAGES.bPat` in `src/main.js`, home shelf entry in `src/ui/home.js` | B | A home book (bottle spine, Play section) with a commendation badge. Phones show the patron and the request on page one; the answer slip is on page two (turn the page). Save: additive `S.patrons`. Rewards are the Shelf book and the ledger only; no stamp yet (PT2). Guards: `test/patrons.test.js`, `scripts/patrons.mjs` (CI; 375 and 1280, every room, fresh/served/answer, ledger spread). Screenshots `screenshots/patrons/`. |
 | Room depth: "X of N met" per room (door plate, room tagline, Room Ledger page); side-door plates say "Daily: done/open" for that room (#337); room Dailies are scheduled forward so no word returns within 14 days; CI floor on room list size and a 60-day simulation | `src/core/roomDepth.js`, `src/core/daily.js` (`roomDaily`), `src/ui/roomHome.js`, `roomLedger.js` | B | Met = every answered word (`S.met`, additive; the shelf only holds 300) plus shelf books and set words. At 100% the plate, tagline and ledger row get a gilt ✦ that glints once (`roomMastery.css`, static under reduced motion). The lines fill in after the room lists load, not at first paint. Unlimited deals a room's words once each before any repeat, then the longest-unseen first (`unlimited.js`, `SEEN_CAP` 1200). Screenshots `screenshots/room-mastery/`. Within 60 words of done, the Room Ledger adds a "N to go" page listing the unmet words (TA2d); the first time a room reaches 100% `S.metAt[room]` is stamped and the Rooms Almanac page prints "Mastered: ... (Nov 6)" (TA2e; `screenshots/room-depth-followups/`). Room Ledger rows each read "N of M met" (the Reading Room "N words met") with a filling swatch like the door plates, falling back to the sets tally until a room's list loads, then repainting (RA5); a thin outer ring shows sets complete, with a tooltip (RA10). Rooms hold 300 to 810 words (list + sets + room-words.json); CI floor is 210. The counter counts that merged pool (TA2a). `test/room-depth.test.js`. |
 | Book switching: both pages are built before the first frame (no staggered rise-in), the cover's inside and leaf dissolve on landing, curls and page edges fade instead of switching on, the landing glow is opacity-only, the room and the spine fade back while the book flies home, a click on another book mid-close is queued and opens on landing; hearth drops to half rate under an open book | `src/ui/home.js` (`openBook`, `bookify`), `src/ui/bookOpenFx.css`, `src/ui/hearth.js` | B | Reduced motion keeps the plain fade. `test/book-switch.test.js`; filmstrips in `screenshots/book-switch/`. Headless frame timing is pessimistic (software raster); check on real hardware. |
@@ -120,14 +121,14 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/app/chrome.js` | 20 |  | - |
 | `src/app/final.js` | 46 |  | - |
 | `src/app/fx.js` | 21 |  | - |
-| `src/app/home.js` | 72 |  | book-open-fx, book-page-flip, book-style, book-switch, door-daily-state, first-notes, home-book-stacks, home-books, home-close-fade, home-layout, home-niche, home-plaque, home, lazy-screens, mantel, page-flip-affordances, patrons, pen-ink, phone-book-pages, unlimited-book |
+| `src/app/home.js` | 73 |  | book-open-fx, book-page-flip, book-style, book-switch, door-daily-state, first-notes, home-book-stacks, home-books, home-close-fade, home-layout, home-niche, home-plaque, home, lazy-screens, mantel, page-flip-affordances, patrons, pen-ink, phone-book-pages, unlimited-book |
 | `src/app/riddle.js` | 107 | Riddle Shelf: the reverse of the Daily. A slip shows a definition and you write the word. | lexicon-worker |
 | `src/app/roomGo.js` | 38 | Walking to another room from home (side doors, [ and ], the ring of lights, the Rooms book | - |
 | `src/app/rooms.js` | 18 | Entering a topic room: swap the per-room save data, narrow the word pool, save. The home s | a11y-ledger, a11y-markup, almanac-progress, door-daily-state, patrons, ra-fixes, restore-daily, restore-pages, room-depth, room-mastery, room-props, room-run, room-tone, room-words, scope-labels, topic-rooms-ui, topic-rooms, unlimited-room-repeats |
-| `src/app/run.js` | 160 |  | daily-judge-policy, first-notes, ink-input |
+| `src/app/run.js` | 179 |  | daily-judge-policy, first-notes, ink-input |
 | `src/app/state.js` | 25 |  | lit-props-eyes |
 | `src/app/util.js` | 10 |  | motion-live |
-| `src/core/almanacProgress.js` | 79 | Progress figures for the Almanac: words met per room, accuracy over time, hardest words an | almanac-progress |
+| `src/core/almanacProgress.js` | 79 | Progress figures for the Almanac: words met per room, accuracy over time, hardest words an | almanac-progress, nemesis |
 | `src/core/attic.js` | 91 | The attic: where books with no known floor live. New books save the floor they were found  | attic-dust-off, attic-entrance, attic-hatch-anim, attic-layers, attic |
 | `src/core/blocklist.js` | 41 | Words and definitions that never belong in a game anyone can play: slurs, hateful terms an | room-words, topic-rooms, word-blocklist |
 | `src/core/boot.js` | 11 | Load-path scheduling: heavy downloads (word list, judge model) start after the first paint | load-path |
@@ -144,6 +145,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/core/hints.js` | 53 | Tiered hints. Each costs depth (shelf rows) instead of a fixed pool of free uses, so a hin | hints-no-spelling, hints, riddle |
 | `src/core/index.js` | 2 |  | core-exports, daily-judge-policy, lexicon-worker, shelf-bays |
 | `src/core/level.js` | 14 |  | lexicon-rank |
+| `src/core/nemesis.js` | 76 | Nemesis: the word you keep missing comes back as a weekly rematch. Each UTC week (Monday t | nemesis |
 | `src/core/numFmt.js` | 5 | Number formats for on-screen copy. Depths and counts take a thousands comma (1,008 ft, nev | number-format |
 | `src/core/patrons.js` | 132 | Patrons: visitors who come to the library desk with one word they need. Each topic room ha | patrons |
 | `src/core/places.js` | 55 | Registry of places: the default descent today, zones and topic rooms tomorrow. A place is  | places |
@@ -161,11 +163,11 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/core/rooms.js` | 45 | Topic rooms: the same fireplace home, each with its own fire and its own words. | a11y-ledger, a11y-markup, almanac-progress, door-daily-state, patrons, ra-fixes, restore-daily, restore-pages, room-depth, room-mastery, room-props, room-run, room-tone, room-words, scope-labels, topic-rooms-ui, topic-rooms, unlimited-room-repeats |
 | `src/core/shelf.js` | 35 |  | shelf-bays, shelf, topic-rooms-ui |
 | `src/core/shelfRooms.js` | 14 | Shelf room tabs (TR7): every book earned in a topic room carries `room` (src/app/run.js);  | topic-rooms-ui |
-| `src/core/stamps.js` | 112 | Achievement stamps: a small set per topic room, and a few library-wide. Pure: no DOM, no s | restore-rewards, stamps-look, stamps, weekly |
+| `src/core/stamps.js` | 115 | Achievement stamps: a small set per topic room, and a few library-wide. Pure: no DOM, no s | nemesis, restore-rewards, stamps-look, stamps, weekly |
 | `src/core/stats.js` | 46 | Pure stats derived from saved state, so nothing extra has to be stored and old saves keep  | daily-local-day, stats, streak, topic-rooms-ui |
 | `src/core/streak.js` | 27 | Streaks derived from the saved Daily results (S.daily keys, UTC days), so they cannot drif | streak |
 | `src/core/swRegister.js` | 11 | Registers the service worker (src/sw/sw.js, built to /sw.js) after the page has loaded and | - |
-| `src/core/tiers.js` | 19 |  | almanac-progress, book-art, cabinet, ledge-story, prewarm, riddle, theme-tokens, verdict-partial |
+| `src/core/tiers.js` | 19 |  | almanac-progress, book-art, cabinet, ledge-story, nemesis, prewarm, riddle, theme-tokens, verdict-partial |
 | `src/core/unlimited.js` | 66 | Unlimited mode: an ~8 word placement test, then an Elo-style rating (the Lexicon, 0-100) t | descent, door-daily-state, lexicon-rank, topic-rooms-ui, unlimited-room-repeats, unlimited |
 | `src/core/verdict.js` | 21 | One-line verdict under a scored answer. The line must agree with the score: tier 0 covers  | verdict-partial |
 | `src/core/weekly.js` | 127 | Weekly themed challenge: "Week of the Sea" and friends. Each UTC week (Monday to Sunday) h | weekly |
@@ -232,8 +234,8 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/a11yCues.js` | 16 | Pure helpers for screen reader announcements (no DOM, unit tested). | a11y |
 | `src/ui/a11yTargets.css` | 85 | Accessibility pass (scripts/a11y.mjs): every control is at least 44px on each side, and ev | css-sanity |
 | `src/ui/alcoveArt.js` | 99 | The alcove as a reading nook: a desk edge under the word with an open book, an inkwell and | alcove-nook, ledge-story |
-| `src/ui/almanacProgress.css` | 52 | Progress page layouts for the Almanac (design source for the three options; the chosen one | almanac-progress |
-| `src/ui/almanacProgress.js` | 62 | Progress page for the Almanac (option B of the layout pick): a spread of two leaves after  | almanac-progress |
+| `src/ui/almanacProgress.css` | 52 | Progress page layouts for the Almanac (design source for the three options; the chosen one | almanac-progress, nemesis |
+| `src/ui/almanacProgress.js` | 74 | Progress page for the Almanac (option B of the layout pick): a spread of two leaves after  | almanac-progress, nemesis |
 | `src/ui/alsoAccepted.css` | 5 | "Also accepted": a handwritten line under the definition. Quiet; the tier stays the hero. | also-accepted, lexicon-worker |
 | `src/ui/alsoAccepted.js` | 29 | "Also accepted": under the true word on a result card, a handwritten line of other words t | also-accepted, lexicon-worker |
 | `src/ui/alsoMeans.css` | 9 | "Also means": other meanings under the definition. Quiet and compact so the card does not  | audit-fixes, judge-lenient, lexicon-worker, room-words |
@@ -247,7 +249,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/bookArt.js` | 180 | The one way to draw a book spine. Used by the canvas world (shelves, ledge, held book) and | book-art, no-clipped-words, sigil |
 | `src/ui/bookCard.css` | 46 | Result card as a small open book (loaded after card.css, same selectors, so it wins). | css-sanity |
 | `src/ui/bookMenus.js` | 117 | Shelf and Stats as pages of an open book. Pure leaf builders are exported for tests; the o | book-pages, pen-ink, shelf-bays, shelf-filters |
-| `src/ui/bookMenusLoad.js` | 35 | The code and styles behind the Shelf, Daily and Stats books. Only reached through lazyScre | lazy-screens, shelf-filters |
+| `src/ui/bookMenusLoad.js` | 39 | The code and styles behind the Shelf, Daily and Stats books. Only reached through lazyScre | lazy-screens, shelf-filters |
 | `src/ui/bookOpenFx.css` | 96 | Book opening and closing v3: timings come from --o- | book-hides-home-hero, book-open-fx, book-switch, hearth, home-close-fade |
 | `src/ui/bookOpenFx.js` | 34 | Book opening and closing choreography (v3). Pure timing plus small DOM helpers used by ope | book-hides-home-hero, book-open-fx, book-switch, hearth, home-close-fade |
 | `src/ui/bookRibbon.css` | 6 |  | book-ribbon |
@@ -290,8 +292,8 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/dailyShare.js` | 30 | Shareable Daily result (per topic room). The text is spoiler-free: the room, the Daily num | daily-share |
 | `src/ui/descend.js` | 25 | Click-to-descend transition: the button presses in, the home sheet sinks and the | - |
 | `src/ui/descendGlow.css` | 7 | Perf: the Descend plaque used to animate a 54px box-shadow forever (a full repaint of the  | css-sanity |
-| `src/ui/descent.css` | 33 | Unlimited descents: the landing between words (src/ui/descentLanding.js) and the run's car | descent |
-| `src/ui/descentLanding.js` | 111 | The landing between two words of an Unlimited descent: three doors (Hard room, Rest alcove | - |
+| `src/ui/descent.css` | 40 | Unlimited descents: the landing between words (src/ui/descentLanding.js) and the run's car | descent |
+| `src/ui/descentLanding.js` | 112 | The landing between two words of an Unlimited descent: three doors (Hard room, Rest alcove | - |
 | `src/ui/deskProps.css` | 30 | Brass props on the wall furniture (deskProps.js): a bell on the cabinet's top slab and a d | desk-props |
 | `src/ui/deskProps.js` | 60 | Two brass props, one on each piece of wall furniture: a bell on the cabinet's shelf and a  | desk-props |
 | `src/ui/dprCap.js` | 8 | Backing-store scale for the world canvas: device ratio, never above 2, and capped so | dpr-cap |
@@ -361,6 +363,8 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/motion.css` | 19 | Motion language tokens. Source of truth: src/ui/motion.js (test/motion.test.js keeps them  | motion-tokens-js, motion |
 | `src/ui/motion.js` | 65 | The motion language: ONE table of durations and easings for every move in the game. | motion-tokens-js, motion |
 | `src/ui/mounts.js` | 41 | Mounts: the bolts, plates and cast shadows that show what a wall-hung thing hangs from, so | mounts |
+| `src/ui/nemesis.css` | 36 | The Nemesis wanted poster on the Almanac's Closeness leaf (src/ui/nemesis.js). A tan bill  | nemesis |
+| `src/ui/nemesis.js` | 29 | The Nemesis poster on the Almanac's Closeness leaf: a wanted poster for this week's rematc | nemesis |
 | `src/ui/pageFit.js` | 40 | Menu-book pages (Shelf, Sets, Stats, Daily) and the Settings, Credits and keys panels: whe | - |
 | `src/ui/pageFlip.css` | 48 | Page flip v2. Loaded after home.css; overrides the flat triangle and the leaf keyframes. T | book-page-flip, page-flip-affordances |
 | `src/ui/pageFlip.js` | 30 | Page-flip affordances for the open menu books: a soft paper curl in each outer bottom corn | book-page-flip, page-flip-affordances |
@@ -427,7 +431,7 @@ _Generated by `node scripts/inventory.mjs` on 2026-11-07. Do not edit by hand._
 | `src/ui/spineLabel.js` | 36 | Spine lettering for the books standing on the home shelf. The old spines had a fixed label | book-art, spine-label |
 | `src/ui/splash.js` | 18 |  | - |
 | `src/ui/stampToast.js` | 45 | The toast for a newly earned stamp (TA5): a brass plaque in the Almanac's wax-seal look, s | stamps-look |
-| `src/ui/stamps.css` | 65 | Achievement stamps (TA5). Look X: a wax seal in the room's colour (--c is the room's r,g,b | restore-rewards, stamps-look, stamps, weekly |
+| `src/ui/stamps.css` | 65 | Achievement stamps (TA5). Look X: a wax seal in the room's colour (--c is the room's r,g,b | nemesis, restore-rewards, stamps-look, stamps, weekly |
 | `src/ui/stampsPage.js` | 40 | The Almanac's Stamps page (TA5, placement A): the Rooms book gets two leaves after the Roo | stamps-look |
 | `src/ui/statsPages.css` | 55 | The Almanac: hand-kept stats pages inside the menu book. Scoped to .alm. Colours via token | almanac-progress, places, scope-labels, stats-almanac |
 | `src/ui/statsPages.js` | 111 |  | almanac-progress, places, scope-labels, stats-almanac |

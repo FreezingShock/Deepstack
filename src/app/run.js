@@ -7,6 +7,7 @@ import {recordMet,recordMastery} from '../core/roomDepth.js';
 import {recordStamps} from '../core/stamps.js';
 import {dayWord,recordWeekly,weekStartOf,weekdayIndex,weeklyWords,dayName,dayRecord} from '../core/weekly.js';
 import {fullPool} from '../core/roomPool.js';
+import {pinNemesis,recordNemesis,BEAT_SCORE} from '../core/nemesis.js';
 import {toastStamps} from '../ui/stampToast.js';
 import '../ui/stamps.css';
 import {toastSetsDone} from '../sets/ui.js';
@@ -25,7 +26,6 @@ import {showFirstNote,clearFirstNote} from '../ui/firstNotes.js';
 import {feedbackData} from '../core/feedback.js';
 import {runLedgeHTML} from '../ui/runLedge.js';
 import {currentRoom} from '../core/roomStore.js';
-import {newDescent,isLanding,isFailure,rowsWithPath,endWord,resolveFailure,limitBonusMs,descentSummary} from '../core/descent.js';
 import {FT,S,TIERS,dailyNo,dailyWords,floorAtFt,floorAtRow,save,tierOf,utc,wordsReady} from './state.js';
 import {World} from '../world/world.js';
 import {ui} from './chrome.js';
@@ -53,17 +53,18 @@ export async function startDaily(practice){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
-/* the descent's landing and chips, loaded when a run first reaches a landing (keeps them out of the entry bundle) */
-let descentUI=null;
+/* the descent's rules and its landing, loaded with the first Unlimited run and the first landing (keeps them out of the entry bundle) */
+let DS=null,descentUI=null;
 export async function startUnlimited(replace=false){
  await wordsReady;
+ DS=DS||await import('../core/descent.js');
  if(modelStatus().state==='loading')await whenReady(8000);
  if(replace&&S.rating.placed){S.rating={...S.rating,placed:false};save();}
  const placing=!S.rating.placed,n=placing?core.PLACEMENT_WORDS:core.RUN_WORDS;
  const first=core.nextWord(S.rating,0,n,[]);
  prepareWords([first]).catch(()=>{});
  World.reset();World.setShelf([]);
- run={mode:'unlimited',placing,practice:false,i:0,words:Array(n).fill(first),results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true,lex0:core.lexicon(S.rating.L),dsc:placing?null:newDescent()};
+ run={mode:'unlimited',placing,practice:false,i:0,words:Array(n).fill(first),results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true,lex0:core.lexicon(S.rating.L),dsc:placing?null:DS.newDescent()};
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
@@ -79,6 +80,22 @@ export async function startWeekly(){
  ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
  showWord();
 }
+/* ---------- nemesis: this week's rematch word, one swing a week (core/nemesis.js). Strict judge, like the weekly word; kept in S.nemesis. ---------- */
+export async function startNemesis(){
+ await wordsReady;
+ if(modelStatus().state==='loading')await whenReady(8000);
+ const day=utc(),wk=weekStartOf(day),pool=fullPool();
+ const rec=pinNemesis(S,wk,pool);
+ if(!rec||rec.duel)return;
+ const w=pool.find(x=>x.w===rec.w);
+ if(!w)return;
+ save(); // keeps the week's pinned word even if the player closes the book now
+ prepareWords([w]).catch(()=>{});
+ World.reset();World.setShelf([]);
+ run={mode:'nemesis',practice:false,day,wk,wlabel:`Nemesis \u00b7 ${dayName(day)}`,i:0,words:[w],results:[],busy:false,depthRows:0,floor:0,combo:0,freeHint:true};
+ ui.home.hidden=true;ui.cap.hidden=true;ui.final.hidden=true;ui.hud.hidden=false;$('#dnum').textContent='0';
+ showWord();
+}
 /* Today's weekly result, read back from S.weekly for the Daily book's button (null until today's word is answered). */
 export function weeklyFinal(){
  const day=utc(),rec=dayRecord(S,day);if(!rec)return null;
@@ -87,10 +104,10 @@ export function weeklyFinal(){
 }
 export function pipsHTML(){return runLedgeHTML(run.words,run.results,run.i,TIERS);}
 export function showWord(){
- if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();const fr_=ruleFor(floorAtRow(World.restRow).key,run,loadEnabled());run.rule=fr_;run.whispered=false;run.limit=limitFor(fr_)+(run.dsc?limitBonusMs(run.dsc):0);
+ if(!run)return;const w=run.words[run.i];run.busy=false;run.t0=performance.now();const fr_=ruleFor(floorAtRow(World.restRow).key,run,loadEnabled());run.rule=fr_;run.whispered=false;run.limit=limitFor(fr_)+(run.dsc?DS.limitBonusMs(run.dsc):0);
  const el=ui.stage;el.hidden=false;el.className='center';
  el.innerHTML=`<div class="candle" id="candle" aria-hidden="true"><div class="wax" id="wax"><i class="flame"></i><i class="wick"></i></div><div class="plate"></div></div><div class="sheet">${pipsHTML()}
-  <div class="wlabel">${run.mode==='weekly'?esc(run.wlabel):`Word ${run.i+1} of ${run.words.length}`}</div>${fr_?`<div class="floorrule">${esc(fr_.line)}</div>`:''}${run.dsc&&descentUI?descentUI.carryChipsHTML(run.dsc):''}${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
+  <div class="wlabel">${run.wlabel?esc(run.wlabel):`Word ${run.i+1} of ${run.words.length}`}</div>${fr_?`<div class="floorrule">${esc(fr_.line)}</div>`:''}${run.dsc&&descentUI?descentUI.carryChipsHTML(run.dsc):''}${run.combo?`<div class="combo live" title="Keep answering ${comboNeeds()} or better">Combo ${comboLabel(comboMultiplier(run.combo+1))} next</div>`:''}
   <div class="word${fr_&&fr_.smear?' smeared':''}" aria-label="${esc(w.w)}">${[...w.w].map((c,i)=>`<span style="animation-delay:${60+i*45}ms">${esc(c)}</span>`).join('')}</div>
   <div class="pos">${esc(w.pos)}</div><div class="clock" id="clock" aria-hidden="true">${Math.floor(run.limit/60000)}:${String(run.limit/1000%60).padStart(2,'0')}</div>
   <div class="timer" id="tbar"><i id="tfill"></i></div>
@@ -126,10 +143,10 @@ export async function submit(skipped){
  $('#reading')?.remove();$('#fld')?.classList.remove('judging');
  const t=tierOf(j.score);
  const spent=skipped?0:(run.hintSpent||0);run.hintSpent=0;
- const base0=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);const base=run.dsc?rowsWithPath(run.dsc,t,skipped,base0):base0; // a Hard room multiplies feet; Folio double applies before the combo
+ const base0=skipped?2:rowsAfterHints(Math.max(3,Math.round(3+.32*j.score)),spent);const base=run.dsc?DS.rowsWithPath(run.dsc,t,skipped,base0):base0; // a Hard room multiplies feet; Folio double applies before the combo
  const cb=applyCombo(run.combo,t,base,skipped);run.combo=cb.chain;const rows=cb.rows;
  const book={fl:floorAtRow(World.restRow+rows).id,wid:w.id,w:w.w,pos:w.pos,def:w.def,answer:skipped?'':text,score:j.score,rough:j.engine==='lexical'||undefined,tier:t,mode:run.mode||'daily',room:currentRoom(S)==='hall'?undefined:currentRoom(S),t:Date.now(),no:dailyNo(),hints:run.hintN||0,fb:feedbackData(j,w),verdict:skipped?'Skipped. The word stays closed.':verdictFor(j,t,w),rows,ft:Math.round(rows*FT),combo:cb.chain>=2?{n:cb.chain,mult:cb.mult,ft:Math.round(cb.bonus*FT)}:undefined};
- if(run.dsc){const failed=isFailure(t,skipped);if(failed){const had=run.dsc.spare>0;run.dsc=resolveFailure(run.dsc,true,run.i+1);book.verdict+=had?' Spare breath kept the run going.':' The run ends here.';}run.dsc=endWord(run.dsc);}
+ if(run.dsc){const failed=DS.isFailure(t,skipped);if(failed){const had=run.dsc.spare>0;run.dsc=DS.resolveFailure(run.dsc,true,run.i+1);book.verdict+=had?' Spare breath kept the run going.':' The run ends here.';}run.dsc=DS.endWord(run.dsc);}
  {const sw=$('#fld');if(sw){sw.classList.add('sending');Sfx.seal();const r=sw.getBoundingClientRect();FX.puff(r.left,r.top,r.width,r.height,40);}FX.warm(t);}
  await sleep(260);ui.stage.classList.add('out');await sleep(300);ui.stage.hidden=true;
  ui.gauge.classList.add('on');ui.skip.classList.add('on');
@@ -141,18 +158,19 @@ export async function submit(skipped){
  World.fillNiche(nicheRow,{w:w.w,pos:w.pos,answer:text,score:j.score,tier:t,ft:book.ft,verdict:book.verdict,skipped},run.results.slice());
  if(cb.chain)setTimeout(()=>Sfx.link(cb.chain),120);else if(cb.broke)setTimeout(()=>Sfx.clunk(),200); // the ledge chain gains a link or lets go
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
- if(!run.practice){if(run.mode==='weekly')recordWeekly(S,run.day,book);recordMet(S,book);recordMastery(S,utc());S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}toastStamps(recordStamps(S,utc()));save();}
- if(!run.practice&&run.mode!=='unlimited'&&run.mode!=='weekly'){S.dailyRun=snapshotRun(run);save();}
+ if(!run.practice){if(run.mode==='weekly')recordWeekly(S,run.day,book);if(run.mode==='nemesis')recordNemesis(S,run.wk,book);recordMet(S,book);recordMastery(S,utc());S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}toastStamps(recordStamps(S,utc()));save();}
+ if(!run.practice&&run.mode!=='unlimited'&&run.mode!=='weekly'&&run.mode!=='nemesis'){S.dailyRun=snapshotRun(run);save();}
  const depth1=Math.round((World.restRow+rows)*FT);
- openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1||!!(run.dsc&&run.dsc.ended),onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length||!!(run.dsc&&run.dsc.ended);const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last){finishRun();return;}if(run.dsc&&isLanding(run.i)){descentUI=descentUI||await import('../ui/descentLanding.js');run.dsc=await descentUI.landingPick(ui.stage,run.dsc,{nextWord:run.i+1,of:run.words.length});if(run.dsc.freeExtra>0&&!run.freeHint){run.freeHint=true;run.dsc.freeExtra--;}}if(run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id),undefined,undefined,run.dsc?run.dsc.bump:0);prepareWords([run.words[run.i]]).catch(()=>{});}showWord();}});
+ openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1||!!(run.dsc&&run.dsc.ended),onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length||!!(run.dsc&&run.dsc.ended);const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last){finishRun();return;}if(run.dsc&&DS.isLanding(run.i)){descentUI=descentUI||await import('../ui/descentLanding.js');run.dsc=await descentUI.landingPick(ui.stage,run.dsc,{nextWord:run.i+1,of:run.words.length});if(run.dsc.freeExtra>0&&!run.freeHint){run.freeHint=true;run.dsc.freeExtra--;}}if(run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id),undefined,undefined,run.dsc?run.dsc.bump:0);prepareWords([run.words[run.i]]).catch(()=>{});}showWord();}});
 }
 export {verdictFor} from '../core/verdict.js';
 export function finishRun(){
  const r=run;const books=r.results;const avg=Math.round(books.reduce((a,b)=>a+b.score,0)/books.length);const best=Math.max(...books.map(b=>b.tier));
  const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,isDaily=r.mode!=='unlimited',depth=isDaily?worldDepth:worldDepth+setBonus; // Daily depth is words only: set bonuses depend on each player's collection, so they stay out of the shared score
  const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
-  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});if(r.dsc)d.descent=descentSummary(r.dsc,r.words.length);}
-  else if(r.mode==='weekly'){Object.assign(d,{mode:'weekly',weekKey:r.wk,themeKey:r.theme.key,themeName:r.theme.name,dayIdx:weekdayIndex(r.day)});toastStamps(recordStamps(S,utc()));save();}
+  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});if(r.dsc)d.descent=DS.descentSummary(r.dsc,r.words.length);}
+ else if(r.mode==='weekly'){Object.assign(d,{mode:'weekly',weekKey:r.wk,themeKey:r.theme.key,themeName:r.theme.name,dayIdx:weekdayIndex(r.day)});toastStamps(recordStamps(S,utc()));save();}
+ else if(r.mode==='nemesis'){Object.assign(d,{mode:'nemesis',word:books[0].w,beat:books[0].score>=BEAT_SCORE,wk:r.wk});toastStamps(recordStamps(S,utc()));save();}
  else if(!r.practice){delete S.dailyRun;if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);toastStamps(recordStamps(S,utc()));save();}
  showFinal(d,false);
 }
