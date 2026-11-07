@@ -53,6 +53,7 @@ jobs:
       - run: npm ci
       - run: npm test
 
+  # Builds the app once and hands dist/ to the browser jobs below as an artifact, so each of them skips the build.
   build:
     needs: scope
     if: needs.scope.outputs.heavy == 'true'
@@ -72,6 +73,45 @@ jobs:
           key: model-${{ hashFiles('src/scorer/model.js') }}
       # prebuild tries to self-host the embedding model and skips gracefully if the network blocks it.
       - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-dist
+          path: dist/
+          retention-days: 1
+
+  # The browser guards, sharded: every guard in a shard runs at once on its own runner, and no shard runs more than three
+  # browsers together, so each guard has headroom (a crowded runner timed out guards that pass alone). Each shard serves
+  # the built app from the artifact. Add a guard to the shard that has room, or to a new shard.
+  guards:
+    needs: [scope, build]
+    if: needs.scope.outputs.heavy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: 1
+            scripts: smoke snapshots text-fit
+          - shard: 2
+            scripts: transitions room-switch room-visuals
+          - shard: 3
+            scripts: ra-fixes ember-log home-frames
+          - shard: 4
+            scripts: stamps-look almanac-progress patrons
+          - shard: 5
+            scripts: pwa-check review-shelf first-note-clear
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-dist
+          path: dist
       - name: Get Playwright version
         id: pw
         run: echo "v=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
@@ -87,41 +127,54 @@ jobs:
           else
             npx playwright install --with-deps chromium
           fi
-      # Both scripts serve the build on their own random port, so they run side by side.
-      - name: Smoke test and screenshot snapshots (in parallel)
+      # Each script serves dist/ on its own random port, so the shard's scripts run side by side.
+      - name: Browser guards (this shard, in parallel)
         run: |
-          node scripts/smoke.mjs & smoke=$!
-          node scripts/snapshots.mjs & snaps=$!
-          node scripts/text-fit.mjs & fit=$!
-          node scripts/transitions.mjs & trans=$!
-          node scripts/room-switch.mjs & rooms=$!
-          node scripts/room-visuals.mjs & rvis=$!
-          node scripts/ra-fixes.mjs & rafix=$!
-          node scripts/ember-log.mjs & ember=$!
-          node scripts/home-frames.mjs & frames=$!
-          node scripts/stamps-look.mjs & stamps=$!
-          node scripts/almanac-progress.mjs & almanac=$!
-          node scripts/pwa-check.mjs & pwa=$!
-          node scripts/review-shelf.mjs & review=$!
-          node scripts/patrons.mjs & patrons=$!
-          rc=0
-          wait $smoke || rc=1
-          wait $snaps || rc=1
-          wait $fit || rc=1
-          wait $trans || rc=1
-          wait $rooms || rc=1
-          wait $rvis || rc=1
-          wait $rafix || rc=1
-          wait $ember || rc=1
-          wait $stamps || rc=1
-          wait $almanac || rc=1
-          wait $pwa || rc=1
-          wait $review || rc=1
-          wait $frames || rc=1
-          wait $patrons || rc=1
-          node scripts/first-note-clear.mjs || rc=1
+          rc=0; pids=""
+          for s in ${{ matrix.scripts }}; do node scripts/$s.mjs & pids="$pids $!"; done
+          for p in $pids; do wait $p || rc=1; done
           exit $rc
-      # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
+      - name: Upload snapshot diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-diffs-${{ matrix.shard }}
+          path: snapshot-diffs/
+          if-no-files-found: ignore
+
+  # Alone on its runner, so timings mean something: the budgets are generous (see the scripts) and catch a data-wait,
+  # judge or memory regression in kind.
+  perf:
+    needs: [scope, build]
+    if: needs.scope.outputs.heavy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-dist
+          path: dist
+      - name: Get Playwright version
+        id: pw
+        run: echo "v=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: pwcache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.v }}
+      - name: Install Chromium
+        run: |
+          if [ "${{ steps.pwcache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
       - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)
         run: node scripts/perf-budget.mjs --rooms hall,science,body
       # Memory and frame time: heap after the judge warms (its data lives in a worker), heap/DOM/listeners kept across laps of
@@ -135,20 +188,13 @@ jobs:
           name: perf-traces
           path: perf-traces/
           if-no-files-found: ignore
-      - name: Upload snapshot diffs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: snapshot-diffs
-          path: snapshot-diffs/
-          if-no-files-found: ignore
 
   # The single required status check: name it "check" in branch protection / rulesets.
   # Runs even when upstream jobs fail or are skipped; passes only if none failed or were cancelled
   # (skipped is fine: that is the docs-only path).
   check:
     if: always()
-    needs: [scope, test, build]
+    needs: [scope, test, build, guards, perf]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
