@@ -19,7 +19,7 @@ test('links are extensible',()=>{
 
 test('menu entries render as books with their ids',()=>{
  const h=homeHTML({...base,d:null});
- for(const id of ['bDaily','bUnl','bAll','bRooms','bStats'])assert.ok(h.includes('id="'+id+'"'),id);
- assert.equal((h.match(/class="hbook"/g)||[]).length,5);
+ for(const id of ['bDaily','bUnl','bPat','bAll','bRooms','bStats'])assert.ok(h.includes('id="'+id+'"'),id);
+ assert.equal((h.match(/class="hbook"/g)||[]).length,6);
  assert.ok(h.includes('id="bPlay"')&&h.includes('class="descend"'));
 });
