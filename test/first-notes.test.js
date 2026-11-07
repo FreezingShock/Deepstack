@@ -97,3 +97,57 @@ test('notes are styled as pencil on the existing strip and add no animation', ()
  assert.doesNotMatch(css, /#[0-9a-f]{3,8}\b/i, 'colours come from tokens');
  assert.match(read('../src/main.js'), /import '\.\/ui\/firstNotes\.css';/);
 });
+
+/* ---- home first-visit lines: one new line per home visit, pinned under the plaque (phones: under the tagline) ---- */
+import {HOME_NOTES, nextHomeNote, showHomeNote} from '../src/ui/firstNotes.js';
+
+const homeRoot = (phone) => {
+ const note = {style: {}};
+ const tag = {getBoundingClientRect: () => ({bottom: 120, height: 20})};
+ const host = {
+  classList: {contains: c => (c === 'hz-title') === phone},
+  getBoundingClientRect: () => ({top: 100}),
+  querySelector: sel => (sel === '.tagline' || sel === '.daily-tag, .next' ? tag : null),
+  querySelectorAll: () => [],
+  lastElementChild: note,
+  insertAdjacentHTML(_, h) { this.html = (this.html || '') + h; note.html = h; },
+ };
+ const root = {querySelector: sel => (sel === (phone ? '.hz-title' : '.hz-plaque') ? host : null), host, note};
+ return root;
+};
+
+test('home lines come in a fixed order, one per visit, and are all short', () => {
+ assert.deepEqual(HOME_NOTES.map(([k]) => k), ['home.daily', 'home.unlimited', 'home.doors', 'home.ledger']);
+ for (const [k, t] of HOME_NOTES) assert.ok(t.length <= 40, `${k} fits a phone line`);
+});
+
+test('a home visit shows the next unseen line, flags it, and stops after the last', () => {
+ const S = {};
+ let saves = 0;
+ const seq = [];
+ for (let i = 0; i < 5; i++) {
+  const root = homeRoot(false);
+  const k = showHomeNote(S, () => saves++, root);
+  if (k) seq.push(k);
+ }
+ assert.deepEqual(seq, ['home.daily', 'home.unlimited', 'home.doors', 'home.ledger']);
+ assert.equal(saves, 4);
+ assert.equal(nextHomeNote(S), null);
+});
+
+test('on a phone the line goes under the tagline, not over the book row', () => {
+ const prev = globalThis.innerWidth;
+ globalThis.innerWidth = 375;
+ try {
+  const root = homeRoot(true);
+  assert.equal(showHomeNote({}, () => {}, root), 'home.daily');
+  assert.match(root.host.html, /class="fnote-home"/);
+  assert.equal(root.note.style.top, '23px', 'sits 3px under the tagline: 120 - 100 + 3');
+ } finally { globalThis.innerWidth = prev; }
+});
+
+test('the home hook is in home.js and skipped while walking between rooms', () => {
+ const src = read('../src/app/home.js');
+ assert.match(src, /if\(!keep\)showHomeNote\(S,save,ui\.home\)/);
+ assert.match(src, /import \{showHomeNote\} from '\.\.\/ui\/firstNotes\.js'/);
+});

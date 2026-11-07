@@ -7,7 +7,7 @@ import {setBookSfx} from '../ui/bookOpenFx.js';
 import {applyHomeTier} from '../ui/homeLayout.js';
 import {descendInto} from '../ui/descend.js';
 import {ui} from './chrome.js';
-import {FLOORS,S,computeStats,dailyNo,fmtCountdown,msUntilNextDaily,utc} from './state.js';
+import {FLOORS,S,computeStats,dailyNo,fmtCountdown,msUntilNextDaily,save,utc} from './state.js';
 import {World} from '../world/world.js';
 import {$} from './util.js';
 import {setRun,startDaily,startUnlimited} from './run.js';
@@ -26,6 +26,7 @@ import {roomMetLabel} from '../core/roomDepth.js';
 import {currentRoom} from '../core/roomStore.js';
 import {goRoom} from './roomGo.js';
 import {fillTodayMet} from '../ui/todayMet.js';
+import {showHomeNote} from '../ui/firstNotes.js';
 
 /* ---------- home ---------- */
 export let cdTimer=0;
@@ -56,6 +57,7 @@ export function showHome(opts){
  const hearth=mountHearth(ui.home,{sfx:Sfx,mood:hearthMood(S,st.streak),reuse:!!held});
  mountIdleRoom(ui.home,{sfx:Sfx,hearth});
  mountRoomHome(ui.home,{room:currentRoom(S),go:goRoom,openLedger:()=>$('#bRooms')&&$('#bRooms').click(),met:id=>roomMetLabel(S,id)});
+ if(!keep)showHomeNote(S,save,ui.home); // one first-visit line per home visit, under the plaque
  setBookSfx(n=>n==="whoosh"?Sfx.cue("lift"):n==="thud"?Sfx.cue("shut"):n==="flip"?Sfx.cue("turn"):Sfx[n]&&Sfx[n]());
  if(d){const tick=()=>{const el=$('#nextd');if(!el)return clearInterval(cdTimer);el.textContent='Next descent in '+fmtCountdown(msUntilNextDaily());};tick();cdTimer=setInterval(tick,1000);}
  ui.cap.hidden=true;

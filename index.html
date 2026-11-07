@@ -1,9 +1,42 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Deepstack</title>
-
+<meta name="description" content="A dark library of words. Define the word, descend the stacks, and keep your streak.">
+<meta name="application-name" content="Deepstack">
+<meta name="theme-color" content="#1b130c">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Deepstack">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="preload" href="/fonts/anthropic-serif/Text-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="apple-touch-startup-image" href="/splash/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1179x2556.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<link rel="apple-touch-startup-image" href="/splash/splash-1320x2868.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+<style>
+/* Launch screen: painted by the HTML itself, before any script or stylesheet loads, so an installed app never opens on a blank page.
+   src/ui/splash.js removes it once the home screen has been drawn. */
+#splash{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,3vh,26px);
+  background:radial-gradient(ellipse at 50% 40%,#3a2819 0%,#1b130c 45%,#0a0604 100%);transition:opacity .45s ease,visibility .45s;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+#splash img{width:min(36vw,30vh,168px);height:auto;border-radius:22%;box-shadow:0 14px 40px rgba(0,0,0,.6)}
+#splash b{font:500 clamp(30px,8.5vw,44px)/1 "Anthropic Serif",Georgia,serif;letter-spacing:.04em;color:#f0d9a6}
+#splash i{display:block;width:clamp(70px,22vw,96px);height:1px;background:#b08a56;opacity:.7}
+#splash.gone{opacity:0;visibility:hidden}
+@media (prefers-reduced-motion: reduce){#splash{transition:none}}
+</style>
 </head><body>
-
+<div id="splash" aria-hidden="true"><img src="/icons/icon.svg" alt=""><b>Deepstack</b><i></i></div>
 
 <canvas id="world"></canvas>
 <div id="ui">
