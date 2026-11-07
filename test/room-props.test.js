@@ -42,6 +42,8 @@ test('the prop is static: the same calls every time it is drawn', () => {
   }
 });
 
+// The spot and the desk are the same in every topic room (only the object differs), so one layout check covers all six.
+// Checked by eye too: run screens with four desk books at 375 in every topic room (screenshots/room-props/phone-books-*).
 test('on phones the prop clears every desk book up to the cap, at the usual phone widths', () => {
   // book widths in the range shelfDims gives real books and skipped ones (20 px); the cap is in roomProps.js
   const dims = b => ({w: b.w, h: 40});
