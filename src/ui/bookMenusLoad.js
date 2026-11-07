@@ -1,8 +1,10 @@
 /* The code and styles behind the Shelf, Daily and Stats books. Only reached through lazyScreens.js (dynamic import),
    so none of it is in the first-paint bundle. Wiring moved here unchanged from main.js. */
 import './dailyBook.css';
+import './weekly.css';
 import './dailyCalendar.css';
 import './statsPages.css';
+import './almanacProgress.css';
 import './shelfFilters.css';
 import './shelfBays.css';
 import './shelfSpineFit.css';
