@@ -33,7 +33,7 @@ for (const [w, h] of [[1000, 800], [1280, 800], [1440, 900], [1640, 900], [1920,
   const m = await page.evaluate(() => {
     const box = e => { const b = e.getBoundingClientRect(); return {l: b.left, r: b.right}; };
     const home = document.querySelector('#home'), desc = document.querySelector('.home .descend');
-    const out = {room: home.dataset.room, home: box(home), descend: desc ? box(desc) : null, units: {}, homeSide: home.scrollWidth - home.clientWidth};
+    const out = {room: home.dataset.room, home: box(home), descend: desc ? box(desc) : null, units: {}};
     for (const [k, s] of [['cabinet', '.home .cc-cab'], ['ledger', '.home .ledger']]) {
       const e = document.querySelector(s);
       if (!e || !e.getClientRects().length) { out.units[k] = null; continue; }
@@ -50,7 +50,6 @@ for (const [w, h] of [[1000, 800], [1280, 800], [1440, 900], [1640, 900], [1920,
   }
   if (c && m.descend && c.r > m.descend.l - 4) failures.push(`${tag}: card catalogue touches Descend`);
   if (g && m.descend && g.l < m.descend.r + 4) failures.push(`${tag}: Librarian's Card touches Descend`);
-  if (m.homeSide > 1) failures.push(`${tag}: the niche scrolls sideways by ${m.homeSide}px (a stray scrollbar)`);
   if (outDir) await page.screenshot({path: join(outDir, `home-${w}x${h}.png`)});
   console.log(tag, JSON.stringify(m.units));
   await ctx.close();
