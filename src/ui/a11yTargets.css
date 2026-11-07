@@ -13,8 +13,12 @@
 #mark{position:relative}
 #mark::after{content:"";position:absolute;inset:-6px -4px;pointer-events:auto}
 
-/* Home menu books: a hit slop reaches 44px tall whatever the book's drawn height */
+/* Home menu books. Phones: the shelf is a stacked column of 24px books on a 25px pitch, with no room to grow on a 667px screen,
+   so each book keeps its drawn size and a hit slop; the audit holds them to WCAG 2.5.8's 24px (spaced) target.
+   Desktop at least 800px tall (a 768px laptop has no room for the taller shelf above the alcove's floor): the book's own button is 44px tall with the spine drawn 38px in the middle, so the shelf looks the
+   same and every tap area is 44px with no overlap into the next book. */
 .home .hbook::before{content:"";position:absolute;inset:-3px 0;pointer-events:auto}
+@media (min-width:701px) and (min-height:800px){.home .hbook{height:44px!important}.home .hbook .hb-spine,.home .hbook::after{top:3px;bottom:3px}.home .hbook::before{content:none}}
 
 /* Ring of room lights and the card catalogue tab */
 /* Ring of lights on wide screens sit about 21px apart, so their slop is 2px: 25px targets that cannot cover a neighbour */
