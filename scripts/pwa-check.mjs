@@ -50,7 +50,7 @@ async function open(ctxOpts = {}) {
     if (process.env.PWA_DEBUG) console.log('console.error at', m.location()?.url, m.text());
     if (BLOCKED.test(m.location()?.url || '')) return;
     if (/Failed to load resource/.test(m.text()) && (!m.location()?.url?.startsWith(url) || /\/(models|ort)\//.test(m.location().url))) return;
-    fail(`console.error: ${m.text()}`);
+    fail(`console.error: ${m.text()} (at ${m.location()?.url || 'unknown url'})`);
   });
   return {ctx, page};
 }
