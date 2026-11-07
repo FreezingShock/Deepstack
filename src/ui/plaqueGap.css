@@ -2,7 +2,8 @@
    The wall units sit a little further out, and the plaque may never be wider than the space between them
    (the Continue state carries a long "Daily No. 4 · 1 of 7 written" line that used to touch both). */
 @media(min-width:1000px){
- .home .cat-card,.home .ledger{--wall:-60px}
+ /* the wall units hang out 60px, but never past the niche's edge: the room is 60hs-26px wider than the plaque on each side (the niche shrinks below 1640 px), so keep 8px in */
+ .home .cat-card,.home .ledger{--wall:calc(-1*min(60px,60px*var(--hs,1) - 34px))}
  .home .hz-plaque .descend{box-sizing:border-box;min-width:0;max-width:336px;padding-left:26px;padding-right:32px}
  .home .hz-plaque .descend .d-sub{letter-spacing:.2em}
 }

@@ -5,7 +5,6 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 ## What nate needs to do
 - Copy and numbers (TY1): a 1,000 ft+ dive now reads "1,008 ft" everywhere (Floors book, Card, Almanac, the depth counter during a run). No text draws under 10 px. Check the Floors book and a deep run on your phone; say if a small plate looks too heavy at 375.
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
-- Pick the Almanac progress layout (AS1): reply A, B or C. B is built; say if you want A or C instead.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
 - Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
@@ -2161,4 +2160,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 
 ### AS1. [~] Almanac progress stats (words met per room, closeness over time, hardest words, best chain)
 **Pitch:** The Almanac gains a progress spread: words met per room, average closeness over the last 21 days, the three hardest words and the longest chain of Folio-or-better answers.
-**Brief:** Goal: pure figures in `src/core/almanacProgress.js` from saves that already exist, layout in `src/ui/almanacProgress.js`. Done when: guard `scripts/almanac-progress.mjs`, 375 and desktop with reduced motion, every room. **Touches:** BOOK. **Conflicts:** 12, 54, 55. **Status:** option B built, PR open as draft until nate picks a letter.
+**Brief:** Goal: pure figures in `src/core/almanacProgress.js` from saves that already exist, layout in `src/ui/almanacProgress.js`. Done when: guard `scripts/almanac-progress.mjs`, 375 and desktop with reduced motion, every room. **Touches:** BOOK. **Conflicts:** 12, 54, 55. **Status:** nate picked B (PR #350, ready for review). A or C would be a follow-up PR; the layout is one module (`src/ui/almanacProgress.js`).
+### G17. [x] Phone hints: newest in the strip, the rest one tap away (changeable)
+**Serves:** easy to understand, hints you can re-read, nothing squeezes the answer slip.
+**Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
+**Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
+**Touches:** RUN. **Conflicts:** G12, G15.
