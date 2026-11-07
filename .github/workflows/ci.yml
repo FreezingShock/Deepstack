@@ -101,8 +101,6 @@ jobs:
           node scripts/home-frames.mjs & frames=$!
           node scripts/stamps-look.mjs & stamps=$!
           node scripts/pwa-check.mjs & pwa=$!
-          node scripts/a11y-axe.mjs & a11y=$!
-          node scripts/a11y-focus.mjs & focus=$!
           node scripts/patrons.mjs & patrons=$!
           rc=0
           wait $smoke || rc=1
@@ -116,9 +114,10 @@ jobs:
           wait $stamps || rc=1
           wait $pwa || rc=1
           wait $frames || rc=1
-          wait $a11y || rc=1
-          wait $focus || rc=1
           wait $patrons || rc=1
+          # The two accessibility guards run after the parallel batch: on the small runner they time out when they share it.
+          node scripts/a11y-axe.mjs || rc=1
+          node scripts/a11y-focus.mjs || rc=1
           exit $rc
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
       - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)
