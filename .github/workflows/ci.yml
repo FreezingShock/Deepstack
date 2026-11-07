@@ -125,7 +125,6 @@ jobs:
           node scripts/almanac-progress.mjs
           node scripts/stamps-look.mjs
           node scripts/patrons.mjs
-          node scripts/new-modes-playtest.mjs --check
           node scripts/onboarding-halo.mjs
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
       - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)
@@ -152,12 +151,56 @@ jobs:
           path: snapshot-diffs/
           if-no-files-found: ignore
 
+  # New-modes playtest (Patrons, Daily weeks, Unlimited, shelf, bench in all seven rooms, 375 and 1280).
+  # Its own job: the build job's 22-minute limit cannot hold it, and a timed-out job blocks "check".
+  playtest:
+    needs: scope
+    if: needs.scope.outputs.heavy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: public/models
+          key: model-${{ hashFiles('src/scorer/model.js') }}
+      - run: npm run build
+      - name: Get Playwright version
+        id: pw
+        run: echo "v=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: pwcache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.v }}
+      - name: Install Chromium
+        run: |
+          if [ "${{ steps.pwcache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - name: New modes playtest (check)
+        run: node scripts/new-modes-playtest.mjs --check --out=new-modes-playtest
+      - name: Upload new-modes playtest report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: new-modes-playtest
+          path: new-modes-playtest/
+          if-no-files-found: ignore
+
   # The single required status check: name it "check" in branch protection / rulesets.
   # Runs even when upstream jobs fail or are skipped; passes only if none failed or were cancelled
   # (skipped is fine: that is the docs-only path).
   check:
     if: always()
-    needs: [scope, test, build]
+    needs: [scope, test, build, playtest]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
