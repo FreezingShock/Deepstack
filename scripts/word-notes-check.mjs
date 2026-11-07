@@ -101,6 +101,15 @@ for (const view of VIEWS) for (const room of ROOMS) {
     if (m.bodyScrollable) problems.push(`${tag}: the page scrolls vertically with the note open`);
     if (!m.inside) problems.push(`${tag}: note text sticks out of its sheet`);
     if (m.pageOverflow) problems.push(`${tag}: a note line is clipped`);
+    // The note stays open on the next judged card once its verdict shows (the player has seen the meaning by then).
+    await page.click('#cardlayer #go');
+    await page.locator('textarea, input[type=text]').first().waitFor({state: 'visible', timeout: T});
+    await page.click('textarea, input[type=text]');
+    await page.keyboard.type(ANSWER);
+    await page.keyboard.press('Enter');
+    await page.locator('#cardlayer.on #bk').waitFor({state: 'visible', timeout: T});
+    const kept = await page.waitForFunction(() => document.querySelector('#cardlayer #vd')?.classList.contains('on') && document.querySelector('#cardlayer .mn')?.classList.contains('open') && document.querySelector('#cardlayer .book')?.classList.contains('mn-on'), null, {timeout: T}).then(() => true, () => false);
+    if (!kept) problems.push(`${tag}: the margin note did not stay open on the next card`);
   } catch (e) {
     problems.push(`${tag}: could not ${step}: ${e.message.split('\n').slice(0,12).join(' / ')}`);
   }
