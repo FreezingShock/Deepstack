@@ -110,6 +110,17 @@ jobs:
           wait $ember || rc=1
           wait $pwa || rc=1
           exit $rc
+      # Walks all seven topic rooms at 375 and 1280 (reduced motion): home, a Daily word, the Unlimited book, the Rooms book and a door walk.
+      # Fails on sideways scroll, vertical scroll on home, scrollable panes, clipped text, a cut home frame at 1280, and console errors.
+      - name: Room-by-room playtest (every room, phone and desktop)
+        run: node scripts/room-playtest.mjs
+      - name: Upload playtest screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playtest-shots
+          path: playtest-shots/
+          if-no-files-found: ignore
       # Alone on the runner: timings are meaningless next to seven other browsers. Budgets are generous (see the script); it catches a data-wait or judge regression in kind.
       - name: Performance budget (repeat visit on a slow data network, judge latency, entry weight)
         run: node scripts/perf-budget.mjs --rooms hall,science,body
