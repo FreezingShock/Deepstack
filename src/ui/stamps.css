@@ -1,0 +1,65 @@
+/* Achievement stamps (TA5). Look X: a wax seal in the room's colour (--c is the room's r,g,b triple, set inline), with a
+   glyph pressed into it. Unearned seals are a dashed ring with a faint glyph. The Almanac's Stamps page (stampsPage.js) and
+   the toast (stampToast.js) both use these. Colours come from the tokens; the room colour only ever enters through --c. */
+
+.stp-page .stp-kick{margin-bottom:.2em}
+.stp-page .note{margin-top:.5em}
+.stp-row{padding:.55em 0 .7em;border-bottom:1px solid color-mix(in srgb,var(--c-black-alpha-aa) 18%,transparent)}
+.stp-head{display:flex;align-items:baseline;gap:.5em;justify-content:space-between;font:400 calc(15px*var(--ts,1))/1.3 var(--serif)}
+.stp-name{display:flex;align-items:center;gap:.45em;min-width:0}
+.stp-dot{width:.6em;height:.6em;border-radius:50%;background:rgb(var(--c,201,164,88));display:inline-block;flex:none}
+.stp-n{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stp-n.all{color:var(--c-brass-cdbb92)}
+.stp-set{display:flex;flex-wrap:wrap;gap:6px 9px;margin-top:.5em}
+
+.stp-seal{--s:36px;position:relative;display:inline-grid;place-items:center;width:var(--s);height:var(--s);border-radius:50%;flex:none;box-sizing:border-box;
+  font-family:var(--serif);line-height:1;user-select:none}
+.stp-seal i{font-style:normal;font-size:calc(var(--s)*.42);font-weight:600;position:relative;z-index:1}
+.stp-seal.on{color:var(--c-parchment);
+  background:radial-gradient(circle at 34% 30%,var(--c-white-alpha-33),transparent 42%),
+    radial-gradient(circle,rgb(var(--c)) 0 58%,rgba(var(--c),.78) 60% 100%);
+  box-shadow:inset 0 0 0 2px rgba(var(--c),.45),inset 0 -3px 5px var(--c-black-alpha-aa),0 2px 4px var(--c-black-alpha-aa)}
+.stp-seal.on i{text-shadow:0 1px 0 var(--c-black-alpha-aa)}
+.stp-seal.off{background:transparent;border:1.5px dashed color-mix(in srgb,var(--c-ink) 32%,transparent);color:color-mix(in srgb,var(--c-ink) 32%,transparent)}
+.stp-seal.off i{opacity:.55}
+/* the library's four: the same wax, in gilt */
+.stp-seal.lib{--c:205,172,103}
+.stp-seal.lib.on{background:radial-gradient(circle at 34% 30%,var(--c-white-alpha-33),transparent 42%),
+    radial-gradient(circle,var(--c-brass-cdbb92) 0 58%,color-mix(in srgb,var(--c-brass-cdbb92) 78%,var(--c-black-alpha-aa)) 60% 100%);color:var(--c-oak-8)}
+.stp-seal.lib.on i{text-shadow:0 1px 0 var(--c-white-alpha-22)}
+
+/* phones: the seals keep a 44px-ish reach with a 6px gap and the page still fits */
+@media (max-width:600px){.stp-seal{--s:34px}.stp-set{gap:6px}}
+
+/* the toast: a brass plaque, as the Almanac's own cards are. It drops in from the top band, sections itself into a head,
+   one entry per stamp (each seal presses in with a small overshoot, a light sweeps across once) and a foot line. Every
+   motion is opacity or transform on the motion tokens, so it collapses with the rest of the app's motion settings and
+   stops entirely under reduced motion. */
+#stamptoast{position:fixed;left:50%;top:64px;z-index:91;width:max-content;max-width:calc(100vw - 32px);min-width:min(280px,calc(100vw - 32px));
+  box-sizing:border-box;padding:0;border-radius:4px;overflow:hidden;color:var(--c-parchment);font:400 calc(15px*var(--ts,1))/1.3 var(--serif);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c-oak-8) 92%,var(--c-brass-cdbb92)),var(--c-oak-8) 38%,color-mix(in srgb,var(--c-oak-8) 86%,var(--c-black-alpha-aa)));
+  box-shadow:inset 0 0 0 1px var(--c-brass-cdbb92),inset 0 0 0 4px var(--c-oak-8),inset 0 0 0 5px color-mix(in srgb,var(--c-brass-cdbb92) 45%,transparent),0 12px 28px var(--c-black-alpha-aa);
+  opacity:0;pointer-events:none;transform:translate(-50%,-14px);
+  transition:opacity var(--m-smooth) var(--e-settle),transform var(--m-smooth) var(--e-settle)}
+#stamptoast.on{opacity:1;transform:translate(-50%,0)}
+#stamptoast::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg,transparent 42%,var(--c-white-alpha-22) 50%,transparent 58%);transform:translateX(-110%)}
+#stamptoast.on::after{animation:stpSheen var(--m-linger) var(--e-settle) var(--m-smooth) 1 both}
+@keyframes stpSheen{to{transform:translateX(110%)}}
+@keyframes stpPress{0%{opacity:0;transform:scale(1.7) rotate(-16deg)}55%{opacity:1;transform:scale(.9) rotate(3deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+#stamptoast .stp-head{display:flex;align-items:center;gap:.6em;padding:.45em .9em .35em;background:color-mix(in srgb,var(--c-black-alpha-aa) 30%,transparent);
+  border-bottom:1px solid color-mix(in srgb,var(--c-brass-cdbb92) 50%,transparent);font:600 calc(11px*var(--ts,1))/1.2 var(--serif);letter-spacing:.14em;text-transform:uppercase;color:var(--c-brass-cdbb92)}
+#stamptoast .stp-head::before,#stamptoast .stp-head::after{content:"\2726";font-size:.9em;opacity:.8}
+#stamptoast .stp-head span{flex:1;text-align:center}
+#stamptoast .stp-entry{display:flex;gap:.8em;align-items:center;padding:.6em .9em}
+#stamptoast .stp-entry+.stp-entry{border-top:1px dashed color-mix(in srgb,var(--c-brass-cdbb92) 35%,transparent)}
+#stamptoast .stp-seal{--s:36px;animation:stpPress var(--m-smooth) var(--e-spring) var(--d,0ms) both}
+#stamptoast .stp-seal i{font-size:calc(14px*var(--ts,1))}
+#stamptoast .stp-text{min-width:0;display:grid;gap:.1em}
+#stamptoast .stp-name{font-weight:600;font-size:calc(16px*var(--ts,1));color:var(--c-parchment)}
+#stamptoast .stp-where{font-size:calc(11px*var(--ts,1));letter-spacing:.1em;text-transform:uppercase;color:var(--c-amber)}
+#stamptoast .stp-hint{font-style:italic;opacity:.78;font-size:calc(14px*var(--ts,1))}
+#stamptoast .stp-foot{display:flex;justify-content:space-between;gap:1em;padding:.35em .9em .45em;font-style:italic;font-size:calc(12px*var(--ts,1));opacity:.7;
+  border-top:1px solid color-mix(in srgb,var(--c-brass-cdbb92) 30%,transparent)}
+@media (prefers-reduced-motion:reduce){#stamptoast,#stamptoast .stp-seal,#stamptoast::after{transition:none;animation:none}#stamptoast::after{display:none}}
+[data-motion="reduce"] #stamptoast,[data-motion="reduce"] #stamptoast .stp-seal,[data-motion="reduce"] #stamptoast::after{animation:none}

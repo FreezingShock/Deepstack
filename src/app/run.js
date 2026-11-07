@@ -5,6 +5,8 @@ import {comboNeeds,comboLabel,comboMultiplier,applyCombo} from '../core/combo.js
 import {recordBook as recordSetBook} from '../sets/sets.js';
 import {recordMet,recordMastery} from '../core/roomDepth.js';
 import {recordStamps} from '../core/stamps.js';
+import {toastStamps} from '../ui/stampToast.js';
+import '../ui/stamps.css';
 import {toastSetsDone} from '../sets/ui.js';
 import * as core from '../core/index.js';
 import {Sfx} from '../feel.js';
@@ -96,7 +98,7 @@ export async function submit(skipped){
  run.busy=true;clearInterval(timerId);Sfx.candle(1);
  /* the press answers at once: the slip holds still, locks, and says it is being read (the judge can take a moment, or the librarian can still be arriving) */
  const fld0=$('#fld'),ta0=$('#ans');
- if(!skipped&&fld0&&ta0){ta0.readOnly=true;fld0.classList.add('judging');const h0=$('#hl');if(h0)h0.insertAdjacentHTML('beforeend','<div class="hslip reading" id="reading" role="status">Reading your answer…</div>');}
+ if(!skipped&&fld0&&ta0){ta0.readOnly=true;fld0.classList.add('judging');fld0.insertAdjacentHTML('beforeend','<div class="hslip reading" id="reading" role="status">Reading your answer…</div>');} // inside the slip, not the hint strip: a line added below would squeeze the slip
  const j=skipped?{score:0,caught:[],missed:w.concepts.map(c=>c[0]),opposite:false,empty:true}:await judgeAnswer(text,w,run.practice||run.mode?undefined:{strict:true,onWait:()=>{const rd=$('#reading');if(rd){rd.textContent='The librarian is still arriving. Your answer is safe and will be read in a moment.';return;}const h=$('#hl');if(h)h.insertAdjacentHTML('beforeend','<div class="hslip" style="--tilt:-.6deg">The librarian is still arriving. Your answer is safe and will be read in a moment.</div>');}});
  $('#reading')?.remove();$('#fld')?.classList.remove('judging');
  const t=tierOf(j.score);
@@ -115,7 +117,7 @@ export async function submit(skipped){
  World.fillNiche(nicheRow,{w:w.w,pos:w.pos,answer:text,score:j.score,tier:t,ft:book.ft,verdict:book.verdict,skipped},run.results.slice());
  if(cb.chain)setTimeout(()=>Sfx.link(cb.chain),120);else if(cb.broke)setTimeout(()=>Sfx.clunk(),200); // the ledge chain gains a link or lets go
  if(run.mode==='unlimited'){S.rating=core.applyResult(S.rating,w,j.score,run.i);save();}
- if(!run.practice){recordMet(S,book);recordMastery(S,utc());S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}recordStamps(S,utc());save();}
+ if(!run.practice){recordMet(S,book);recordMastery(S,utc());S.shelf.push({...book});if(S.shelf.length>300)S.shelf.shift();{const fin=recordSetBook(S,book);toastSetsDone(fin);run.setBonus=(run.setBonus||0)+fin.reduce((n,x)=>n+x.bonus,0);}toastStamps(recordStamps(S,utc()));save();}
  if(!run.practice&&run.mode!=='unlimited'){S.dailyRun=snapshotRun(run);save();}
  const depth1=Math.round((World.restRow+rows)*FT);
  openCard(book,{fresh:true,depth0,depth1,broke:cb.broke,chain:cb.chain,last:run.i>=run.words.length-1,onNext:async()=>{World.release();run.i++;run.busy=true;const last=run.i>=run.words.length;if(!last&&run.mode==='unlimited'){run.words[run.i]=core.nextWord(S.rating,run.i,run.words.length,run.words.slice(0,run.i).map(x=>x.id));prepareWords([run.words[run.i]]).catch(()=>{});}const nr=World.restRow+World.nextRows();World.openNiche(nr,{label:last?'FINIS':['I','II','III','IV','V','VI','VII','VIII'][run.i],books:run.results});await World.glide(nr,1200);if(last)finishRun();else showWord();}});
@@ -126,7 +128,7 @@ export function finishRun(){
  const worldDepth=Math.round(World.restRow*FT),setBonus=r.setBonus||0,isDaily=r.mode!=='unlimited',depth=isDaily?worldDepth:worldDepth+setBonus; // Daily depth is words only: set bonuses depend on each player's collection, so they stay out of the shared score
  const d={books,avg,best,depth,floor:floorAtFt(worldDepth).id,practice:r.practice,setBonus:setBonus||undefined};
  if(r.mode==='unlimited'){S.rating=core.finishRating(S.rating,avg);S.bestDepth=Math.max(S.bestDepth,depth);save();Object.assign(d,{mode:'unlimited',placing:r.placing,lex0:r.lex0,lex:core.lexicon(S.rating.L)});}
- else if(!r.practice){delete S.dailyRun;if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);recordStamps(S,utc());save();}
+ else if(!r.practice){delete S.dailyRun;if(core.recordDaily(S,r.day||utc(),d))S.bestDepth=Math.max(S.bestDepth,depth);toastStamps(recordStamps(S,utc()));save();}
  showFinal(d,false);
 }
 export function setRun(v){run=v;}
