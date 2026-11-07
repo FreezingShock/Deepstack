@@ -109,9 +109,10 @@ async function run(label, {width, height}) {
       const el = document.getElementById('stamptoast'), b = el.getBoundingClientRect();
       const txt = [...el.querySelectorAll('.stp-name, .stp-where, .stp-hint, .stp-count, .stp-head span, .stp-foot span')].every(x => x.scrollWidth <= x.clientWidth + 1);
       const op = parseFloat(getComputedStyle(el).opacity);
-      return {inside: b.left >= 0 && b.right <= innerWidth + 0.5, whole: txt, shown: op > 0.9, sideways: document.documentElement.scrollWidth - document.documentElement.clientWidth};
+      return {inside: b.left >= 0 && b.right <= innerWidth + 0.5, whole: txt, shown: op > 0.9, width: b.width, sideways: document.documentElement.scrollWidth - document.documentElement.clientWidth};
     });
     if (!t.inside) fail(`${label}: the toast runs off the screen`);
+    if (width > 600 && t.width > 360) fail(`${label}: the toast is ${Math.round(t.width)}px wide on desktop, the slip is at most 360px`);
     if (!t.whole) fail(`${label}: the toast text is clipped`);
     if (!t.shown) fail(`${label}: the toast did not show (opacity is not 1)`);
     if (t.sideways > 0) fail(`${label}: the toast makes the page scroll sideways`);
