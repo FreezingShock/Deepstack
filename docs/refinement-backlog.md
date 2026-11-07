@@ -1593,6 +1593,26 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** Building the word pool from words.json is still the longest task on a slow phone (~0.9 s at 4x CPU) right as home appears.
 **Brief:** Goal: precompute the pool's reject reasons at build time (or build it in a worker), same pool and same Daily words. Files: `src/core/wordPool.js`, `scripts/build-words.mjs`. Done when: `perf-memory` boot worst task halves, daily tests unchanged. **Touches:** performance. **Conflicts:** PF3.
 
+### PF11. [x] (first-visit pass: the judge model crosses the link once, not three times; judge ready on a cold slow phone at 133 s, down from 359 s; see docs/load-path.md) Judge model downloaded once per visit
+**Pitch:** On a cold visit the 23 MB judge model was fetched three times at once, so the copies shared the phone's bandwidth and the judge came up about three times later than it needed to.
+**Brief:** Done: `src/scorer/fileShare.js` wraps the loader's fetch so each model file is one streamed download (callers get clones of the same response). Guard: `scripts/perf-budget.mjs` fails if a cold visit fetches a model file twice or a repeat visit fetches any. **Touches:** scorer, performance. **Conflicts:** scorer threads.
+
+### PF12. Fetch the judge's wasm runtime with the model
+**Pitch:** The 3.5 MB (gzip) onnxruntime wasm starts only after the 22 MB model has finished, so on a slow link the judge waits about 17 s more for a file it could have had in parallel.
+**Brief:** Goal: start the `.wasm` download as soon as the worker starts (in `src/scorer/engine.js`), without slowing the word list. Done when: `scripts/first-load.mjs` shows the wasm finishing before the model, and the judge-ready time drops by about the wasm's share. **Touches:** scorer, performance. **Conflicts:** scorer threads.
+
+### PF13. Room lists after the judge, not 3 s after boot
+**Pitch:** Every first visit downloads rooms.json and room-words.json (about 120 KB gzip) three seconds after boot, for the word counts in the Room Ledger, while the model is still coming down the same link.
+**Brief:** Goal: load the room lists when the Ledger opens (its `onPaint` already loads them) or once the judge is ready, whichever comes first. Done when: the Ledger still shows counts at 375 and 1280, and the probe's room-list bytes move after the model. **Touches:** rooms, performance. **Conflicts:** room threads (roomLedger.js).
+
+### PF14. First word is CPU-bound on a slow phone
+**Pitch:** On a repeat visit at 4x CPU the first word lands about 9 s after the home screen, with almost no bytes left to wait for: boot, the word pool and the Descend animation are the cost, not the network.
+**Brief:** Goal: profile the path from `#bPlay` to the first `#stage .word` with `?perf` at 4x CPU and cut the largest task (PF9 covers the word pool). Done when: `scripts/first-load.mjs` repeat-visit first word drops by a third. **Touches:** performance, run. **Conflicts:** PF9.
+
+### PF15. Splash art is 9.4 MB
+**Pitch:** `public/splash/` holds 11 full-size launch PNGs for iOS home-screen launches. Only one is ever read per launch, but they are the largest files in the app.
+**Brief:** Goal: re-encode the splash images (or pick a smaller set) and check that the iOS launch still matches the device size. Done when: total splash bytes drop by at least half and `pwa-check` still passes. **Touches:** PWA. **Conflicts:** none.
+
 ### PF10. Real-phone check of low power mode
 **Pitch:** Headless numbers can't show iOS Low Power Mode (30 fps cap) or a real GPU. A quick on-device pass would confirm the quality step-down and the reduced-motion idle rate feel right.
 **Brief:** Goal: with `?perf`, record home, a room walk and a run on a phone in Low Power Mode and with Reduce Motion; tune `src/ui/quality.js` thresholds if it steps down too eagerly. Done when: numbers in screenshots/performance/. **Touches:** quality. **Conflicts:** none.
