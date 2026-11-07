@@ -33,12 +33,25 @@ export function toastStamps(list) {
     el.setAttribute('role', 'status');
     document.body.appendChild(el);
   }
-  el.innerHTML = stampToastHTML(list);
-  const set = document.getElementById('settoast'); // the set toast sits in the same place; stack under it while both show
-  el.style.top = set && set.classList.contains('on') ? '112px' : '';
+  /* It steps aside: a small brass tab at the top corner, so the page under it (a duel result, a margin note) stays readable.
+     Tap the tab to open the full plaque; it closes with the tab after five seconds, or on a second tap. */
+  el.innerHTML = `<button type="button" class="stp-tab" aria-expanded="false" aria-label="${list.length} stamp${list.length > 1 ? 's' : ''} earned, show"><span>${list.length}</span></button>`
+    + `<div class="stp-plaque">${stampToastHTML(list)}</div>`;
+  el.classList.remove('open');
+  const tab = el.querySelector('.stp-tab');
+  tab.setAttribute('aria-expanded', 'false');
+  el.tabIndex = -1;
+  const setOpen = open => {
+    el.classList.toggle('open', open);
+    tab.setAttribute('aria-expanded', String(open));
+    el.tabIndex = open ? 0 : -1;
+    if (open) el.focus({preventScroll: true});
+  };
+  el.onclick = () => setOpen(!el.classList.contains('open')); // the tab and the open plaque both toggle it
+  el.onkeydown = e => { if (e.key === 'Escape' && el.classList.contains('open')) setOpen(false); };
   el.classList.remove('on');
   void el.offsetWidth; // restart the drop and the sheen when a second stamp lands before the first has gone
   el.classList.add('on');
   clearTimeout(timer);
-  timer = setTimeout(() => el.classList.remove('on'), 5000);
+  timer = setTimeout(() => { setOpen(false); el.classList.remove('on'); }, 5000);
 }
