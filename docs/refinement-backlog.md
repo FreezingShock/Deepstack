@@ -3,7 +3,8 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
-- Daily cover on a desktop (new-modes playtest, PR pending): the left page holds Daily, Daily Riddle, Week of the Sea and Practice. At 1280x800 with reduced motion they run about 250px past the page and the cover scrolls; with motion on the page fitter shrinks it and it fits. Pick one: A = Week and Practice move to their own cover spread (recommended); B = keep scrolling; C = shrink the calendar to make room. Screenshots: screenshots/new-modes-playtest/before/1280/hall-daily-cover.png and after/1280/hall-daily-cover.png.
+- Daily cover on a desktop (new-modes playtest, PR #390 built as option A): Riddle and Practice moved to a desk spread after the calendar, so the cover fits at 1280 with reduced motion. Reply A, B or C: A = desk spread (built, recommended); B = keep the cover scrolling; C = shrink the calendar. Mockups: screenshots/new-modes-playtest/mockups/.
+- Onboarding halo (ON1, this PR): on a fresh profile, the first home visit lights the Room Ledger spine. The halo should sit on the spine, not beside it, and the side-door line on desktop should light the left door. Tell me if either still looks off (screenshots in screenshots/onboarding-halo/).
 - Restoration follow-ups (MR2 to MR4, this PR): open the bench from the bottom-left door on your phone. The first page of each room today is its Daily, and its frame on the wall says Daily. Restore all three entries on a page and a Wax seal plaque drops over the open bench, in the Almanac's library row. Tell me if the plaque should wait until you close the bench instead.
 - Restoration bench (MR1, this PR): a new door at the bottom-left of home, "Restoration bench". Open it, write what each faded word means, type the smudged word, and check the wall. A, B or C mixes are in screenshots/restoration/option-*; B (two faded, one smudged) is built. Reply with a letter if you want another mix.
 - To review (RV1): open the Shelf, tap To review, then Try again on a word and write it from memory. Tell me if 46 is the right bar to win a word back, and whether To review should stay inside the Shelf (now) or get its own spine on the home. Screenshots: screenshots/review-shelf/.
@@ -2133,6 +2134,27 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### TY3. One range style for floor ranges
 **Pitch:** The depth tracker writes "0–101 ft" with an en dash, while the Floors book and the Card's floor row write "0 to 101 ft". Pick one and use it on every screen.
 **Brief:** Goal: one range helper in `src/core/numFmt.js` used by `src/ui/tracker.js`, `src/ui/floorLeaves.js` and the floor banner. Files: those three files, plus a test in `test/number-format.test.js`. **Conflicts:** Card floor row (TA7), Floors book.
+## ON. Onboarding (2026-11-07)
+
+### [x] ON1. Onboarding halo sits on its target (this PR)
+**Pitch:** The first-visit halo on the Room Ledger spine sat up and left of the spine and ran into the Stats spine below it. Every first-visit note (Daily, Unlimited, the side doors, the Ledger) now follows its target frame by frame, and a side-door note waits until the doors are placed.
+**Brief:** Done: `src/ui/firstNotes.js` (`followNote`, `showHomeNoteSoon`), `src/app/home.js`. Guard: `scripts/onboarding-halo.mjs` (every home note in all seven rooms at 1920 and 375, motion on and reduced). Unit tests: `test/onboarding-halo.test.js`.
+
+### [ ] ON2. Halo ring crosses the next spine
+**Pitch:** The 5px ring around a spine overlaps the top or bottom edge of the spine beside it (ROOMS over STATS). nate asked for nothing to sit over the highlight, so the ring should stay inside its neighbours.
+**Brief:** Goal: a ring that stays within the target's neighbours in a stack, at every size. Options: a 3px ring, or a ring drawn inside the spine's edge. Files: `src/ui/firstNotes.css`, `src/ui/firstNotes.js` (`followNote` ring offset). Done when: `scripts/onboarding-halo.mjs` also asserts the ring does not cross a neighbour's edge. Show nate both options as screenshots first.
+**Conflicts:** firstNotes.js (ON1 is done, so no conflict now).
+
+### [ ] ON3. Notes fade in, not pop
+**Pitch:** A first-visit note appears all at once. Give the halo and panel the same short fade-in as the rest of the motion language (#125) and keep it still under reduced motion.
+**Brief:** Goal: the halo and panel fade in over the motion token, with the fade-out kept. Files: `src/ui/firstNotes.css`. Done when: the reduced-motion case in `scripts/onboarding-halo.mjs` shows no transition, and motion-on frames show the opacity rising.
+**Conflicts:** firstNotes.css.
+
+### [ ] ON4. Phones get a line for the side doors
+**Pitch:** On a phone the side doors are hidden, so a first-visit note for them never shows. Decide whether phones get a different line for rooms, such as one under the Ledger, or nothing.
+**Brief:** Goal: a phone first visit explains how to reach the topic rooms. Options: A, the Ledger note says "Rooms: words met, per room"; B, a line on the Rooms book; C, nothing, since the Ledger already covers it. Show nate all three on a phone in screenshots/onboarding-halo/ before building.
+**Conflicts:** home.js notes list (HOME_NOTES).
+
 ## MR. Manuscript restoration (2026-11-07, nate: "something more unique")
 ### MR1. [x] Restoration bench: a damaged page per room, ink returns, finished pages hang on a wall (this PR)
 Brief: a water-damaged page from the room you are in. Two faded entries: the headword shows, the definition has run, and you write what it means in your own words; the judge scores it, and the real entry comes back in ink at 14 or better. One smudged entry: its definition is clear, the headword has gaps, and you type the word (a letter can be given). Leave an entry and it stays damaged. A finished page pins to the wall. Code: `src/restore/` (pages, store, markup, ui, entry). Screenshots: `screenshots/restoration/`. Guards: `test/restore-*.test.js`, `scripts/restore-check.mjs` (CI).
