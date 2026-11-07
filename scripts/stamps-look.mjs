@@ -1,5 +1,5 @@
 // Stamps guard (TA5): the Almanac's Stamps page at 375 and 1280, reduced motion on, after `npm run build`.
-//  1. the page opens from the Stats book (its Rooms pages are followed by two Stamps leaves) and shows all 41 seals,
+//  1. the page opens from the Stats book (its Rooms pages are followed by two Stamps leaves) and shows all 42 seals,
 //  2. the earned seals are lit and the rest are dashed, with the count in the page's kicker,
 //  3. no seal, row or name is cut off by its page, and the page never scrolls sideways,
 //  4. the toast markup fits a phone-width screen with its text whole (checked on a copy of the same markup).
@@ -78,10 +78,10 @@ async function run(label, {width, height}) {
         bad: bad.slice(0, 5),
       };
     });
-    if (r.seals !== 41) fail(`${label}: expected 41 seals on the Stamps leaves, got ${r.seals}`);
+    if (r.seals !== 42) fail(`${label}: expected 42 seals on the Stamps leaves, got ${r.seals}`);
     if (r.lit !== Object.keys(EARNED).length) fail(`${label}: expected ${Object.keys(EARNED).length} lit seals, got ${r.lit}`);
-    if (r.dashed !== 41 - Object.keys(EARNED).length) fail(`${label}: dashed seals ${r.dashed} do not match the rest`);
-    if (!/6 of 41 earned/.test(r.kicker)) fail(`${label}: kicker should read "6 of 41 earned", got "${r.kicker}"`);
+    if (r.dashed !== 42 - Object.keys(EARNED).length) fail(`${label}: dashed seals ${r.dashed} do not match the rest`);
+    if (!/6 of 42 earned/.test(r.kicker)) fail(`${label}: kicker should read "6 of 42 earned", got "${r.kicker}"`);
     if (r.sideways > 0) fail(`${label}: the page scrolls sideways by ${r.sideways}px`);
     if (r.bad.length) fail(`${label}: cut off or outside its page: ${r.bad.join(', ')}`);
     if (SHOTS) await page.screenshot({path: join(SHOTS, `stamps-${width}.png`)});
