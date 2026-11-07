@@ -89,8 +89,9 @@ async function targets(page, vp, state) {
       if (el.closest('nav[aria-label="Depth tracker"]') && el.tagName === 'BUTTON') continue;
       // a control under an open modal layer (the result card, the shortcut panel) cannot be tapped now, so it is not a target here
       if (cardUp && !cardUp.contains(el)) continue;
-      // WCAG 2.5.8 (AA) minimum is 24px. Room lights and book spines sit side by side, so they keep the spacing exception.
-      const min = el.matches('.rm-dot, .ledgebook') ? 24 : 44;
+      // WCAG 2.5.8 (AA) minimum is 24px. Room lights, book spines and the menu books sit side by side on the shelf
+      // (4-8px apart, so a 44px tap area would overlap the next book and move the clicks); the menu books are 28px and up.
+      const min = el.matches('.rm-dot, .ledgebook, .home .hbook') ? 24 : 44;
       if (r.width >= min && r.height >= min) continue;
       const max = 44;
       const w = r.width + reach(el, -1, 0, max, r) + reach(el, 1, 0, max, r);

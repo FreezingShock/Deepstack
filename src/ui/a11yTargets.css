@@ -3,7 +3,6 @@
    does not change. Imported last in main.js so these rules win the cascade. */
 
 /* Top bar icon buttons keep their drawn size (the bar is tight at 320px); a hit slop makes the tap area 44px */
-#bar #bSound,#bar #bSettings,#bar #bCredits,#bar #bKeys{position:relative}
 #bar #bSound::after,#bar #bSettings::after,#bar #bCredits::after,#bar #bKeys::after{content:"";position:absolute;inset:-4px;pointer-events:auto}
 
 /* Title plaque (home mark): hit slop above and below the plaque */
@@ -11,17 +10,15 @@
 #mark::after{content:"";position:absolute;inset:-6px -4px;pointer-events:auto}
 
 /* Home menu books: a hit slop reaches 44px tall whatever the book's drawn height */
-.home .hbook{position:relative}
-.home .hbook::before{content:"";position:absolute;inset:-10px 0;pointer-events:auto}
+.home .hbook::before{content:"";position:absolute;inset:-3px 0;pointer-events:auto}
 
 /* Ring of room lights and the card catalogue tab */
 /* Ring of lights on wide screens sit about 21px apart, so their slop is 2px: 25px targets that cannot cover a neighbour */
 #home .rm-dot::after{content:"";position:absolute;inset:-2px;pointer-events:auto}
-.cc-tab{position:relative}
+/* .cc-tab is position:fixed already, which makes it the containing block for its slop */
 .cc-tab::after{content:"";position:absolute;inset:-8px;pointer-events:auto}
 
-/* Desk props (brass bell, due-date stamp) */
-#dp-bell,#dp-stamp{position:relative}
+/* Desk props (brass bell, due-date stamp): .dp is position:absolute already, so it is the containing block for the slop */
 /* the bell's bottom edge sits on the card catalogue's tag, so its slop reaches up (46px in all) */
 #dp-bell::after{content:"";position:absolute;left:-7px;right:-7px;top:-14px;bottom:0;pointer-events:auto}
 #dp-stamp::after{content:"";position:absolute;inset:-7px -8px;pointer-events:auto}
@@ -45,9 +42,10 @@
 .bk-spread .dly.cal .cal-d::before{content:"";position:absolute;inset:-4px;pointer-events:auto} /* ::before, because today's underline owns ::after; the button's 2px border is inside the slop */
 .bk-spread.menu .dly.cal .cal-d:focus-visible{outline:2px solid var(--bk);outline-offset:3px}
 
-/* Librarian's Card rows you can open: the value button reaches 44px tall with the same drawn position
-   (negative margin cancels the padding), and 44px wide so a one-digit value is still an easy target */
-.home .lg-row.lg-link .lg-val{min-width:44px;min-height:44px;padding-block:9px;margin-block:-9px}
+/* Librarian's Card rows you can open: the value button reaches 44px with a slop (below) */
+/* The button keeps its drawn size; its tap area is a slop (the card's last row sits at the page edge, so a taller box would be clipped) */
+.home .lg-row.lg-link .lg-val{position:relative}
+.home .lg-row.lg-link .lg-val::before{content:"";position:absolute;inset:-8px -18px;pointer-events:auto}
 /* Result card's main button: the card is a .book zoomed by --fz on phones, so its 44px floor is divided by that zoom */
 #cardlayer #go{min-height:calc(44px / var(--fz,1));box-sizing:border-box}
 /* Settings: volume and effects sliders (17px tall as drawn) and the Reset progress button (36px) */
@@ -65,6 +63,16 @@ nav[aria-label="Depth tracker"] li button{width:45px;margin:0 -13px;padding:0}
 .tpseg button{min-height:44px!important;min-width:44px!important}
 #sVol{min-height:44px}
 .tpcred a{display:inline-block;padding:13px 2px;margin:-13px -2px}
+
+/* Home: the Descend button is the main thumb target on a phone (35px as drawn) */
+.home .descend{min-height:44px;box-sizing:border-box}
+/* Daily page: the week link ("Open the week") gets the same floor as the other Daily buttons, zoomed like them on phones */
+.bk-spread .dly .dly-go{min-height:44px!important;box-sizing:border-box;align-items:center}
+@media (max-width:420px) and (max-height:760px){.bk-spread .dly .dly-go{min-height:calc(44px / .74)!important}}
+@media (max-width:380px){.bk-spread .dly .dly-go{min-height:calc(44px / .68)!important}}
+@media (max-width:340px){.bk-spread .dly .dly-go{min-height:calc(44px / .58)!important}}
+/* Margin note tab (result card, books): a 44px tab. Its clip-path clips hit slop too, so the tab itself grows, zoomed with the card */
+.book .mn-tab{min-height:calc(44px / var(--fz,1))!important;box-sizing:border-box;align-items:center}
 
 /* Calendar days: 44px cells (the grid keeps its shape; the cells were 40px) */
 .bk-spread .dly.cal .cal-d{width:min(44px,100%)!important;max-height:44px!important}
