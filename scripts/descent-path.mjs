@@ -82,6 +82,14 @@ for (attempt = 1; attempt <= ATTEMPTS && !reached; attempt++) {
     if (fit.sideways) problems.push('the landing scrolls sideways at 375 px');
     if (fit.offPage) problems.push(`${fit.offPage} landing door(s) run past the screen edge`);
     if (fit.doors < 3) problems.push(`the landing shows ${fit.doors} doors, not three`);
+    /* the desktop landing: the doors stop above the shelf's books (canvas art behind the card, so no DOM hit test sees
+       them). Their bottom edge stays in the top 70% of a 1280 x 800 screen; the books reach about 71% of it. */
+    await page.setViewportSize({width: 1280, height: 800});
+    await page.waitForTimeout(900);
+    const deskBottom = await page.evaluate(() => Math.max(...[...document.querySelectorAll('.dl [data-path]')].map(b => b.getBoundingClientRect().bottom)));
+    if (OUT) { await mkdir(OUT, {recursive: true}); await page.screenshot({path: join(OUT, 'landing-1280.png')}); }
+    if (deskBottom > 800 * 0.7) problems.push(`the desktop landing's doors run down into the shelf books (bottom at ${Math.round(deskBottom / 800 * 100)}% of 800 px)`);
+    if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)) problems.push('the desktop landing scrolls sideways at 1280 px');
     /* the curio shop: its two relics must appear, and one must be takeable */
     await page.locator('[data-path="curio"]').first().click({timeout: 3000}).catch(() => problems.push('the curio door cannot be clicked'));
     await page.waitForTimeout(700);
