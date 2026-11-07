@@ -41,3 +41,43 @@ export function findClipped() {
   }
   return out;
 }
+
+// Tiny text, small-caps tracking and unformatted depths, the copy side of the same sweep. Runs via page.evaluate(findTiny, minPx).
+// Flags visible HTML text whose computed size is under minPx (it reads as dust on a phone), uppercase text under 20px
+// tracked under 0.06em (small caps need air), and any depth written without its thousands comma: "1008 ft" or
+// "706–1008 ft" (it must be "1,008 ft"), or a bare 4+ digit counter.
+export function findTiny(minPx) {
+  const out = [];
+  const XHTML = 'http://www.w3.org/1999/xhtml';
+  const label = el => {
+    const cls = typeof el.className === 'string' ? el.className.trim().split(/\s+/).slice(0, 2).join('.') : '';
+    return el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (cls ? '.' + cls : '');
+  };
+  const ownText = el => [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
+  const COUNTERS = ['dnum', 'cnt', 'bgDeep'];
+  for (const el of document.body.querySelectorAll('*')) {
+    if (el.namespaceURI !== XHTML) continue; // SVG text scales with its transform, so its CSS size is not what is drawn
+    const text = ownText(el);
+    if (!text || /^(SCRIPT|STYLE|CANVAS|TEXTAREA|INPUT)$/.test(el.tagName)) continue;
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) continue;
+    let hidden = false;
+    for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+      const c = getComputedStyle(n);
+      if (c.display === 'none' || c.visibility === 'hidden' || +c.opacity === 0) { hidden = true; break; }
+    }
+    if (hidden) continue;
+    const what = [];
+    const px = parseFloat(cs.fontSize);
+    if (px < minPx - 0.01) what.push(`renders at ${px.toFixed(1)}px, under the ${minPx}px floor`);
+    // a running entrance animation (rvink, tierin, fbanner) tweens letter-spacing through 0, so read it only once settled
+    const moving = (() => { for (let a = el; a && a !== document.body; a = a.parentElement) if (a.getAnimations().some(x => x.playState === 'running')) return true; return false; })();
+    const ls = parseFloat(cs.letterSpacing) || 0; // 'normal' reads as 0
+    if (!moving && cs.textTransform === 'uppercase' && px < 20 && ls / px < 0.06 - 0.001) what.push(`uppercase at ${px.toFixed(0)}px tracked ${(ls / px).toFixed(2)}em, under the 0.06em small-caps floor`);
+    if (/\d{4,}\s?ft\b/.test(text) || /–\d{4,}/.test(text) || (COUNTERS.includes(el.id) && /^\d{4,}$/.test(text))) what.push('depth written without a thousands comma');
+    if (what.length) out.push({el: label(el), text: text.slice(0, 40), why: what.join('; ')});
+  }
+  return out;
+}

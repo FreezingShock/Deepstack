@@ -1,3 +1,5 @@
+import {fmtNum} from '../core/numFmt.js';
+import {longDate} from '../core/dates.js';
 import {PALETTE} from '../theme/colors.js';
 import {comboLabel} from '../core/combo.js';
 import {playReveal,revealPlan} from '../ui/reveal.js';
@@ -14,6 +16,7 @@ import {alsoAcceptedHTML} from '../ui/alsoAccepted.js';
 import {fillMeans} from '../ui/alsoMeans.js';
 import {pushBack,popBack} from '../ui/backGesture.js';
 import {attachSwipe} from '../ui/swipe.js';
+import {marginNoteHTML,wireMarginNote} from '../ui/wordNotes.js';
 
 /* ---------- result card ---------- */
 export let cardOpts=null;
@@ -32,10 +35,11 @@ export function openCard(b,opts={}){
    <p class="def">${esc(b.def)}</p>
    <span class="means-slot"></span>
    ${alsoAcceptedHTML(b)||'<span class="also-slot"></span>'}
+   ${marginNoteHTML(b)}
    ${b.answer?`<p class="wrote">You wrote: \u201c${esc(b.answer)}\u201d</p>`:''}
    ${feedbackHTML(b)}
    <div class="chips">
-    ${opts.fresh?`<span><b>+${b.ft} ft</b> \u00b7 ${opts.depth1} ft deep</span>`:b.t?`<span>${b.mode==='daily'?'No. '+Math.max(1,core.dailyNumber(core.dayKey(b.t)))+' \u00b7 ':''}${new Date(b.t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</span>`:''}
+    ${opts.fresh?`<span><b>+${b.ft} ft</b> \u00b7 ${fmtNum(opts.depth1)} ft deep</span>`:b.t?`<span>${b.mode==='daily'?'No. '+Math.max(1,core.dailyNumber(core.dayKey(b.t)))+' \u00b7 ':''}${longDate(core.dayKey(b.t))}${b.ft?' \u00b7 <b>+'+b.ft+' ft</b>':''}</span>`:''}
     ${opts.fresh&&b.combo?`<span class="cb">Combo <b>${comboLabel(b.combo.mult)}</b> \u00b7 ${b.combo.n} in a row</span>`:opts.fresh&&opts.broke?`<span>Combo broken</span>`:''}
     <span class="cs"><b id="cn">${opts.fresh?0:b.score}</b>/100<div class="meter"><i id="mt" style="width:${opts.fresh?0:b.score}%"></i></div></span>
    </div>
@@ -50,6 +54,7 @@ export function openCard(b,opts={}){
  </div>`;
  L.hidden=false;requestAnimationFrame(()=>L.classList.add('on'));
  fillMeans(L,b);
+ wireMarginNote(L,b);
  const bk=$('#bk');stampCover(bk.querySelector('.cover'),b.w,b.tier);stampPage(bk.querySelector('.page'),b.w,b.tier);
  if(opts.fresh){const pl0=revealPlan(b.tier);bk.classList.add('rvc');const cvv=coverLockVars(pl0.cover,RM),dl=RM?0:pl0.cover.delay;for(const k in cvv)bk.style.setProperty(k,cvv[k]);
  /* hurry: a press (Enter, Space or a tap) during the reveal jumps to the finished card, like "click or press space to hurry" on the descent, so nothing is lost while the cover swings */
