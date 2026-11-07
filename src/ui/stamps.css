@@ -1,0 +1,45 @@
+/* Achievement stamps (TA5). Look X: a wax seal in the room's colour (--c is the room's r,g,b triple, set inline), with a
+   glyph pressed into it. Unearned seals are a dashed ring with a faint glyph. The Almanac's Stamps page (stampsPage.js) and
+   the toast (stampToast.js) both use these. Colours come from the tokens; the room colour only ever enters through --c. */
+
+.stp-page .stp-kick{margin-bottom:.2em}
+.stp-page .note{margin-top:.5em}
+.stp-row{padding:.55em 0 .7em;border-bottom:1px solid color-mix(in srgb,var(--c-black-alpha-aa) 18%,transparent)}
+.stp-head{display:flex;align-items:baseline;gap:.5em;justify-content:space-between;font:400 calc(15px*var(--ts,1))/1.3 var(--serif)}
+.stp-name{display:flex;align-items:center;gap:.45em;min-width:0}
+.stp-dot{width:.6em;height:.6em;border-radius:50%;background:rgb(var(--c,201,164,88));display:inline-block;flex:none}
+.stp-n{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stp-n.all{color:var(--c-brass-cdbb92)}
+.stp-set{display:flex;flex-wrap:wrap;gap:6px 9px;margin-top:.5em}
+
+.stp-seal{--s:36px;position:relative;display:inline-grid;place-items:center;width:var(--s);height:var(--s);border-radius:50%;flex:none;box-sizing:border-box;
+  font-family:var(--serif);line-height:1;user-select:none}
+.stp-seal i{font-style:normal;font-size:calc(var(--s)*.42);font-weight:600;position:relative;z-index:1}
+.stp-seal.on{color:var(--c-parchment);
+  background:radial-gradient(circle at 34% 30%,var(--c-white-alpha-33),transparent 42%),
+    radial-gradient(circle,rgb(var(--c)) 0 58%,rgba(var(--c),.78) 60% 100%);
+  box-shadow:inset 0 0 0 2px rgba(var(--c),.45),inset 0 -3px 5px var(--c-black-alpha-aa),0 2px 4px var(--c-black-alpha-aa)}
+.stp-seal.on i{text-shadow:0 1px 0 var(--c-black-alpha-aa)}
+.stp-seal.off{background:transparent;border:1.5px dashed color-mix(in srgb,var(--c-ink) 32%,transparent);color:color-mix(in srgb,var(--c-ink) 32%,transparent)}
+.stp-seal.off i{opacity:.55}
+/* the library's four: the same wax, in gilt */
+.stp-seal.lib{--c:205,172,103}
+.stp-seal.lib.on{background:radial-gradient(circle at 34% 30%,var(--c-white-alpha-33),transparent 42%),
+    radial-gradient(circle,var(--c-brass-cdbb92) 0 58%,color-mix(in srgb,var(--c-brass-cdbb92) 78%,var(--c-black-alpha-aa)) 60% 100%);color:var(--c-oak-8)}
+.stp-seal.lib.on i{text-shadow:0 1px 0 var(--c-white-alpha-22)}
+
+/* phones: the seals keep a 44px-ish reach with a 6px gap and the page still fits */
+@media (max-width:600px){.stp-seal{--s:34px}.stp-set{gap:6px}}
+
+/* the toast: a small brass-edged banner, the same family as the set toast (#settoast) */
+#stamptoast{position:fixed;left:50%;top:64px;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);z-index:91;
+  display:flex;flex-direction:column;gap:7px;padding:9px 16px 9px 10px;border-radius:4px;background:var(--c-oak-8);
+  border:1px solid var(--c-amber);color:var(--c-parchment);font:400 calc(15px*var(--ts,1))/1.3 var(--serif);
+  box-shadow:0 8px 22px var(--c-black-alpha-aa);opacity:0;pointer-events:none;transition:opacity var(--m-smooth) var(--e-settle)}
+#stamptoast.on{opacity:1}
+#stamptoast .stp-seal{--s:32px}
+#stamptoast .stp-seal i{font-size:calc(13px*var(--ts,1))}
+#stamptoast .stp-tr{display:flex;gap:10px;align-items:center}
+#stamptoast b{display:block;font-weight:600}
+#stamptoast small{display:block;opacity:.72;font-style:italic}
+@media (prefers-reduced-motion:reduce){#stamptoast{transition:none}}
