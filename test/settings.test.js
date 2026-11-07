@@ -6,9 +6,15 @@ const fake=()=>{const m={};return{getItem:k=>k in m?m[k]:null,setItem:(k,v)=>{m[
 
 test('sanitize fills defaults and clamps bad values',()=>{
  assert.deepEqual(sanitize(null),DEFAULTS);
- assert.deepEqual(sanitize({volume:9,music:-1,effects:'loud',motion:'x',text:'huge',contrast:'yes'}),{volume:1,music:0,effects:1,motion:'system',text:'normal',contrast:false});
+ assert.deepEqual(sanitize({volume:9,music:-1,effects:'loud',motion:'x',text:'huge',contrast:'yes'}),{volume:1,music:0,effects:1,motion:'system',text:'normal',contrast:false,haptics:true});
  assert.equal(sanitize({volume:-2}).volume,0);
  assert.equal(sanitize({text:'large',contrast:true,motion:'reduce'}).text,'large');
+});
+test('haptics default on and only an explicit false turns the buzz off',()=>{
+ assert.equal(DEFAULTS.haptics,true);
+ assert.equal(sanitize({haptics:false}).haptics,false);
+ assert.equal(sanitize({haptics:'no'}).haptics,true);
+ assert.equal(sanitize({}).haptics,true);
 });
 test('defaults keep the sound and look the game had before music and effects existed',()=>{
  assert.equal(DEFAULTS.music,1);
@@ -18,7 +24,7 @@ test('defaults keep the sound and look the game had before music and effects exi
 test('settings round-trip through storage and survive corrupt data',()=>{
  const st=fake();
  saveSettings({volume:.3,music:.4,effects:.9,motion:'reduce',text:'xlarge',contrast:true},st);
- assert.deepEqual(loadSettings(st),{volume:.3,music:.4,effects:.9,motion:'reduce',text:'xlarge',contrast:true});
+ assert.deepEqual(loadSettings(st),{volume:.3,music:.4,effects:.9,motion:'reduce',text:'xlarge',contrast:true,haptics:true});
  st.m[SETTINGS_KEY]='{not json';
  assert.deepEqual(loadSettings(st),DEFAULTS);
  assert.deepEqual(loadSettings({getItem(){throw new Error('blocked');}}),DEFAULTS);
