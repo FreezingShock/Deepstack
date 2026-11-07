@@ -42,7 +42,8 @@ async function daily(w, h, motion) {
   await page.goto(url, {waitUntil: 'load'});
   await page.locator('#bPlay').first().waitFor({state: 'visible', timeout: T});
   await page.waitForTimeout(400);
-  await page.locator('#bPlay').first().click();
+  await page.locator('#bPlay').first().evaluate(el => el.click()); // the home plaque keeps idle motion, so click the element itself
+  await page.locator('#stage .word').waitFor({state: 'visible', timeout: T});
   await page.locator('#ans').waitFor({state: 'visible', timeout: T});
   await page.waitForTimeout(900);
   return {ctx, page, errors};
