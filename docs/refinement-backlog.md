@@ -5,12 +5,13 @@ How to use: pick numbers, start one thread per number, paste the item's **Brief*
 ## What nate needs to do
 - Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
+- Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
 - Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
 - Settings placement (ST1): A gear in the top bar, B card catalogue drawer (desktop only, the phone has no cabinet), C both (recommended). Mockups in screenshots/settings-overhaul/ (where-A, where-B, where-C at 1280 and 375). Reply with a letter and I will act on it.
 - Pick the Daily share look (screenshots in screenshots/daily-share/): A is built and is the default (streak line added, Share button first). B is a boxed brass card and button, C uses coloured tier dots. Phones: the note is hidden today to fit one view; showing it (B or C) pushes the buttons below the fold, so say whether the phone should show it or keep it hidden (item 70).
 - Deep perf pass: play a long Unlimited session and walk the rooms on your phone (also with Low Power Mode and Reduce Motion on); it should stay smooth with no slowdown over time. Numbers: screenshots/performance/results.md.
-- Pick a one-tap way into the Ember Log on phones (LC7): A flame tag, B fire, C labelled flame tag (recommended), D streak line under Descend. Screenshots in screenshots/ember-log-onetap/.
+- Ember Log on phones (LC7): tap the labelled flame tag on the attic hatch (option C, "7 Ember Log"). Please check it on your phone; the tag must not overlap the bar and tapping it must not open the attic.
 - Slow-network check (perf pass): on your phone, load the site once, then toggle airplane-mode-slow or a weak connection and reload; entering another room and the first answer should no longer stall. Tell me if any room still feels slow and which (numbers in screenshots/performance/results.md).
 - Phone check for the three audit fixes (RA2/RA5/RA7): the attic hatch should now sit between the wordmark and the buttons with Mute fully tappable (on very narrow phones the keyboard button hides and the wordmark shrinks a little; Keys is still in the card catalogue). Open the Rooms book (each row says "N of M met" and its swatch fills), and open the Today card in a few rooms (the footer names the room and the card takes its colour). Tell me if you would rather keep the keyboard button and lose the streak plate instead.
 - On your phone, open the Rooms book, tap a room in the contents list (try the Reading Room): it now turns to that room's page. CI also walks every room by door, keys, dots and the book on every push (TA4).
@@ -1368,7 +1369,7 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Brief:** Goal: contextual first-time notes, not a tutorial screen or pop-up. Flag each in additive `S.seen.*`. Files: new `src/ui/firstNotes.js` plus css, one hook in `showWord`. Done when: each note shows once, reduced motion shows it static, Daily timing is not changed by it, 14-letter word and 375 checked.
 **Touches:** RUN, HOME. **Conflicts:** run screen thread, 29 (welcome).
 
-### G12. [ ] Phone run sheet has no room for a hint or a note
+### G12. [x] Phone run sheet has no room for a hint or a note (PR #333: taller alcove on phones; 320x568 and two-plus hints still open, see decision)
 **Pitch:** At 375x667 and 360x640 the hint strip (and now the first-run notes) takes about 60px from the run sheet, so the answer slip shrinks from 132px to about 70px and the typed text scrolls. Screenshots: /mnt/project-files/screenshots/onboarding/before-375-b-hint.png.
 **Brief:** Goal: give the run sheet a fixed budget on phones (tighter word size or top padding, or notes that float in the empty alcove wall under the row). Files: `src/styles/phone-run.css`. Done when: the slip keeps its height with a hint and with a note at 320x568, 360x640 and 375x667.
 
@@ -2071,9 +2072,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### LC6. Milestone stamps on the Ember Log
 **Pitch:** Earned milestones (3, 7, 14, 30, 100) get inked stamps on a third page.
 **Brief:** Goal: derive stamps from Daily history with no new saved fields. Files: `src/ui/streakLeaves.js`. **Conflicts:** LC2.
-### LC7. A one-tap way into the Ember Log on phones
-**Pitch:** On phones the Ember Log is two taps away (Stats, then the link); the attic hatch leaves no room for a streak chip in the rail.
-**Brief:** Goal: one tap from home, e.g. tap the hearth fire (the fire already reflects the streak). Files: `src/ui/hearth.js`, `src/ui/ledgerBooks.js`. **Conflicts:** fireplace layout threads, RA2 rail fit.
+### LC7. [x] A one-tap way into the Ember Log on phones (option C, this PR)
+**Pitch:** On phones the flame tag on the attic hatch (shown when the streak plate is hidden) now says "Ember Log" and opens the book. The Stats link stays as a second way in.
+**Brief:** Goal: the tag is a button in `syncFlame`; a capture-phase click stops the hatch from opening the attic. Files: `src/ui/railFit.js`, `src/ui/ledgerBooks.js`, `railHatch.css`. **Conflicts:** RA2 rail fit, attic hatch threads.
 
 ## P. Installable app (2026-11-06, the install PR)
 
@@ -2116,3 +2117,16 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### SH3. Room colour on the share text
 **Pitch:** The share card's header takes the room's fire colour, so a Chronicle share looks red and a Gallery share purple (text only, no emoji).
 **Brief:** Goal: a colour line via `ROOMS[].rgb` in the share card's header (HTML sheet only). Files: `src/ui/results.js`, `src/ui/dailyShare.css`. **Conflicts:** SH1.
+
+### CF1. [x] Core loop: answer feedback, hurry the reveal, full "You wrote" (this PR)
+**Pitch:** Enter now answers at once: the slip holds, locks and says "Reading your answer", Enter or Space during the card reveal hurries it to the verdict, phone cards drop the Enter hint, and a long answer shows whole.
+**Done:** `src/app/run.js` (judging state), `src/app/card.js` (hurry), `src/main.js` (a hurried Enter does not also close the card), `src/ui/coreLoop.css`, guard `scripts/core-loop.mjs` (CL1 to CL4), `scripts/smoke.mjs` mid-reveal step updated to the hurry rule. Screenshots in `screenshots/core-loop/`.
+**Conflicts:** G12 (phone answer slip, owned by the onboarding thread), any card.css thread.
+
+### CF2. Skip with typed text asks first
+**Pitch:** Skip throws away a half-typed answer with no warning; a quiet "Keep typing" or a second tap would save it.
+**Brief:** Goal: first Skip with text in the slip shows "Skip and lose this answer?" for 3 s; second tap skips. Files: `src/app/run.js`, `src/ui/runWriteIn.js`. Done when: keyboard and touch both confirm, 375 and 1280 screenshots.
+
+### CF3. Judge wait shows a real progress note
+**Pitch:** When the librarian is still arriving the wait is silent for up to 6 s before a note appears.
+**Brief:** Goal: start the "Reading your answer" note with a small candle-flicker on the slip, not after the 6 s fallback. Files: `src/scorer/index.js` (onWait timing), `src/ui/coreLoop.css`. Done when: a test pins the note at 300 ms.
