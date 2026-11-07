@@ -45,17 +45,29 @@ export function pickExample(word, texts) {
   return null;
 }
 
-/** Up to `max` related words: single words or short phrases, lowercase, never the headword itself. */
-export function cleanRelated(word, list, max = 4) {
+/** A related word is a fragment when it is a piece of the headword ("hemeral" inside "ephemeral"). Derived forms that contain the headword ("ephemerality") are fine. */
+export const isFragment = (word, w) => w !== word && word.includes(w);
+
+/**
+ * Up to `max` related words: single words or short phrases, lowercase, never the headword itself, never a fragment of it.
+ * `known` (optional) says whether a word is a real word the dictionary knows; without it every clean word passes.
+ */
+export function cleanRelated(word, list, max = 4, known = null) {
   const out = [];
   for (const raw of list) {
     const w = clean(raw).toLowerCase();
     if (w === word || out.includes(w) || w.length < 3 || w.length > 28) continue;
     if (!/^[a-z][a-z' -]*[a-z]$/.test(w) || w.split(' ').length > 2 || !isCleanText(w)) continue;
+    if (isFragment(word, w) || (known && !known(w))) continue;
     out.push(w);
     if (out.length === max) break;
   }
   return out;
+}
+
+/** True when the entry has at least one sense a player could be asked about (used as the list of real headwords). */
+export function hasUsableSense(entry) {
+  return !!NOTE_POS[entry.pos] && (entry.senses || []).some(s => usable(s));
 }
 
 const usable = s => {
@@ -95,7 +107,7 @@ export function summarize(entry) {
 }
 
 /** Choose the note for one word from its summaries (same pos first; any pos only when none matches). */
-export function pickNote(word, pos, summaries) {
+export function pickNote(word, pos, summaries, known = null) {
   const same = summaries.filter(s => s.pos === pos), pool = same.length ? same : summaries;
   const best = pool.find(s => s.et) || pool[0];
   if (!best) return null;
@@ -106,7 +118,7 @@ export function pickNote(word, pos, summaries) {
   const e = et ? shortEtymology(et) : null; if (e && e.length >= 30 && isCleanText(e)) note.e = e;
   const x = pickExample(word, [...same, ...pool].flatMap(s => s.ex).slice(0, 60)); if (x) note.x = x;
   if (best.u) note.u = best.u;
-  const r = cleanRelated(word, [...same, ...pool].flatMap(s => s.rel), 4); if (r.length) note.r = r;
+  const r = cleanRelated(word, [...same, ...pool].flatMap(s => s.rel), 4, known); if (r.length) note.r = r;
   return Object.keys(note).length ? note : null;
 }
 

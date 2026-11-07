@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync, readdirSync} from 'node:fs';
-import {summarize, pickNote, pickExample, cleanRelated, shortEtymology, shardOf, isCleanText, etymologyOk} from '../scripts/lib/notesData.mjs';
+import {summarize, pickNote, pickExample, cleanRelated, shortEtymology, shardOf, isCleanText, etymologyOk, isFragment} from '../scripts/lib/notesData.mjs';
 import {shardKey, noteHTML, marginNoteHTML} from '../src/ui/wordNotes.js';
 
 const sample = readFileSync(new URL('./fixtures/kaikki-notes-sample.jsonl', import.meta.url), 'utf8').trim().split('\n').map(JSON.parse);
@@ -48,6 +48,16 @@ test('template dumps and stray bullets are not shown as etymologies', () => {
   assert.equal(s.et, 'First attested in the late 15th century, from approve + -al.');
   assert.equal(summarize({word: 'approval', pos: 'noun', etymology_text: 'Etymology tree Proto-Indo-European ?', senses: [{glosses: ['The act of approving.']}]}), null);
 });
+test('a fragment of the headword is never a related word, but a derived form is', () => {
+  assert.equal(isFragment('ephemeral', 'hemeral'), true);
+  assert.equal(isFragment('ephemeral', 'ephemerality'), false);
+  assert.deepEqual(cleanRelated('ephemeral', ['hemeral', 'ephemeron', 'ephemerality'], 4), ['ephemeron', 'ephemerality']);
+});
+test('related words must be real words when the caller knows the list', () => {
+  const known = w => w !== 'xyzzy';
+  assert.deepEqual(cleanRelated('ephemeral', ['xyzzy', 'transient'], 4, known), ['transient']);
+  assert.deepEqual(pickNote('ephemeral', 'adjective', byWord.ephemeral, w => w !== 'transient').r, ['fleeting', 'ephemerality']);
+});
 test('a note stays short: example and etymology sizes are bounded', () => {
   const n = pickNote('ephemeral', 'adjective', byWord.ephemeral);
   assert.ok(n.e.length <= 171 && n.x.length <= 150 && n.r.length <= 4);
@@ -81,6 +91,12 @@ test('the boot path does not fetch notes: only the result card and its module re
   assert.deepEqual(fetchers, ['ui/wordNotes.js'], 'only the margin note module fetches a note shard');
   const importers = files.filter(p => /from '[./]*ui\/wordNotes\.js'/.test(readFileSync(p, 'utf8'))).map(rel);
   assert.deepEqual(importers, ['app/card.js'], 'only the result card imports the margin note');
+});
+test('no shipped related word is a fragment of its headword', { skip: !readdirSync('public/data').some(f => f.startsWith('word-notes-')) }, () => {
+  for (const f of readdirSync('public/data').filter(f => /^word-notes-.+\.json$/.test(f))) {
+    const {words} = JSON.parse(readFileSync(`public/data/${f}`, 'utf8'));
+    for (const [w, n] of Object.entries(words)) for (const r of n.r || []) assert.ok(!isFragment(w, r), `${w}: "${r}" is a fragment of it`);
+  }
 });
 test('shipped note shards are small, sorted, clean and keyed by their own letter', { skip: !readdirSync('public/data').some(f => f.startsWith('word-notes-')) }, () => {
   let total = 0;
