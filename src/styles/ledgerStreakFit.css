@@ -1,0 +1,5 @@
+/* The Ember Log row in the Room Ledger: its number keeps its natural width, and its label wraps instead.
+   The row is flex with the label and the number side by side; in a narrow ledger the number was squeezed
+   to a few pixels while the label stayed put, so the "0" streak was clipped. */
+.home .lg-streak dd{flex:0 0 auto}
+.home .lg-streak dt{min-width:0;white-space:normal;overflow-wrap:anywhere}
