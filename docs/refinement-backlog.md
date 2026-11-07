@@ -1989,7 +1989,8 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### SP1. [x] Readable home spine captions (PR #292)
 **Pitch:** The tiny NO. 4 / 113 / LEXICON 44 / 7 ROOMS captions on the home stacks are now 10-11px and centred on the spine. Done: `src/ui/homeSpineSub.{js,css}`.
 
-### SP2. Short Unlimited caption that always fits
+### [x] SP2. Short Unlimited caption that always fits
+**Done:** PR #374. Switches, motion chips and sliders have 44px targets at 320; the guard drops them from its open list.
 **Pitch:** "Find your rank" drops off narrow spines; a shorter caption (e.g. "Unplaced") would stay visible at 320-375px.
 **Brief:** Goal: caption text for Unlimited shortened per width so it never needs to step aside. Files: `src/ui/home.js` (badge), `src/ui/homeSpineSub.js`. **Conflicts:** fireplace layout threads.
 
@@ -2196,6 +2197,16 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Some related words in the note are odd fragments ("hemeral" under ephemeral). Keep only related words that are in the game's own word lists or the synonym data, so the list reads as a set of real neighbours.
 **Brief:** Goal: filter `r` against `words.json`, `room-words.json` and `senses.json` in the builder, then rebuild the shards. Files: `scripts/lib/notesData.mjs`, `scripts/build-word-notes.mjs`. **Conflicts:** WN1.
 
+### SP2. Settings controls at 320 are under 44px
+**Pitch:** On a 320 px phone the Sound switch is 37x21, the sliders are 13px tall and the Calm and Full chips are 29px, so a thumb misses them.
+**Brief:** Goal: give each switch, slider and motion chip a 44px hit area with a transparent pseudo-element or padding, keeping the look. Files: `src/ui/settingsBook.js` (markup only if needed), `src/styles/small-phone.css`. Done when: `scripts/small-phone.mjs` drops the settings entries from its ALLOW list and 320 screenshots show no change. **Conflicts:** sound palette thread (settings sliders).
+### SP3. Home spines are 24px tall on phones
+**Pitch:** The Daily, Unlimited, Shelf, Rooms and Stats spines are the main menu on a phone and each is 24px tall, so they are the hardest targets on the home room.
+**Brief:** Decision for nate: taller spines (layout shifts the room), or two wider spines per row. Files: `src/ui/home.js`, `src/styles/fit.css`. Done when: nate picks A or B from the 320 screenshots in screenshots/small-phone/ and the guard drops `#home .hbook` from ALLOW. **Conflicts:** home layout threads, responsive fit.
+### [x] SP4. Card catalogue tab covers the tagline and the first room dot
+**Done:** PR #374. The card catalogue tab sits on the left wall between the fireplace and Descend at phone width, clear of the tagline and room dots. Guard: `scripts/small-phone.mjs` checks the overlap at 320 and 375. Alternatives logged: the tab on the top bar (crowded by the four buttons), or inside the card catalogue with no floating tab.
+**Pitch:** At 320 the round card catalogue tab sits on top of "Every word is a step into the dark." and over the Reading Room dot, so the first letters of the tagline are hidden.
+**Brief:** Goal: move the tab onto the top bar or below the tagline on phones and make its target 44px. Files: `src/ui/cabinet.css`, `src/styles/small-phone.css`. **Conflicts:** home room threads (tagline, attic tag), G12.
 ### AS1. [~] Almanac progress stats (words met per room, closeness over time, hardest words, best chain)
 **Pitch:** The Almanac gains a progress spread: words met per room, average closeness over the last 21 days, the three hardest words and the longest chain of Folio-or-better answers.
 **Brief:** Goal: pure figures in `src/core/almanacProgress.js` from saves that already exist, layout in `src/ui/almanacProgress.js`. Done when: guard `scripts/almanac-progress.mjs`, 375 and desktop with reduced motion, every room. **Touches:** BOOK. **Conflicts:** 12, 54, 55. **Status:** nate picked B (PR #350, ready for review). A or C would be a follow-up PR; the layout is one module (`src/ui/almanacProgress.js`).
