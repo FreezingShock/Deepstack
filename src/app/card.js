@@ -7,6 +7,7 @@ import {coverLockHTML,coverLockVars} from '../ui/coverLock.js';
 import * as core from '../core/index.js';
 import {Sfx,Feel} from '../feel.js';
 import {feedbackHTML} from '../ui/feedback.js';
+import {clearAllNotes} from '../ui/firstNotes.js';
 import {TIERS,save} from './state.js';
 import {$,RM,esc,sleep} from './util.js';
 import {stampCover,stampPage} from '../ui/coverSigil.js';
@@ -20,6 +21,7 @@ import {marginNoteHTML,wireMarginNote} from '../ui/wordNotes.js';
 /* ---------- result card ---------- */
 export let cardOpts=null;
 export function openCard(b,opts={}){
+ clearAllNotes();
  cardOpts=opts;const T=TIERS[b.tier],L=$('#cardlayer');
  L.innerHTML=`<div class="book t${b.tier}" id="bk" style="--tc:${T.spine};--ti:${T.ink};--tf:${[PALETTE.ash13,PALETTE.ash13,PALETTE.white,PALETTE.white,PALETTE.ash13,PALETTE.white,PALETTE.ash13][b.tier]}">
   <div class="halo" id="halo"></div>
