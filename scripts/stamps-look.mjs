@@ -2,13 +2,14 @@
 //  1. the page opens from the Stats book (its Rooms pages are followed by two Stamps leaves) and shows every seal,
 //  2. the earned seals are lit and the rest are dashed, with the count in the page's kicker,
 //  3. no seal, row or name is cut off by its page, and the page never scrolls sideways,
-//  4. the toast markup fits a phone-width screen with its text whole (checked on a copy of the same markup).
+//  4. the toast slip (the real markup from stampToastInner) fits a phone-width screen with its text whole, open and in view.
 // Writes before/after PNGs to STAMPS_SHOTS (default: screenshots/stamps-look under the project files folder) when set.
 // Skips (exit 0) when no Chromium is available, like the other guards. Set CHROMIUM_PATH to use your own.
 import {createServer} from 'node:http';
 import {readFile, mkdir} from 'node:fs/promises';
 import {extname, join, normalize} from 'node:path';
 import {CATALOG} from '../src/core/stamps.js';
+import {stampToastInner} from '../src/ui/stampToast.js';
 
 const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.svg': 'image/svg+xml'};
 const root = join(process.cwd(), 'dist');
@@ -16,7 +17,8 @@ const server = createServer(async (req, res) => {
   try {
     let p = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname));
     if (p.endsWith('/')) p += 'index.html';
-    res.writeHead(200, {'content-type': TYPES[extname(p)] || 'application/octet-stream'}).end(await readFile(join(root, p)));
+    const body = await readFile(join(root, p)); // read first, so a missing file is a clean 404 and not a second writeHead
+    res.writeHead(200, {'content-type': TYPES[extname(p)] || 'application/octet-stream'}).end(body);
   } catch { res.writeHead(404).end('not found'); }
 });
 await new Promise(r => server.listen(0, r));
@@ -88,24 +90,24 @@ async function run(label, {width, height}) {
     if (r.bad.length) fail(`${label}: cut off or outside its page: ${r.bad.join(', ')}`);
     if (SHOTS) await page.screenshot({path: join(SHOTS, `stamps-${width}.png`)});
 
-    // the toast: the plaque the app builds (src/ui/stampToast.js), shown on home where it appears in a run, with the same stylesheet
+    // the toast: the slip the app builds (src/ui/stampToast.js), open on home with the same stylesheet and the real markup
     await page.goto(url);
     await page.waitForSelector('#bStats', {state: 'attached', timeout: 15000});
     await page.waitForTimeout(600);
-    await page.evaluate(() => {
+    await page.evaluate(html => {
       const d = document.createElement('div');
       d.id = 'stamptoast'; d.setAttribute('role', 'status');
-      d.innerHTML = '<div class="stp-head"><span>2 stamps earned</span></div>'
-        + '<div class="stp-entry"><span class="stp-seal on" style="--c:90,215,110;--d:180ms" aria-hidden="true"><i>\u2713</i></span><div class="stp-text"><b class="stp-name">Perfect Daily</b><small class="stp-where">The Observatory</small><em class="stp-hint">Every word at 78 or better, none skipped.</em></div></div>'
-        + '<div class="stp-entry"><span class="stp-seal on lib" style="--c:205,172,103;--d:340ms" aria-hidden="true"><i>\u2302</i></span><div class="stp-text"><b class="stp-name">Every door opened</b><small class="stp-where">The library</small><em class="stp-hint">Open all 6 topic rooms.</em></div></div>'
-        + '<div class="stp-foot"><span>Kept in the Almanac</span><span>Rooms \u203a Stamps</span></div>';
+      d.innerHTML = html;
       document.body.appendChild(d);
-      d.classList.add('on');
-    });
+      d.classList.add('on', 'open');
+    }, stampToastInner([
+      {id: 'science.perfect', room: 'science', name: 'Perfect Daily', hint: 'Every word at 78 or better, none skipped.', of: {n: 4, total: 6}},
+      {id: 'library.doors', room: null, name: 'Every door opened', hint: 'Open all 6 topic rooms.', of: {n: 8, total: 13}},
+    ]));
     await page.waitForTimeout(500);
     const t = await page.evaluate(() => {
       const el = document.getElementById('stamptoast'), b = el.getBoundingClientRect();
-      const txt = [...el.querySelectorAll('.stp-name, .stp-where, .stp-hint, .stp-head span, .stp-foot span')].every(x => x.scrollWidth <= x.clientWidth + 1);
+      const txt = [...el.querySelectorAll('.stp-name, .stp-where, .stp-hint, .stp-count, .stp-head span, .stp-foot span')].every(x => x.scrollWidth <= x.clientWidth + 1);
       const op = parseFloat(getComputedStyle(el).opacity);
       return {inside: b.left >= 0 && b.right <= innerWidth + 0.5, whole: txt, shown: op > 0.9, sideways: document.documentElement.scrollWidth - document.documentElement.clientWidth};
     });

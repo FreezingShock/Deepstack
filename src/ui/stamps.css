@@ -31,46 +31,74 @@
 /* phones: the seals keep a 44px-ish reach with a 6px gap and the page still fits */
 @media (max-width:600px){.stp-seal{--s:34px}.stp-set{gap:6px}}
 
-/* the toast: a brass plaque, as the Almanac's own cards are. It drops in from the top band, sections itself into a head,
-   one entry per stamp (each seal presses in with a small overshoot, a light sweeps across once) and a foot line. Every
-   motion is opacity or transform on the motion tokens, so it collapses with the rest of the app's motion settings and
-   stops entirely under reduced motion. */
-#stamptoast{position:fixed;left:50%;top:64px;z-index:91;width:max-content;max-width:calc(100vw - 32px);min-width:min(280px,calc(100vw - 32px));
-  box-sizing:border-box;padding:0;border-radius:4px;overflow:hidden;color:var(--c-parchment);font:400 calc(15px*var(--ts,1))/1.3 var(--serif);
-  background:linear-gradient(180deg,color-mix(in srgb,var(--c-oak-8) 92%,var(--c-brass-cdbb92)),var(--c-oak-8) 38%,color-mix(in srgb,var(--c-oak-8) 86%,var(--c-black-alpha-aa)));
-  box-shadow:inset 0 0 0 1px var(--c-brass-cdbb92),inset 0 0 0 4px var(--c-oak-8),inset 0 0 0 5px color-mix(in srgb,var(--c-brass-cdbb92) 45%,transparent),0 12px 28px var(--c-black-alpha-aa);
-  opacity:0;pointer-events:none;transform:translate(-50%,-14px);
-  transition:opacity var(--m-smooth) var(--e-settle),transform var(--m-smooth) var(--e-settle)}
-#stamptoast.on{opacity:1;transform:translate(-50%,0)}
-#stamptoast::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(100deg,transparent 42%,var(--c-white-alpha-22) 50%,transparent 58%);transform:translateX(-110%)}
-#stamptoast.on::after{animation:stpSheen var(--m-linger) var(--e-settle) var(--m-smooth) 1 both}
-@keyframes stpSheen{to{transform:translateX(110%)}}
-@keyframes stpPress{0%{opacity:0;transform:scale(1.7) rotate(-16deg)}55%{opacity:1;transform:scale(.9) rotate(3deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
-#stamptoast .stp-head{display:flex;align-items:center;gap:.6em;padding:.45em .9em .35em;background:color-mix(in srgb,var(--c-black-alpha-aa) 30%,transparent);
-  border-bottom:1px solid color-mix(in srgb,var(--c-brass-cdbb92) 50%,transparent);font:600 calc(11px*var(--ts,1))/1.2 var(--serif);letter-spacing:.14em;text-transform:uppercase;color:var(--c-brass-cdbb92)}
-#stamptoast .stp-head::before,#stamptoast .stp-head::after{content:"\2726";font-size:.9em;opacity:.8}
-#stamptoast .stp-head span{flex:1;text-align:center}
-#stamptoast .stp-entry{display:flex;gap:.8em;align-items:center;padding:.6em .9em}
-#stamptoast .stp-entry+.stp-entry{border-top:1px dashed color-mix(in srgb,var(--c-brass-cdbb92) 35%,transparent)}
-#stamptoast .stp-seal{--s:36px;animation:stpPress var(--m-smooth) var(--e-spring) var(--d,0ms) both}
-#stamptoast .stp-seal i{font-size:calc(14px*var(--ts,1))}
-#stamptoast .stp-text{min-width:0;display:grid;gap:.1em}
-#stamptoast .stp-name{font-weight:600;font-size:calc(16px*var(--ts,1));color:var(--c-parchment)}
-#stamptoast .stp-where{font-size:calc(11px*var(--ts,1));letter-spacing:.1em;text-transform:uppercase;color:var(--c-amber)}
-#stamptoast .stp-hint{font-style:italic;opacity:.78;font-size:calc(14px*var(--ts,1))}
-#stamptoast .stp-foot{display:flex;justify-content:space-between;gap:1em;padding:.35em .9em .45em;font-style:italic;font-size:calc(12px*var(--ts,1));opacity:.7;
-  border-top:1px solid color-mix(in srgb,var(--c-brass-cdbb92) 30%,transparent)}:where(html.rm) #stamptoast,:where(html.rm) #stamptoast .stp-seal,:where(html.rm) #stamptoast::after{transition:none;animation:none}:where(html.rm) #stamptoast::after{display:none}
-html.rm #stamptoast,html.rm #stamptoast .stp-seal,html.rm #stamptoast::after{animation:none}
+/* The stamp toast (stampToast.js): an inked stamp lands on an aged slip of paper, one section per stamp, with the room's
+   progress as a row of pips. The slip lands open, folds to an inked tab after a few seconds so the page under it stays
+   readable, and a tap opens it again. Every motion is a transform or opacity on a motion token (the longest is --m-page,
+   560ms), nothing loops, and :where(html.rm) stops them all. */
+#stamptoast{position:fixed;top:60px;right:10px;left:auto;z-index:91;box-sizing:border-box;width:48px;height:48px;max-width:calc(100vw - 20px);
+  color:var(--c-ink);font:400 calc(15px*var(--ts,1))/1.3 var(--serif);pointer-events:none;
+  opacity:0;transform:translateY(-10px) rotate(-6deg);transform-origin:50% 0;
+  transition:opacity var(--m-smooth) var(--e-settle),transform var(--m-smooth) var(--e-settle),width var(--m-smooth) var(--e-settle)}
+#stamptoast.on{opacity:1;transform:none;pointer-events:auto}
+#stamptoast.open{width:min(344px,calc(100vw - 20px));height:auto;transform:none}
 
-/* The stamp plaque steps aside (stampToast.js): a small brass tab at the top corner that opens the full plaque on tap. */
-#stamptoast{left:auto;right:8px;top:56px;width:46px;height:46px;min-width:0;max-width:none;padding:0;border-radius:50%;transform:translateY(-14px);pointer-events:none}
-#stamptoast.on{transform:none;pointer-events:auto}
-#stamptoast.open{left:8px;width:auto;height:auto;border-radius:4px;transform:none}
-#stamptoast .stp-tab{all:unset;box-sizing:border-box;display:grid;place-items:center;width:100%;height:100%;min-height:44px;cursor:pointer;color:var(--c-parchment);font:600 calc(16px*var(--ts,1))/1 var(--serif);font-variant-numeric:lining-nums}
-#stamptoast .stp-tab:focus-visible{outline:2px solid var(--c-amber);outline-offset:2px;border-radius:50%}
-#stamptoast .stp-plaque{display:none}
-#stamptoast.open .stp-tab{display:none}
-#stamptoast.open .stp-plaque{display:block}
-#stamptoast.open{cursor:pointer}
-:where(html.rm) #stamptoast{transition:none}
+/* the tab: a small inked stamp, the count in its middle. It fades away while the slip is open. */
+#stamptoast .stp-tab{all:unset;box-sizing:border-box;position:absolute;inset:0;display:grid;place-items:center;width:48px;height:48px;border-radius:50%;cursor:pointer;
+  color:var(--c-ink);background:radial-gradient(circle at 36% 30%,var(--c-white-alpha-33),transparent 46%),color-mix(in srgb,var(--c-parchment) 90%,var(--c-brass-cdbb92));
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--c-ink) 70%,transparent),inset 0 0 0 4px color-mix(in srgb,var(--c-parchment) 80%,transparent),inset 0 0 0 5px color-mix(in srgb,var(--c-ink) 55%,transparent),0 3px 8px var(--c-black-alpha-aa);
+  font:600 calc(17px*var(--ts,1))/1 var(--serif);font-variant-numeric:lining-nums;transform:rotate(-8deg);
+  transition:opacity var(--m-quick) var(--e-settle),transform var(--m-quick) var(--e-settle)}
+#stamptoast .stp-tab:focus-visible{outline:2px solid var(--c-amber);outline-offset:3px}
+#stamptoast.open .stp-tab{opacity:0;transform:rotate(-8deg) scale(.6);pointer-events:none}
+#stamptoast .stp-tab span{position:relative;z-index:1}
+
+/* the slip itself: aged paper with no rules, a dotted perforation under the head, a soft shadow */
+#stamptoast .stp-plaque{position:absolute;top:0;right:0;width:100%;height:0;visibility:hidden;box-sizing:border-box;border-radius:3px;overflow:hidden;
+  background:linear-gradient(180deg,var(--c-parchment),color-mix(in srgb,var(--c-parchment) 84%,var(--c-brass-cdbb92)));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c-ink) 24%,transparent),inset 0 0 18px color-mix(in srgb,var(--c-brass-cdbb92) 40%,transparent),0 12px 26px var(--c-black-alpha-aa)}
+#stamptoast.open .stp-plaque{position:relative;height:auto;visibility:visible;animation:stpSlip var(--m-smooth) var(--e-settle) both}
+@keyframes stpSlip{from{opacity:0;transform:translateY(-12px) rotate(-1.5deg)}to{opacity:1;transform:none}}
+
+#stamptoast .stp-head{display:flex;align-items:center;gap:.6em;padding:.5em .95em .4em;border-bottom:1px dotted color-mix(in srgb,var(--c-ink) 42%,transparent);
+  font:600 calc(11px*var(--ts,1))/1.2 var(--serif);letter-spacing:.16em;text-transform:uppercase;color:color-mix(in srgb,var(--c-ink) 78%,transparent)}
+#stamptoast .stp-head::before,#stamptoast .stp-head::after{content:"\2726";font-size:.9em;opacity:.7}
+#stamptoast .stp-head span{flex:1;text-align:center}
+
+#stamptoast .stp-entry{display:flex;gap:.85em;align-items:center;padding:.65em .95em}
+#stamptoast .stp-entry+.stp-entry{border-top:1px dotted color-mix(in srgb,var(--c-ink) 26%,transparent)}
+
+/* the ink stamp: a double ring in the room's ink, a glyph in its middle, pressed on at a slant */
+#stamptoast .stp-mark{--s:50px;--r:-8deg;--ink:color-mix(in srgb,rgb(var(--c)) 74%,var(--c-ink));position:relative;flex:none;display:grid;place-items:center;
+  width:var(--s);height:var(--s);box-sizing:border-box;border-radius:50%;color:var(--ink);font-family:var(--serif);line-height:1;user-select:none;
+  border:2px solid var(--ink);box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--c-parchment) 60%,transparent),inset 0 0 0 4px var(--ink);
+  mix-blend-mode:multiply;transform:rotate(var(--r));
+  animation:stpPress var(--m-smooth) var(--e-spring) var(--d,0ms) both}
+#stamptoast .stp-mark.lib{--r:6deg;--ink:color-mix(in srgb,var(--c-oak-8) 66%,var(--c-brass-cdbb92))}
+#stamptoast .stp-mark i{font-style:normal;font-size:calc(19px*var(--ts,1));font-weight:600}
+/* the ink spreads once, a faint ring that grows and goes */
+#stamptoast .stp-mark::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid var(--ink);opacity:0;pointer-events:none;
+  animation:stpBloom var(--m-smooth) var(--e-ink) calc(var(--d,0ms) + var(--m-quick)) both}
+#stamptoast .stp-entry[data-seen] .stp-mark,#stamptoast .stp-entry[data-seen] .stp-mark::after{animation:none}
+#stamptoast .stp-entry[data-seen] .stp-mark::after{opacity:0}
+@keyframes stpPress{0%{opacity:0;transform:rotate(calc(var(--r) - 12deg)) scale(1.6)}55%{opacity:1;transform:rotate(var(--r)) scale(.9)}100%{opacity:1;transform:rotate(var(--r)) scale(1)}}
+@keyframes stpBloom{0%{opacity:.5;transform:scale(1)}100%{opacity:0;transform:scale(1.45)}}
+
+#stamptoast .stp-text{min-width:0;display:grid;gap:.12em}
+#stamptoast .stp-name{font-weight:600;font-size:calc(16px*var(--ts,1));line-height:1.2;color:var(--c-ink)}
+#stamptoast .stp-where{font-size:calc(11px*var(--ts,1));letter-spacing:.12em;text-transform:uppercase;color:color-mix(in srgb,rgb(var(--c)) 62%,var(--c-ink))}
+#stamptoast .stp-entry.lib .stp-where{color:color-mix(in srgb,var(--c-oak-8) 70%,var(--c-brass-cdbb92))}
+#stamptoast .stp-hint{font-style:italic;color:color-mix(in srgb,var(--c-ink) 74%,transparent);font-size:calc(14px*var(--ts,1));line-height:1.3}
+#stamptoast .stp-prog{display:flex;align-items:center;gap:.5em;margin-top:.3em;font-size:calc(11px*var(--ts,1));color:color-mix(in srgb,var(--c-ink) 70%,transparent)}
+#stamptoast .stp-pips{display:inline-flex;gap:4px}
+#stamptoast .stp-pips i{width:8px;height:8px;border-radius:50%;box-sizing:border-box;border:1.5px solid color-mix(in srgb,var(--c-ink) 50%,transparent)}
+#stamptoast .stp-pips i.on{background:var(--c-ink);border-color:var(--c-ink)}
+#stamptoast .stp-count{font-variant-numeric:lining-nums;white-space:nowrap}
+
+#stamptoast .stp-foot{display:flex;justify-content:space-between;gap:1em;padding:.4em .95em .5em;font-style:italic;font-size:calc(12px*var(--ts,1));
+  color:color-mix(in srgb,var(--c-ink) 66%,transparent);border-top:1px dotted color-mix(in srgb,var(--c-ink) 42%,transparent)}
+
+@media (max-width:600px){#stamptoast .stp-mark{--s:44px}}
+
+/* reduced motion: the slip, the stamps and the tab change in place. Each rule repeats the selector of the animated rule above it
+   (same specificity, later in the file), so the :where() guard wins without a bare media query. */
+:where(html.rm) #stamptoast,:where(html.rm) #stamptoast .stp-tab,:where(html.rm) #stamptoast.open .stp-plaque,:where(html.rm) #stamptoast .stp-mark,:where(html.rm) #stamptoast .stp-mark::after{transition:none;animation:none}

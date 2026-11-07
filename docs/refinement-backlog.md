@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Stamp toast look (TA12, this PR): reply A, B or C. A = an inked stamp on an aged slip that lands open and folds to a stamp tab (built, recommended). B = today's brass plaque (before shots). C = the tab lands folded and the slip opens only on tap. Screenshots: screenshots/stamp-toast/options/ (desktop 1280 and phone 375); before and after for all six rooms in screenshots/stamp-toast/before/ and after/.
 - Daily cover on a desktop (new-modes playtest, PR #390 built as option A): Riddle and Practice moved to a desk spread after the calendar, so the cover fits at 1280 with reduced motion. Reply A, B or C: A = desk spread (built, recommended); B = keep the cover scrolling; C = shrink the calendar. Mockups: screenshots/new-modes-playtest/mockups/.
 - Book ribbon on a phone (Nemesis playtest, PR pending): the bookmark ribbon used to hang over the Almanac's header seal at 375 px with motion on. It now hangs in the page's gutter (14 px, top edge). Reply A, B or C: A = gutter (built, recommended); B = hide the ribbon on phones; C = centre seam (covers the subtitle). Mockups: screenshots/new-modes-playtest/mockups/ribbon-option-{A,B,C}-{375,1280}.png. Also: the stamp plaque is now a small tab at the top corner that opens on tap, so it no longer covers a duel result (screenshots/new-modes-playtest/stamp-tab/).
 - Unlimited roguelike descent (descent thread, #366): play one Unlimited run on your phone and a desktop. Landings come before words 3, 5 and 7 with three doors: Hard room, Rest alcove, Curio shop. Tell me if a failed word (skip or Pamphlet) ends the run too harshly, and whether the three relics read clearly. Options A/B/C are in screenshots/descent/.
@@ -2394,3 +2395,18 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 - NM-PT2: with motion on, the shelf page corner and the calendar arrow poke 2 to 45px past the book edge at desktop. Found by scripts/new-modes-playtest.mjs --motion=no-preference.
 - NM-PT3: the Shelf's bay lists scroll 25px past the desktop page. Decide whether bays page instead.
 
+### [x] TA12. Stamp toast as an inked slip (this PR, PR pending)
+**Pitch:** The stamp toast looked like a brass menu plaque. Now a stamp is pressed onto an aged slip: one section per stamp, the room's progress as pips, and a stamp tab that folds the slip away so the page under it stays readable. A stamp that lands while the slip is up joins it.
+**Brief:** Done. Files: `src/ui/stampToast.js`, `src/ui/stamps.css`, `src/core/stamps.js` (each new stamp carries its group's progress as `of`), `test/stamp-toast-slip.test.js`, `scripts/stamps-look.mjs`. Guards: toast motion at or under 560ms, reduced motion through `:where(html.rm)` at matching specificity, reopening never replays a stamp. Options A, B, C in screenshots/stamp-toast/options/.
+
+### TA13. Stamp ink on the Almanac's seals
+**Pitch:** The Stamps page seals should be the same inked stamp as the toast, so a stamp reads the same on the page as on the slip.
+**Brief:** Goal: restyle the Almanac's `.stp-seal` with the toast's double ring and glyph (same tokens, the room's ink). Files: `src/ui/stamps.css`, `src/ui/stampsPage.js`. **Conflicts:** TA5 page. Done when: the stamps-look guard passes at 375 and 1280.
+
+### TA14. A soft thump when a stamp lands
+**Pitch:** A short, soft press sound as a stamp lands on the slip, in the verdict sound palette and silenced by the Sound setting.
+**Brief:** Goal: one cue fired when `toastStamps` shows a new entry, through the existing sound module. Files: `src/ui/stampToast.js`, `src/sound/`. **Conflicts:** verdict sounds (#353). Done when: a test covers the call and the muted setting silences it.
+
+### TA15. Name the next stamp on the slip
+**Pitch:** Under the new stamps, one line naming the closest unearned stamp in that room, so the slip also says what comes next.
+**Brief:** Goal: pick the first unearned row of `stampRows(S, room)` and show it in the slip's foot. Files: `src/ui/stampToast.js`, `src/core/stamps.js`. **Conflicts:** TA7 (hints on unearned seals).
