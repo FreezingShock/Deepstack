@@ -42,8 +42,5 @@ textarea:focus-visible,#fq:focus-visible{box-shadow:none}
 /* handwritten links inside books */
 .bk-spread.menu .dly .dly-go:active{transform:translateY(1px);opacity:.8}
 .lnk:active,.links .lnk:active{transform:translateY(1px);opacity:.85}
-
-@media (prefers-reduced-motion:reduce){
-  .btn,.bbtn,.fchip,.tpx,.plq,.bs-corner,.rbook,.hbook,.shelfgrid img,.spineimgs img,.bk-spread.menu .sbook{transition-duration:.01ms!important}
-  .btn:hover,.bbtn:hover,.fchip:hover,.tpx:hover,#mark:hover .plq,.bs-corner:hover{transform:none}
-}
+  :where(html.rm) .btn,:where(html.rm) .bbtn,:where(html.rm) .fchip,:where(html.rm) .tpx,:where(html.rm) .plq,:where(html.rm) .bs-corner,:where(html.rm) .rbook,:where(html.rm) .hbook,:where(html.rm) .shelfgrid img,:where(html.rm) .spineimgs img,:where(html.rm) .bk-spread.menu .sbook{transition-duration:.01ms!important}
+  :where(html.rm) .btn:hover,:where(html.rm) .bbtn:hover,:where(html.rm) .fchip:hover,:where(html.rm) .tpx:hover,:where(html.rm) #mark:hover .plq,:where(html.rm) .bs-corner:hover{transform:none}

@@ -58,6 +58,6 @@ test('played days draw a pen ring; today gets an animated underline; reduced mot
  const css=readFileSync(new URL('../src/ui/dailyCalendar.css',import.meta.url),'utf8');
  assert.match(js,/cal-ring/);
  assert.match(css,/@keyframes cal-ring/);assert.match(css,/@keyframes cal-underline/);
- const rm=css.slice(css.indexOf('prefers-reduced-motion'));
+ const rm=css.slice(css.indexOf('where(html.rm)'));
  assert.match(rm,/cal-ring path/);assert.match(rm,/animation:none/);
 });

@@ -29,7 +29,7 @@ test('wet letters are escaped in the mirror html',()=>{
 test('hooked into the run screen without replacing input handlers; reduced motion and 14-letter-safe css',()=>{
  const m=read('src/app/run.js');assert.match(m,/attachInk\(ta\)/);
  const css=read('src/ui/inkInput.css');
- assert.match(css,/prefers-reduced-motion/);assert.match(css,/pointer-events:none/);
+ assert.match(css,/html\.rm/);assert.match(css,/pointer-events:none/);
  assert.doesNotMatch(css,/#[0-9a-fA-F]{3,8}\b/);
  assert.match(read('src/ui/inkInput.js'),/aria-hidden/);
 });

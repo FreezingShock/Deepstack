@@ -14,8 +14,7 @@
 .book-opening .hbook:not(.opening){opacity:0;transform:translateX(-8px) scale(.97);filter:none;transition:opacity var(--m-base) var(--e-cruise),transform var(--m-base) var(--e-cruise)}
 .book-opening .hbook.opening{transform:none}
 .hbook{transition:transform var(--m-base) var(--e-settle),filter var(--m-base),opacity var(--m-base) var(--e-cruise)}
-.hbook:hover,.hbook:focus-visible{transition:transform var(--m-base) var(--e-spring),filter var(--m-base),opacity var(--m-base) var(--e-cruise)}
-@media(prefers-reduced-motion:reduce){.book-opening .hbook:not(.opening){transform:none;transition:opacity var(--m-quick)}}
+.hbook:hover,.hbook:focus-visible{transition:transform var(--m-base) var(--e-spring),filter var(--m-base),opacity var(--m-base) var(--e-cruise)}:where(html.rm) .book-opening .hbook:not(.opening){transform:none;transition:opacity var(--m-quick)}
 
 /* AT8: as a book closes the other spines ease forward in a short ripple (nearest the top first) rather than all at once. */
 .book-opening.book-closing .hbook:not(.opening){transition:opacity var(--m-smooth) var(--e-cruise),transform var(--m-smooth) var(--e-cruise)}
@@ -28,5 +27,4 @@
    `translate`, so it never fights the transform transitions). */
 @keyframes hb-set{0%{translate:0 0}40%{translate:0 var(--hb-dip,1px)}100%{translate:0 0}}
 .book-landed .hbook{animation:hb-set var(--m-base) var(--e-settle)}
-.book-landed .hbook.landed{--hb-dip:2px}
-@media(prefers-reduced-motion:reduce){.book-landed .hbook{animation:none}}
+.book-landed .hbook.landed{--hb-dip:2px}:where(html.rm) .book-landed .hbook{animation:none}

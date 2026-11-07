@@ -77,7 +77,7 @@ html[data-contrast="high"] .keys,html[data-contrast="high"] .hatnote,html[data-c
 html[data-contrast="high"] .btn,html[data-contrast="high"] .bbtn,html[data-contrast="high"] .tpbox{border-color:var(--c-parchment)}
 html[data-contrast="high"] .tpbox,html[data-contrast="high"] .tpbox p{color:var(--c-white)}
 html[data-contrast="high"] #gauge,html[data-contrast="high"] #shelfcap{text-shadow:0 0 3px var(--c-black),0 0 8px var(--c-black)}
-html[data-motion="reduce"] *,html[data-motion="reduce"] *::before,html[data-motion="reduce"] *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-iteration-count:1!important}
-html[data-motion="reduce"] .word span{opacity:1;transform:none}
+html.rm *,html.rm *::before,html.rm *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-iteration-count:1!important}
+html.rm .word span{opacity:1;transform:none}
 /* Graphics has four choices (Auto, High, Medium, Low): on a phone the row wrapped past the panel and clipped Low. Legend gets its own line, buttons share the width. */
 @media (max-width:480px){#sQual{flex-wrap:wrap;row-gap:6px}#sQual legend{flex:0 0 100%}#sQual button{flex:1 1 0;min-width:0;margin-left:0;padding:0 4px}#sQual button+button{margin-left:6px}}

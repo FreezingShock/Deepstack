@@ -60,8 +60,8 @@
  [data-room=roomy] .home .cc-cab,[data-room=cozy] .home .cc-cab,[data-room=snug] .home .cc-cab{display:block}
  [data-room=roomy] .home .ledger,[data-room=cozy] .home .ledger,[data-room=snug] .home .ledger{display:block}
 }
-@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .lg-row .lg-v{animation:none}}
-html[data-motion="reduce"] .home .lg-row .lg-v,html[data-motion="reduce"] .home .ledger.jolt .lg-frame{animation:none}
+html.rm .home .lg-row .lg-v{animation:none}
+html.rm .home .lg-row .lg-v,html.rm .home .ledger.jolt .lg-frame{animation:none}
 
 /* Today's result and the next-descent line sit as the centrepiece of the room */
 .home #bRes{font:500 calc(20px*var(--ts))/1 var(--label);letter-spacing:.22em;padding:16px 34px;min-width:280px}

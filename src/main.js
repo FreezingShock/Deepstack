@@ -124,6 +124,7 @@ import './ui/hintSlips.css';
 import './ui/hintTags.css';
 import './ui/hintTags.js';
 import './ui/firstNotes.css';
+import {initNoteClear} from './ui/firstNotes.js';
 import './ui/feedback.js';
 import './core/feedback.js';
 import './ui/feedback.css';
@@ -156,6 +157,7 @@ initRoomRun();
 initKeys();
 initTopbar({Sfx});initTopbarRail({S,Sfx});installUiSounds(Sfx);
 watchHomeLayout(ui.home);
+initNoteClear();
 World.onLedge(initLedge({tiers:TIERS,canActivate:()=>ui.stage.hidden&&$('#cardlayer').hidden,onOpen:b=>openCard(b,{fresh:false}),showTip,hideTip}));
 const browse=initBrowse({world:World,floors:FLOORS,startOf:floorStartFt,ft:FT,rm:RM});
 World.onDepth(v=>{browse.update(v);const e=$('#dnum');if(e.textContent!==fmtNum(v))e.textContent=fmtNum(v);
@@ -186,7 +188,7 @@ addEventListener('keydown',e=>{
 const bookOpenCard=()=>!$('#cardlayer').hidden;
 BOOK_PAGES.bRooms={...roomsBook(S,{go:id=>goRoom(id),today:utc,lexicon:core.lexicon}),keepOnEsc:bookOpenCard};
 BOOK_PAGES.bPat=patronsBook({S,save,utc,dailyNo:()=>Math.max(1,core.dailyNumber(utc())),pool:()=>WORDS,room:()=>currentRoom(S)}); // the Patrons desk (src/ui/patronsBook.js)
-lazyBooks({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,utc,computeStats,floorAtFt,wordsReady,wordsLoaded:()=>wordsLoaded});
+lazyBooks({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,utc,computeStats,floorAtFt,wordsReady,wordsLoaded:()=>wordsLoaded,save});
 registerLedgerBooks({S,FLOORS,floorStartFt:core.floorStartFt,today:utc,computeStats});
 const RHnow=()=>clamp(innerHeight*.22,108,172);
 applySound();

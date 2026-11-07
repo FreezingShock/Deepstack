@@ -25,9 +25,7 @@
  animation:cal-ring var(--m-page) var(--e-ink) calc(.1s + min(var(--i,0),20)*.07s) backwards}
 @keyframes cal-ring{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 @keyframes cal-underline{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
-@media (prefers-reduced-motion:reduce){
- .bk-spread.menu .dly.cal .cal-ring path,.bk-spread.menu .dly.cal .cal-d.today::after{animation:none}
-}
+ :where(html.rm) .bk-spread.menu .dly.cal .cal-ring path,:where(html.rm) .bk-spread.menu .dly.cal .cal-d.today::after{animation:none}
 .bk-spread.menu .dly.cal button.cal-d:hover,.bk-spread.menu .dly.cal button.cal-d:focus-visible{outline:0;border-color:var(--bk);color:var(--bk)}
 .bk-spread.menu .dly.cal button.cal-d.played:hover,.bk-spread.menu .dly.cal button.cal-d.played:focus-visible{border-color:transparent}
 .bk-spread.menu .dly.cal .cal-week h2{margin-top:6px}

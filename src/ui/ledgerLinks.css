@@ -4,8 +4,7 @@
 .home .lg-row[role="button"]:hover .lg-v,.home .lg-row[role="button"]:focus-visible .lg-v{border-bottom-width:3px;text-shadow:0 0 6px color-mix(in srgb,var(--lg-ink) 45%,transparent)}
 .home .lg-row[role="button"]:focus-visible{box-shadow:0 0 0 2px color-mix(in srgb,var(--lg-ink) 70%,transparent)}
 .home .lg-row[role="button"]:active .lg-v{transform:translateY(1px)}
-@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .lg-row[role="button"] .lg-v{transition:none}}
-html[data-motion="reduce"] .home .lg-row[role="button"] .lg-v{transition:none}
+html.rm .home .lg-row[role="button"] .lg-v{transition:none}
 /* The Floors book */
 .bk-spread.menu .flb-toc{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
 .bk-spread.menu .flb-toc li{display:flex;justify-content:space-between;gap:10px;font:500 calc(19px*var(--ts))/1.3 var(--hand);border-bottom:1px dotted var(--rule)}
@@ -27,9 +26,8 @@ html[data-motion="reduce"] .home .lg-row[role="button"] .lg-v{transition:none}
 /* The top-bar streak chip opens the Ember Log */
 .bg-streak[role="button"]{cursor:pointer;pointer-events:auto;transition:background-color var(--m-quick) var(--e-settle)}
 .bg-streak[role="button"]:hover,.bg-streak[role="button"]:focus-visible{background:color-mix(in srgb,var(--c-brass-65) 14%,transparent)}
-.bg-streak[role="button"]:focus-visible{outline:2px solid var(--c-brass-65);outline-offset:1px}
-@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .bg-streak[role="button"]{transition:none}}
-html[data-motion="reduce"] .bg-streak[role="button"]{transition:none}
+.bg-streak[role="button"]:focus-visible{outline:2px solid var(--c-brass-65);outline-offset:1px}html.rm .bg-streak[role="button"]{transition:none}
+html.rm .bg-streak[role="button"]{transition:none}
 /* The Almanac's link into the Ember Log (the way in on phones) */
 .bk-spread.menu .alm-ember{margin:6px 0 0;padding:2px 0;border:0;border-bottom:1.5px solid currentColor;background:none;cursor:pointer;font:600 calc(19px*var(--ts))/1.3 var(--hand);color:var(--bk)}
 .bk-spread.menu .alm-ember:hover,.bk-spread.menu .alm-ember:focus-visible{border-bottom-width:3px;outline:none}

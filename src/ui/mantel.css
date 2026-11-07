@@ -39,9 +39,8 @@
 .home .mc-lit .mc-flame{animation:mc-light var(--m-smooth) var(--e-settle) both,mc-flick calc(1.9s + var(--r,0)*.13s) ease-in-out infinite;
  animation-delay:calc(300ms + var(--i,0)*110ms),calc(300ms + var(--i,0)*110ms + var(--m-smooth))}
 .home .mc-lit .mc-glow{animation:mc-light var(--m-smooth) var(--e-settle) both,mc-breathe calc(2.3s + var(--r,0)*.11s) ease-in-out infinite;
- animation-delay:calc(300ms + var(--i,0)*110ms),calc(300ms + var(--i,0)*110ms + var(--m-smooth))}
-@media(prefers-reduced-motion:reduce){html:not([data-motion="full"]) .home .mc-lit .mc-flame,html:not([data-motion="full"]) .home .mc-lit .mc-glow{animation:none}}
-html[data-motion="reduce"] .home .mc-lit .mc-flame,html[data-motion="reduce"] .home .mc-lit .mc-glow{animation:none}
+ animation-delay:calc(300ms + var(--i,0)*110ms),calc(300ms + var(--i,0)*110ms + var(--m-smooth))}html.rm .home .mc-lit .mc-flame,html.rm .home .mc-lit .mc-glow{animation:none}
+html.rm .home .mc-lit .mc-flame,html.rm .home .mc-lit .mc-glow{animation:none}
 /* ---- where it sits ---- */
 /* tablets and phones: in the flow above Descend, a size smaller in snug rooms; very short rooms drop it rather than crowd the plaque */
 [data-room=snug] .home .mantel{--mc-s:.8}

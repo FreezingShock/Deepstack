@@ -63,8 +63,7 @@
 .bk-spread.menu .sb-n{flex:none;font:600 calc(16px*var(--ts))/1 var(--bs-hand);font-style:normal;letter-spacing:.02em;color:var(--gild);text-shadow:0 1px 0 var(--c-black-alpha-99)}
 .bk-spread.menu .sb-fav{flex:none;font:400 calc(11px*var(--ts))/1 var(--sans);color:var(--c-amber-92);font-style:normal;text-shadow:0 0 6px var(--c-black)}
 .bk-spread.menu .sbook:hover,.bk-spread.menu .sbook:focus-visible{transform:translateX(calc(var(--o,0px) + 7px));filter:brightness(1.18);z-index:3}
-.bk-spread.menu .sbook:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:2px}
-@media(prefers-reduced-motion:reduce){.bk-spread.menu .sbook{transition:none}}
+.bk-spread.menu .sbook:focus-visible{outline:2px solid var(--c-lamplight);outline-offset:2px}:where(html.rm) .bk-spread.menu .sbook{transition:none}
 .bk-spread.menu .toc{list-style:none;margin:0;padding:0}
 .bk-spread.menu .toc li{display:flex;align-items:baseline;gap:8px;padding:3px 0;font:400 calc(16px*var(--ts)) var(--serif)}
 .bk-spread.menu .toc li::after{content:"";order:1;flex:1;border-bottom:1px dotted var(--mute);opacity:.5}
@@ -108,5 +107,4 @@
 @media(max-width:700px){.bk-spread.menu .bigs{grid-template-columns:1fr 1fr}}
 
 /* a card opened from a menu book sits above the book */
-body:has(.bk-spread) #cardlayer{z-index:100}
-@media(prefers-reduced-motion:reduce){.bk-spread.menu .fchip.pen::after{animation:none}}
+body:has(.bk-spread) #cardlayer{z-index:100}:where(html.rm) .bk-spread.menu .fchip.pen::after{animation:none}

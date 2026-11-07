@@ -1,0 +1,58 @@
+/* The To review view of the Shelf book (reviewPages.js / reviewWire.js). Colours come from the theme tokens; the
+   tier colour of a word arrives as --t on each row or entry. Pages are the book's own parchment, so text is ink. */
+
+.sv-tabs{margin:8px 0 12px}
+.sv-tabs .fchip small{opacity:.75}
+
+.rv-toc{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.rv-row-item{border-bottom:1px dotted var(--c-bronze-41)}
+.rv-jump{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:10px;padding:8px 4px;cursor:pointer;border-radius:3px;color:var(--c-ink)}
+.rv-jump:hover,.rv-jump:focus-visible{background:var(--c-brass-65);background:color-mix(in srgb,var(--c-brass-65) 26%,transparent)}
+.rv-jump:focus-visible{outline:2px solid var(--c-bronze-42);outline-offset:1px}
+.rv-dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--t,var(--c-bronze-41));box-shadow:0 0 0 1px var(--c-ink-alpha-aa)}
+.rv-w{flex:1;min-width:0;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv-s{flex:none;font-size:calc(12px*var(--ts,1));color:var(--c-bronze-35);letter-spacing:.02em}
+
+.rv-entry{color:var(--c-ink);display:flex;flex-direction:column;gap:2px;min-height:0}
+.rv-entry .kicker{margin:0 0 2px}
+.rv-word{margin:0;font-size:calc(30px*var(--ts,1));line-height:1.1;font-style:italic;word-break:break-word}
+.rv-pos{font-style:italic;color:var(--c-bronze-35);font-size:calc(13px*var(--ts,1))}
+.rv-score{display:flex;align-items:center;gap:8px;font-size:calc(13px*var(--ts,1));font-weight:600;margin:0 0 2px}
+.rv-score .rv-dot{width:11px;height:11px}
+.rv-facts{margin:0;display:grid;gap:0}
+.rv-facts dt{font:600 calc(10.5px*var(--ts,1)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--c-bronze-35);margin-top:6px}
+.rv-facts dd{margin:0;font-size:calc(14.5px*var(--ts,1));line-height:1.42}
+.rv-wrote{font-style:italic}
+.rv-ideas{margin:0;padding-left:1.1em;font-size:calc(13.5px*var(--ts,1))}
+.rv-ideas li{margin:1px 0}
+
+/* while a word is being written from memory, its meaning is hidden (the book keeps the layout) */
+.rv-entry.trying .rv-def{visibility:hidden;position:relative}
+.rv-entry.trying .rv-def::before{content:'Hidden while you write from memory.';visibility:visible;position:absolute;inset:0;font-style:italic;color:var(--c-bronze-35)}
+
+/* the book's page-turn corners cover the lower quarter of each page when hovered: the re-try controls sit above them */
+.rv-actions,.rv-form{position:relative;z-index:6}
+.rv-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:8px}
+.rv-try,.rv-back,.rv-go,.rv-close{font:600 calc(12.5px*var(--ts,1)) var(--label);letter-spacing:.08em;text-transform:uppercase;color:var(--c-ink);background:transparent;border:1px solid var(--c-bronze-41);border-radius:3px;padding:8px 12px;cursor:pointer;min-height:36px}
+.rv-try:hover,.rv-back:hover,.rv-go:hover,.rv-close:hover{background:color-mix(in srgb,var(--c-brass-65) 30%,transparent)}
+.rv-try:focus-visible,.rv-back:focus-visible,.rv-go:focus-visible,.rv-close:focus-visible,.rv-in:focus-visible{outline:2px solid var(--c-bronze-42);outline-offset:2px}
+.rv-go{background:var(--c-brass-65);border-color:var(--c-bronze-42)}
+.rv-go:disabled{opacity:.6;cursor:progress}
+.rv-meta{font-size:calc(12px*var(--ts,1));color:var(--c-bronze-35);font-style:italic}
+
+.rv-form{margin-top:6px;display:grid;gap:4px}
+.rv-form[hidden]{display:none}
+.rv-label{font:600 calc(10.5px*var(--ts,1)) var(--label);letter-spacing:.14em;text-transform:uppercase;color:var(--c-bronze-35)}
+.rv-in{width:100%;box-sizing:border-box;resize:vertical;min-height:56px;font:inherit;font-size:calc(15px*var(--ts,1));line-height:1.4;color:var(--c-ink);background:color-mix(in srgb,var(--c-parchment) 70%,#fff);border:1px solid var(--c-bronze-41);border-radius:3px;padding:8px 10px}
+.rv-row{display:flex;gap:8px;flex-wrap:wrap}
+.rv-result{margin:4px 0 0;min-height:1.4em;font-size:calc(13.5px*var(--ts,1));line-height:1.4}
+.rv-result:empty{display:none}
+.rv-entry.won .rv-word::after{content:' \2713';color:var(--c-bronze-42)}
+.rv-form.shake{animation:rvShake .34s linear}
+@keyframes rvShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+html.rm .rv-form.shake{animation:none}
+
+.rv-empty{margin-top:14px}
+
+/* the handwritten margin note and its doodle are drawn at the foot of every page; on an entry they would sit under the form */
+.pg-in:has(> .rv-entry) .ink-note,.pg-in:has(> .rv-entry)>.doodle,.pg-in:has(> .rv-entry)>svg.doodle{display:none}

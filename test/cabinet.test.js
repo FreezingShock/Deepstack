@@ -56,9 +56,9 @@ test('first-visit slip on Rules goes once read',()=>{
 });
 test('css: reduced motion shows and hides the card with no flight or flip',()=>{
  const c=readFileSync(new URL('../src/ui/cabinet.css',import.meta.url),'utf8');
- assert.match(c,/data-motion="reduce"\] \.home \.cc-flip[^{]*\{transition:none\}/);
- assert.match(c,/data-motion="reduce"\] \.home \.cc-slot:not\(\[data-s="on"\]\)\{display:none\}/);
- assert.match(c,/prefers-reduced-motion:reduce/);
+ assert.match(c,/html\.rm \.home \.cc-flip[^{]*\{transition:none\}/);
+ assert.match(c,/html\.rm \.home \.cc-slot:not\(\[data-s="on"\]\)\{display:none\}/);
+ assert.match(c,/html\.rm/);
 });
 test('the ledger still mirrors the cabinet',()=>{
  const l=ledgerHTML({streak:3,deepest:844,books:7,floor:'The Hollow'});

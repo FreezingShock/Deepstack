@@ -7,5 +7,4 @@
 .world-dip.on{opacity:1}
 .world-dip.lift{opacity:0;transition:opacity var(--m-smooth) var(--e-settle)}
 #topPanel.leaving{animation:tpout var(--m-quick) var(--e-accelerate) both;pointer-events:none}
-@keyframes tpout{to{opacity:0}}
-@media(prefers-reduced-motion:reduce){.ghost-fade,#depthHud:not([hidden]),#shelfcap:not([hidden]){animation:none}.world-dip{display:none}}
+@keyframes tpout{to{opacity:0}}:where(html.rm) .ghost-fade,:where(html.rm) #depthHud:not([hidden]),:where(html.rm) #shelfcap:not([hidden]){animation:none}:where(html.rm) .world-dip{display:none}
