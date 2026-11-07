@@ -3,7 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
-- Relic codex and descent history (DS3, PR pending): the Almanac now has two spreads after the curio pages, one for the relics (dated on their first carry) and one for recent descents with personal bests per room. Screenshots: screenshots/relic-codex/. Reply A or B: A = as built, a lost relic shows its name and effect greyed (recommended); B = a silhouette with "???" until carried (DS5).
+- Relic codex and descent history (DS3, #394): the Almanac now has two spreads after the curio pages, one for the relics (dated on their first carry) and one for recent descents with personal bests per room. Screenshots: screenshots/relic-codex/. Reply A or B: A = as built, a lost relic shows its name and effect greyed (recommended); B = a silhouette with "???" until carried (DS5).
 - Unlimited roguelike descent (descent thread, PR pending): play one Unlimited run on your phone and a desktop. Landings come before words 3, 5 and 7 with three doors: Hard room, Rest alcove, Curio shop. Tell me if a failed word (skip or Pamphlet) ends the run too harshly, and whether the three relics read clearly. Options A/B/C are in screenshots/descent/.
 
 - Nemesis rematch (NM1): open the Almanac on your phone and turn to the Wanted page. This week's hardest word sits there as a wanted poster, and the Rematch button is also on its row in the hardest-words list. Tap "Face it this week" and answer. Say whether the poster and the rematch feel right, and which option you want (A, B or C in NM1).
@@ -2297,7 +2297,7 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 **Pitch:** A landing with only three doors feels fixed after a few runs. Add a door that depends on the Lexicon (a rank-gated Scholar's stair) and let the Lexicon change which relics the shop lays out.
 **Brief:** Goal: one more door when the Lexicon is at least 60, and shop relics weighted by rank. Files: `src/core/descent.js`, `src/ui/descentLanding.js`. Done when: a test pins the door appears only at 60 and above, and the 375 landing still fits. **Touches:** RUN. **Conflicts:** DS1.
 
-### DS3. [x] Relics on the Almanac after a run (relic codex and descent history, PR pending)
+### DS3. [x] Relics on the Almanac after a run (relic codex and descent history, #394)
 **Pitch:** A relic kept on a finished run is lost, so a good run leaves nothing behind. Show the relics a run kept as a small row on the Almanac, so the run leaves a mark.
 **Brief:** Goal: keep a count of relics kept per run in `S.descent` (additive) and show them on the Almanac page. Files: `src/app/final.js`, `src/ui/almanac*.js`. Done when: the save round-trips and the Almanac fits at 375. **Touches:** HOME, STATS. **Conflicts:** DS1.
 
