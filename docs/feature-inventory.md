@@ -94,6 +94,7 @@ Update the row for your feature when your PR merges (see CLAUDE.md). The file ma
 | Fonts: Anthropic Serif, Cinzel, Fuzzy Bubbles, Special Elite, Newsreader, IM Fell English, Source Sans 3 (all self-hosted woff2) | `src/ui/fonts.css`, `public/fonts/` | B | Load path (#39): no third-party requests; word list and judge model start after first paint (`src/core/boot.js`), measured by `scripts/loadpath.mjs`. |
 
 ## Persistence and tooling
+- Room playtest (`scripts/room-playtest.mjs`, CI job `playtest`): walks all seven topic rooms at 375 and 1280 with reduced motion (home, one Daily with its result, Unlimited book and word, Rooms book, a door). Fails on sideways or vertical scroll, trapped panes, clipped text outside result cards, console errors, or a control covered by another element.
 | Feature | Files | Q | State and known gaps |
 |---|---|---|---|
 | Save in `localStorage` key `deepstack.v1` (additive fields; falls back to memory if blocked) | `src/main.js` (`store`) | B | No export/import, no versioned migrations, shelf capped. |
