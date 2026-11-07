@@ -127,7 +127,6 @@ jobs:
           node scripts/patrons.mjs
           node scripts/nemesis-check.mjs
           node scripts/onboarding-halo.mjs
-          node scripts/rm-page-fit.mjs
       # Alone on the runner, after the parallel batch: it plays a whole Unlimited descent in every topic room at two sizes,
       # and beside the batch its waits for an answer ran out.
       - name: Descent guard (roguelike landings, relics and carry chips in every topic room)
@@ -157,12 +156,48 @@ jobs:
           path: snapshot-diffs/
           if-no-files-found: ignore
 
+  # Reduced-motion page fit: every book and panel at 375 and 1280 in all seven rooms, with motion on and off. Its own job so the
+  # build job's 30-minute limit is not spent on it (about five minutes here).
+  fit:
+    needs: scope
+    if: needs.scope.outputs.heavy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: public/models
+          key: model-${{ hashFiles('src/scorer/model.js') }}
+      - run: npm run build
+      - name: Get Playwright version
+        id: pw
+        run: echo "v=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: pwcache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.v }}
+      - name: Install Chromium
+        run: |
+          if [ "${{ steps.pwcache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - run: node scripts/rm-page-fit.mjs
+
   # The single required status check: name it "check" in branch protection / rulesets.
   # Runs even when upstream jobs fail or are skipped; passes only if none failed or were cancelled
   # (skipped is fine: that is the docs-only path).
   check:
     if: always()
-    needs: [scope, test, build]
+    needs: [scope, test, build, fit]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
