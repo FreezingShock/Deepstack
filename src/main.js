@@ -28,6 +28,7 @@ import './ui/results.css';
 import './ui/finalPage.css';
 import './ui/dailyShare.css';
 import './ui/card.css';
+import './ui/coreLoop.css';
 import './ui/bookCard.css';
 import './ui/cardFit.js';
 import './ui/pageFit.js';
@@ -171,7 +172,7 @@ initCurios({world:World,canvas:cvEl,enabled:()=>!World.busy,...initCurioFx({S,sa
 onModelStatus(paintJudge);
 addEventListener('keydown',e=>{
  if(!$('#cardlayer').hidden&&cardOpts&&cardOpts.nav&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){const b=$(e.key==='ArrowLeft'?'#cprev':'#cnext');if(b&&!b.disabled){e.preventDefault();b.click();}return;}
- if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'){e.preventDefault();closeCard();return;}
+ if(!$('#cardlayer').hidden&&cardOpts&&(e.key==='Enter')&&e.target.id!=='go'&&!e.defaultPrevented){e.preventDefault();closeCard();return;} // a press that hurried the reveal (card.js) is already handled
  if(e.key==='Escape'){if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();else if(!$('#cardlayer').hidden&&cardOpts&&!cardOpts.onNext)closeCard();}
  if(World.descending&&(e.key===' '||e.key==='Escape'||e.key==='Enter')){e.preventDefault();World.skipDown();}
 });
