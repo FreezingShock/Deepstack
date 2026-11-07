@@ -140,11 +140,23 @@ try {
     await page.locator('#go').click();
     await page.waitForFunction(() => document.querySelector('#cardlayer')?.hidden !== false || !document.querySelector('#cardlayer .book'), null, {timeout: 10000}).catch(() => {});
   };
+  // Each sample is taken once a card has closed (settled), and the median of three counts is kept. The growth is the mean of the
+  // word-to-word changes that are not a run's final screen. That screen (~200 nodes, shown when a run ends and gone when the next
+  // one starts) enters and leaves in single steps at a random phase; end-minus-start over a dozen words spread one such step
+  // over every word (+22 a word, which is how a 12-word window read 35 to 40 on one build). A second one-off step of +93 showed up once, so the cut is 60. An ordinary word adds 0 to ~40 nodes (its spine on the shelf), so steps over 60 are one-off screens, not words.
+  const settled = async () => {
+    await page.waitForFunction(() => { const c = document.querySelector('#cardlayer'); return !c || c.hidden || !c.children.length; }, null, {timeout: 15000}).catch(() => {});
+    await page.waitForTimeout(1200);
+    const s = [];
+    for (let i = 0; i < 3; i++) { s.push(await metrics()); if (i < 2) await page.waitForTimeout(300); }
+    return s.sort((a, b) => a.nodes - b.nodes)[1];
+  };
   for (let i = 0; i < 3; i++) await playOne();
-  const w3 = await metrics();
-  for (let i = 3; i < WORDS; i++) await playOne();
-  const wN = await metrics(), k = WORDS - 3;
-  R.word = {heapKB: (wN.heapMB - w3.heapMB) * 1024 / k, nodes: (wN.nodes - w3.nodes) / k, listeners: (wN.listeners - w3.listeners) / k, end: wN};
+  const seen = [await settled()];
+  for (let i = 3; i < WORDS; i++) { await playOne(); seen.push(await settled()); }
+  const steps = seen.slice(1).map((m, i) => ({heapKB: (m.heapMB - seen[i].heapMB) * 1024, nodes: m.nodes - seen[i].nodes, listeners: m.listeners - seen[i].listeners}));
+  const plain = steps.filter(s => Math.abs(s.nodes) <= 60), mean = k => (plain.length ? plain.reduce((a, s) => a + s[k], 0) / plain.length : 0);
+  R.word = {heapKB: mean('heapKB'), nodes: mean('nodes'), listeners: mean('listeners'), steps: steps.map(s => s.nodes), finalScreenSteps: steps.length - plain.length, end: seen[seen.length - 1]};
   over('heap kept per Unlimited word (KB)', R.word.heapKB, BUDGET.wordHeapKB);
   over('DOM nodes kept per Unlimited word', R.word.nodes, BUDGET.wordNodes);
   over('listeners kept per Unlimited word', R.word.listeners, BUDGET.wordListeners);

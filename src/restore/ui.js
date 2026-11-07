@@ -1,15 +1,16 @@
 /* The Restoration bench: a full-screen manuscript page from the room you are in. Opened from the entry on the home screen
    (src/restore/entry.js). Rendering uses event delegation on one root, and the page repaints only the parts that changed,
    so the sheet's water stain can glide back while the restored entry comes up in ink. Pure rules live in pages.js. */
-import {S, save, WORDS, wordsReady} from '../app/state.js';
+import {S, save, WORDS, wordsReady, utc} from '../app/state.js';
 import {judgeAnswer, prepareWords} from '../scorer/index.js';
 import {Sfx} from '../feel.js';
 import {currentRoom} from '../core/roomStore.js';
 import {roomById} from '../core/rooms.js';
 import {fullPool} from '../core/roomPool.js';
-import {currentPage, pinToWall, restoreOf, saveProgress} from './store.js';
+import {toastStamps} from '../ui/stampToast.js';
+import {currentPage, pinToWall, restoreOf, rewardRestored, saveProgress} from './store.js';
 import {applyScore, applyWord, giveLetter, leaveFaded, pageComplete, pageDamage, smudgedShown} from './pages.js';
-import {passageHTML, sheetHTML, wallHTML, footHTML, roomName, esc} from './markup.js';
+import {passageHTML, sheetHTML, wallHTML, footHTML, roomName, pageNo, esc} from './markup.js';
 import './restore.css';
 
 let root = null, page = null, room = null, view = 'bench', busy = false, opener = null;
@@ -20,7 +21,7 @@ const wordObj = w => WORDS.find(x => x.w === w) || fullPool().find(x => x.w === 
 function shellHTML(body) {
   const n = restoreOf(S).wall.length;
   const title = view === 'wall' ? 'The wall' : roomName(room || currentRoom(S));
-  const no = view === 'bench' && page ? `<span class="rs-no">Page ${page.seed}</span>` : '';
+  const no = view === 'bench' && page ? `<span class="rs-no">${esc(pageNo(page))}</span>` : '';
   return `<div class="rs-stage">
     <header class="rs-top">
       <div class="rs-title"><span class="rs-kicker">Restoration bench</span><h2>${esc(title)} ${no}</h2></div>
@@ -50,7 +51,7 @@ function paint(freshI = -1) {
   sheet.querySelector('.rs-foot').innerHTML = footHTML(page);
   const wb = root.querySelector('[data-act=wall]');
   if (wb) wb.textContent = `The wall (${restoreOf(S).wall.length})`;
-  root.querySelector('.rs-no') && (root.querySelector('.rs-no').textContent = `Page ${page.seed}`);
+  root.querySelector('.rs-no') && (root.querySelector('.rs-no').textContent = pageNo(page));
 }
 
 const msgOf = i => root && root.querySelector(`.rs-p[data-i="${i}"] .rs-msg`);
@@ -68,14 +69,13 @@ function focusNext() {
 
 /* ---------- actions ---------- */
 function settle(i, restored) {
-  if (pageComplete(page)) {
-    pinToWall(S, page);
-    if (restored) Sfx.seal && Sfx.seal();
-  } else {
-    saveProgress(S, page);
-    if (restored) Sfx.flip && Sfx.flip();
-  }
+  const complete = pageComplete(page);
+  if (complete) pinToWall(S, page); else saveProgress(S, page);
+  // a restored entry counts as met for its room; a finished page can earn the wax seal (MR3, MR4)
+  const fresh = restored ? rewardRestored(S, page.passages[i], utc()) : [];
   save();
+  if (restored) { if (complete) Sfx.seal && Sfx.seal(); else Sfx.flip && Sfx.flip(); }
+  toastStamps(fresh);
   paint(restored ? i : -1);
   focusNext();
 }
@@ -111,7 +111,7 @@ function writeWord(i, text) {
 }
 
 function nextPage() {
-  page = currentPage(S, room, WORDS);
+  page = currentPage(S, room, WORDS, utc());
   save();
   view = 'bench';
   if (page) prepareWords(page.passages.map(p => wordObj(p.w)).filter(Boolean)).catch(() => {});
@@ -159,7 +159,7 @@ export async function openRestore(from) {
   await wordsReady;
   opener = from || null;
   room = currentRoom(S);
-  page = currentPage(S, room, WORDS);
+  page = currentPage(S, room, WORDS, utc());
   save();
   if (page) prepareWords(page.passages.map(p => wordObj(p.w)).filter(Boolean)).catch(() => {});
   view = 'bench';
