@@ -240,14 +240,15 @@ export const World=(()=>{
  let shelfVisible=0,lastCam=0,ambItems=[];
  // creatures keep off the alcove (and everything it could be), the top bar and any covering page
  function ambEnv(camNow,top,bot){const n=nicheBox(),ex=[{x:0,y:0,w:W,h:barPx()+10}];for(const [row] of niches){ex.push({x:n.x-44,y:n.t+(row*RH-(H-RH-BM))-camNow-60,w:n.w+88,h:n.h+130});}if(btgt>=-4)ex.push({x:n.x-44,y:n.t-60,w:n.w+88,h:n.h+130});return{W,H,RH,camNow,top,bot,excl:ex,rm:RM,low:lowQuality(),quiet:covNow,busy:!!st||!!rest};}
- let lastDraw=0,coverChk=0,covNow=false,movedAt=0,prevCam=0;const RM_IDLE_MS=80;
+ let lastDraw=0,coverChk=0,covNow=false,bookOn=false,bookAt=-1e9,movedAt=0,prevCam=0;const RM_IDLE_MS=80;
+ const BOOK_OPEN_QUIET_MS=1000; // a settings book has just opened over the library: no world draw while its open motion runs (each draw is ~80 ms of commit at 4x, and that is the book's frame rate)
  let napT=0;const wake=()=>{napT=0;requestAnimationFrame(frame);};const nap=ms=>{napT=setTimeout(wake,Math.max(0,ms-8));};
  if(typeof addEventListener==='function')for(const ev of ['wheel','pointerdown','pointermove','keydown','touchmove'])addEventListener(ev,()=>{movedAt=performance.now();if(napT){clearTimeout(napT);wake();}},{passive:true}); // any input: full frame rate again at once
  const pass=createPass();function doorsPassed(c,now){for(const k of pass.track(c,now,RH,H,RM))if(!(st&&st.skip))Sfx.threshold(k);} // the camera crossed a floor door: sign swings, floor answers
  function frame(now){
-  if(now-coverChk>100){coverChk=now;covNow=worldCovered();} // DOM probe at 10 Hz, not per frame
+  if(now-coverChk>100){coverChk=now;covNow=worldCovered();const wasBook=bookOn;bookOn=!!document.querySelector('.bk-spread.open:not(.closing)');if(bookOn&&!wasBook)bookAt=now;} // DOM probe at 10 Hz, not per frame
   Quality.sample(now);
-  const fa=Feel.ts!==1||!!Feel.ox||!!Feel.oy,gap=Math.max(Quality.params().frameMs,frameInterval({covered:covNow,busy:!!st||!!rest,feelActive:fa}),RM&&!st&&!rest&&!fa&&now-movedAt>500?RM_IDLE_MS:0); // reduced motion: nothing glides, only the dust drifts, so an idle library needs ~12 frames a second, not 60
+  const fa=Feel.ts!==1||!!Feel.ox||!!Feel.oy,quiet=bookOn&&!st&&!rest&&!fa&&now-bookAt<BOOK_OPEN_QUIET_MS?BOOK_OPEN_QUIET_MS:0,gap=Math.max(Quality.params().frameMs,quiet,frameInterval({covered:covNow,busy:!!st||!!rest,feelActive:fa}),RM&&!st&&!rest&&!fa&&now-movedAt>500?RM_IDLE_MS:0); // reduced motion: nothing glides, only the dust drifts, so an idle library needs ~12 frames a second, not 60
   if(gap&&now-lastDraw<gap-4){nap(gap-(now-lastDraw)-4);return;} // sleep until the next drawn frame instead of waking every vsync (battery: covered library, low tier, reduced motion)
   lastDraw=now;
   const rdt=Math.min(gap?.12:.05,(now-last)/1000);last=now;Feel.tick(rdt);const dt=rdt*Feel.ts;vt+=dt*(st&&st.skip?6:1);cv.style.transform=Feel.ox||Feel.oy?`translate(${Feel.ox}px,${Feel.oy}px)`:'';{const cl=document.getElementById('cardlayer');if(cl)cl.style.transform=cv.style.transform;}
