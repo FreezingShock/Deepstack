@@ -81,6 +81,18 @@ Status key: `[ ]` open, `[~]` in progress, `[x]` done (add the PR number).
 - Respect existing decisions (see inventory); if you change something an earlier PR chose on purpose, say so in the PR body and add a test pinning the new behaviour.
 - If the look is new, ask nate at most 3-5 styling questions with a recommended default, then start on the default.
 
+### [x] RM1. Reduced-motion page fit: books fit the same with Calm on (this PR)
+**Pitch:** With Calm (or the OS reduce setting) on, the Daily cover ran past its page at 1280x800 and its calendar page was cut off, because the reduced-motion rule gave every element a 0.01 ms transition, so zoom animated and the page fitter measured the old size. Now every book and panel fits the same as with motion on.
+**Brief:** Done: `html.rm` holds transitions at none (topbar.css, result.css, tactile.css); spine labels keep their tracking when they shrink (homeSpineSub.js). Guard: `scripts/rm-page-fit.mjs` (8 books and panels, 375 and 1280, all 7 rooms, fit compared with motion on and off) and `test/rm-transitions-none.test.js`. Screenshots: screenshots/rm-page-fit/. **Conflicts:** #390 (Daily cover desk spread) and #389 (playtest guard) touch the same cover; #390's split still holds.
+
+### [ ] RM2. Keys button is off screen on phones, so phone players can't reach the Keys book
+**Pitch:** On a 375px phone the Keys book button isn't on screen, and the page-fit guard has to skip it. Nate may want Keys reachable from the rail or the `?` key on phones.
+**Brief:** Goal: decide the phone route to Keys (rail button, a long-press, or the Settings book). Files: `src/ui/topbarRail.js`, `src/ui/keysCore.js`. Done when: a 375px test finds a visible Keys route and `rm-page-fit.mjs` no longer skips it. **Conflicts:** phone top-bar nits (#331), room keys and phone Back (#341).
+
+### [ ] RM3. Small spines keep their caption longer, or drop it on purpose
+**Pitch:** At 320px the Daily spine's title now shrinks to 11px and keeps its tracking, so the caption steps aside sooner. Nate might prefer a smaller title with the caption kept.
+**Brief:** Goal: pick between "caption stays, title drops to 11px" and "caption steps aside first". Files: `src/ui/homeSpineSub.js`. Done when: 320 and 375 screenshots of the spine row (before and after) and a text-fit check. **Conflicts:** home spine work, text-fit sweep.
+
 ## In progress (do not start)
 - [x] S3 + S4. Sigil watermark behind the open card's definition; set crests and wax seal on the Sets book (`stampPage`, `setCrest`)
 - [x] S1 + S2. Big sigils on result-card covers, set books share a ring (`src/ui/coverSigil.js`, PR #174)

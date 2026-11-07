@@ -13,7 +13,8 @@ const server = createServer(async (req, res) => {
   try {
     let p = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname));
     if (p.endsWith('/')) p += 'index.html';
-    res.writeHead(200, {'content-type': TYPES[extname(p)] || 'application/octet-stream'}).end(await readFile(join(root, p)));
+    const body = await readFile(join(root, p)); // read before writing headers: a missing file must reach the 404 below
+    res.writeHead(200, {'content-type': TYPES[extname(p)] || 'application/octet-stream'}).end(body);
   } catch { res.writeHead(404).end('not found'); }
 });
 await new Promise(r => server.listen(0, r));
