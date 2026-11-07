@@ -42,6 +42,8 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 - 2026-11-06 room depth: fine pulling more words from the archive to fill thin rooms; wants every room deep enough to play, so a room should not repeat its words within weeks.
 - 2026-11-07 unique features: asked for "something more unique" beside the weekly challenge -> built Patrons, a visitor-driven feature tied to the topic rooms and rewarding the Shelf and Almanac
 
+- 2026-11-07 books: "make every book readable and usable" -> every open page at 375 and laptop: no text under 12px, every button 44px, long pages say "more ↓" instead of cutting text off (thread: make every book readable and usable)
+
 ## 3. How he works
 
 - Starts many threads at once (picked 11 menu numbers in one message) and wants them "all working in conjunction". Wants independence checked between threads.
