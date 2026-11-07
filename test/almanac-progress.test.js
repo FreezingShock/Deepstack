@@ -77,6 +77,6 @@ test('the Almanac gains the progress spread only once something is answered', ()
   const ctx = {TIERS, FLOORS, floorStartFt};
   const base = {runs: 1, books: 1, answered: 1, tiers: [1, 0, 0, 0, 0, 0, 0], rarest: 0, best: null, deepest: 0, deepestDay: null, totalFt: 0, avg: 20, streak: 1, bestStreak: 1, recent: []};
   assert.equal(statsLeaves(base, {}, ctx).length, 4);
-  assert.equal(statsLeaves(base, save(), ctx).length, 6);
+  assert.equal(statsLeaves(base, save(), ctx).length, 7);
   assert.match(statsLeaves(base, save(), ctx)[5], /class="alm pg pg-b"/);
 });

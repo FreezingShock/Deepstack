@@ -5,6 +5,11 @@ import {esc} from './bookpages.js';
 import {ROOMS, rgbOf} from '../core/rooms.js';
 import {TIERS} from '../core/tiers.js';
 import {progressFigures, TREND_DAYS} from '../core/almanacProgress.js';
+import {fullPool} from '../core/roomPool.js';
+import {dayKey} from '../core/stats.js';
+import {nemesisPoster} from './nemesis.js';
+import {weekStartOf} from '../core/weekly.js';
+import {duelState, nemesisOf} from '../core/nemesis.js';
 
 export const HARDEST_SHOWN = 3;
 const fmtDay = k => new Date(k + 'T00:00:00Z').toLocaleDateString(undefined, {month: 'short', day: 'numeric', timeZone: 'UTC'});
@@ -30,12 +35,14 @@ export function roomBars(rooms) {
   return `<ul class="pg-bars">${rooms.map(r => `<li style="--c:${rgbOf(ROOMS.find(x => x.id === r.id))}"><span class="pg-n"><i></i>${esc(r.short)}</span><span class="pg-track"><i style="width:${Math.round(r.met / mx * 100)}%"></i></span><b>${r.met}</b></li>`).join('')}</ul>`;
 }
 
-/** Hardest words: word, tier in its ink colour, average closeness, and how many tries. */
-export function hardestList(list) {
+/** Hardest words: word, tier in its ink colour, average closeness, and how many tries. `nm` is this week's open Nemesis word:
+ *  its row gets a Rematch button (class nm-go, wired by bookMenusLoad.js). */
+export function hardestList(list, nm = null) {
   if (!list.length) return '<p class="empty hand">Nothing answered yet.</p>';
   return `<ul class="pg-hard">${list.map(h => {
     const t = TIERS[h.tier] || TIERS[0];
-    return `<li><span class="pg-w">${esc(h.w)}</span><span class="pg-tier" style="color:${t.ink}">${esc(t.name)}</span><b>${h.avg}</b><small>${h.n} ${h.n === 1 ? 'try' : 'tries'}</small></li>`;
+    const rematch = nm && nm.open && nm.w === h.w ? `<button class="pg-nm nm-go pen-ink" type="button">Rematch \u2192</button>` : '';
+    return `<li><span class="pg-w">${esc(h.w)}</span><span class="pg-tier" style="color:${t.ink}">${esc(t.name)}</span><b>${h.avg}</b><small>${h.n} ${h.n === 1 ? 'try' : 'tries'}${rematch}</small></li>`;
   }).join('')}</ul>`;
 }
 
@@ -45,10 +52,12 @@ export function chainLine(f) {
   return `Longest chain: ${f.chain.n} Folio-or-better answers in a row${when}, ending on ${esc(f.chain.w)}.`;
 }
 
-/** The two Progress leaves for one save, or [] when nothing has been answered yet. */
-export function progressLeaves(S) {
+/** The Progress leaves for one save (Words met, Closeness, Wanted), or [] when nothing has been answered yet. `today` is a local day key; `pool` the word
+ *  list the Nemesis is drawn from (the whole library by default). */
+export function progressLeaves(S, today = dayKey(Date.now()), pool = fullPool()) {
   const f = progressFigures(S);
   if (!f.answered) return [];
+  const poster = nemesisPoster(S, today, pool), rec = nemesisOf(S, weekStartOf(today)), nm = rec ? {w: rec.w, open: duelState(S, weekStartOf(today)) === 'open'} : null;
   const named = f.rooms.filter(r => r.met).length;
   const left = `<div class="alm pg pg-b"><h1>Words met</h1><div class="kicker">${f.distinct} ${f.distinct === 1 ? 'word' : 'words'} across ${named} ${named === 1 ? 'room' : 'rooms'}</div>
     <ul class="pg-figs"><li><b>${f.distinct}</b><span>words met</span></li><li><b>${f.answered}</b><span>answers</span></li><li><b>${f.avg}</b><span>avg closeness</span></li><li><b>${f.chain ? f.chain.n : 0}</b><span>best chain</span></li></ul>
@@ -56,6 +65,9 @@ export function progressLeaves(S) {
     <h2>Chains</h2><p class="note">${chainLine(f)}</p></div>`;
   const right = `<div class="alm pg pg-b"><h1>Closeness</h1><div class="kicker">Average over the last ${Math.min(TREND_DAYS, f.trend.length)} ${f.trend.length === 1 ? 'day' : 'days'} you answered</div>
     <h2>Over time</h2>${closenessChart(f.trend)}
-    <h2>Hardest words</h2>${hardestList(f.hardest.slice(0, HARDEST_SHOWN))}</div>`;
-  return [left, right];
+    <h2>Hardest words</h2>${hardestList(f.hardest.slice(0, HARDEST_SHOWN), nm)}</div>`;
+  /* the Nemesis poster gets its own leaf: on the Closeness page it ran 300 px past the page on desktop */
+  const wanted = `<div class="alm pg pg-b pg-wanted"><h1>Wanted</h1><div class="kicker">Nemesis of the week</div>${poster}
+    <p class="note">The word you miss most. Beat it at Folio or better and it leaves the wall for good.</p></div>`;
+  return [left, right, wanted];
 }
