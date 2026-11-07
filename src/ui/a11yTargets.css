@@ -22,7 +22,8 @@
 
 /* Desk props (brass bell, due-date stamp) */
 #dp-bell,#dp-stamp{position:relative}
-#dp-bell::after{content:"";position:absolute;inset:-8px -7px;pointer-events:auto}
+/* the bell's bottom edge sits on the card catalogue's tag, so its slop reaches up (46px in all) */
+#dp-bell::after{content:"";position:absolute;left:-7px;right:-7px;top:-14px;bottom:0;pointer-events:auto}
 #dp-stamp::after{content:"";position:absolute;inset:-7px -8px;pointer-events:auto}
 
 /* Word screen: the hint and skip buttons */
@@ -47,6 +48,11 @@
 /* Librarian's Card rows you can open: the value button reaches 44px tall with the same drawn position
    (negative margin cancels the padding), and 44px wide so a one-digit value is still an easy target */
 .home .lg-row.lg-link .lg-val{min-width:44px;min-height:44px;padding-block:9px;margin-block:-9px}
+/* Result card's main button: the card is a .book zoomed by --fz on phones, so its 44px floor is divided by that zoom */
+#cardlayer #go{min-height:calc(44px / var(--fz,1));box-sizing:border-box}
+/* Settings: volume and effects sliders (17px tall as drawn) and the Reset progress button (36px) */
+.bk-spread.panel .sb-slider input[type="range"]{min-height:44px;box-sizing:border-box}
+.bk-spread.panel .sb-reset{min-height:44px!important;box-sizing:border-box}
 /* Top bar Ember Log chip: hit slop above and below */
 #bar .bg-streak[role="button"]{position:relative}
 #bar .bg-streak[role="button"]::after{content:"";position:absolute;inset:-8px 0;pointer-events:auto}

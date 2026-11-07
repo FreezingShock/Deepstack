@@ -42,10 +42,10 @@ function rideHome(px,t){
 function paintCue(){
  if(!cue)return;
  if(!cue.firstChild)cue.innerHTML='<span class="ach-hatch" aria-hidden="true"><span class="ach-glow"></span><span class="ach-lid"><span class="ach-word">Attic</span></span></span>'
-  +'<span class="ach-cord" aria-hidden="true"><span class="ach-rope"></span><span class="ach-tag"><b></b></span></span>';
+  +'<span class="ach-cord" aria-hidden="true"><span class="ach-rope"></span><span class="ach-tag"><b></b></span></span><span class="sr-only"></span>';
  cue.querySelector('.ach-tag b').textContent=count;
  fitRail();
- cue.setAttribute('aria-label',`Pull the cord and climb up to the attic: ${count} ${count===1?'book':'books'}`);
+ cue.querySelector('.sr-only').textContent=`Attic: pull the cord and climb up, ${count} ${count===1?'book':'books'}`; // a name from content, not aria-label: the count badge is visible text
 }
 /* After a book is dusted off: re-list what the attic holds and refresh the entrance. */
 export function refreshAttic(shelf){

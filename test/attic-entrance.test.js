@@ -5,7 +5,7 @@ const js=readFileSync('src/ui/atticHome.js','utf8'),css=readFileSync('src/ui/att
 test('the attic entrance is a real button with the count in its label and on the tag',()=>{
  assert.match(js,/createElement\('button'\)/);
  assert.match(js,/ach-hatch/);assert.match(js,/ach-tag/);
- assert.match(js,/aria-label',`Pull the cord and climb up to the attic: \$\{count\}/);
+ assert.match(js,/sr-only'\)\.textContent=`Attic: pull the cord and climb up, \$\{count\}/); // a name from content: no aria-label, so the visible count cannot mismatch it
  assert.ok(!/↑ The attic/.test(js),'old pill text is gone');
 });
 test('the entrance sits dead centre in the ceiling and uses the shared motion tokens',()=>{

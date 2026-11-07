@@ -12,8 +12,9 @@ test('a door plate shows Daily: done once the room has played today', async () =
   const {doorHTML} = await import('../src/ui/roomHome.js');
   const h = doorHTML(ROOMS[1], 'prev', '0 of 413 met', true);
   assert.match(plateOf(h), /<small class="rm-daily done">Daily: done<\/small>/);
-  assert.match(h, /aria-label="Previous room: The Chronicle, History, Daily done"/);
-  assert.match(h, /Previous room: The Chronicle/); // the name and topic stay as they were
+  // the accessible name is the text the door shows: the sr-only direction, the room name and topic, and the Daily line
+  const text = h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  assert.match(text, /Previous room: The Chronicle History .*Daily: done/);
 });
 
 test('a door plate shows Daily: open while today\'s Daily is still to play', async () => {
@@ -21,7 +22,8 @@ test('a door plate shows Daily: open while today\'s Daily is still to play', asy
   const h = doorHTML(ROOMS[3], 'next', '0 of 809 met', false);
   assert.match(plateOf(h), /<small class="rm-daily open">Daily: open<\/small>/);
   assert.doesNotMatch(plateOf(h), /Daily: done/);
-  assert.match(h, /Daily open"/);
+  const text = h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  assert.match(text, /Next room: The Observatory .*Daily: open/);
 });
 
 test('no Daily line when the caller does not say (the old call shape)', async () => {

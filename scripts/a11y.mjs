@@ -77,6 +77,7 @@ async function targets(page, vp, state) {
       return n;
     };
     const out = [];
+    const cardUp = document.querySelector('#cardlayer.on:not([hidden]), .keyhelp');
     for (const el of document.querySelectorAll(sel)) {
       const cs = getComputedStyle(el);
       // inert controls (behind an open book) cannot be tapped, so their size is not a target
@@ -86,7 +87,10 @@ async function targets(page, vp, state) {
       // KNOWN GAP, listed in the backlog: on phones the depth tracker's floor buttons are 19px-wide slivers of the rail,
       // and the rail sits on top of them, so no slop reaches 44px without moving the rail. Exempted by name, printed below.
       if (el.closest('nav[aria-label="Depth tracker"]') && el.tagName === 'BUTTON') continue;
-      const min = el.matches('.rm-dot') ? 24 : 44;
+      // a control under an open modal layer (the result card, the shortcut panel) cannot be tapped now, so it is not a target here
+      if (cardUp && !cardUp.contains(el)) continue;
+      // WCAG 2.5.8 (AA) minimum is 24px. Room lights and book spines sit side by side, so they keep the spacing exception.
+      const min = el.matches('.rm-dot, .ledgebook') ? 24 : 44;
       if (r.width >= min && r.height >= min) continue;
       const max = 44;
       const w = r.width + reach(el, -1, 0, max, r) + reach(el, 1, 0, max, r);
@@ -194,8 +198,12 @@ for (const [vp, width, height] of VIEWPORTS) {
       await focusRings(page, vp, 'result card', 12);
     } else skipped.push(`${vp}: result card not reached (the judge did not answer, so the answer never submitted)`);
   }
+  // the room, the dialogs and the top bar start again from a fresh load: a finished word can leave its card layer up
+  await page.goto(url, {waitUntil: 'load'});
+  await page.locator('#bPlay, #bRes').first().waitFor({state: 'visible', timeout: T}).catch(() => {});
+  await page.addScriptTag({path: AXE});
+  await settle(page, 1200);
   // a topic room: enter one from its side door (desktop) or its ring light (phone), then audit the room's home
-  await page.keyboard.press('Escape').catch(() => {});
   const home = page.locator('#bPlay, #bRes').first();
   if (await home.count()) {
     const door = page.locator('.rm-door.rm-next, .rm-dot:not(.on)').first();
@@ -213,13 +221,14 @@ for (const [vp, width, height] of VIEWPORTS) {
   for (const [id, name] of [['bSettings', 'Settings'], ['bCredits', 'Credits'], ['bKeys', 'Keyboard shortcuts']]) {
     const btn = page.locator(`#${id}`).first();
     if (!(await btn.count())) continue;
+    if (!(await btn.isVisible())) { skipped.push(`${vp}: ${name} dialog (its top-bar button is hidden at this width, by design)`); continue; }
     await btn.click({timeout: T}).catch(() => {});
     if (await page.locator('[role=dialog]:not([hidden])').first().waitFor({state: 'visible', timeout: T}).then(() => true, () => false)) {
       await settle(page, 700);
       await audit(page, vp, `${name} dialog`);
       await targets(page, vp, `${name} dialog`);
       await focusRings(page, vp, `${name} dialog`, 30);
-    }
+    } else problems.push(`${vp}: ${name} dialog did not open`); // a screen that never opens must not pass silently
     await page.keyboard.press('Escape');
     await settle(page, 500);
   }
