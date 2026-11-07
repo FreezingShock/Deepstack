@@ -2157,3 +2157,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### CF3. Judge wait shows a real progress note
 **Pitch:** When the librarian is still arriving the wait is silent for up to 6 s before a note appears.
 **Brief:** Goal: start the "Reading your answer" note with a small candle-flicker on the slip, not after the 6 s fallback. Files: `src/scorer/index.js` (onWait timing), `src/ui/coreLoop.css`. Done when: a test pins the note at 300 ms.
+
+### G17. [x] Phone hints: newest in the strip, the rest one tap away (changeable)
+**Serves:** easy to understand, hints you can re-read, nothing squeezes the answer slip.
+**Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
+**Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
+**Touches:** RUN. **Conflicts:** G12, G15.
