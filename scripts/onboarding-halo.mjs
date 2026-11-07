@@ -8,7 +8,7 @@ import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {extname, join, normalize} from 'node:path';
 import {createRequire} from 'node:module';
-import {HOME_NOTES, NOTE_TARGET} from '../src/ui/firstNotes.js';
+import {HOME_NOTES, noteSelector, PHONE_DOOR_TEXT, DOOR_MIN_WIDTH} from '../src/ui/firstNotes.js';
 
 const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.otf': 'font/otf', '.jpg': 'image/jpeg', '.png': 'image/png'};
 const root = join(process.cwd(), 'dist');
@@ -52,6 +52,7 @@ const readOut = ({key, sel}) => new Promise(done => requestAnimationFrame(() => 
     halo: box(halo),
     halohidden: !!(halo && halo.hidden),
     panel: box(document.querySelector(`.fcall[data-note="${key}"]`)),
+    panelText: (document.querySelector(`.fcall[data-note="${key}"]`) || {}).textContent || '',
     vw: innerWidth, vh: innerHeight,
   });
 })));
@@ -82,7 +83,8 @@ const driftOf = o => {
 
 async function checkCase([w, h], reduce, room, key) {
   const tag = `${w}x${h} ${reduce ? 'reduced' : 'motion'} ${room} ${key}`;
-  const sel = NOTE_TARGET[key];
+  const sel = noteSelector(key, w); // the app's own choice at this width: a phone's door line lights the ring of room lights
+  const wantText = key === 'home.doors' && w < DOOR_MIN_WIDTH ? PHONE_DOOR_TEXT : HOME_NOTES.find(([k]) => k === key)[1];
   const ctx = await browser.newContext({viewport: {width: w, height: h}, reducedMotion: reduce ? 'reduce' : 'no-preference'});
   const page = await ctx.newPage();
   const errs = [];
@@ -127,6 +129,7 @@ async function checkCase([w, h], reduce, room, key) {
   const o = await read();
   if (!o.panel) failures.push(`${tag}: no panel with the note`);
   else {
+    if (o.panelText !== wantText) failures.push(`${tag}: panel says "${o.panelText}", expected "${wantText}"`);
     const p = o.panel, t = o.tgt;
     if (p.l < 0 || p.t < 0 || p.r > o.vw || p.b > o.vh) failures.push(`${tag}: panel runs off screen (${[p.l, p.t, p.r, p.b].map(Math.round)})`);
     const overlaps = !(p.r <= t.l || p.l >= t.r || p.b <= t.t || p.t >= t.b);
