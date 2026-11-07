@@ -58,3 +58,11 @@
 .bk-spread.menu .dly .dly-words .w{font-size:calc(22px*var(--ts))}
 .bk-spread.menu .dly .dly-words .d{font-size:calc(17px*var(--ts));line-height:1.15}
 .bk-spread.menu .dly .dly-res{gap:4px}
+
+/* The Daily cover (src/ui/dailyBook.js coverLeaf): each section's button sits beside its heading, so the four sections
+   (Daily, Riddle, the weekly theme, Practice) fit the left page at phone and desktop sizes instead of running off its bottom edge. */
+.bk-spread.menu .dly.dly-cover .dly-sec{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;align-items:center;margin-top:8px;padding-top:2px}
+.bk-spread.menu .dly.dly-cover .dly-sec h2{grid-column:1;grid-row:1;margin:0}
+.bk-spread.menu .dly.dly-cover .dly-sec .dly-act,.bk-spread.menu .dly.dly-cover .dly-sec .dly-go{grid-column:2;grid-row:1;margin:0;padding:2px 6px;white-space:nowrap}
+.bk-spread.menu .dly.dly-cover .dly-sec .dly-line,.bk-spread.menu .dly.dly-cover .dly-sec .dly-tally{grid-column:1 / -1;margin:2px 0 4px}
+.bk-spread.menu .dly.dly-cover .dly-sec .dly-go{font:600 calc(24px*var(--ts)) var(--hand);color:var(--bk);background:none;border:0;cursor:pointer;text-decoration:underline wavy;text-decoration-thickness:1px;text-underline-offset:5px}

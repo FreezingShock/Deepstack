@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Daily cover on a desktop (new-modes playtest, PR pending): the left page holds Daily, Daily Riddle, Week of the Sea and Practice. At 1280x800 with reduced motion they run about 250px past the page and the cover scrolls; with motion on the page fitter shrinks it and it fits. Pick one: A = Week and Practice move to their own cover spread (recommended); B = keep scrolling; C = shrink the calendar to make room. Screenshots: screenshots/new-modes-playtest/before/1280/hall-daily-cover.png and after/1280/hall-daily-cover.png.
 - Book ribbon on a phone (Nemesis playtest, PR pending): the bookmark ribbon used to hang over the Almanac's header seal at 375 px with motion on. It now hangs in the page's gutter (14 px, top edge). Reply A, B or C: A = gutter (built, recommended); B = hide the ribbon on phones; C = centre seam (covers the subtitle). Mockups: screenshots/new-modes-playtest/mockups/ribbon-option-{A,B,C}-{375,1280}.png. Also: the stamp plaque is now a small tab at the top corner that opens on tap, so it no longer covers a duel result (screenshots/new-modes-playtest/stamp-tab/).
 - Unlimited roguelike descent (descent thread, #366): play one Unlimited run on your phone and a desktop. Landings come before words 3, 5 and 7 with three doors: Hard room, Rest alcove, Curio shop. Tell me if a failed word (skip or Pamphlet) ends the run too harshly, and whether the three relics read clearly. Options A/B/C are in screenshots/descent/.
 
@@ -2387,3 +2388,9 @@ Brief: on the Room Ledger, a room's "N of M met" line adds a small "+2 restored"
 
 ### PL4. [ ] One world plate draw takes 250-400 ms on the first frame of a room switch
 **Pitch:** During a room switch one `floorProp` plate draw (`src/world/world.js`) costs 250-400 ms at 4x. The same draw is about 1 ms when idle, and font and canvas state look clean, so the cost is likely a raster flush. **Brief:** Goal: find what the first frame after the key flushes (a deferred draw from the previous room, or a bitmap). Files: `src/world/world.js`. Done when: first-frame long task under 150 ms at 4x. **Conflicts:** world.js.
+
+## New from the new-modes playtest
+- NM-PT1: the reduced-motion desktop Daily cover ignores the page fitter's zoom (src/ui/pageFit.js); with motion on it fits. Find out why the page fitter's zoom is ignored under reduced motion first, then choose A, B or C.
+- NM-PT2: with motion on, the shelf page corner and the calendar arrow poke 2 to 45px past the book edge at desktop. Found by scripts/new-modes-playtest.mjs --motion=no-preference.
+- NM-PT3: the Shelf's bay lists scroll 25px past the desktop page. Decide whether bays page instead.
+
