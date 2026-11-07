@@ -23,3 +23,11 @@ test('the walk is wired into CI beside the other browser checks', () => {
   assert.match(ci, /node scripts\/settings-walk\.mjs & walk=\$!/);
   assert.match(ci, /wait \$walk \|\| rc=1/);
 });
+
+test('the Settings page drops the margin note that main writes on every menu page', () => {
+  assert.match(css, /\.bk-spread\.panel\.menu \.ink-note\{display:none\}/);
+});
+
+test('Settings rows are tighter so both pages fit a 1280x800 window', () => {
+  assert.match(css, /\.bk-spread\.panel \.tprow\{padding:8px 0\}/);
+});

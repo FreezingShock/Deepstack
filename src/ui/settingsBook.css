@@ -24,3 +24,10 @@
 /* the page-turn corners reach up the page edges on a phone (home.css), so a control on the second page could sit under a
    turn zone and a tap would flip the page instead. Settings controls lift above the zones. */
 .bk-spread.panel .sb-group button,.bk-spread.panel .sb-group input,.bk-spread.panel .sb-group [role="switch"],.bk-spread.panel .sb-confirm .btn{position:relative;z-index:5}
+/* ink.js writes a handwritten margin note (and a blot) at the foot of every menu book page. Settings is a full page of
+   controls, so the note spilled past the page number at every size once main added it. The panel book drops the note;
+   the ink on the title, rules and doodle stays. */
+.bk-spread.panel.menu .ink-note{display:none}
+/* the Settings page is a full page of rows: tighter row rhythm keeps both pages inside the book's box on a 1280x800 window */
+.bk-spread.panel .tprow{padding:8px 0}
+.bk-spread.panel .tpseg{padding:8px 0}
