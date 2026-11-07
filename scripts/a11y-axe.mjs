@@ -57,18 +57,21 @@ async function open(view, room) {
   return {ctx, page};
 }
 
+const incomplete = []; // colour-contrast checks axe could not decide (text over images or gradients): reported, not failing
 async function audit(page, tag) {
   await page.addScriptTag({content: AXE});
   const res = await page.evaluate(async tags => {
-    const r = await window.axe.run(document, {runOnly: {type: 'tag', values: tags}, resultTypes: ['violations']});
-    return r.violations.map(v => ({id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.slice(0, 4).map(n => ({target: n.target.join(' '), summary: (n.failureSummary || '').split('\n').slice(0, 2).join(' ')}))}));
+    const r = await window.axe.run(document, {runOnly: {type: 'tag', values: tags}, resultTypes: ['violations', 'incomplete']});
+    const inc = r.incomplete.filter(v => v.id === 'color-contrast').flatMap(v => v.nodes.map(n => n.target.join(' ')));
+    return {inc, violations: r.violations.map(v => ({id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.slice(0, 4).map(n => ({target: n.target.join(' '), summary: (n.failureSummary || '').split('\n').slice(0, 2).join(' ')}))}))};
   }, TAGS);
-  for (const v of res) {
+  incomplete.push(...res.inc);
+  for (const v of res.violations) {
     if (ALLOW.some(a => a.rule === v.id && (!a.room || tag.includes(a.room)))) continue;
     problems.push(`${tag}: [${v.impact}] ${v.id}: ${v.help} (${v.nodes.length}+ nodes)`);
     if (REPORT) for (const n of v.nodes) console.log(`    ${n.target}  ${n.summary}`);
   }
-  return res.length;
+  return res.violations.length;
 }
 
 for (const view of VIEWS) for (const room of ROOMS) {
@@ -107,4 +110,5 @@ if (problems.length) {
   for (const p of problems) console.error('  ' + p);
   process.exit(1);
 }
+if (incomplete.length) console.log(`a11y-axe: ${incomplete.length} colour-contrast check(s) axe could not decide (not failing): ${[...new Set(incomplete)].slice(0, 8).join(', ')}`);
 console.log(`a11y-axe: ok (${ROOMS.length} rooms x ${VIEWS.map(v => v.w).join('/')}px, home and run, ${TAGS.join(' ')})`);
