@@ -28,3 +28,6 @@
 .bk-spread.menu .dly.cal .cal-nav:focus-visible,.bk-spread.menu .dly.cal button.cal-d:focus-visible,.bk-spread.menu .fchip:focus-visible{outline:2px solid var(--c-blood-34);outline-offset:3px}
 .hbook:focus-visible,.descend:focus-visible{outline:3px solid var(--c-lamplight);outline-offset:4px}
 .attic-cue-home:focus-visible .ach-hatch,.attic-down:focus-visible .adl-frame{outline:3px solid var(--c-lamplight);outline-offset:4px}
+/* Shortcut groups on a desktop: two columns in a wider card, so the list fits the window without zooming the controls */
+@media (min-width:900px){.khbox{max-width:900px;column-count:2;column-gap:44px}.khbox>h2,.khbox>.khsub,.khbox>.btn{column-span:all}.khbox h3{break-after:avoid;margin-top:12px}.khbox dl,.khbox dl>div{break-inside:avoid}}
+.khbox .btn{min-height:44px}

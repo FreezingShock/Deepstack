@@ -127,6 +127,7 @@ jobs:
           node scripts/patrons.mjs
           node scripts/nemesis-check.mjs
           node scripts/onboarding-halo.mjs
+          node scripts/rm-page-fit.mjs
       # Alone on the runner, after the parallel batch: it plays a whole Unlimited descent in every topic room at two sizes,
       # and beside the batch its waits for an answer ran out.
       - name: Descent guard (roguelike landings, relics and carry chips in every topic room)

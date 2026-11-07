@@ -18,3 +18,5 @@
 .bk-spread.panel .tpcred dd{margin:3px 0 0;color:var(--bs-ink);font:400 calc(15px*var(--ts))/1.5 var(--serif)}
 .bk-spread.panel a{color:var(--bk)}
 .bk-spread.panel :focus-visible{outline:3px solid var(--bk);outline-offset:2px}
+/* Desktop: Settings rows and hints a little tighter so the two pages fit the window without zooming their controls */
+@media (min-width:900px){.bk-spread.panel .tprow{padding:6px 0}.bk-spread.panel .tphint{margin:1px 0 2px;padding-bottom:4px}}

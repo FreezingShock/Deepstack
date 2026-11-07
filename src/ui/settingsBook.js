@@ -22,15 +22,16 @@ export function settingsPages({st,sound=true,prefs=[],pref='auto',floorRules=fal
    <div class="tprow"><span id="lHap">Haptics</span>${sw('sHaptics','lHap',st.haptics!==false)}</div>
    <p class="tphint">On a phone that supports it, the device buzzes softly as a verdict lands. Reduce motion turns the buzz off.</p>
   </section>
-  <section class="sb-group" aria-label="Motion">
-   <fieldset class="tprow tpseg sb-motion" id="sMotion"><legend>Motion</legend>${MOTION_LABELS.map(([v,l])=>`<button type="button" data-motion-choice="${v}" aria-pressed="${st.motion===v}">${l}</button>`).join('')}</fieldset>
-   <p class="tphint" id="mHint">${motionHint} Calm shortens or stops most animations. A few effects only pick a change up on the next visit.</p>
-  </section>`;
+`;
  const right=`<section class="sb-group" aria-label="Display">
    <fieldset class="tprow tpseg" id="sText"><legend>Text size</legend>${TEXT_SIZES.map((t,i)=>`<button type="button" data-text="${t}" aria-pressed="${st.text===t}" style="font-size:${14+i*3}px">A${i?'+'.repeat(i):''}<span class="sr-only"> ${['Normal','Large','Extra large'][i]}</span></button>`).join('')}</fieldset>
    <fieldset class="tprow tpseg" id="sQual"><legend>Graphics</legend>${prefs.map(p=>`<button type="button" data-q="${p}" aria-pressed="${pref===p}">${p[0].toUpperCase()+p.slice(1)}</button>`).join('')}</fieldset>
    <p class="tphint">Auto lightens dust, particles and resolution on slow devices. Pick Low if the library stutters.</p>
    <div class="tprow"><span id="lCon">High contrast</span>${sw('sContrast','lCon',st.contrast)}</div>
+  </section>
+  <section class="sb-group" aria-label="Motion">
+   <fieldset class="tprow tpseg sb-motion" id="sMotion"><legend>Motion</legend>${MOTION_LABELS.map(([v,l])=>`<button type="button" data-motion-choice="${v}" aria-pressed="${st.motion===v}">${l}</button>`).join('')}</fieldset>
+   <p class="tphint" id="mHint">${motionHint} Calm shortens or stops most animations. A few effects only pick a change up on the next visit.</p>
   </section>
   <section class="sb-group" aria-label="Play">
    <div class="tprow"><span id="lFR">Floor rules</span>${sw('sFloorRules','lFR',floorRules)}</div>

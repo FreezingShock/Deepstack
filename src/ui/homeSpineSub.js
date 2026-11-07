@@ -8,8 +8,7 @@ export function fitHomeSpines(root = document) {
     let fs = parseFloat(getComputedStyle(el).fontSize) || 14, tries = 0;
     while (el.scrollWidth > el.clientWidth + .5 && fs > MIN && tries++ < 24) {
       fs -= .5;
-      el.style.fontSize = fs + 'px';
-      if (fs < 12) el.style.letterSpacing = '0';
+      el.style.fontSize = fs + 'px'; // the tracking stays (small caps need air, see text-fit): only the size gives
     }
     /* still too wide on a very narrow spine: the caption steps aside rather than clip */
     if (el.scrollWidth > el.clientWidth + .5) { el.classList.add('sub-off'); el.style.fontSize = ''; el.style.letterSpacing = ''; }
