@@ -2206,18 +2206,36 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Touches:** RUN, DAILY BOOK, STAMPS. **Conflicts:** Daily book leaves (prefix count in `dailyBook.js`).
 **Follow-ups:** WK2 (tighter theme lists), WK3 (resume a weekly word after reload), WK4 (a whole-week run as an alternative, if nate prefers seven words at once).
 
-### WK2. [~] Tighter weekly theme lists (exclusion list and membership guard in PR #361; the rest of the lists is open)
+### WK2. [x] Tighter weekly theme lists (curated allowlist per theme, `THEME_WORDS`)
 **Serves:** themes that feel right, with no odd words.
 **Pitch:** Some weekly matches are loose: "curtain" turns up under Weather and "butler" under Food. Hand-review the matched words for each theme and drop the odd ones, or add a short allow list per theme.
-**Brief:** Goal: every matched word clearly belongs to its theme. Files: `src/core/weekly.js` (THEMES). Done when: a sample of 30 matches per theme is reviewed and the odd ones are removed or listed as exceptions.
+**Brief:** Goal: every matched word clearly belongs to its theme. Files: `src/core/weekly.js` (THEMES, THEME_WORDS). Done when: a sample of 30 matches per theme is reviewed and the odd ones are removed or listed as exceptions. Done in the follow-up: each theme takes only its allowlist, and `test/weekly-curation.test.js` checks every entry against the library. A played day shows the word it was answered with.
 **Touches:** WEEKLY. **Conflicts:** WK1.
 
-### WK3. Resume a weekly word after a reload
+### WK3. [x] Resume a weekly word after a reload
 **Serves:** no lost answer when the page is reloaded mid-word.
 **Pitch:** A weekly word is one run, and a reload mid-answer starts it again. Save the open weekly word like the Daily run is saved (`S.weeklyRun`), and resume it the same day.
-**Brief:** Goal: a reload during today's weekly word resumes it. Files: `src/core/dailyRun.js` (pattern), `src/app/run.js`. Done when: a reload test in `scripts/weekly-check.mjs` resumes the word.
+**Brief:** Goal: a reload during today's weekly word resumes it. Files: `src/core/dailyRun.js` (pattern), `src/app/run.js`. Done when: a reload test in `scripts/weekly-check.mjs` resumes the word. Done in the follow-up: the unsent answer is kept in `S.weeklyRun` (one day at a time, cleared when the day is answered), it comes back on the slip after a reload, and the leaf reads "Continue today's word". The word's clock restarts (see WK6).
 **Touches:** RUN, WEEKLY. **Conflicts:** WK1.
 
+
+### WK5. A mark for each themed week
+**Serves:** a stamp that says which theme was finished.
+**Pitch:** Every finished themed week earns the same ✿ on the Almanac. Give each theme its own small mark (a wave for the Sea, a cloud for the Weather, a note for Music, a star for the Night, a paw for Animals, a spoon for Food), shown on the Almanac line.
+**Brief:** Goal: six marks keyed by theme key, shown where the library stamp shows. Files: `src/core/stamps.js`, `src/ui/stampsPage.js` (LIBRARY_GLYPH). Done when: the Almanac shows the mark of each theme played, at 375 and 1280.
+**Touches:** STAMPS, WEEKLY. **Conflicts:** WK1.
+
+### WK6. Keep the clock when a weekly word resumes
+**Serves:** a reload mid-word costs no time.
+**Pitch:** A resumed weekly word starts its candle at full time, so a reload buys a fresh clock. Keep the time already spent by saving when the word started in `S.weeklyRun`, and resume with what is left.
+**Brief:** Goal: a resumed weekly word starts with the time it had left. Files: `src/core/weekly.js` (`setWeeklyDraft`), `src/app/run.js` (`startWeekly`, `run.limit`). Done when: `test/weekly-resume.test.js` covers the saved start time and the check resumes at the remaining time.
+**Touches:** WEEKLY, RUN. **Conflicts:** WK3.
+
+### WK7. Theme-coloured ink on the weekly leaf
+**Serves:** each week reads as its own theme.
+**Pitch:** The weekly leaves use the book's ink for every theme. Tint the pips and the motto in the theme's colour (Sea slate blue, Weather grey-blue, Music brass, Night indigo, Animals ochre, Food rust), keeping each one at 4.5:1 or better on the paper.
+**Brief:** Goal: a theme colour on the leaf for each of the six themes. Files: `src/ui/weekly.css`, `src/ui/weeklyLeaf.js`. Done when: the contrast is checked for each theme on the paper colour, and the leaves are screenshot at 375 and 1280.
+**Touches:** WEEKLY. **Conflicts:** WK1.
 
 ## PT. Patrons follow-ups (2026-11-07, from the Patrons thread)
 
