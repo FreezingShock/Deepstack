@@ -1,0 +1,49 @@
+/* Book readability pass, loaded last so it wins over the book styles it tightens (every menu book, the Settings and
+   Credits panels). Three promises, checked by scripts/book-readability.mjs in CI:
+   1. Type: nothing a reader has to read on a page drops below 12px (labels) before the text-size setting.
+   2. Touch: every button, switch, slider and day cell on a page is at least 44px across, on phone and desktop.
+   3. Reach: writing that runs past a page's foot is never silently cut off. The page fades its last line and says
+      "more ↓" in its footer (bookReadable.js sets .has-more); the reader scrolls to it.
+   The book styles are very specific (.bk-spread.menu .x), so the floors below use !important on purpose. */
+
+/* 1. type floor: the small-caps labels, kickers and sort/filter tags were 9 to 11px */
+.bk-spread .kicker,.bk-spread .pg-kicker,.bk-spread .pg-label,.bk-spread .lx-lbl,.bk-spread .k,
+#topPanel .kicker{font-size:calc(12.5px*var(--ts))!important}
+.bk-spread .fk,.bk-spread .scope{font-size:calc(12px*var(--ts))!important}
+.bk-spread .pg-foot{font-size:calc(13.5px*var(--ts))!important}
+.bk-spread dt,.bk-spread h3,.bk-spread .sb-h,.bk-spread h2.inked{font-size:calc(12.5px*var(--ts))!important}
+.bk-spread .ledger li>span:first-child,.bk-spread .emb-cal i{font-size:calc(12.5px*var(--ts))!important}
+.bk-spread .emb-cal i{font-size:calc(12px*var(--ts))!important}
+
+/* 2. touch targets. Controls that are visually small keep their look and grow an invisible hit area (::before)
+   instead, so the layout stays where the designers put it. */
+.bk-spread button:not(.bs-corner),.bk-spread [role=button],.bk-spread a[href],#topPanel button{min-height:44px!important;box-sizing:border-box}
+.bk-spread button:not(.bs-corner),#topPanel button{min-width:44px!important}
+.bk-spread input:not([type=range]):not([type=checkbox]):not([type=radio]),#topPanel input:not([type=range]){min-height:44px!important}
+/* inline text links (credits, notes) keep their line; the hit area grows around them */
+.bk-spread a[href],#topPanel a[href]{position:relative}
+.bk-spread a[href]::before,#topPanel a[href]::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+.bk-spread .fold,.bk-spread .sbook,.bk-spread .dly-act{min-height:44px!important;display:inline-block;box-sizing:border-box}
+.bk-spread .dly-act{display:inline-flex!important;align-items:center}
+.bk-spread input[type=range],#topPanel input[type=range]{height:44px!important;margin:0;cursor:pointer}
+.tap-grow{position:relative}
+.tap-grow::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+
+/* room for the page: a settings panel or a menu book with a full page of writing is taller than the default
+   spread on a laptop, so the spread grows to the window instead of scrolling inside itself */
+.bk-spread.panel{--H:min(640px,calc(100dvh - var(--barH,52px) - 36px))!important;top:calc(50% + var(--barH,52px) / 2 - 4px);overflow:visible}
+.bk-spread.menu{--H:min(660px,calc(100dvh - var(--barH,52px) - 36px))!important;top:calc(50% + var(--barH,52px) / 2 - 4px)}
+
+/* 3. reach: a page that runs long fades its last line and says so in its footer. Every page keeps clear of the
+   turn-the-page corner, so the last line never sits under it. */
+.bk-spread .pg-in{padding-bottom:34px}
+.bk-spread .pg-in.has-more{-webkit-mask-image:linear-gradient(#000 calc(100% - 44px),transparent);mask-image:linear-gradient(#000 calc(100% - 44px),transparent)}
+.bk-spread .pg-in.has-more + .pg-foot::after{content:"more ↓";margin-left:.5em;font:italic 400 calc(13.5px*var(--ts))/1 var(--serif);color:var(--c-bronze-33)}
+/* day cells stay 40px on the calendar; the hit area is 44px */
+.bk-spread .dly.cal .cal-d::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+/* fit.css shrank the Daily page on narrow phones with zoom (.68 at 380px), which put its day buttons under 44px.
+   Pages with controls scroll with the "more" cue instead of shrinking. */
+body .bk-spread.menu .dly,body .bk-spread.menu .pg-in>*:not(.dly){zoom:1}
+/* the switches keep their pill shape; the 44px hit area grows around them */
+.bk-spread button.tpsw,#topPanel button.tpsw{min-width:0!important;min-height:0!important}
+.bk-spread button.tpsw::before,#topPanel button.tpsw::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}

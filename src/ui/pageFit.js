@@ -8,6 +8,9 @@ function fitPage(pg) {
   const set = z => kids.forEach(k => z >= 1 ? k.style.removeProperty('zoom') : (k.style.zoom = z));
   set(1);
   pg.style.removeProperty('overflow-y');
+  /* a page with controls never shrinks: a zoomed button drops under the 44px touch target, so it scrolls with the
+     "more" cue instead (bookReadable.css) */
+  if (pg.querySelector('button, input, select, a[href], [role=button]')) return;
   /* measure the in-flow content only: the pen-ink overlay is absolutely positioned and can be taller than the text */
   const flow = kids.filter(k => getComputedStyle(k).position !== 'absolute');
   const cs = getComputedStyle(pg), padT = parseFloat(cs.paddingTop) || 0, padB = parseFloat(cs.paddingBottom) || 0, have = pg.clientHeight;
@@ -29,7 +32,7 @@ function fitPage(pg) {
 }
 function run() {
   queued = false;
-  document.querySelectorAll('.bk-spread.menu .pg-in, .tpbox, .khbox').forEach(fitPage);
+  document.querySelectorAll('.bk-spread.menu .pg-in, .bk-spread.panel .pg-in, .tpbox, .khbox').forEach(fitPage);
 }
 const queue = () => { if (!queued) { queued = true; setTimeout(run, 120); } };
 new MutationObserver(queue).observe(document.body, {childList: true, subtree: true});

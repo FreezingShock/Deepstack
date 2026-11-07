@@ -2174,3 +2174,21 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
 **Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
 **Touches:** RUN. **Conflicts:** G12, G15.
+### [x] BR1. Every book readable and usable (this PR)
+**Done:** every open book page keeps its writing at 12px or more (labels) and every button, switch, slider and day cell is at least 44px across, at phone and laptop sizes. Long pages fade their last line and say "more ↓" in the footer instead of cutting text off. Settings and Credits fit the window (they were not fitting, because the fit covered only the old panels). Pages with controls no longer shrink with zoom. Guard: `scripts/book-readability.mjs` in CI, `test/book-readable.test.js`. Files: `src/ui/bookReadable.css`, `src/ui/bookReadable.js`, `src/ui/pageFit.js`. Screenshots: screenshots/book-readability/. The Results book is not in the guard yet (see BR2).
+**Touches:** every book. **Conflicts:** Settings ST threads, Ember Log, Almanac stamps (CSS only, loaded last).
+
+### BR2. Put the Results book in the readability guard
+**Serves:** "words must be fully readable", "make all the books more readable".
+**Pitch:** The result ledger after a Daily or a run is the one book the readability guard cannot open yet, because it needs a finished save. Cover it at phone and laptop sizes.
+**Brief:** Goal: seed a finished Daily record the results page accepts (its fields are `books`, `depth`, `room`, `streak`, see `src/ui/results.js`), then add `#bRes` to the BOOKS list in `scripts/book-readability.mjs`. Done when: the guard opens the results book at 375 and 1280 and passes. **Touches:** guard script only. **Conflicts:** none.
+
+### BR3. Contrast pass on small book labels
+**Serves:** "make all the books more readable", dark-on-parchment labels.
+**Pitch:** The kickers, page labels and sort tags use a light bronze that reads faint on the parchment. Measure each one against its page and darken the ones under 4.5 to 1.
+**Brief:** Goal: a contrast table for every label class in the books, then a token change in `src/theme/colors.js` where it fails. Done when: a test checks the listed pairs at 4.5 to 1 and the screenshots are reviewed at 375. **Touches:** `colors.js`, `bookReadable.css`. **Conflicts:** colour threads.
+
+### BR4. Alphabet jump on the Shelf list
+**Serves:** "make all the books more readable and usable".
+**Pitch:** The Shelf list rows are now 44px tall, so a long shelf takes many screens. Add a letter strip down the edge so a reader jumps to a word.
+**Brief:** Goal: an A to Z strip on the Shelf list page that scrolls to the first word with that letter. Done when: at 375 the strip stays inside the page, every letter is a 44px target, and the test covers a shelf with words under each letter. **Touches:** Shelf book pages. **Conflicts:** shelf threads.
