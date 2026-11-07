@@ -58,17 +58,19 @@ async function open(view, room) {
 }
 
 const incomplete = []; // colour-contrast checks axe could not decide (text over images or gradients): reported, not failing
-async function audit(page, tag) {
+async function audit(page, tag, ctxSel = null) {
   await page.addScriptTag({content: AXE});
-  const res = await page.evaluate(async tags => {
-    const r = await window.axe.run(document, {runOnly: {type: 'tag', values: tags}, resultTypes: ['violations', 'incomplete']});
+  const res = await page.evaluate(async ([tags, sel]) => {
+    const root = (sel && document.querySelector(sel)) || document;
+    const r = await window.axe.run(root, {runOnly: {type: 'tag', values: tags}, resultTypes: ['violations', 'incomplete']});
     const inc = r.incomplete.filter(v => v.id === 'color-contrast').flatMap(v => v.nodes.map(n => n.target.join(' ')));
     return {inc, violations: r.violations.map(v => ({id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.slice(0, 4).map(n => ({target: n.target.join(' '), summary: (n.failureSummary || '').split('\n').slice(0, 2).join(' ')}))}))};
-  }, TAGS);
+  }, [TAGS, ctxSel]);
   incomplete.push(...res.inc);
   for (const v of res.violations) {
     if (ALLOW.some(a => a.rule === v.id && (!a.room || tag.includes(a.room)))) continue;
     problems.push(`${tag}: [${v.impact}] ${v.id}: ${v.help} (${v.nodes.length}+ nodes)`);
+    for (const n of v.nodes) problems.push(`      ${n.target}  ${n.summary}`);
     if (REPORT) for (const n of v.nodes) console.log(`    ${n.target}  ${n.summary}`);
   }
   return res.violations.length;
@@ -84,8 +86,10 @@ for (const view of VIEWS) for (const room of ROOMS) {
       const btn = page.locator(`#${id}`).first();
       if (!(await btn.count()) || !(await btn.isVisible().catch(() => false))) continue;
       await btn.click({timeout: T}).catch(() => {});
-      await page.waitForTimeout(350);
-      await audit(page, `${tag} ${id}`);
+      // the book's own pages are the thing to check: the home buttons under it are still moving while it opens
+      await page.locator('[role=dialog]:not([hidden]), #topPanel:not([hidden])').first().waitFor({state: 'visible', timeout: 3000}).catch(() => {});
+      await page.waitForTimeout(150);
+      await audit(page, `${tag} ${id}`, '[role=dialog]:not([hidden]), #topPanel:not([hidden])');
       await page.keyboard.press('Escape');
       await page.waitForTimeout(350);
     }
