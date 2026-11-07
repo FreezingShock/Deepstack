@@ -32,7 +32,7 @@ const ALLOW = [
   ['#home .cc-tab', 'card catalogue tab overlaps the tagline and the first room dot; placement decision (PR 2)'],
   ['#tracker li button', 'depth rail plaques are hidden on phones; the rail itself is the target (tracker)'],
   ['.skiplink', 'off-screen until focused'],
-  ['#sSound, #sVol, #sMus, #sFx', 'settings switch and sliders at 320 (PR 2: settings controls)'],
+  ['#sSound, #sVol, #sMus, #sFx, #sHaptics', 'settings switches and sliders at 320, Haptics added by #353 (PR 2: settings controls)'],
   ['#sMotion button', 'settings motion chips at 320 (PR 2: settings controls)'],
 ];
 const OUT = process.env.SHOTS || '';
