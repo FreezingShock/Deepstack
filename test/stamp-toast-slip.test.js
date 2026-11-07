@@ -81,3 +81,15 @@ test('the toast stylesheet has no raw colours: tokens and --c only', () => {
   assert.doesNotMatch(toastCss, /#[0-9a-fA-F]{3,8}\b(?!\s*\{)/, 'no hex colours');
   assert.doesNotMatch(toastCss, /rgba?\(\s*\d/, 'no rgb literals');
 });
+
+test('the plaque is the Almanac brass on oak, and stays slip-sized on desktop', () => {
+  assert.match(toastCss, /#stamptoast\.open\{width:min\(344px,calc\(100vw - 20px\)\)/, 'open width is capped at 344px, not the full screen');
+  assert.match(toastCss, /var\(--c-oak-8\)/, 'dark oak plaque');
+  assert.match(toastCss, /var\(--c-brass-cdbb92\)/, 'brass rules and pips');
+  assert.doesNotMatch(toastCss, /--c-parchment\)\s*,\s*color-mix/, 'the slip is not the old paper gradient');
+});
+
+test('an open slip lets taps through, so a door under it on the descent landing stays clickable', () => {
+  assert.match(toastCss, /#stamptoast\.open\{[^}]*pointer-events:none/, 'the open slip is click-through');
+  assert.match(toastCss, /#stamptoast\.on\{[^}]*pointer-events:auto/, 'the folded tab still takes taps');
+});
