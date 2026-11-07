@@ -159,10 +159,12 @@ async function judgeScenario(vw, room) {
 
 async function booksScenario(vw) {
   const tag = `books hall ${vw.w}px`;
-  const {ctx, page} = await newPage(vw, {room: 'hall'});
+  const glob = /bookMenusLoad-[^/]*\.js/;
+  // installed before the first navigation: the lazy prewarm fetches this chunk about 3 s after load, and under CI load that
+  // can happen before a route added later would apply, leaving nothing to wait on
+  const slowFail = async page => { await page.route(glob, r => { setTimeout(() => r.abort(), 1400); }); };
+  const {ctx, page} = await newPage(vw, {room: 'hall', setup: slowFail});
   try {
-    const glob = /bookMenusLoad-[^/]*\.js/;
-    await page.route(glob, r => { setTimeout(() => r.abort(), 1400); }); // a slow, failing download of the book's code
     await page.waitForFunction(() => typeof document.getElementById('bStats')?.onclick === 'function', null, {timeout: T}); // bookify has wired the spines
     await page.locator('#bStats').click();
     // while its pages are fetched the spine waits visibly (a pending mark; reduced motion keeps it still)
