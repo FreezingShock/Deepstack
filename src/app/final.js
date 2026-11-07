@@ -17,6 +17,8 @@ import {setRun} from './run.js';
 import {snapSpines,beginBind,playBind,isDailyRun} from '../ui/dailyBind.js';
 import {dailyShareText,shareDaily} from '../ui/dailyShare.js';
 import {runDay} from '../core/streak.js';
+import {runWordsToReview} from '../core/reviewShelf.js';
+import {wantShelfView} from '../ui/shelfStart.js';
 
 import {dailyNumber} from '../core/daily.js';
 import {riddleDayShare} from '../core/riddleDaily.js';
@@ -33,11 +35,15 @@ export async function showFinal(d,fromHome){
  ui.hud.hidden=false;$('#dnum').textContent=fmtNum(d.depth);
  World.openNiche(World.restRow,{label:'FINIS',books:[]});
  const txt=shareText(d);const el=ui.final;el.hidden=false;el.className='center fadein';
- el.innerHTML=finalHTML(d,S,{txt,share:isDailyRun(d),rarest:TIERS[d.best].name,no:dailyNo(),dayNo:d.day?dailyNumber(d.day):0,floorName:d.floor?FLOORS[d.floor].name:'',levelTitle,spines:d.books.map((b,i)=>spineImg(b,i,'final',132)).join('')});
+ el.innerHTML=finalHTML(d,S,{txt,share:isDailyRun(d),rarest:TIERS[d.best].name,no:dailyNo(),dayNo:d.day?dailyNumber(d.day):0,floorName:d.floor?FLOORS[d.floor].name:'',levelTitle,spines:d.books.map((b,i)=>spineImg(b,i,'final',132)).join(''),toReview:runWordsToReview(S,d.books)});
  countUp($('#cnt'),d.depth,1200,0,fmtNum);
  bindRecap(el,d.books,openCard);
  $$('#sp img').forEach(im=>{im.onclick=()=>openCard(d.books[+im.dataset.i],{fresh:false});});
  $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(txt);$('#cp').textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents($('#shr'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('#cp').textContent='Selected. Copy it.';}};
  const shb=$('#sh');if(shb)shb.onclick=async()=>{const r=await shareDaily(txt,'Deepstack');const label={shared:'Shared',copied:'Copied',cancelled:'Share',failed:'Share'}[r];shb.textContent=label;if(r==='failed'){const rg=document.createRange();rg.selectNodeContents($('#shr'));const s=getSelection();s.removeAllRanges();s.addRange(rg);shb.textContent='Selected. Copy it.';}};
- $('#up').onclick=async()=>{const bind=!fromHome&&isDailyRun(d)?snapSpines(ui.final):null;if(bind)beginBind();ui.final.hidden=true;ui.hud.hidden=true;setRun(null);await World.ascend();showHome();if(bind)playBind(bind,ui.home,d,d.day||utc());};
+ /* back to the home surface; a Daily's spines still settle onto the shelf first. `then` runs once the home is up. */
+ const surface=async(then)=>{const bind=!fromHome&&isDailyRun(d)?snapSpines(ui.final):null;if(bind)beginBind();ui.final.hidden=true;ui.hud.hidden=true;setRun(null);await World.ascend();showHome();if(bind)await playBind(bind,ui.home,d,d.day||utc());if(then)then();};
+ $('#up').onclick=()=>surface();
+ /* RV2: a run with words still to win back opens the Shelf on its To review view (ask first, then open the book) */
+ const rvw=$('#rvw');if(rvw)rvw.onclick=()=>{wantShelfView('review');surface(()=>{const bAll=document.getElementById('bAll');if(bAll)bAll.click();});};
 }

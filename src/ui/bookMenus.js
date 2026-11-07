@@ -11,6 +11,7 @@ import {ROOMS,rgbOf} from '../core/rooms.js';
 import {reviewCount} from '../core/reviewShelf.js';
 import {viewTabs,reviewLeaves} from './reviewPages.js';
 import {wireReview} from './reviewWire.js';
+import {takeShelfView} from './shelfStart.js';
 
 /* Shelf layout. Books lie flat in stacks (STACK_H high, STACKS_PER_SHELF side by side) on a wooden shelf; a labelled
    plaque heads each section. Pages fill by a height budget: a shelf costs 1, a plaque PLAQUE_COST. */
@@ -56,8 +57,8 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOOR
  const SORTS=core.SORTS;
  let list=[],countText='';
  /* the To review view (reviewPages.js, reviewWire.js): a second view of this book, remembered between openings */
- let view='shelf',rv=null;
- const reviewPages=()=>{rv=reviewLeaves(S);return toSpreads(rv.leaves);};
+ let view='shelf',rv=null,rvRoom='',rvTier=-1; // the room and rarity the To review view is narrowed to (RV3)
+ const reviewPages=()=>{rv=reviewLeaves(S,{room:rvRoom,tier:rvTier});return toSpreads(rv.leaves);};
  const book=(x)=>{const b=x.b,t=TIERS[b.tier],o=stagger(b.w);
   return `<button class="sbook" data-i="${x.i}" data-tex="${TEXTURES[b.tier%TEXTURES.length]}" style="--t:${t.spine};--o:${o}px;--e:${pileEdges(x.n)}" data-tip="${esc(b.w)}${x.n>1?` \u00d7${x.n}`:''} \u00b7 ${t.name} \u00b7 ${b.score}" aria-label="${esc(b.w)}, ${t.name}, ${b.score} out of 100${x.n>1?`, ${x.n} copies`:''}"><span class="sb-pages" aria-hidden="true"></span><span class="sb-spine"><i class="sb-band" aria-hidden="true"></i><span class="sb-t">${esc(b.w)}</span>${x.n>1?`<i class="sb-n" aria-hidden="true">\u00d7${x.n}</i>`:''}${b.fav?'<i class="sb-fav" aria-hidden="true">\u2605</i>':''}<i class="sb-band" aria-hidden="true"></i></span></button>`;};
  const stack=items=>`<div class="sstack">${items.map(book).join('')}</div>`;
@@ -84,8 +85,10 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOOR
   const pages=shelfPlan(groups).map(secs=>secs.map(s=>`<section class="ssec"><div class="splaque"><span>${esc(s.label)}${s.cont?' \u00b7 cont.':''}<b>${s.count}</b></span>${s.sub&&!s.cont?`<em>${esc(s.sub)}</em>`:''}</div><div class="scase"${ladderSide(s.key,s.shelves.length)?` data-lad="${ladderSide(s.key,s.shelves.length)}"`:''}>${s.shelves.map(shelf).join('')}</div></section>`).join(''));
   return [ctrl,...pages];
  };
- const spreadsFor=()=>view==='review'?reviewPages():toSpreads(build());
+ /* a one-off request from the result card (RV2) opens the book on To review; it is taken once, on this opening */
+ const spreadsFor=()=>{const want=takeShelfView();if(want)view=want;return view==='review'?reviewPages():toSpreads(build());};
  const switchView=(v,ctl)=>{view=v;ctl.setSpreads(spreadsFor(),0);};
+ const setFilter=(k,v,ctl)=>{if(k==='room')rvRoom=v;else rvTier=+v;ctl.setSpreads(reviewPages(),0);};
  const bind=(root,ctl)=>{
   root.querySelectorAll('.sv-tab').forEach(b=>b.onclick=()=>switchView(b.dataset.view,ctl));
   const redo=k=>{penMark(root,k);ctl.setSpreads(toSpreads(build()),0);};
@@ -110,7 +113,7 @@ export function shelfBook({S,core,TIERS,openCard,showTip,hideTip,keepOnEsc,FLOOR
  const onPaint=(sp,ctl)=>{
   if(view!=='review'){bind(sp,ctl);return;}
   wireReview(sp,ctl,{S,save:review.save,judge:review.judge,fullWord:review.fullWord,verdictFor:review.verdictFor,
-   jump:L=>ctl.setSpreads(toSpreads(rv.leaves),L>>1,undefined,L&1?'r':'l'),switchView:v=>switchView(v,ctl)});
+   jump:L=>ctl.setSpreads(toSpreads(rv.leaves),L>>1,undefined,L&1?'r':'l'),switchView:v=>switchView(v,ctl),setFilter:(k,v)=>setFilter(k,v,ctl)});
  };
  return {label:'Your shelf',keepOnEsc,spreads:spreadsFor,onPaint};
 }

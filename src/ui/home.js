@@ -1,4 +1,5 @@
 import {PALETTE} from '../theme/colors.js';
+import {reviewCount} from '../core/reviewShelf.js';
 import {BOOK_TIMING,bookTimings,dressBook,thud,bookSound} from './bookOpenFx.js';
 import {decorate as inkPage} from './ink.js';
 import {RIBBON_HTML,ribbonKey,remember,recall,ribbonTarget,paintRibbon} from './bookRibbon.js';
@@ -38,7 +39,7 @@ export const HOME_LINKS=[
  {id:'bDaily',stack:0,tex:'grain',color:'navy',label:'Daily',note:'Every Daily, plus Practice',badge:(s,x)=>x.dailyNo?dailyBadge({S:s,played:x.played,no:x.dailyNo,today:x.today}):''},
  {id:'bUnl',stack:0,color:'oxblood',label:'Unlimited',note:'Adaptive words, rated',badge:(s,x)=>unlimitedBadge(s,x.lexicon)},
  {id:'bPat',stack:0,tex:'vellum',color:'bottle',label:'Patrons',note:'Who is at the desk, and what they need',badge:s=>Object.values((s.patrons&&s.patrons.served)||{}).reduce((n,x)=>n+(x|0),0)||''},
- {id:'bAll',stack:1,tex:'worn',color:'calf',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||''},
+ {id:'bAll',stack:1,tex:'worn',color:'calf',label:'Shelf',note:'Every book you have earned',badge:s=>s.shelf.length||'',tag:s=>reviewCount(s)||0},
  /* the Rooms book (src/ui/roomLedger.js) took over from Sets: every set now lives in its topic room */
  {id:'bRooms',stack:1,tex:'vellum',color:'ochre',label:'Rooms',note:'Every room, its fire and its sets',badge:s=>{const r=roomById(currentRoom(s));return r.id==='hall'?ROOMS.length+' rooms':r.short;}},
  {id:'bStats',stack:1,tex:'grain',color:'slate',label:'Stats',note:'Streaks, depth and tiers'},
@@ -62,7 +63,9 @@ export function homeHTML({S,st,d,no,floorName,floorKey,tierInk,lexicon=()=>'',to
  const rules=cabinetHTML({steps:HOME_STEPS,bestTier:S.shelf.reduce((m,b)=>Math.max(m,b.tier|0),-1),today:{no,kind:pq.kind,tag:pq.tag,streak:st.streak|0,played:!!d,room:(r=>({name:r.name,short:r.short,rgb:r.rgb,met:r.id==='hall'?(n=>`${n} ${n===1?'word':'words'} met`)(new Set(S.shelf.filter(b=>b&&!b.skipped).map(b=>b.w)).size):roomMetLabel(S,r.id)}))(roomById(currentRoom(S)))},tierCounts:S.shelf.reduce((a,b)=>{const t=b.tier|0;a[t]=(a[t]|0)+1;return a;},[]),seen:loadSeen()});
  const slip=ledgerHTML({streak:st.streak,deepest:st.deepest,books:S.shelf.length,floor:floorName||'',floorKey:floorKey||'',tierInk:tierInk||'',room:scopeRoom(S)});
  const book=l=>{const b=l.badge?l.badge(S,ctx):'';const c=HOME_BOOK_COLORS[l.color]||HOME_BOOK_COLORS.brown;
-  return `<li><button class="hbook" data-tex="${l.tex||'leather'}" id="${l.id}"${l.note?` title="${esc(l.note)}"`:''} style="--bk:${c[0]};--bk2:${c[1]};--bk-gild:${c[2]}"><span class="hb-pages" aria-hidden="true"></span><span class="hb-spine"><i class="hb-band" aria-hidden="true"></i><span class="hb-t">${esc(l.label)}${b?` <small>${esc(b)}</small>`:''}</span><i class="hb-band" aria-hidden="true"></i></span></button></li>`;};
+  /* RV4: a tag on the spine's right edge counts the words to review (only when there are some) */
+  const tag=l.tag?l.tag(S):0;
+  return `<li><button class="hbook" data-tex="${l.tex||'leather'}" id="${l.id}"${l.note?` title="${esc(tag?`${l.note} · ${tag} to review`:l.note)}"`:''} style="--bk:${c[0]};--bk2:${c[1]};--bk-gild:${c[2]}"><span class="hb-pages" aria-hidden="true"></span><span class="hb-spine"><i class="hb-band" aria-hidden="true"></i><span class="hb-t">${esc(l.label)}${b?` <small>${esc(b)}</small>`:''}</span><i class="hb-band" aria-hidden="true"></i></span>${tag?`<span class="hb-rv" aria-hidden="true">${tag}</span>`:''}</button></li>`;};
  const stacks=[...new Set(HOME_LINKS.map(l=>l.stack||0))].sort((a,b)=>a-b);
  const secs=stacks.map(n=>`<ul class="hshelf" data-stack="${n}">${HOME_LINKS.filter(l=>(l.stack||0)===n).map(book).join('')}</ul>`).join('');
  return `<div class="sheet home">

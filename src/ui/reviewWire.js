@@ -11,11 +11,13 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
  * @param {{setSpreads:Function}} api   the book's controls
  * @param {object} d
  *   S, save(), judge(text, word, opts), fullWord(key) -> word record or undefined, verdictFor(j, t, word),
- *   jump(leafIndex) -> repaints the book at that leaf, switch(view) -> switches the Shelf / To review view
+ *   jump(leafIndex) -> repaints the book at that leaf, switch(view) -> switches the Shelf / To review view,
+ *   setFilter(key, value) -> narrows the words by room ('room') or rarity ('tier') and repaints the overview
  */
-export function wireReview(sp, api, {S, save, judge, fullWord, verdictFor, jump, switchView}) {
+export function wireReview(sp, api, {S, save, judge, fullWord, verdictFor, jump, switchView, setFilter}) {
   sp.querySelectorAll('.sv-tab').forEach(b => { b.onclick = () => switchView(b.dataset.view); });
   sp.querySelectorAll('.rv-jump,.rv-back').forEach(b => { b.onclick = () => jump(+b.dataset.leaf); });
+  sp.querySelectorAll('.rv-filter').forEach(b => { b.onclick = () => setFilter(b.dataset.k, b.dataset.v); });
   sp.querySelectorAll('.rv-entry').forEach(entry => {
     const form = entry.querySelector('.rv-form'), ta = entry.querySelector('.rv-in'), out = entry.querySelector('.rv-result');
     const go = entry.querySelector('.rv-go');
