@@ -1,11 +1,38 @@
-/* First-time margin notes (src/ui/firstNotes.js): a pencilled aside on the hint strip, one line, lighter than a hint.
-   Reduced motion: the strip and its slips already stop animating (hintSlips.css), so the note simply sits there. */
-.hslip.fnote{font:500 calc(16px*var(--ts))/24px 'Fuzzy Bubbles','Newsreader',cursive;color:var(--c-steel-53);text-align:left;overflow-wrap:anywhere;text-wrap:pretty}
-@media(max-width:640px){.hslip.fnote{font-size:calc(15px*var(--ts));line-height:23px}}
+/* First-time notes (src/ui/firstNotes.js): a lamp-gold halo on the thing a note is about, and a small themed panel beside it.
+   Four objects so the notes vary: a brass plate, a pinned card, a ribbon tag, a wax seal. No ruled paper, no keyframes.
+   Both the halo and the panel fade with a transition only; reduced motion turns the transition off, so they simply appear and go. */
 
-/* Home first-visit line (showHomeNote): a small pinned slip under the Descend plaque. Static, so reduced motion needs nothing. */
-.hz-plaque > .fnote-home,.hz-title > .fnote-home{position:absolute;left:50%;top:100%;transform:translate(-50%,0) rotate(-.6deg);width:max-content;max-width:min(94%,340px);box-sizing:border-box;padding:4px 12px;border-radius:2px;
-  background:linear-gradient(180deg,var(--c-parchment-ebe1c4),var(--c-parchment-92));color:var(--c-steel-23);box-shadow:0 6px 12px -6px var(--c-black);
-  font:500 calc(15px*var(--ts))/1.25 'Fuzzy Bubbles','Newsreader',cursive;text-align:center;pointer-events:none;z-index:2}
-@media(max-width:640px){.hz-plaque > .fnote-home,.hz-title > .fnote-home{font-size:calc(12.5px*var(--ts));line-height:1.2;padding:2px 8px;white-space:nowrap;max-width:98%}}
-.hz-title{position:relative}
+.fhalo,.fcall{position:fixed;pointer-events:none;box-sizing:border-box;transition:opacity var(--m-base) var(--e-settle)}
+.fhalo{z-index:899;border-radius:10px;box-shadow:0 0 0 2px var(--c-lamplight),0 0 18px 4px color-mix(in srgb,var(--c-lamplight) 45%,transparent);background:color-mix(in srgb,var(--c-lamplight) 6%,transparent)}
+.fhalo.out,.fcall.out{opacity:0}
+
+.fcall{z-index:900;max-width:min(88vw,280px);padding:8px 14px;text-align:center;
+  font:500 calc(16px*var(--ts))/1.25 'Fuzzy Bubbles','Newsreader',cursive;color:var(--c-steel-23);overflow-wrap:anywhere;text-wrap:balance}
+.fcall::before,.fcall::after{content:"";position:absolute;pointer-events:none}
+
+/* brass plate: engraved, two screws, the first slip and the Unlimited book */
+.fcall-plate{background:linear-gradient(180deg,var(--c-brass-f6d98a),var(--c-brass-65));color:var(--c-oak-1a1208);
+  border:1px solid var(--c-oak-1a1208);border-radius:4px;box-shadow:0 6px 12px -6px var(--c-black),inset 0 1px 0 var(--c-white-alpha-33)}
+.fcall-plate::before,.fcall-plate::after{top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:var(--c-oak-4a3a22)}
+.fcall-plate::before{left:5px}
+.fcall-plate::after{right:5px}
+
+/* pinned card: a plain index card with a red pin, the candle and the side doors */
+.fcall-card{background:linear-gradient(180deg,var(--c-parchment-ebe1c4),var(--c-parchment-92));color:var(--c-steel-23);
+  border-radius:2px;box-shadow:0 6px 12px -6px var(--c-black);transform:rotate(-1.2deg)}
+.fcall-card::before{left:50%;top:-6px;width:12px;height:12px;margin-left:-6px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,var(--c-blood-77),var(--c-blood-43));box-shadow:0 2px 3px var(--c-black)}
+
+/* ribbon tag: a notched tag, the hint button and the Room Ledger */
+.fcall-tag{background:var(--c-parchment-92);color:var(--c-steel-23);padding-left:24px;
+  clip-path:polygon(0 0,100% 0,100% 100%,0 100%,12px 50%);box-shadow:0 4px 8px -4px var(--c-black)}
+
+/* wax seal: dark oak with a lamplight hand and a brass rim, the Daily book */
+.fcall-seal{background:var(--c-oak-1a1208);color:var(--c-lamplight);border:1px solid var(--c-brass-65);border-radius:6px;
+  box-shadow:0 6px 14px -6px var(--c-black)}
+
+@media(max-width:640px){.fcall{font-size:calc(15px*var(--ts));padding:6px 12px;max-width:min(92vw,260px)}}
+
+/* reduced motion: no fade at all, the note just appears and is taken away */
+@media (prefers-reduced-motion:reduce){html:not([data-motion="full"]) .fhalo,html:not([data-motion="full"]) .fcall{transition:none}}
+html[data-motion="reduce"] .fhalo,html[data-motion="reduce"] .fcall{transition:none}

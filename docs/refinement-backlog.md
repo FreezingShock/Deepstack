@@ -1379,6 +1379,22 @@ Broader than pixel fixes: each item is a goal to make the base game clearer, mor
 **Pitch:** The first result card shows "0/100" and a tier name with no words for either. One pencil line on the first card only, using the same once-only flag in `S.seen`.
 **Brief:** Goal: one note near the score, under 34 characters. Files: `src/app/card.js` (fit-checked, so check the card at 375 and 1280). Done when: the card fit tests still pass.
 
+### G14. [x] Onboarding notes as a highlight and a themed panel (this PR)
+**Serves:** easy to understand, less intrusive, more on theme, more variety.
+**Pitch:** The first-run notes were pencil lines on ruled paper. Now each note lights the thing it is about (a lamp-gold halo) and a small panel beside it: a brass plate, a pinned card, a ribbon tag or a wax seal. They fade by themselves after nine seconds and never take a tap.
+**Brief:** Goal: same copy, same once-only flags, new look. Files: `src/ui/firstNotes.js`, `src/ui/firstNotes.css`. Done when: each note shows once on a real run or home screen at 375 and 1280, and reduced motion shows it with no fade.
+**Touches:** RUN, HOME. **Conflicts:** G12 (phone run sheet), G13 (result card note).
+
+### G15. Hint text in a panel too, not the ruled strip
+**Pitch:** The hint text still sits on the ruled strip under the answer slip. With two or more hints at 320x568 and 375x667 the strip is taller than the stage, so the slip is squeezed (see G12). A hint could light the Hint button and show as a ribbon tag beside it, like the G14 notes.
+**Brief:** Goal: hints out of the lined strip, one panel each, newest only on phones. Files: `src/ui/hintSlips.js`, `src/ui/hintSlips.css`. Done when: the slip keeps its height with two hints at 320x568.
+**Touches:** RUN. **Conflicts:** G12, run screen thread.
+
+### G16. First result card note in the same panel objects
+**Pitch:** G13 proposes a pencil line on the first result card. Use the G14 pinned card for it so the first-run notes stay one look.
+**Brief:** Goal: one panel near the score, once only. Files: `src/app/card.js` (fit-checked at 375 and 1280). Done when: the card fit tests still pass.
+**Touches:** RESULT. **Conflicts:** G13.
+
 ### G2. A score that explains itself
 **Serves:** scoring clarity, rarity is the hero, words fully readable, lenient judging.
 **Pitch:** The card says "Pamphlet, 0/100" and a vague line like "Nothing here points at the meaning yet", but not why. Show it: in "You wrote" underline the words the judge counted, and add one quiet handwritten caption saying what a stronger answer would have named. A long answer must never be cut with an ellipsis ("somethin…" today).
@@ -2163,3 +2179,9 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### CF3. Judge wait shows a real progress note
 **Pitch:** When the librarian is still arriving the wait is silent for up to 6 s before a note appears.
 **Brief:** Goal: start the "Reading your answer" note with a small candle-flicker on the slip, not after the 6 s fallback. Files: `src/scorer/index.js` (onWait timing), `src/ui/coreLoop.css`. Done when: a test pins the note at 300 ms.
+
+### G17. [x] Phone hints: newest in the strip, the rest one tap away (changeable)
+**Serves:** easy to understand, hints you can re-read, nothing squeezes the answer slip.
+**Pitch:** On phones the strip shows the newest hint only, with a "· more" cue. A tap opens every hint in a small panel over the stage, and a tap closes it. Built as the default because nate prefers fewer questions. Changeable: if he wants all hints in the strip again, or a count instead of the cue, change `src/ui/hintTags.css` (phone block) and `src/ui/hintTags.js`.
+**Brief:** Goal: earlier hints stay readable on phones without squeezing the slip. Files: `src/ui/hintTags.css`, `src/ui/hintTags.js`. Done when: the slip keeps its height with two hints at 320x568 and a tap opens the full list. Screenshots: `screenshots/onboarding/highlight/hints-tags-320-*.png`.
+**Touches:** RUN. **Conflicts:** G12, G15.
