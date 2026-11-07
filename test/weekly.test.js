@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {THEMES, THEME_MIN, weekStartOf, weekdayIndex, weekDayKeys, themeOfWeek, weeklyWords, dayWord,
+import {THEMES, THEME_MIN, OFF_THEME, themeCandidates, weekStartOf, weekdayIndex, weekDayKeys, themeOfWeek, weeklyWords, dayWord,
   recordWeekly, dayRecord, weekPlayed, themedWeeksDone, weekRows} from '../src/core/weekly.js';
 import {earnedStamps, CATALOG} from '../src/core/stamps.js';
 
@@ -98,4 +98,19 @@ test('weekRows marks each day played, missed, today or sealed, and reveals only 
   assert.equal(played, 1);
   assert.deepEqual(rows.map(r => r.state), ['played', 'missed', 'today', 'sealed', 'sealed', 'sealed', 'sealed']);
   assert.ok(rows.every(r => r.w), 'the seven words are known for the week');
+});
+
+test('theme membership guard: no off-theme word is a candidate of any theme, and each theme keeps enough words after the exclusions', () => {
+  for (const t of THEMES) {
+    const c = themeCandidates(t, POOL);
+    assert.ok(c.length >= THEME_MIN, `${t.key} keeps ${c.length} words`);
+    const bad = c.filter(w => OFF_THEME.has(w.w)).map(w => w.w);
+    assert.deepEqual(bad, [], `${t.key} lets off-theme words through`);
+  }
+});
+
+test('the known loose matches stay out: butler under Food, curtain under Weather', () => {
+  const food = THEMES.find(t => t.key === 'food'), weather = THEMES.find(t => t.key === 'weather');
+  assert.ok(!themeCandidates(food, POOL).some(w => w.w === 'butler'));
+  assert.ok(!themeCandidates(weather, POOL).some(w => w.w === 'curtain'));
 });

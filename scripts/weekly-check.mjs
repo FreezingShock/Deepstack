@@ -1,7 +1,8 @@
-// Weekly themed challenge check: serves dist/, opens the Daily book, reads the weekly cover and leaf, plays today's themed
-// word and checks what was saved. Fails on page errors, horizontal overflow in the weekly leaf, or a save that lacks the
-// answer. Writes screenshots to the folder given by WEEKLY_SHOTS (default: screenshots/weekly/after).
-// Usage: npm run build && node scripts/weekly-check.mjs   (CHROMIUM_PATH optional; skips when no browser is found)
+// Weekly themed challenge check: serves dist/, then for every room in the ring (Reading Room and the six topic rooms) on a
+// phone and a desktop view: opens the Daily book, checks the cover entry and the two weekly leaves for overflow, and saves a
+// screenshot. In the Reading Room it also plays today's themed word and checks the save. Fails on page errors, a cut-off cover
+// or leaf, or a missing weekly section. Screenshots go to WEEKLY_SHOTS (default: screenshots/weekly/after).
+// Usage: npm run build && CHROMIUM_PATH=... node scripts/weekly-check.mjs   (skips with a message when no browser is found)
 import {createServer} from 'node:http';
 import {readFile, mkdir} from 'node:fs/promises';
 import {extname, join, normalize} from 'node:path';
@@ -27,17 +28,48 @@ try { browser = await chromium.launch(process.env.CHROMIUM_PATH ? {executablePat
 catch (e) { console.log('weekly-check: no browser, skipping:', e.message.split('\n')[0]); server.close(); process.exit(0); }
 
 const SHOTS = process.env.WEEKLY_SHOTS || 'screenshots/weekly/after';
-await mkdir(SHOTS, {recursive: true});
+await mkdir(`${SHOTS}/rooms`, {recursive: true});
 const BLOCKED = /^https?:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|huggingface\.co|[^/]*\.hf\.co|cdn\.jsdelivr\.net)\//;
 const OPTIONAL = /\/(models|ort)\//;
 const problems = [];
 const fail = m => problems.push(m);
 const T = 15000;
+// The ring of rooms, in side-door order (core/rooms.js).
+const RING = ['hall', 'history', 'math', 'science', 'english', 'art', 'body'];
 
 const VIEWS = [
   {name: '375', viewport: {width: 375, height: 667}, scale: 2, mobile: true},
   {name: '1280', viewport: {width: 1280, height: 800}, scale: 2, mobile: false},
 ];
+
+// The weekly leaves must hold their text: no cut-off page and no sideways scroll.
+async function checkLeaves(page, tag, label) {
+  const leaves = page.locator('.dly.wk');
+  const n = await leaves.count();
+  if (n < 2) fail(tag(`${label}: expected two weekly leaves, found ${n}`));
+  for (let i = 0; i < n; i++) {
+    const over = await leaves.nth(i).evaluate(el => {
+      const pg = el.closest('.pg-in') || el.parentElement;
+      return {tall: pg.scrollHeight > pg.clientHeight + 1, wide: pg.scrollWidth > pg.clientWidth + 1 || document.documentElement.scrollWidth > innerWidth + 1, h: [pg.scrollHeight, pg.clientHeight]};
+    });
+    if (over.tall || over.wide) fail(tag(`${label}: weekly leaf ${i + 1} overflows: ${JSON.stringify(over)}`));
+  }
+}
+
+// Opens the Daily book, enters the weekly leaves through the cover, and checks them. Leaves the book open.
+async function openWeeklyLeaves(page, tag, label, shot) {
+  await page.locator('#bDaily').first().click({timeout: T}).catch(() => fail(tag(`${label}: Daily book not clickable`)));
+  const hasCover = await page.locator('.wk-cover').first().waitFor({state: 'attached', timeout: T}).then(() => true, () => false);
+  if (!hasCover) { fail(tag(`${label}: Daily book cover has no weekly section`)); return; }
+  await page.waitForTimeout(800);
+  const cover = await page.locator('.dly').first().evaluate(el => ({tall: el.scrollHeight > el.clientHeight + 1, h: [el.scrollHeight, el.clientHeight]})).catch(() => null);
+  if (cover && cover.tall) fail(tag(`${label}: Daily cover is cut off: ${JSON.stringify(cover)}`));
+  if (shot) await page.screenshot({path: shot.replace(/\.png$/, '-cover.png')});
+  await page.locator('.wk-cover .dly-go').first().click({timeout: T}).catch(() => fail(tag(`${label}: cover entry not clickable`)));
+  await page.waitForTimeout(1000);
+  await checkLeaves(page, tag, label);
+  if (shot) await page.screenshot({path: shot});
+}
 
 async function run(view) {
   const ctx = await browser.newContext({viewport: view.viewport, deviceScaleFactor: view.scale, isMobile: view.mobile, reducedMotion: 'reduce', hasTouch: view.mobile});
@@ -54,33 +86,11 @@ async function run(view) {
   await page.goto(url, {waitUntil: 'load'});
   await page.locator('#bDaily').first().waitFor({state: 'visible', timeout: T}).catch(() => { fail(tag('home never rendered')); throw new Error('stop'); });
 
-  // 1. The Daily book: the cover has a short entry to the weekly theme, which turns to its two leaves.
-  await page.locator('#bDaily').first().click();
-  await page.locator('.wk-cover').first().waitFor({state: 'attached', timeout: T}).catch(() => { fail(tag('Daily book cover has no weekly section')); throw new Error('stop'); });
-  await page.waitForTimeout(900);
-  const coverFit = await page.locator('.dly').first().evaluate(el => ({tall: el.scrollHeight > el.clientHeight + 1, h: [el.scrollHeight, el.clientHeight]})).catch(() => null);
-  if (coverFit && coverFit.tall) fail(tag(`Daily cover is cut off: ${JSON.stringify(coverFit)}`));
-  await page.screenshot({path: `${SHOTS}/cover-${view.name}.png`});
-  await page.locator('.wk-cover .dly-go').first().click({timeout: T}).catch(() => fail(tag('cover entry not clickable')));
-  await page.waitForTimeout(1000);
-  // The weekly leaves are the spread after the calendar: each page must hold its text without cutting it or scrolling sideways.
-  const leaves = page.locator('.dly.wk');
-  if (await leaves.count() < 2) fail(tag(`expected two weekly leaves in the Daily book, found ${await leaves.count()}`));
-  for (let i = 0; i < await leaves.count(); i++) {
-    const over = await leaves.nth(i).evaluate(el => {
-      const pg = el.closest('.pg-in') || el.parentElement;
-      return {tall: pg.scrollHeight > pg.clientHeight + 1, wide: pg.scrollWidth > pg.clientWidth + 1 || document.documentElement.scrollWidth > innerWidth + 1,
-        h: [pg.scrollHeight, pg.clientHeight]};
-    });
-    if (over.tall || over.wide) fail(tag(`weekly leaf ${i + 1} overflows: ${JSON.stringify(over)}`));
-  }
-  await page.screenshot({path: `${SHOTS}/leaf-${view.name}.png`});
-
-  // 2. Play today's themed word from the cover button, answer it, and check the save.
+  // 1. Reading Room: the cover entry and leaves, then play today's themed word and check the save.
+  await openWeeklyLeaves(page, tag, 'Reading Room', `${SHOTS}/leaf-${view.name}.png`);
   await page.mouse.move(2, 2);
-  await page.waitForTimeout(3500);
+  await page.waitForTimeout(3500); // the first-time tooltip sits over the book for a few seconds
   const btn = page.locator('.dly.wk [data-act=weekly]').first();
-  if (await btn.count() === 0) { fail(tag('no weekly button')); return ctx.close(); }
   await btn.click({timeout: T}).catch(() => fail(tag('weekly button not clickable')));
   const ans = page.locator('#ans');
   await ans.waitFor({state: 'visible', timeout: T}).catch(() => { fail(tag('weekly run never showed an answer slip')); throw new Error('stop'); });
@@ -95,8 +105,10 @@ async function run(view) {
   await page.waitForTimeout(600);
   await page.screenshot({path: `${SHOTS}/card-${view.name}.png`});
   await go.click().catch(() => fail(tag('card button not clickable')));
-  // The run is one word, so the card's button is the last step: it finishes the run and shows the result.
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(2500);
+  // The run is one word: its last card leads to the result screen, whose "up" button returns to the library.
+  await page.locator('#up').first().click({timeout: T}).catch(() => fail(tag('result screen has no way back to the library')));
+  await page.waitForTimeout(3500);
   const saved = await page.evaluate(() => {
     try { const S = JSON.parse(localStorage.getItem('deepstack.v1') || '{}'); return {weekly: S.weekly || null, daily: Object.keys(S.daily || {}).length, dailyRun: !!S.dailyRun}; }
     catch (e) { return {error: String(e)}; }
@@ -106,6 +118,30 @@ async function run(view) {
   if (saved.dailyRun) fail(tag('weekly run wrote the Daily resume field'));
   if (saved.daily !== 0) fail(tag('weekly run counted as a Daily'));
   await page.screenshot({path: `${SHOTS}/result-${view.name}.png`});
+
+  // 2. Every room: walk the ring (desktop side doors; the phone reaches rooms through the Rooms book) and check each room's weekly leaves.
+  for (const id of RING) {
+    if (id !== 'hall') {
+      if (!view.mobile) {
+        await page.locator('#rm-doors .rm-next').first().click({timeout: T}).catch(() => fail(tag(`no next side door on the way to ${id}`)));
+      } else {
+        await page.locator('#bRooms').first().click({timeout: T}).catch(() => fail(tag(`Rooms book not clickable before ${id}`)));
+        await page.waitForTimeout(900);
+        // The contents lists every room; its entry turns to that room's page, which has the Enter button.
+        await page.locator(`.rl-toc li[data-room="${id}"]`).first().click({timeout: T}).catch(() => fail(tag(`Rooms book contents has no entry for ${id}`)));
+        await page.waitForTimeout(900);
+        await page.locator(`.rl-enter [data-room="${id}"]`).first().click({timeout: T}).catch(() => fail(tag(`Rooms book has no Enter for ${id}`)));
+      }
+      await page.waitForTimeout(3200);
+      const now = await page.evaluate(() => { try { return JSON.parse(localStorage.getItem('deepstack.v1') || '{}').room || 'hall'; } catch { return null; } });
+      if (now !== id) fail(tag(`switched to ${now}, expected ${id}`));
+    }
+    await page.keyboard.press('Escape').catch(() => {});
+    await page.waitForTimeout(600);
+    await openWeeklyLeaves(page, tag, id, `${SHOTS}/rooms/${id}-${view.name}.png`);
+    await page.keyboard.press('Escape').catch(() => {});
+    await page.waitForTimeout(900);
+  }
   await ctx.close();
 }
 

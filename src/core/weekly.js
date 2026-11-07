@@ -30,6 +30,11 @@ export const THEMES = [
    re: /\b(food\w*|cook\w*|bak(?:e|ed|es|ing|ery)|meals?|dish(?:es)?|sauces?|bread\w*|cheeses?|wines?|spices?|desserts?|cuisines?|fruits?|vegetables?|soups?|pastr\w*)\b/i},
 ];
 
+/* Words a theme's pattern catches by accident (a verb sense, a metaphor, a rude sense). They never enter a week, whatever the
+   theme. test/weekly.test.js checks that none of them is a candidate, so a new loose match shows up in CI. */
+export const OFF_THEME = new Set(['butler', 'horny', 'bestiality', 'catwalk', 'storey', 'snout', 'rummage', 'sacristy', 'journal',
+  'shorts', 'dregs', 'cheeky', 'curtain', 'stair', 'singular']);
+
 const iso = t => new Date(t).toISOString().slice(0, 10);
 const at = dayKey => Date.parse(dayKey + 'T00:00:00Z');
 
@@ -43,6 +48,9 @@ export const dayName = dayKey => DOW[new Date(at(dayKey)).getUTCDay()];
 /** The seven day keys of the week that starts on `weekKey` (a Monday). */
 export const weekDayKeys = weekKey => Array.from({length: WEEK_DAYS}, (_, i) => iso(at(weekKey) + i * DAY));
 
+/** Every pool word a theme takes: its pattern on the definition, minus the OFF_THEME words. */
+export const themeCandidates = (theme, pool) => pool.filter(w => w && typeof w.def === 'string' && theme.re.test(w.def) && !OFF_THEME.has(w.w));
+
 const candCache = new Map();
 /** The theme of a week and every pool word that matches it. Falls through the theme list (deterministically) when a theme is too thin. */
 export function themeOfWeek(weekKey, pool = fullPool()) {
@@ -52,7 +60,7 @@ export function themeOfWeek(weekKey, pool = fullPool()) {
   let out = {theme: null, words: []};
   for (let i = 0; i < THEMES.length; i++) {
     const theme = THEMES[(start + i) % THEMES.length];
-    const words = pool.filter(w => w && typeof w.def === 'string' && theme.re.test(w.def));
+    const words = themeCandidates(theme, pool);
     if (words.length >= THEME_MIN) { out = {theme, words}; break; }
   }
   candCache.set(memo, out);
