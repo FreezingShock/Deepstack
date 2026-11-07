@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Descent landing options</title>
+<style>
+/* Mockup only. Shows one landing option per ?o=A|B|C so screenshots/descent/ can be captured at 1280 and 375. */
+:root{--ink:#eadcc0;--dim:#a8977a;--lamp:#f0b25a;--wood:#1d1510;--paper:#2a1f17;--line:#5a4530;--ember:#c4553a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:radial-gradient(ellipse at 50% 35%,#3a2818 0%,#150f0b 62%,#0a0705 100%);color:var(--ink);font-family:"AnthropicSerif",Georgia,serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden}
+@font-face{font-family:"AnthropicSerif";src:url("../../fonts/AnthropicSerif-Text-Regular-Static.otf") format("opentype");font-weight:400}
+@font-face{font-family:"AnthropicSerif";src:url("../../fonts/AnthropicSerif-Text-Semibold-Static.otf") format("opentype");font-weight:600}
+.frame{width:100%;max-width:1100px;text-align:center}
+.kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin:0 0 6px}
+h2{font-weight:600;font-size:clamp(22px,4.2vw,34px);margin:0 0 6px}
+.lede{color:var(--dim);font-size:14px;margin:0 0 18px;line-height:1.4}
+.carry{font-size:13px;color:var(--lamp);margin:0 0 18px}
+.doors{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.door{position:relative;background:linear-gradient(180deg,#33241a,#24190f);border:1px solid var(--line);border-radius:6px;padding:18px 16px 16px;text-align:left;box-shadow:inset 0 0 0 1px rgba(255,220,160,.05),0 10px 24px rgba(0,0,0,.45)}
+.door .l{position:absolute;top:-12px;left:14px;width:26px;height:26px;border-radius:50%;background:var(--lamp);color:#2a1a08;font-weight:600;display:grid;place-items:center;font-size:14px}
+.door h3{margin:4px 0 4px;font-size:19px;font-weight:600}
+.door .fx{display:inline-block;font-size:13px;color:var(--lamp);border-bottom:1px dotted var(--lamp);margin-bottom:8px}
+.door p{margin:0;font-size:14px;line-height:1.45;color:#d6c6a6}
+.door.off{opacity:.45}
+.phone{width:375px;max-width:100%;margin:0 auto;border:1px solid var(--line);border-radius:14px;padding:14px 12px 16px;background:rgba(20,14,10,.6)}
+.phone .doors{grid-template-columns:1fr;gap:10px}
+.phone .door{padding:14px 14px 12px}
+.phone h2{font-size:22px}
+/* Option B: a forked stair */
+.fork{position:relative;height:300px;margin:0 auto 14px;max-width:760px}
+.fork svg{position:absolute;inset:0;width:100%;height:100%}
+.branch{position:absolute;width:31%;background:linear-gradient(180deg,#33241a,#24190f);border:1px solid var(--line);border-radius:6px;padding:12px 14px;text-align:left;font-size:14px}
+.branch b{display:block;font-size:17px;font-weight:600;margin-bottom:4px}
+.branch small{color:var(--lamp)}
+.b1{left:2%;top:4px}.b2{right:2%;top:4px}.b3{left:34.5%;bottom:0;width:31%}
+.phone .fork{height:auto;display:grid;gap:10px}
+.phone .fork svg{display:none}
+.phone .branch{position:static;width:auto}
+/* Option C: draw cards */
+.cards{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.card{width:220px;height:300px;border-radius:8px;position:relative;border:1px solid #6b5230;background:repeating-linear-gradient(135deg,#3a2a1b 0 8px,#2e2115 8px 16px);box-shadow:0 12px 26px rgba(0,0,0,.5)}
+.card.up{background:linear-gradient(180deg,#f3e6c6,#e6d3a6);color:#2a1d10;border-color:#a88a55;text-align:left;padding:18px 16px}
+.card.up h3{font-size:20px;margin:6px 0 6px}
+.card.up p{font-size:14px;line-height:1.45;margin:0}
+.card.up .tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7b5a2a}
+.card.up .fx{display:block;margin-top:10px;font-weight:600;color:#7a2d18}
+.card.back::after{content:"?";position:absolute;inset:0;display:grid;place-items:center;font-size:48px;color:#8a6d43}
+.phone .cards{flex-direction:column;align-items:center}
+.phone .card{width:100%;max-width:300px;height:190px}
+.note{margin-top:14px;font-size:12px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="frame" id="frame"></div>
+<script>
+const o=(new URLSearchParams(location.search).get('o')||'A').toUpperCase();
+const ph=new URLSearchParams(location.search).get('w')==='phone';
+const frame=document.getElementById('frame');
+const head=(k,t,lede)=>`<p class="kicker">${k}</p><h2>${t}</h2><p class="lede">${lede}</p><p class="carry">Carrying: Index card &middot; Spare breath</p>`;
+const A=`
+<div class="${ph?'phone':''}">
+${head('Landing 2 of 3','Three ways on','Choose the way down. Each costs something, and a failed word ends the run unless you carry Spare breath.')}
+<div class="doors">
+ <button class="door"><span class="l">A</span><h3>Hard room</h3><span class="fx">Feet &times;1.5 on the next word</span><p>The next word is harder. It is worth more feet, and it is no kinder if you miss it.</p></button>
+ <button class="door"><span class="l">B</span><h3>Rest alcove</h3><span class="fx">Spare breath</span><p>A candle stub in a dry niche. Your next failed word will not end the run.</p></button>
+ <button class="door"><span class="l">C</span><h3>Curio shop</h3><span class="fx">Take one relic of two</span><p>A shopkeeper with two relics on a tray. Keep one for the rest of the descent.</p></button>
+</div>
+${ph?'':'<p class="note">Option A. Three doors on one landing. Keyboard: A, B, C or Tab and Enter.</p>'}
+</div>`;
+const B=`
+<div class="${ph?'phone':''}">
+${head('Landing 2 of 3','Where the stair forks','Two stairs go down from here, and a side niche holds a shop. Take a branch: the word that follows depends on it.')}
+<div class="fork">
+ <svg viewBox="0 0 760 300" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M380 0 L380 90 Q380 120 340 150 L150 262" fill="none" stroke="#6b4e2c" stroke-width="10" stroke-linecap="round"/>
+  <path d="M380 0 L380 90 Q380 120 420 150 L610 262" fill="none" stroke="#6b4e2c" stroke-width="10" stroke-linecap="round"/>
+  <path d="M380 110 L380 300" fill="none" stroke="#3b2a1a" stroke-width="6" stroke-dasharray="2 10" stroke-linecap="round"/>
+  <circle cx="380" cy="104" r="7" fill="#f0b25a"/>
+ </svg>
+ <div class="branch b1"><b>Narrow stair</b><small>Feet &times;1.5 on the next word</small><br>Harder, and it pays more.</div>
+ <div class="branch b2"><b>Lantern gallery</b><small>Spare breath</small><br>A quiet walk. The next fall is forgiven.</div>
+ <div class="branch b3"><b>Curio niche</b><small>Take one relic of two</small></div>
+</div>
+${ph?'':'<p class="note">Option B. A forked stair drawn on the wall. Same three choices, shown as a map.</p>'}
+</div>`;
+const C=`
+<div class="${ph?'phone':''}">
+${head('Landing 2 of 3','Draw from the landing','Three cards lie face down. Turn one to see what it does; the others stay closed until the next landing.')}
+<div class="cards">
+ <div class="card up"><span class="tag">Hard room</span><h3>Deeper</h3><p>The next word is harder and counts for more feet.</p><span class="fx">Feet &times;1.5</span></div>
+ <div class="card back" aria-label="Face-down card"></div>
+ <div class="card back" aria-label="Face-down card"></div>
+</div>
+${ph?'':'<p class="note">Option C. Cards are turned one at a time, so each landing is a small draw rather than a menu.</p>'}
+</div>`;
+frame.innerHTML={A,B,C}[o]||A;
+</script>
+</body>
+</html>
