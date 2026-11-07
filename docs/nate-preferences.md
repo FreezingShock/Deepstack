@@ -158,3 +158,4 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 speed: submitted a word in another room and it "took ages to load" -> asked for performance fixed "all around the site"; waiting on anything is felt, treat load/answer latency as a bug with a CI budget.
 - 2026-11-06 Wants the site as fast and memory-light as possible: aggressive caching where it helps, unload what isn't needed, reuse repeated elements, and it must hold up in low power mode and with animations off.
 - 2026-11-07 Ember Log on phones: picked option C (the flame tag on the attic hatch gets an "Ember Log" label and opens the book) out of four lettered options with phone screenshots in context.
+- 2026-11-07 books: wants all the books more readable and usable ("make all the books more readable and usable, etc"). The review view is built as book pages with the book's own type, not as a list in a panel.

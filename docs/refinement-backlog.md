@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- To review (RV1): open the Shelf, tap To review, then Try again on a word and write it from memory. Tell me if 46 is the right bar to win a word back, and whether To review should stay inside the Shelf (now) or get its own spine on the home. Screenshots: screenshots/review-shelf/.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
 - Install Deepstack on your phone (installable app, PR for "Make the site installable as an app"): open the site in Chrome on Android and tap the small "Keep the library" tab on home, then Install; on iPhone open it in Safari, tap Share, then Add to Home Screen. Open it from the icon: the launch screen should show, the top rail should sit below the notch, and the Daily should play with Airplane Mode on. Say if the tab feels too loud or too quiet. Screenshots: screenshots/install-app/.
@@ -2116,3 +2117,24 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### SH3. Room colour on the share text
 **Pitch:** The share card's header takes the room's fire colour, so a Chronicle share looks red and a Gallery share purple (text only, no emoji).
 **Brief:** Goal: a colour line via `ROOMS[].rgb` in the share card's header (HTML sheet only). Files: `src/ui/results.js`, `src/ui/dailyShare.css`. **Conflicts:** SH1.
+
+### [x] RV1. To review: words to win back, with a quick re-try (this PR)
+**Done:** the Shelf book has a Shelf / To review switch. To review lists every word whose best answer is under 46 (skips count as 0) with its real meaning, what you wrote and the ideas you missed. Each word has a re-try judged by the full judge: 46 or better wins it back, and a re-try adds no book and no depth. Guard: `scripts/review-shelf.mjs` in CI and `test/review-shelf.test.js`. Screenshots: screenshots/review-shelf/.
+
+### RV2. Review from the end of a run
+**Serves:** honest answers, and the "look at the books I missed" choice on the ledger.
+**Pitch:** After a descent the result page offers "Words to win back (N)" that opens the To review view, so missed words are one tap away.
+**Brief:** Goal: a link on the result ledger that opens the Shelf book on its To review view when there are words to win back, and stays hidden on a clean run. Files: `src/app/final.js`, `src/ui/results.js`, `src/ui/bookMenus.js` (its `view` state). Done when: a run with a miss shows the link and a clean run does not.
+**Touches:** result card. **Conflicts:** result-card threads.
+
+### RV3. Filter To review by room and rarity
+**Serves:** books that are readable and usable.
+**Pitch:** Once there are many misses, the review list narrows to one room or one rarity, the same way the shelf already does.
+**Brief:** Goal: reuse the shelf's room and rarity chips inside the To review view. Files: `src/ui/reviewPages.js`, `src/ui/bookMenus.js`. Done when: a save with two rooms shows the room chips and the contents follow them.
+**Touches:** shelf. **Conflicts:** shelf-filters threads.
+
+### RV4. Count the words to review on the Shelf spine
+**Serves:** discovery. The feature sits behind the Shelf book today.
+**Pitch:** The Shelf spine on the home says how many words are waiting to review, so nobody has to open the book to find out.
+**Brief:** Goal: badge the Shelf spine with the count from `reviewCount` (`src/core/reviewShelf.js`) in `src/ui/home.js`. Done when: the home snapshot and text-fit checks pass at 375 and 1280 with the badge on.
+**Touches:** home. **Conflicts:** home-layout threads.
