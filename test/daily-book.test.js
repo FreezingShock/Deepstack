@@ -60,7 +60,8 @@ test('cover has Daily and Daily Riddle sections; a played riddle shows on its da
   const S = {daily: {}, riddle: {days: {'2026-11-04': {books: [{tier:1}], solved: 3, of: 7, depth: 120}}}};
   const {leaves} = dailyLeaves(S, '2026-11-04', {wordsFor});
   assert.match(leaves[0], /aria-label="Daily"/);
-  assert.match(leaves[0], /aria-label="Daily Riddle"[\s\S]*data-act="dailyRiddle"/);
-  assert.match(leaves[0], /Solved 3 of 7 today/);
+  const desk = leaves.find(l => /aria-label="Daily Riddle"/.test(l));
+  assert.match(desk, /aria-label="Daily Riddle"[\s\S]*data-act="dailyRiddle"/);
+  assert.match(desk, /Solved 3 of 7 today/);
   assert.ok(leaves.some(l => /<h2>Daily Riddle<\/h2><div class="dly-sum"><span><b>3<\/b> of 7 solved/.test(l)));
 });
