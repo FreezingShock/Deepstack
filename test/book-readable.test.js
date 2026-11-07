@@ -58,3 +58,9 @@ test('the cue and the floors are wired in last, so they win over the book styles
   const cssImports = [...main.matchAll(/import '\.\/ui\/[^']+\.css';/g)].map(m => m[0]);
   assert.equal(cssImports[cssImports.length - 1], "import './ui/bookReadable.css';");
 });
+
+test('the Results card gets the same reach cue as a book page', () => {
+  const js = readFileSync(join(root, 'src/ui/bookReadable.js'), 'utf8');
+  assert.match(js, /PAGES = '\.bk-spread \.pg-in, #topPanel \.pg-in, #final'/);
+  assert.match(css, /#final\.has-more::after\{content:"more ↓"/);
+});
