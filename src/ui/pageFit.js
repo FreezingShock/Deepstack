@@ -7,6 +7,12 @@ function fitPage(pg) {
   const kids = [...pg.children];
   const set = z => kids.forEach(k => z >= 1 ? k.style.removeProperty('zoom') : (k.style.zoom = z));
   set(1);
+  /* a zoom also shrinks the controls on the page: a fit may not make any control smaller on screen than it is at full
+     size, and never under 44px (the tap floor). Where a control was already small at full size, only the shrink is refused */
+  const ctrls = () => [...pg.querySelectorAll('button, a[href], [role=button], input, select, textarea')];
+  const minSide = t => { const r = t.getBoundingClientRect(); return r.width && r.height ? Math.min(r.width, r.height) : Infinity; };
+  const fullSides = ctrls().map(minSide);
+  const tapsOk = () => ctrls().every((t, i) => fullSides[i] === Infinity || minSide(t) >= Math.min(43.5, fullSides[i]) - .5);
   pg.style.removeProperty('overflow-y');
   /* measure the in-flow content only: the pen-ink overlay is absolutely positioned and can be taller than the text */
   const flow = kids.filter(k => getComputedStyle(k).position !== 'absolute');
@@ -25,7 +31,9 @@ function fitPage(pg) {
     z = nz;
   }
   /* fitted: the in-flow text fits, so a stray few px from a rotated pen note must not raise a bar */
-  if (best >= MIN) { set(best); pg.style.overflowY = 'hidden'; } else set(1);
+  if (best >= MIN) set(best);
+  if (best >= MIN && !tapsOk()) best = 0; // the zoom would shrink a control below the floor: scroll the page instead
+  if (best >= MIN) pg.style.overflowY = 'hidden'; else set(1);
 }
 function run() {
   queued = false;
