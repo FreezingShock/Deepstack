@@ -2141,3 +2141,13 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 ### CF3. Judge wait shows a real progress note
 **Pitch:** When the librarian is still arriving the wait is silent for up to 6 s before a note appears.
 **Brief:** Goal: start the "Reading your answer" note with a small candle-flicker on the slip, not after the 6 s fallback. Files: `src/scorer/index.js` (onWait timing), `src/ui/coreLoop.css`. Done when: a test pins the note at 300 ms.
+
+### SP2. Settings controls at 320 are under 44px
+**Pitch:** On a 320 px phone the Sound switch is 37x21, the sliders are 13px tall and the Calm and Full chips are 29px, so a thumb misses them.
+**Brief:** Goal: give each switch, slider and motion chip a 44px hit area with a transparent pseudo-element or padding, keeping the look. Files: `src/ui/settingsBook.js` (markup only if needed), `src/styles/small-phone.css`. Done when: `scripts/small-phone.mjs` drops the settings entries from its ALLOW list and 320 screenshots show no change. **Conflicts:** sound palette thread (settings sliders).
+### SP3. Home spines are 24px tall on phones
+**Pitch:** The Daily, Unlimited, Shelf, Rooms and Stats spines are the main menu on a phone and each is 24px tall, so they are the hardest targets on the home room.
+**Brief:** Decision for nate: taller spines (layout shifts the room), or two wider spines per row. Files: `src/ui/home.js`, `src/styles/fit.css`. Done when: nate picks A or B from the 320 screenshots in screenshots/small-phone/ and the guard drops `#home .hbook` from ALLOW. **Conflicts:** home layout threads, responsive fit.
+### SP4. Card catalogue tab covers the tagline and the first room dot
+**Pitch:** At 320 the round card catalogue tab sits on top of "Every word is a step into the dark." and over the Reading Room dot, so the first letters of the tagline are hidden.
+**Brief:** Goal: move the tab onto the top bar or below the tagline on phones and make its target 44px. Files: `src/ui/cabinet.css`, `src/styles/small-phone.css`. **Conflicts:** home room threads (tagline, attic tag), G12.

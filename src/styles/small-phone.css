@@ -1,0 +1,15 @@
+/* Small-phone tap targets (up to 600 px wide). Each control keeps its look; a transparent hit area, centred and at least
+   44px, grows its target. Pseudo-elements only, so nothing moves or repaints. Guarded by scripts/small-phone.mjs. */
+@media(max-width:600px){
+ #bar .bbtn,#mark,.ach-flame,.alm-ember{position:relative}
+ #bar .bbtn::before,#mark::before,.ach-flame::before,.alm-ember::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+ /* the Descend bar keeps its glow on ::before, so its hit area lives on ::after */
+ #home .descend{position:relative}
+ #home .descend::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+ /* room dots on the home room are 40px wide once seven share a row */
+ #home .rm-dot::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%)}
+ /* the Daily book's pen links are 20px tall text */
+ .bk-spread .pen-ink::before{content:"";position:absolute;left:-10px;right:-10px;top:-12px;bottom:-12px}
+ /* run: Hint and Skip stand at the 44px minimum */
+ #stage .row .hs-btn{min-height:44px}
+}
