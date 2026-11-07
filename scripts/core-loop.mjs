@@ -1,5 +1,5 @@
 // Guard for the answer and result flow (run after `npm run build`), in a Daily run:
-//  CL1: pressing Enter answers at once: the slip locks, says "Reading your answer" and holds still, synchronously, before the judge returns.
+//  CL1: pressing Enter answers at once: the slip locks, says "Reading your answer" inside itself and keeps its height, synchronously, before the judge returns.
 //  CL2: Enter, Space or a tap during the card reveal hurries it: the verdict, score and Next word focus land within ~300ms, the card stays open, and a second Enter goes on.
 //  CL3: the card's Enter hint is hidden on phones and touch screens (375px) and shown on desktop (1280px), like the run screen's own hint.
 //  CL4: a 300-character answer shows in full under "You wrote" (no two-line clamp, no ellipsis) at 375px and 1280px, and Next word stays reachable.
@@ -42,7 +42,8 @@ async function daily(w, h, motion) {
   await page.goto(url, {waitUntil: 'load'});
   await page.locator('#bPlay').first().waitFor({state: 'visible', timeout: T});
   await page.waitForTimeout(400);
-  await page.locator('#bPlay').first().click();
+  await page.locator('#bPlay').first().evaluate(el => el.click()); // the home plaque keeps idle motion, so click the element itself
+  await page.locator('#stage .word').waitFor({state: 'visible', timeout: T});
   await page.locator('#ans').waitFor({state: 'visible', timeout: T});
   await page.waitForTimeout(900);
   return {ctx, page, errors};
@@ -52,6 +53,7 @@ async function daily(w, h, motion) {
 {
   const {ctx, page, errors} = await daily(375, 667, 'reduce');
   try {
+    const h0 = await page.evaluate(() => document.querySelector('#fld').getBoundingClientRect().height);
     const r = await page.evaluate(() => {
       const ta = document.querySelector('#ans');
       ta.value = 'a short answer about the meaning';
@@ -59,6 +61,8 @@ async function daily(w, h, motion) {
       const fld = document.querySelector('#fld');
       return {reading: document.querySelector('#reading')?.textContent || '', judging: !!fld && fld.classList.contains('judging'), locked: ta.readOnly};
     });
+    const h1 = await page.evaluate(() => document.querySelector('#fld').getBoundingClientRect().height);
+    if (Math.abs(h1 - h0) > 1) problems.push(`CL1: the slip changes height while judging (${Math.round(h0)}px to ${Math.round(h1)}px)`);
     if (r.reading !== 'Reading your answer…') problems.push(`CL1: no "Reading your answer" line on Enter (got ${JSON.stringify(r.reading)})`);
     if (!r.judging) problems.push('CL1: the answer slip does not hold (no judging class) while the judge reads');
     if (!r.locked) problems.push('CL1: the answer box stays editable while the judge reads');

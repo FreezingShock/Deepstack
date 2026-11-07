@@ -3,6 +3,7 @@
 How to use: pick numbers, start one thread per number, paste the item's **Brief** plus the **Standard preamble** below. Companion files: [feature-inventory.md](feature-inventory.md) (what exists) and [nate-preferences.md](nate-preferences.md) (what nate asks for). Snapshot 2026-11-04, after #80. Numbers were reassigned on 2026-11-04 when this list was reworked; ticks in later PRs keep them stable.
 
 ## What nate needs to do
+- Real phone check for the stamps (TA5): on your phone open the Stats book, turn to the Stamps pages in the Rooms book (the seals, the count and the labels) and earn one stamp to see the toast. The look is wax seals (X) on the Almanac page (A), per your pick.
 - Audit 2026-11-07 (docs/audit-2026-11-07.md): five threads now run from it (home frames at 1280, room playtest in CI, door Daily state, Unlimited walk in every room, Settings walk). Nothing to decide yet; test the desktop home at 1280 after the frames PR merges.
 - Door Daily state (audit 2026-11-07): each side-door plate now reads "Daily: done ✓" or "Daily: open" for that room, from its own save (PR #337). On a wide screen, check the two plates by the fire.
 - Room sounds (TR16): play each topic room with sound on (Sound button on). Tell me if an accent (tick, beads, bell, quill, chord, heartbeat) is too loud, too frequent, or never heard, and which room.
@@ -1903,7 +1904,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** A room at 100% should be remembered somewhere: a small "Rooms mastered" line on the Rooms stats page with the date it was completed.
 **Brief:** Goal: store `S.metAt = {room: isoDate}` the first time a room reaches 100% and show it on the Rooms Almanac page. Files: `src/core/roomDepth.js`, `src/ui/roomStats.js`. **Conflicts:** none.
 
-### [~] TA5. Achievement stamps per room and library-wide (data layer in, visuals wait for nate's pick)
+### [x] TA5. Achievement stamps per room and library-wide (PR #322 rules; this PR: wax-seal look on the Almanac page, toast, CI guard scripts/stamps-look.mjs)
 **Pitch:** Small stamps that say what you have done. Each topic room has six: a first word, a quarter shelved, half the room, room mastered, a week of Dailies, and a perfect Daily (every word at 78 or better, none skipped). The library has four: every door opened, full shelves, an any-room week, and a hundred words met. A stamp is kept once earned, and a toast says when one lands.
 **Brief:** Goal: pure rules in `src/core/stamps.js` (done), additive `S.stamps = {id: day}`, recorded after each answer and each Daily (`src/app/run.js`). Left: the look and placement nate picks from screenshots/room-stamps/ (`design/stamps/mock.mjs` makes them), then the toast in that look, then a CI guard that a stamp never disappears when a room list changes. Files: `src/core/stamps.js`, `src/app/run.js`, `test/stamps.test.js`. **Conflicts:** TA2, TA2e (reads S.metAt), and #33 (achievements as brass plaques, the same idea: pick one).
 
@@ -2123,6 +2124,7 @@ The room (title, plaque with cabinet, card and fire, sibling spines) now fades i
 **Pitch:** Enter now answers at once: the slip holds, locks and says "Reading your answer", Enter or Space during the card reveal hurries it to the verdict, phone cards drop the Enter hint, and a long answer shows whole.
 **Done:** `src/app/run.js` (judging state), `src/app/card.js` (hurry), `src/main.js` (a hurried Enter does not also close the card), `src/ui/coreLoop.css`, guard `scripts/core-loop.mjs` (CL1 to CL4), `scripts/smoke.mjs` mid-reveal step updated to the hurry rule. Screenshots in `screenshots/core-loop/`.
 **Conflicts:** G12 (phone answer slip, owned by the onboarding thread), any card.css thread.
+**Checked, intended:** the tan pad that rocks across the slip on Enter is the blotter from `src/ui/inkInput.js` (sending cue), not a defect. The first version put the reading note under the slip and squeezed it from 180px to 94px; it now sits inside the slip, and CL1 pins the height.
 
 ### CF2. Skip with typed text asks first
 **Pitch:** Skip throws away a half-typed answer with no warning; a quiet "Keep typing" or a second tap would save it.
