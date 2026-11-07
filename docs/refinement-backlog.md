@@ -321,7 +321,7 @@ Coming back from looking up the descent no longer snaps: the candle, pips, word,
 **Brief:** Goal: layered ambience (paper hush, stone drips, water, hollow wind, abyss drone). Files: new `src/sound/ambience.js`. Done when: silent when sound off, no clicks on start/stop, node cap tested.
 **Touches:** FEEL hook. **Conflicts:** 23.
 
-### 25. [x] Haptics: verdict buzz and sound (PR pending)
+### 25. [x] Haptics: verdict buzz and sound (PR #353)
 **Serves:** tactile on phones.
 **Pitch:** Light vibration on tier reveals, combo links and page flips.
 **Brief:** Files: new `src/ui/haptics.js`, Settings toggle (additive). Done when: guarded by `navigator.vibrate`, pattern table per tier, stubbed test.
