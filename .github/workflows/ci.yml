@@ -58,7 +58,8 @@ jobs:
     if: needs.scope.outputs.heavy == 'true'
     runs-on: ubuntu-latest
     # 30, not 22: the browser guards run in series here. On 67a49f5 the descent guard and the onboarding halo guard took the job past 22 minutes, and it was cancelled during perf-memory with every guard before it passing.
-    timeout-minutes: 30
+    # the build job runs every browser guard in sequence; with the relic codex guard it passed 30 minutes, so the ceiling is 40
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
