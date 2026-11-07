@@ -129,6 +129,7 @@ import './core/feedback.js';
 import './ui/feedback.css';
 import './ui/alsoAccepted.css';
 import './ui/alsoMeans.css';
+import './ui/wordNotes.css';
 import './ui/textScale.css';
 import './ui/cabinet.css';
 import './ui/auditFixes.css';
@@ -136,6 +137,8 @@ import './ui/shelfGroups.css';
 import './ui/phonePolish.css';
 import './ui/dailyBind.css';
 import {deferAfterPaint} from './core/boot.js';
+import {patronsBook} from './ui/patronsBook.js';
+import {currentRoom} from './core/roomStore.js';
 import {$,$$,RM,clamp} from './app/util.js';
 import {FLOORS,FT,S,TIERS,WORDS,computeStats,dailyWords,floorAtFt,floorStartFt,hashStr,save,utc,wordsLoaded,wordsReady} from './app/state.js';
 import {announceFloor,hideTip,showTip,ui} from './app/chrome.js';
@@ -182,6 +185,7 @@ addEventListener('keydown',e=>{
 /* ---------- shelf, sets and stats: pages of the menu books (src/ui/bookMenus.js, home.js BOOK_PAGES) ---------- */
 const bookOpenCard=()=>!$('#cardlayer').hidden;
 BOOK_PAGES.bRooms={...roomsBook(S,{go:id=>goRoom(id),today:utc,lexicon:core.lexicon}),keepOnEsc:bookOpenCard};
+BOOK_PAGES.bPat=patronsBook({S,save,utc,dailyNo:()=>Math.max(1,core.dailyNumber(utc())),pool:()=>WORDS,room:()=>currentRoom(S)}); // the Patrons desk (src/ui/patronsBook.js)
 lazyBooks({S,core,TIERS,FLOORS,FT,RM,openCard,showTip,hideTip,keepOnEsc:bookOpenCard,utc,computeStats,floorAtFt,wordsReady,wordsLoaded:()=>wordsLoaded});
 registerLedgerBooks({S,FLOORS,floorStartFt:core.floorStartFt,today:utc,computeStats});
 const RHnow=()=>clamp(innerHeight*.22,108,172);

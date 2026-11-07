@@ -42,6 +42,7 @@ Mined from the whole project chat, 2026-11-03 to 2026-11-04 (about 60 of nate's 
 - 2026-11-05 home books: items behind an opening menu book (other books, desk props) must never show through mid-animation; the alcove behind it stays empty at every frame.
 - 2026-11-05 open menu book: "why is there a black box for the alcove when a book is open?" -> behind an open book the room stays lit (fire, brick, shelves); only items that would overlap the book hide, never a solid veil.
 - 2026-11-06 room depth: fine pulling more words from the archive to fill thin rooms; wants every room deep enough to play, so a room should not repeat its words within weeks.
+- 2026-11-07 unique features: asked for "something more unique" beside the weekly challenge -> built Patrons, a visitor-driven feature tied to the topic rooms and rewarding the Shelf and Almanac
 
 ## 3. How he works
 
@@ -78,6 +79,8 @@ When your PR merges, if nate said anything new about taste in your thread (a cor
 - 2026-11-06 home cabinet: the Library Rules drawer was a weak, off-style menu and Tiers A-M / Sets N-Z were fake -> every drawer must do something real; wants small box drawers (Credits, Instructions and so on) so the cabinet is part of the game, and the cabinet and the whole fireplace room allowed to be much bigger on big windows.
 
 ## Changelog
+
+- 2026-11-07 Patrons (PT1): six visitors at the library desk, each asking for one word, served into the Shelf with a commendation in the desk ledger (PR)
 - 2026-11-04 initial version from project chat history.
 
 - Colors (2026-11-04): nate likes Minecraft color codes as the color reference (use the actual hues: dark blue, dark red, dark green, dark aqua, dark purple, gold/orange). Variety comes from values within each item (darker edges, stripes), not muted/aged versions of the hue. Home menu books: Daily blue, Unlimited red, Practice green, Shelf aqua, Sets purple, Stats orange-brown.
