@@ -20,7 +20,7 @@
 /* Lexicon line */
 .bk-spread.menu .alm .lexchart{display:block;width:100%;height:auto;max-height:210px;margin-top:10px;overflow:visible}
 .bk-spread.menu .alm .lexchart .gr{stroke:var(--rule);stroke-width:1;stroke-dasharray:3 4}
-.bk-spread.menu .alm .lexchart .ax{font:400 calc(9px*var(--ts)) var(--mono);fill:var(--mute)}
+.bk-spread.menu .alm .lexchart .ax{font:400 calc(10px*var(--ts)) var(--mono);fill:var(--mute)}
 .bk-spread.menu .alm .lexchart .ln{fill:none;stroke:var(--bk);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0;animation:almDraw var(--m-linger) var(--e-settle) both}
 .bk-spread.menu .alm .lexchart .dt{fill:var(--bk)}
 /* tier spines */

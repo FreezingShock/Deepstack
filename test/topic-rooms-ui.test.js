@@ -34,7 +34,7 @@ test('the Room ledger: every room opens on a left page, sets follow their room, 
     for (const s of setsOfRoom(r.id)) assert.ok(leaves.slice(at[r.id], at[r.id] + 4).some(l => l.includes(s.name.replace(/[’]/g, '’'))), s.id);
   }
   assert.match(leaves[at[HALL]], /You are here/);
-  assert.match(leaves[0], /Room ledger/);
+  assert.match(leaves[0], /Room Ledger/);
 });
 
 test('ring of lights and side doors name the rooms', async () => {
