@@ -42,23 +42,28 @@ export function marginNoteHTML(b) {
     + `<div class="mn-body" id="mnPage" aria-hidden="true"><div class="mn-in"><div class="mn-page" aria-live="polite"></div></div></div></div>`;
 }
 
+// Kept open from one card to the next, but only once the player has seen the meaning. A card that is already read (a shelf card)
+// opens with the note at once; a judged card waits for its verdict, which is when the meaning has been shown. Turning back clears it.
+let keepOpen = false;
+
 /** Wires the tab on a rendered card. The note is fetched on the first open; nothing loads before that. */
 export function wireMarginNote(root, b) {
   const box = root.querySelector('.mn[data-word]');
   if (!box) return;
   const tab = box.querySelector('.mn-tab'), body = box.querySelector('.mn-body'), page = box.querySelector('.mn-page');
+  const verdict = root.querySelector('#vd');
   let loaded = false;
-  tab.onclick = async () => {
-    const open = !box.classList.contains('open');
+  const show = async open => {
     box.classList.toggle('open', open);
     // Turning to the note takes the page: the definition and meanings step aside (see .book.mn-on in wordNotes.css), and the tab turns back.
     box.closest('.book')?.classList.toggle('mn-on', open);
     tab.textContent = open ? 'Back to the word' : 'Margin note';
     tab.setAttribute('aria-expanded', String(open));
     body.setAttribute('aria-hidden', String(!open));
+    keepOpen = open;
     if (!open || loaded) return;
     loaded = true;
-    page.innerHTML = '<p class="mn-none">Turning to the margin…</p>';
+    page.innerHTML = '<p class="mn-none">Turning to the margin\u2026</p>';
     try {
       const n = await loadNote(b.w);
       if (box.isConnected) page.innerHTML = noteHTML(b.w, n);
@@ -67,4 +72,15 @@ export function wireMarginNote(root, b) {
       if (box.isConnected) page.innerHTML = '<p class="mn-none">The margin note would not load. Try again in a moment.</p>';
     }
   };
+  tab.onclick = () => show(!box.classList.contains('open'));
+  if (keepOpen) {
+    if (!verdict || verdict.classList.contains('on')) show(true);
+    else {
+      const watch = new MutationObserver(() => {
+        if (!box.isConnected || !keepOpen) { watch.disconnect(); return; }
+        if (verdict.classList.contains('on')) { watch.disconnect(); show(true); }
+      });
+      watch.observe(verdict, {attributes: true, attributeFilter: ['class']});
+    }
+  }
 }
